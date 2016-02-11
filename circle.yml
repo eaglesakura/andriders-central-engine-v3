@@ -3,6 +3,7 @@ checkout:
     - chmod 755 ./gradlew
     - chmod 755 ./script/circleci-build-assemble.sh
     - chmod 755 ./script/circleci-deploy-deploygate.sh
+    - chmod 755 ./script/developer-install-private.sh
 machine:
   timezone:
     Asia/Tokyo
@@ -15,6 +16,7 @@ machine:
 dependencies:
   override:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk.sh)"
+    - ./script/developer-install-private.sh
 test:
   override:
     - echo "Skip test task"
@@ -25,20 +27,20 @@ deployment:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
-      - git clone git@github.com:eaglesakura/maven.git
-      - ./script/deploy.sh
-      - ./script/circle-maven-commit.sh
+      - ./script/circleci-build-assemble.sh
+      - ./script/circleci-deploy-deploygate.sh
   feature:
     branch: /^feature\/id\/*/
     commands:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
-      - ./script/assemble.sh
+      - ./script/circleci-build-assemble.sh
   develop:
     branch: develop
     commands:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
-      - ./script/deploy.sh
+      - ./script/circleci-build-assemble.sh
+      - ./script/circleci-deploy-deploygate.sh
