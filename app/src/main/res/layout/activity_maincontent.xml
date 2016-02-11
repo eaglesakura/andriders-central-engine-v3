@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <android.support.v4.widget.DrawerLayout
+            android:id="@+id/Content.Drawer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <!-- メインコンテンツ -->
+        <FrameLayout
+                android:id="@+id/Content.Holder.Root"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        <android.support.design.widget.NavigationView
+                android:id="@+id/Content.Navigation.Root"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:fitsSystemWindows="true"
+                app:headerLayout="@layout/navigation_header_main"
+                app:menu="@menu/activity_maincontent"
+                />
+
+    </android.support.v4.widget.DrawerLayout>
+
+    <FrameLayout
+            android:id="@+id/Main.Progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:visibility="invisible">
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/esm_background_white_4"
+                android:minWidth="250dp"
+                android:orientation="vertical">
+
+            <ProgressBar
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                    android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+                    android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"/>
+
+            <TextView
+                    android:id="@+id/Main.Progress.Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                    android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+                    android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                    android:text="@string/Common.App.File.Load"/>
+
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

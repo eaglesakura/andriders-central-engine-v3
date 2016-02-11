@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
+                                    xmlns:android="http://schemas.android.com/apk/res/android"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+            <ImageView
+                    android:layout_width="@dimen/EsMaterial.Header.Icon.Size"
+                    android:layout_height="@dimen/EsMaterial.Header.Icon.Size"
+                    android:layout_marginLeft="@dimen/EsMaterial.Button.Margin"
+                    android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                    android:src="@drawable/ic_launcher"/>
+        </FrameLayout>
+
+        <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                android:orientation="vertical">
+
+            <TextView
+                    style="@style/EsMaterial.Font.Title.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="ゾーン設定"/>
+
+            <LinearLayout
+                    android:id="@+id/Setting.RoadBikeProfile.BikeName"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"
+                    android:orientation="horizontal">
+
+                <TextView
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="巡航速度"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                <TextView
+                        android:id="@+id/Setting.RoadBikeProfile.CruiseZone.MinValue"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="25 km/h"/>
+
+                <TextView
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text=" - "/>
+
+                <TextView
+                        android:id="@+id/Setting.RoadBikeProfile.CruiseZone.MaxValue"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="35 km/h"/>
+            </LinearLayout>
+
+            <view
+                    android:id="@+id/Setting.RoadBikeProfile.CruiseZone.ZoneBar"
+                    class="com.edmodo.rangebar.RangeBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+            <LinearLayout
+                    android:id="@+id/Setting.RoadBikeProfile.WheelSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"
+                    android:orientation="horizontal">
+
+                <TextView
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="目標ケイデンス"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                <TextView
+                        android:id="@+id/Setting.RoadBikeProfile.CadenceZone.MinValue"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="80rpm"/>
+
+                <TextView
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text=" - "/>
+
+                <TextView
+                        android:id="@+id/Setting.RoadBikeProfile.CadenceZone.MaxValue"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="110rpm"/>
+            </LinearLayout>
+
+            <view
+                    android:id="@+id/Setting.RoadBikeProfile.CadenceZone.ZoneBar"
+                    class="com.edmodo.rangebar.RangeBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <corners
+        android:bottomLeftRadius="@dimen/CycleComputer.Background.Corner.Size"
+        android:bottomRightRadius="@dimen/CycleComputer.Background.Corner.Size"
+        android:radius="@dimen/CycleComputer.Background.Corner.Size"
+        android:topLeftRadius="@dimen/CycleComputer.Background.Corner.Size"
+        android:topRightRadius="@dimen/CycleComputer.Background.Corner.Size" />
+
+    <gradient
+        android:angle="90"
+        android:endColor="@color/EsMaterial.Grey.300"
+        android:startColor="@color/EsMaterial.Grey.300" />
+</shape>

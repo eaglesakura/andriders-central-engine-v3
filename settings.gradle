@@ -1,0 +1,7 @@
+apply from: "app/private/private.gradle"
+apply from: "eglibrary/projects.gradle"
+
+if (ACESDK_COMPILE_LOCAL) {
+    include ':sdk'
+}
+include ':app'

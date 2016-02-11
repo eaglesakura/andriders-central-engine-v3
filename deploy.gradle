@@ -1,0 +1,57 @@
+buildscript {
+    repositories {
+        maven { url "http://eaglesakura.github.io/maven/" }
+        jcenter()
+    }
+    dependencies {
+        classpath("com.eaglesakura:eglibrary-gradle-plugin:0.2.7")
+        classpath "com.google.apis:google-api-services-androidpublisher:v2-rev18-1.20.0"
+    }
+}
+
+apply plugin: 'com.eaglesakura.android-support'
+apply plugin: 'deploygate'
+
+/**
+ * フレーバー指定でapkを検索
+ * @return 検索したAPKファイル or null
+ */
+private File getApk(String app, String flavor, String type) {
+    File dir = file("ci-release/${app}/apk/");
+    for (File file : dir.listFiles()) {
+        println "check ${file.name}"
+        if ("${app}-${flavor}-${type}.apk".toString().equals(file.name)) {
+            return file;
+        }
+    }
+//    println "not found apk(${app}-${flavor}-${type}.apk)"
+    return null;
+}
+
+deploygate {
+
+    userName = DEPLOYGATE_USER_NAME;
+    token = DEPLOYGATE_API_KEY;
+
+    apks {
+        /**
+         * googleplay debug
+         */
+        googleplayDebug {
+            sourceFile = getApk("app", "googleplay", "debug");
+            message = "for GooglePlay ${eglibrary.ci.buildDate}";
+            releaseNote = "for GooglePlay Debug ${eglibrary.ci.buildDate}";
+        }
+
+        /**
+         * googleplay release
+         */
+        googleplayRelease {
+            sourceFile = getApk("app", "googleplay", "release");
+            message = "for GooglePlay ${eglibrary.ci.buildDate}";
+            releaseNote = "for GooglePlay ${eglibrary.ci.buildDate}";
+        }
+
+    }
+}
+

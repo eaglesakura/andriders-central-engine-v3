@@ -1,0 +1,22 @@
+<resources>
+
+    <style name="App.Theme" parent="EsMaterial.Theme.Red.NoActionBar">
+        <item name="colorAccent">@color/EsMaterial.LightGreen.Button.Normal</item>
+        <item name="android:windowAnimationStyle">@style/EsMaterial.Animation.Activity</item>
+    </style>
+
+    <style name="App.Button.Normal" parent="App.Theme">
+        <item name="buttonBaseColor">@color/EsMaterial.LightGreen.Button.Normal</item>
+        <item name="buttonTextColorMode">light</item>
+    </style>
+
+    <style name="App.Button.Alert" parent="App.Theme">
+        <item name="buttonBaseColor">@color/EsMaterial.Red.Button.Normal</item>
+        <item name="buttonTextColorMode">light</item>
+    </style>
+
+    <style name="App.Theme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="App.Theme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+</resources>

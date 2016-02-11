@@ -1,0 +1,185 @@
+// バージョン名
+// ${メジャーバージョン}.${機能バージョン}.${ジェンキンスビルド番号}
+// 1.0.x  : 初期リリース
+// 1.9.x  : サイコンUI切り替えでAndroid 5.1対応
+// 3.0.x  : モジュール細分化バージョン
+def ACES_APP_VERSION = "3.0"
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.eaglesakura.android-support'
+
+configurations {
+    all*.exclude group: "com.google.code.findbugs", module: "jsr305"
+    all*.exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    if (EGLIBRARY_COMPILE_LOCAL) {
+        compile project(":eglibrary:simple-logger")
+        compile project(":eglibrary:simple-utils")
+        compile project(':eglibrary:android-thread')
+        compile project(':eglibrary:android-text-kvs')
+        compile project(':eglibrary:android-command-service')
+        compile project(':eglibrary:android-net')
+        compile project(':eglibrary:android-framework')
+        compile project(':eglibrary:android-bluetooth')
+        compile project(':eglibrary:greendao-wrapper')
+    } else {
+        compile 'com.eaglesakura:simple-logger:+'
+        compile 'com.eaglesakura:simple-utils:+'
+        compile 'com.eaglesakura:simple-serialize:+'
+        compile 'com.eaglesakura:geo-utils:+'
+        compile 'com.eaglesakura:android-simple-utils:+'
+        compile 'com.eaglesakura:android-thread:+'
+        compile 'com.eaglesakura:android-text-kvs:+'
+        compile 'com.eaglesakura:android-bluetooth:+'
+        compile 'com.eaglesakura:android-command-service:+'
+        compile 'com.eaglesakura:android-canvas-graphics:+'
+        compile 'com.eaglesakura:android-net:+'
+        compile 'com.eaglesakura:android-framework:+'
+        compile 'com.eaglesakura:onactivityresult-invoke:+'
+        compile 'com.eaglesakura:json-wrapper:+'
+        compile 'com.eaglesakura:greendao-wrapper:+'
+        compile 'com.eaglesakura:small-aquery:+'
+
+        /**
+         * Injection / State
+         */
+        compile "com.jakewharton:butterknife:+"
+        compile 'frankiesardo:icepick:+'
+        provided 'frankiesardo:icepick-processor:+'
+    }
+
+    if (ACESDK_COMPILE_LOCAL) {
+        compile project(':sdk')
+    } else {
+        compile 'com.eaglesakura:andriders-central-engine-sdk:+'
+    }
+
+    /**
+     * support libs
+     */
+    compile "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
+    compile "com.android.support:appcompat-v7:${ANDROID_SUPPORT_LIB_VERSION}"
+    compile "com.android.support:cardview-v7:${ANDROID_SUPPORT_LIB_VERSION}"
+    compile "com.android.support:recyclerview-v7:${ANDROID_SUPPORT_LIB_VERSION}"
+    compile "com.android.support:palette-v7:${ANDROID_SUPPORT_LIB_VERSION}"
+    compile "com.android.support:design:${ANDROID_SUPPORT_LIB_VERSION}"
+
+    /**
+     * Play Service
+     */
+    compile "com.google.android.gms:play-services-fitness:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.android.gms:play-services-analytics:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.android.gms:play-services-plus:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.android.gms:play-services-gcm:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile 'com.android.support:support-annotations:+'
+
+    // UI Library
+    compile 'com.edmodo:rangebar:1.0.0' // Zone Setting
+    compile 'com.cocosw:bottomsheet:1.0@aar'    // sheet select
+
+    // Remote Debug
+    debugCompile 'com.deploygate:sdk:3.1'
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "com.eaglesakura.andriders.v3"
+        minSdkVersion 21
+        targetSdkVersion 23
+
+//        versionCode 99999;
+        versionCode eglibrary.ci.buildVersionCode as int;
+        versionName eglibrary.ci.buildVersionName;
+
+        // add BuildConfig
+        buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = [
+                    'src/main/java',
+                    'src/main/generated/dao', 'src/main/generated/protobuf', 'src/main/generated/props',
+            ]
+            res.srcDirs = [
+                    "src/main/res", "private/main/res"
+            ];
+        }
+    }
+
+    // 署名設定
+    signingConfigs {
+        debug {
+            storeFile DEBUG_KEYSTORE_FILE_PATH
+            storePassword DEBUG_KEYSTORE_PASS
+            keyAlias DEBUG_KEYSTORE_ALIAS_NAME
+            keyPassword DEBUG_KEYSTORE_ALIAS_PASS
+        }
+
+        release {
+            storeFile RELEASE_KEYSTORE_FILE_PATH
+            storePassword RELEASE_KEYSTORE_PASS
+            keyAlias RELEASE_KEYSTORE_ALIAS_NAME
+            keyPassword RELEASE_KEYSTORE_ALIAS_PASS
+        }
+    }
+
+    buildTypes {
+        debug {
+            // デバッグビルド時は"package名+.debug"を入れる
+            applicationIdSuffix ".debug"
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    productFlavors {
+        // for googleplay release
+        googleplay {
+            // app idを特殊化する
+            applicationId android.defaultConfig.applicationId
+
+            versionName "${ACES_APP_VERSION}.${getArtifactVersionSuffix()}";
+        }
+    }
+
+    lintOptions {
+        disable "DuplicateIds"
+        disable "NewApi"
+        disable "InvalidPackage"
+        abortOnError false
+    }
+
+    // ignore include
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'androidannotations-api.properties'
+        exclude 'services/com.fasterxml.jackson.core.JsonFactory'
+        exclude 'services/com.fasterxml.jackson.core.ObjectCodec'
+    }
+}
+/**
+ * バージョンを取得する
+ * CircleCIの場合、バージョン末尾にビルド番号を付与する
+ */
+def getArtifactVersionSuffix() {
+    if (System.env.CIRCLE_BUILD_NUM != null) {
+        // CircleCIのバージョンが指定されているので、そちらを利用する
+        return ".${System.env.CIRCLE_BUILD_NUM}"
+    } else {
+        return ".local"
+    }
+}
+
+apply from: "generator.gradle"

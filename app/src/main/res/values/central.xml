@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="CycleComputer.Time.Font">35</integer>
+    <dimen name="CycleComputer.Card.InnerPadding">15dp</dimen>
+    <dimen name="CycleComputer.Zonebar.Width">15dp</dimen>
+    <dimen name="CycleComputer.Background.Corner.Size">2dp</dimen>
+    <dimen name="CycleComputer.Margin.Normal">2dp</dimen>
+
+    <style name="CycleComputer.Font.Normal" parent="EsMaterial.Font.Title">
+        <item name="android:textSize">48sp</item>
+    </style>
+
+    <style name="CycleComputer.Font.Small" parent="EsMaterial.Font.Title">
+        <item name="android:textColor">@color/EsMaterial.Grey.500</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+</resources>

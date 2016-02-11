@@ -1,0 +1,106 @@
+<resources>
+
+    <!-- ルートメニュー -->
+    <string name="Login.Welcome.Information">Andriders Central
+        Engine(A.C.E)をダウンロードしていただき、ありがとうございます。\nこのアプリはGoogle Play
+        Serviceの機能を利用するため、ログインを行ってください。\nこの作業は数タップで完了します。
+    </string>
+    <string name="Login.Welcome.Information.UpdateRelease3">Andriders Central
+        Engine(A.C.E)はより良いユーザー体験のため、全面リニューアルしました。
+    </string>
+    <string name="Login.Initial.Error">ログイン失敗</string>
+    <string name="Login.Initial.Error.Information">Google Play Serviceへのログインに失敗しました。\n再度認証を行いますか？
+    </string>
+    <string name="Login.Initial.Success">ログイン完了</string>
+    <string name="Login.Initial.Success.Information">Google Play Serviceへのログインに成功しました。</string>
+    <string name="Login.Initial.Login">ログイン</string>
+    <string name="Login.Initial.Exit">終了</string>
+
+    <string name="Setting.Gadgets.GpsSpeed">速度計算でGPSを優先</string>
+    <string name="Setting.Gadgets.GpsDistance">距離計算でGPSを優先</string>
+    <string name="Setting.Gadgets.SpeedAndCadence">スピード＆ケイデンス</string>
+    <string name="Setting.Gadgets.Heartrate">ハートレートモニター</string>
+    <string name="Setting.Gadgets.RemoteCentral">リモートセントラル</string>
+    <string name="Setting.Gadgets.RemoteCentral.None">未選択</string>
+    <string name="Setting.Gadgets.BleDevice.NotConnected">未接続</string>
+    <string name="Setting.Gadgets.Sensors.Found">センサー【%1$s】を検出しました</string>
+    <!--<string name="Setting.Gadgets.Sensors.Selector">%1$s【%2$d 回接続】</string>-->
+    <string name="Setting.Gadgets.Sensors.Selector">%1$s【ID: %2$s】</string>
+    <string name="Setting.Gadgets.Sensors.Selector.None">センサー未選択</string>
+
+    <!-- ロードバイク設定 -->
+    <string name="Setting.Roadbike.MaxWheelLength">最大ホイール周長は%d mmです。</string>
+    <string name="Setting.Roadbike.WheelOuterLength">タイヤ外周サイズ</string>
+
+    <!-- フィットネス -->
+    <string name="Setting.Fitness.Weight.SyncCompleted">体重データを同期しました</string>
+    <string name="Setting.Fitness.Weight.SyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>
+    <string name="Setting.Fitness.Weight">体重</string>
+    <string name="Setting.Fitness.Weight.Unit">kg</string>
+    <string name="Setting.Fitness.Weight.DialogHiht"></string>
+    <string name="Setting.Fitness.Weight.DialogTitle">体重入力</string>
+    <string name="Setting.Fitness.MaxHeartrate">最大心拍数</string>
+    <string name="Setting.Fitness.MaxHeartrate.Unit">bpm</string>
+    <string name="Setting.Fitness.MaxHeartrate.DialogHiht"></string>
+    <string name="Setting.Fitness.MaxHeartrate.DialogTitle">最大心拍数入力</string>
+    <string name="Setting.Fitness.NormalHeartrate.DialogTitle">安静心拍数入力</string>
+
+    <!-- 拡張モジュール -->
+    <string name="Extension.Empty">拡張モジュールがありません。</string>
+    <string name="Extension.Category.Location">位置情報</string>
+    <string name="Extension.Category.Location.Information">現在位置の取得方法を選択します。</string>
+    <string name="Extension.Category.Heartrate">心拍</string>
+    <string name="Extension.Category.Heartrate.Information">心拍の取得方法を選択します。</string>
+    <string name="Extension.Category.SpeedAndCadence">スピード＆ケイデンス</string>
+    <string name="Extension.Category.SpeedAndCadence.Information">速度・ケイデンスの取得方法を選択します。</string>
+    <string name="Extension.Category.Other">その他</string>
+    <string name="Extension.Category.Other.Information">インストールされたその他のモジュールの設定を行います。</string>
+
+    <!-- 内蔵拡張機能設定 -->
+    <string name="Extension.Inner.Location.Name">GPSから取得</string>
+
+    <!-- アプリ情報 -->
+    <string name="Information.Build.Title">ビルド情報</string>
+    <string name="Information.App.Version">アプリバージョン</string>
+    <string name="Information.App.BuildDate">ビルド日時</string>
+    <string name="Information.App.SDKVersion">ACE-SDKバージョン</string>
+    <string name="Information.App.Licenses">オープンソースライセンス</string>
+    <string name="Information.Debug.Title">開発者用機能</string>
+    <string name="Information.Debug.Enabled">
+        開発用デバッグ機能を有効化します。\n開発者向けの機能であるため、バッテリーの消費量増大等の副作用があります。\nアプリ再起動後に有効化されます。
+    </string>
+
+    <!-- その他 -->
+    <string name="Common.BleDevice.HeartRateMonitor">ハートレートモニター</string>
+    <string name="Common.BleDevice.SpeedAndCadenceSensor">スピード＆ケイデンスセンサー</string>
+    <string name="Common.Gadget.BluetoothServer">Bluetoothサーバー</string>
+    <string name="Common.BleDevice.ScanTimeout">デバイス検索がタイムアウトしました</string>
+    <string name="Common.Dialog.Title.Error">エラー</string>
+    <string name="Common.Dialog.Title.Check">確認</string>
+    <string name="Common.OK">OK</string>
+    <string name="Common.Cancel">キャンセル</string>
+    <string name="Common.Reset">リセット</string>
+    <string name="Common.Worning">注意</string>
+    <string name="Common.File.Processing">処理中</string>
+    <string name="Common.File.Load">読み込み中</string>
+    <string name="Common.File.Write">書き込み中</string>
+    <string name="Common.File.NotFound">ファイルが見つかりませんでした</string>
+    <string name="Common.File.FormatError">正常なファイルではない、もしくはファイルが壊れています</string>
+    <string name="Common.Update.Migration">アプリケーション準備中</string>
+    <string name="Common.App.Finish">アプリを終了する</string>
+
+    <string name="Common.Delete">削除</string>
+    <string name="Common.Dialog.Title.Verification">確認</string>
+
+    <!-- 各種フォーマッタ -->
+    <string name="Common.Formatter.Time.HM">%1$d 時間 %2$d 分</string>
+    <string name="Common.Formatter.Time.MS">%1$d 分 %2$d 秒</string>
+    <string name="Common.Formatter.Time.S">%1$d 秒</string>
+    <string name="Main.Menu.Profile">プロファイル</string>
+    <string name="Main.Menu.CycleComputer">サイコン表示内容</string>
+    <string name="Main.Menu.Extensions">サイコン機能詳細</string>
+    <string name="Main.Menu.Activity">活動記録</string>
+    <string name="Main.Menu.Information">アプリについて</string>
+    <string name="Extension.Inner.BleSensor.Name">BLEセンサーから取得</string>
+    <string name="Extension.Inner.Default.Name">ACE標準機能</string>
+</resources>

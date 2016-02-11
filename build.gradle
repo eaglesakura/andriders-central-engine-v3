@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        maven { url "http://eaglesakura.github.io/maven/" }
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath "com.eaglesakura:eglibrary-gradle-plugin:0.2.7"
+        classpath 'com.eaglesakura:joint-connector-plugin:0.1.13'
+        classpath 'com.deploygate:gradle:0.6'
+    }
+}
+
+allprojects {
+    repositories {
+        maven { url "http://eaglesakura.github.io/maven/" }
+        maven { url "https://clojars.org/repo/" }
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+// リリースディレクトリ指定
+ext {
+    ANDROID_SUPPORT_LIB_VERSION = "23.1.+"
+    ANDROID_PLAYSERVICE_LIB_VERSION = "8.4.+"
+}
+
+// APIキー等の隠蔽したいデータを配置
+apply from: "app/private/private.gradle"
+apply from: "deploy.gradle"

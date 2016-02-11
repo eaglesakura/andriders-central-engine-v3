@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="160dp"
+              android:background="@drawable/side_nav_bar"
+              android:gravity="bottom"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+              android:paddingLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+              android:paddingRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+              android:paddingTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+              android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:paddingTop="@dimen/EsMaterial.Button.Margin"
+            android:src="@drawable/ic_launcher"/>
+
+    <com.eaglesakura.material.widget.MaterialSwitch
+            android:id="@+id/Main.Menu.BootService"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/EsMaterial.Button.Margin"
+            android:text="Andriders Central Engine"
+            android:textAppearance="@style/EsMaterial.Font.Normal"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="andriders.blog.jp"/>
+
+</LinearLayout>
