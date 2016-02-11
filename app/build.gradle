@@ -154,7 +154,7 @@ android {
             // app idを特殊化する
             applicationId android.defaultConfig.applicationId
 
-            versionName "${ACES_APP_VERSION}.${getArtifactVersionSuffix()}";
+            versionName "${ACES_APP_VERSION}${getArtifactVersionSuffix()}";
         }
     }
 
