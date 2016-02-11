@@ -30,6 +30,7 @@
 アプリの動作確認は可能です。
 
 <pre>
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk.sh)"
 git clone git@github.com:eaglesakura/andriders-central-engine-v3.git
 cd andriders-central-engine-v3
 git checkout develop
