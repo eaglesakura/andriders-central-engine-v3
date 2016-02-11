@@ -1,3 +1,7 @@
+general:
+  branches:
+    ignore:
+      - master
 checkout:
   post:
     - chmod 755 ./gradlew
