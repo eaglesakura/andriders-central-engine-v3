@@ -1,0 +1,6 @@
+[submodule "sdk"]
+	path = sdk
+	url = git@github.com:eaglesakura/andriders-central-engine-sdk.git
+[submodule "eglibrary"]
+	path = eglibrary
+	url = git@github.com:eaglesakura/eglibrary.git

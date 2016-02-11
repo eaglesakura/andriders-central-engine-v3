@@ -16,7 +16,7 @@ ext.ACESDK_COMPILE_LOCAL = true
  *
  * 実開発での署名とは異なる。
  */
-ext.DEBUG_KEYSTORE_FILE_PATH = file('sign/appdebug.jks')
+ext.DEBUG_KEYSTORE_FILE_PATH = file('app/private/sign/appdebug.jks')
 ext.DEBUG_KEYSTORE_PASS = "appdebug"
 ext.DEBUG_KEYSTORE_ALIAS_NAME = "appdebug"
 ext.DEBUG_KEYSTORE_ALIAS_PASS = "appdebug"
@@ -29,7 +29,7 @@ ext.DEBUG_KEYSTORE_ALIAS_PASS = "appdebug"
  *
  * Circle CIのビルドでは正しいリリース用鍵で署名される。
  */
-ext.RELEASE_KEYSTORE_FILE_PATH = file('sign/apprelease.jks')
+ext.RELEASE_KEYSTORE_FILE_PATH = file('app/private/sign/apprelease.jks')
 ext.RELEASE_KEYSTORE_PASS = "apprelease"
 ext.RELEASE_KEYSTORE_ALIAS_NAME = "apprelease"
 ext.RELEASE_KEYSTORE_ALIAS_PASS = "apprelease"
