@@ -113,6 +113,10 @@ android {
         }
     }
 
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     // 署名設定
     signingConfigs {
         debug {
