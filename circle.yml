@@ -8,6 +8,7 @@ checkout:
     - chmod 755 ./script/circleci-build-assemble.sh
     - chmod 755 ./script/circleci-deploy-deploygate.sh
     - chmod 755 ./script/developer-install-private.sh
+    - git submodule update --init
 machine:
   timezone:
     Asia/Tokyo
@@ -33,13 +34,15 @@ deployment:
       - rm -rf "/home/ubuntu/.gradle"
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
+      - cp -r ./ci-release $CIRCLE_ARTIFACTS
   feature:
-    branch: /^feature\/id\/*/
+    branch: /^feature\/id\/.*$/
     commands:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
       - ./script/circleci-build-assemble.sh
+      - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
     commands:
@@ -48,3 +51,4 @@ deployment:
       - rm -rf "/home/ubuntu/.gradle"
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
+      - cp -r ./ci-release $CIRCLE_ARTIFACTS

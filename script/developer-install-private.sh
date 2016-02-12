@@ -5,14 +5,19 @@
 # OSS化に伴い、プライベートリポジトリで署名鍵等の重要ファイルを管理する
 # ace-privateを同期後、必要なファイルをローカルにコピーする
 #################################################################################
-rm -rf ./ace-private
-git clone git@bitbucket.org:eaglesakura/ace-private.git
+if [ -e ./ace-private/v3.0.x ]; then
+    echo "installed ace-private/"
+    cd ace-private/
+    git fetch
+    git pull origin master
+    cd ..
+else
+    git clone git@bitbucket.org:eaglesakura/ace-private.git
+fi
 
 if [ -e "./ace-private/v3.0.x/" ]; then
-
-cp -rf ./ace-private/v3.0.x/** ./app/private/
-
+    cp -rf ./ace-private/v3.0.x/** ./app/private/
 else
     echo "ace-private not sync"
-    exit 1
+    cp -rf ./app/private.tmp/** ./app/private/
 fi

@@ -1,5 +1,5 @@
 // バージョン名
-// ${メジャーバージョン}.${機能バージョン}.${ジェンキンスビルド番号}
+// ${メジャーバージョン}.${機能バージョン}.${ビルド番号}
 // 1.0.x  : 初期リリース
 // 1.9.x  : サイコンUI切り替えでAndroid 5.1対応
 // 3.0.x  : モジュール細分化バージョン
@@ -113,6 +113,12 @@ android {
         }
     }
 
+    dexOptions {
+        // memo: http://developer.covelline.com/2015/06/circle-ci/
+        javaMaxHeapSize "4g"
+        preDexLibraries !(System.getenv()["CIRCLECI"] as boolean)
+    }
+
     // 署名設定
     signingConfigs {
         debug {
@@ -148,7 +154,7 @@ android {
             // app idを特殊化する
             applicationId android.defaultConfig.applicationId
 
-            versionName "${ACES_APP_VERSION}.${getArtifactVersionSuffix()}";
+            versionName "${ACES_APP_VERSION}${getArtifactVersionSuffix()}";
         }
     }
 
