@@ -9,10 +9,8 @@ rm -rf ./ace-private
 git clone git@bitbucket.org:eaglesakura/ace-private.git
 
 if [ -e "./ace-private/v3.0.x/" ]; then
-
-cp -rf ./ace-private/v3.0.x/** ./app/private/
-
+    cp -rf ./ace-private/v3.0.x/** ./app/private/
 else
     echo "ace-private not sync"
-    exit 1
+    cp -rf ./app/private.tmp/** ./app/private/
 fi
