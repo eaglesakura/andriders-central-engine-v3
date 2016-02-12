@@ -16,7 +16,7 @@
 
 ## 開発版インストール
 
- * DeployGate版のインストールは下記のリンクから行えます。
+ * デバッグ版のインストールは下記のリンクから行えます。
   * https://dply.me/o3nql5
 
 ![DeployGate](https://chart.googleapis.com/chart?chs=256x256&cht=qr&chl=https%3A%2F%2Fdeploygate.com%2Fdistributions%2F0e9f7d4a23ab9744856a5b1be5b2e353fe963baf)
