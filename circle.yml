@@ -36,7 +36,7 @@ deployment:
       - ./script/circleci-deploy-deploygate.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   feature:
-    branch: /^feature\/id\/*/
+    branch: /^feature\/id\/.*$/
     commands:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
