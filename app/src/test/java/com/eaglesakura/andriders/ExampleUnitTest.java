@@ -1,15 +1,22 @@
 package com.eaglesakura.andriders;
 
 import org.junit.Test;
+import org.robolectric.shadows.ShadowLog;
 
-import static org.junit.Assert.*;
+import android.util.Log;
 
-/**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
- */
-public class ExampleUnitTest {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class ExampleUnitTest extends AceJUnitTester {
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+    public void helloContextTest() throws Exception {
+        assertNotNull(mContext);
+        assertNotNull(mContext instanceof AceApplication);
+        assertNotNull(mContext.getString(R.string.Common_File_Load));
+        assertTrue(BuildConfig.DEBUG);
+
+        ShadowLog.stream = System.out;
+        Log.i("TEST", "Hello JUnit Test!!");
     }
 }

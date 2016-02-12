@@ -8,6 +8,7 @@ checkout:
     - chmod 755 ./script/circleci-build-assemble.sh
     - chmod 755 ./script/circleci-deploy-deploygate.sh
     - chmod 755 ./script/developer-install-private.sh
+    - chmod 755 ./script/circleci-build-testing.sh
     - git submodule update --init
 machine:
   timezone:
@@ -42,6 +43,7 @@ deployment:
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
       - ./script/circleci-build-assemble.sh
+      - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
