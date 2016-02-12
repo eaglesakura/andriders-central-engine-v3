@@ -2,11 +2,17 @@
 
 
 report_cp() {
-cp -R "./app/build/reports" "$CIRCLE_TEST_REPORTS"
+mkdir "$CIRCLE_TEST_REPORTS/junit/googleplayDebug"
+mkdir "$CIRCLE_TEST_REPORTS/junit/googleplayRelease"
+
+find . -type f -regex ".*/build/test-results/googleplayDebug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/googleplayDebug/ \;
+find . -type f -regex ".*/build/test-results/googleplayDebug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+find . -type f -regex ".*/build/test-results/googleplayRelease/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/googleplayRelease/ \;
 }
 
 # テスト実行
-./gradlew testDebug
+./gradlew test
+
 
 if [ $? -ne 0 ]; then
     echo "UnitTest failed..."
