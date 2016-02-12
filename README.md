@@ -27,14 +27,31 @@
 
 ただし、署名鍵等はダミーファイルがコミットされているため、Google PlayやDeploygateにアップロードされているapkを生成することはできません。
 
+署名ファイルやAPIキー等の重要情報は "app/private"配下に管理されます。ダミーファイルは"app/private.tmp"に保存されていますので、そのファイルを"app/private"配下にコピーする（もしくは"script/developer-install-private.sh"を実行することで所定の位置へファイルを移動できます。
+
 アプリの動作確認は可能です。
 
 <pre>
+
+# Android SDKの内容を同期する
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk.sh)"
+
+# リポジトリをcloneしてビルド用ブランチへ移動する
 git clone git@github.com:eaglesakura/andriders-central-engine-v3.git
 cd andriders-central-engine-v3
 git checkout develop
+
+# submoduleを同期し、SDK等を取得する
 git submodule update --init
+
+# スクリプトに実行権限を付与する
+chmod 755 ./script/developer-install-private.sh
+chmod 755 ./gradlew
+
+# app/private.tmpをapp/privateにコピーする
+./script/developer-install-private.sh
+
+# ビルドを行う
 ./gradlew assembleDebug
 </pre>
 
