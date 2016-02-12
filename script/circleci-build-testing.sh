@@ -1,16 +1,17 @@
 #! /bin/sh
 
-# 通常ビルド
-./script/circleci-build-assemble.sh
-if [ $? -ne 0 ]; then
-    echo "build failed..."
-    exit 1
-fi
+
+report_cp() {
+cp -R "./app/build/reports" "$CIRCLE_TEST_REPORTS"
+}
 
 # テスト実行
 ./gradlew testDebug
 
 if [ $? -ne 0 ]; then
-    echo "build failed..."
+    echo "UnitTest failed..."
+    report_cp
     exit 1
+else
+    report_cp
 fi
