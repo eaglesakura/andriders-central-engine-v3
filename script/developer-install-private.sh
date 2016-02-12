@@ -9,6 +9,7 @@ if [ -e ./ace-private/v3.0.x ]; then
     echo "installed ace-private/"
     cd ace-private/
     git fetch
+    git pull origin master
     cd ..
 else
     git clone git@bitbucket.org:eaglesakura/ace-private.git
