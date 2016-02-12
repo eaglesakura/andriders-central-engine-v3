@@ -1,11 +1,8 @@
-general:
-  branches:
-    ignore:
-      - master
 checkout:
   post:
     - chmod 755 ./gradlew
     - chmod 755 ./script/circleci-build-assemble.sh
+    - chmod 755 ./script/circleci-build-testing.sh
     - chmod 755 ./script/circleci-deploy-deploygate.sh
     - chmod 755 ./script/developer-install-private.sh
     - git submodule update --init
@@ -34,6 +31,7 @@ deployment:
       - rm -rf "/home/ubuntu/.gradle"
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
+      - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   feature:
     branch: /^feature\/id\/.*$/
@@ -42,6 +40,7 @@ deployment:
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
       - ./script/circleci-build-assemble.sh
+      - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
@@ -52,3 +51,13 @@ deployment:
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
+  develop:
+    branch: master
+    commands:
+      - rm -rf "/home/ubuntu/.m2"
+      - rm -rf "/home/ubuntu/.ivy2"
+      - rm -rf "/home/ubuntu/.gradle"
+      - ./script/circleci-build-assemble.sh
+      - ./script/circleci-build-testing.sh
+      - cp -r ./ci-release $CIRCLE_ARTIFACTS
+

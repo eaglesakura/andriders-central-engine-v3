@@ -1,15 +1,20 @@
 package com.eaglesakura.andriders;
 
+import com.eaglesakura.util.LogUtil;
+
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-/**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
- */
-public class ExampleUnitTest {
+public class ExampleUnitTest extends AceJUnitTester {
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+    public void helloContextTest() throws Exception {
+        LogUtil.log("Hello JUnit Test!!");
+
+        assertNotNull(mContext);
+        assertNotNull(mContext instanceof AceApplication);
+        assertNotNull(mContext.getString(R.string.Common_File_Load));
+        assertTrue(BuildConfig.DEBUG == BuildConfig.APPLICATION_ID.endsWith(".debug"));
     }
 }

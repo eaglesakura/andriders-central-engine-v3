@@ -26,6 +26,6 @@ fi
 ./gradlew ciCollect
 
 if [ $? -ne 0 ]; then
-    echo "collect failed..."
+    echo "unit test failed..."
     exit 1
 fi
