@@ -2,6 +2,7 @@
 
 
 report_cp() {
+mkdir "$CIRCLE_TEST_REPORTS/junit/"
 mkdir "$CIRCLE_TEST_REPORTS/junit/googleplayDebug"
 mkdir "$CIRCLE_TEST_REPORTS/junit/googleplayRelease"
 
