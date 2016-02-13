@@ -1,6 +1,5 @@
 package com.eaglesakura.andriders.extension;
 
-import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.util.LogUtil;
 
@@ -51,7 +50,7 @@ public class BasicExtensionService extends BaseService implements IExtensionServ
     @Override
     public ExtensionInformation getExtensionInformation() {
         ExtensionInformation info = new ExtensionInformation(this, "basic_extension");
-        info.setText("Andriders Central Engine 標準機能");
+        info.setSummary("Andriders Central Engine 標準機能");
         info.setCategory(ExtensionCategory.CATEGORY_OTHERS);
         return info;
     }

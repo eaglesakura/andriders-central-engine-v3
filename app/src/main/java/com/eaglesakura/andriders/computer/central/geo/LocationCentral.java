@@ -4,8 +4,8 @@ import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.base.BaseCentral;
 import com.eaglesakura.andriders.computer.central.calculator.AltitudeDataCalculator;
 import com.eaglesakura.andriders.computer.central.calculator.DistanceDataCalculator;
-import com.eaglesakura.andriders.idl.remote.IdlLocation;
 import com.eaglesakura.andriders.protocol.GeoProtocol;
+import com.eaglesakura.andriders.protocol.internal.InternalData;
 import com.eaglesakura.geo.Geohash;
 
 /**
@@ -51,7 +51,7 @@ public class LocationCentral extends BaseCentral {
     /**
      * 位置情報を更新する
      */
-    public void setLocation(IdlLocation loc) {
+    public void setLocation(InternalData.IdlLocation loc) {
         // 高さを更新
         mAltitudeDataCalculator.onLocationUpdated(loc.getLatitude(), loc.getLongitude(), loc.getAltitude());
         mDistanceDataCalculator.updateLocation(loc.getLatitude(), loc.getLongitude());

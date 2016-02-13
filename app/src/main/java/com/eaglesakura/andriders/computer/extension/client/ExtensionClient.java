@@ -9,10 +9,8 @@ import com.eaglesakura.andriders.extension.ExtensionInformation;
 import com.eaglesakura.andriders.extension.internal.CentralDataCommand;
 import com.eaglesakura.andriders.extension.internal.DisplayCommand;
 import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
-import com.eaglesakura.andriders.idl.remote.IdlHeartrate;
-import com.eaglesakura.andriders.idl.remote.IdlLocation;
-import com.eaglesakura.andriders.idl.remote.IdlSpeedAndCadence;
 import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.protocol.internal.InternalData;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.service.central.CentralService;
 import com.eaglesakura.android.service.CommandClient;
@@ -288,7 +286,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(CentralDataCommand.CMD_setLocation, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                IdlLocation idl = payload.deserializePropOrNull(IdlLocation.class);
+                InternalData.IdlLocation idl = payload.deserializeMessageOrNull(InternalData.IdlLocation.class);
                 dataManager.setLocation(idl);
                 return null;
             }
@@ -300,7 +298,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(CentralDataCommand.CMD_setHeartrate, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                IdlHeartrate idl = payload.deserializePropOrNull(IdlHeartrate.class);
+                InternalData.IdlHeartrate idl = payload.deserializeMessageOrNull(InternalData.IdlHeartrate.class);
                 dataManager.setHeartrate(idl);
                 return null;
             }
@@ -312,7 +310,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                IdlSpeedAndCadence idl = payload.deserializePropOrNull(IdlSpeedAndCadence.class);
+                InternalData.IdlSpeedAndCadence idl = payload.deserializeMessageOrNull(InternalData.IdlSpeedAndCadence.class);
                 dataManager.setSpeedAndCadence(idl);
                 return null;
             }

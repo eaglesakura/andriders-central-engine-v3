@@ -10,10 +10,8 @@ import com.eaglesakura.andriders.computer.central.sensor.CadenceDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.HeartrateDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.SensorDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.SpeedDataCentral;
-import com.eaglesakura.andriders.idl.remote.IdlHeartrate;
-import com.eaglesakura.andriders.idl.remote.IdlLocation;
-import com.eaglesakura.andriders.idl.remote.IdlSpeedAndCadence;
 import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.protocol.internal.InternalData;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
@@ -89,7 +87,7 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * GPS座標を更新する
      */
-    public void setLocation(final IdlLocation loc) {
+    public void setLocation(final InternalData.IdlLocation loc) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
@@ -112,7 +110,7 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * Speed&Cadenceセンサーの情報を更新する
      */
-    public void setSpeedAndCadence(final IdlSpeedAndCadence sc) {
+    public void setSpeedAndCadence(final InternalData.IdlSpeedAndCadence sc) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
@@ -130,7 +128,7 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * 心拍を更新する
      */
-    public void setHeartrate(final IdlHeartrate heartrate) {
+    public void setHeartrate(final InternalData.IdlHeartrate heartrate) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {

@@ -70,7 +70,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     @Override
     public ExtensionInformation getExtensionInformation() {
         ExtensionInformation info = new ExtensionInformation(this, "gps_loc");
-        info.setText("現在位置をサイクルコンピュータに反映します。");
+        info.setSummary("現在位置をサイクルコンピュータに反映します。");
         info.setCategory(ExtensionCategory.CATEGORY_LOCATION);
         info.setHasSetting(false);
         return info;
