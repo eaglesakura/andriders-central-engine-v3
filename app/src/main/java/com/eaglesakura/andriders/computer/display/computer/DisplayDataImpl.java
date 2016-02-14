@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.extension.display.BasicValue;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.display.LineValue;
-import com.eaglesakura.andriders.idl.display.IdlCycleDisplayValue;
+import com.eaglesakura.andriders.protocol.internal.InternalData;
 import com.eaglesakura.android.aquery.AQuery;
 
 import android.content.Context;
@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 public class DisplayDataImpl extends DisplayData {
     final long createdDate = System.currentTimeMillis();
 
-    public DisplayDataImpl(IdlCycleDisplayValue raw) {
+    public DisplayDataImpl(InternalData.IdlCycleDisplayValue.Builder raw) {
         super(raw);
     }
 

@@ -61,21 +61,18 @@ public class BasicExtensionService extends BaseService implements IExtensionServ
         {
             DisplayInformation info = new DisplayInformation(this, DISPLAY_ID_HEARTRATE);
             info.setTitle("心拍");
-            info.setText("現在の心拍を表示します。");
 
             result.add(info);
         }
         {
             DisplayInformation info = new DisplayInformation(this, DISPLAY_ID_CURRENT_SPEED);
             info.setTitle("速度");
-            info.setText("現在の速度を表示します");
 
             result.add(info);
         }
         {
             DisplayInformation info = new DisplayInformation(this, DISPLAY_ID_CURRENT_CADENCE);
             info.setTitle("ケイデンス");
-            info.setText("ケイデンスを表示します。");
 
             result.add(info);
         }
