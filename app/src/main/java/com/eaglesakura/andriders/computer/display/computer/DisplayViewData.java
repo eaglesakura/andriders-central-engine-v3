@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.display.LineValue;
 import com.eaglesakura.andriders.protocol.internal.InternalData;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -76,8 +77,19 @@ public class DisplayViewData extends DisplayData {
         }
     }
 
+    public boolean isTimeout() {
+        if (getTimeoutMs() <= 0) {
+            // 時間が設定しなければタイムアウトしない
+            return false;
+        } else {
+            return (System.currentTimeMillis() - createdDate) > getTimeoutMs();
+        }
+    }
+
     public void bindView(@NonNull Context context, @NonNull ViewGroup stub) {
-        if ((System.currentTimeMillis() - createdDate) > getTimeoutMs()) {
+        AndroidThreadUtil.assertUIThread();
+
+        if (isTimeout()) {
             // タイムアウトしたので、N/A扱いにする
             bindNotAvailable(context, stub);
             return;

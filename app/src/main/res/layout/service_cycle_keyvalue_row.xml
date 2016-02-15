@@ -22,6 +22,8 @@
             android:layout_gravity="center"
             android:textColor="@color/EsMaterial.Grey.800"
             android:text="@string/AceUI.Information.NotConnected"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:gravity="right"/>
 
 </LinearLayout>
