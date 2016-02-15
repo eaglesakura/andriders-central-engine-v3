@@ -18,3 +18,5 @@ UserInterfaceState.xcuserstate
 .gradle/
 latex/
 ace-private/
+# libは必要に応じてcloneする
+/eglibrary
