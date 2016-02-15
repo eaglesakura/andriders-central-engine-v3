@@ -8,6 +8,7 @@ import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -144,11 +145,17 @@ public class BasicExtensionService extends BaseService implements IExtensionServ
         postDummyHeartrate(session);
     }
 
+    /**
+     * ダミーの心拍データを書き込む
+     * FIXME 将来的に、DisplayDataではなく心拍そのものをダミー書き込みするようにする
+     */
     private void postDummyHeartrate(ExtensionSession session) {
         DisplayData data = new DisplayData(this, DEBUG_RANDOM_HEARTRATE);
         BasicValue value = new BasicValue();
         value.setTitle("DBG: 心拍");
         value.setValue(String.format("%d", 90 + (int) (Math.random() * 10)));
+        value.setBarColorARGB(Math.random() > 0.5 ? Color.RED : Color.TRANSPARENT);
+        value.setZoneText("Zone" + (System.currentTimeMillis() % 10));
         data.setValue(value);
 
         session.getDisplayExtension().setValue(data);

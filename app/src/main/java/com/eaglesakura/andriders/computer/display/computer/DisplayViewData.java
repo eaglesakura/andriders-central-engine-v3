@@ -39,11 +39,27 @@ public class DisplayViewData extends DisplayData {
         if (DisplaySlot.isLeft(stub.getId())) {
             updateOrGone(q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Left).visible().getTextView(), value.getZoneText());
             q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Right).gone();
-            // TODO ゾーンカラーを設定する
+
+            // ゾーンカラーを設定する
+            if (value.hasZoneBar()) {
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).visible().backgroundColor(value.getBarColorARGB());
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+            } else {
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+            }
         } else {
             q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Left).gone();
             updateOrGone(q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Right).visible().getTextView(), value.getZoneText());
-            // TODO ゾーンカラーを設定する
+
+            // ゾーンカラーを設定する
+            if (value.hasZoneBar()) {
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).visible().backgroundColor(value.getBarColorARGB());
+            } else {
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+            }
         }
     }
 
