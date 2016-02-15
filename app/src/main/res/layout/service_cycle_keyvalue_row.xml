@@ -9,6 +9,7 @@
             android:id="@+id/Service.Central.Display.KeyValue.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/EsMaterial.Grey.800"
             android:layout_gravity="center"
             android:text="title"/>
 
@@ -19,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:textColor="@color/EsMaterial.Grey.800"
             android:text="@string/AceUI.Information.NotConnected"
             android:gravity="right"/>
 
