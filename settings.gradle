@@ -1,7 +1,12 @@
 apply from: "app/private/private.gradle"
-apply from: "eglibrary/projects.gradle"
+
+if (EGLIBRARY_COMPILE_LOCAL) {
+    // local buildが有効な場合のみ読み込む
+    apply from: "eglibrary/projects.gradle"
+}
 
 if (ACESDK_COMPILE_LOCAL) {
     include ':sdk'
 }
+
 include ':app'
