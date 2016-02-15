@@ -40,7 +40,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
 
 
     @Override
-    public ExtensionInformation getExtensionInformation() {
+    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
         ExtensionInformation info = new ExtensionInformation(this, "ble_hr");
         info.setSummary("Bluetooth LE対応センサーから心拍を取得します");
         info.setCategory(ExtensionCategory.CATEGORY_HEARTRATEMONITOR);
@@ -48,7 +48,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation() {
+    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
         return null;
     }
 
