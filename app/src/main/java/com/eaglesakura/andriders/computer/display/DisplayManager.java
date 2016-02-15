@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.computer.display;
 
 import com.eaglesakura.andriders.computer.CycleComputerManager;
-import com.eaglesakura.andriders.computer.display.computer.DisplayDataImpl;
+import com.eaglesakura.andriders.computer.display.computer.DisplayViewData;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.display.DisplayData;
@@ -26,7 +26,7 @@ public class DisplayManager extends CycleComputerManager {
     /**
      * 表示内容一覧
      */
-    Map<String, DisplayDataImpl> values = new HashMap<>();
+    Map<String, DisplayViewData> values = new HashMap<>();
 
     public DisplayManager(Context context) {
         super(context);
@@ -35,14 +35,14 @@ public class DisplayManager extends CycleComputerManager {
     /**
      * 値を保持させる
      */
-    public void putValue(final ExtensionClient extension, final DisplayDataImpl value) {
+    public void putValue(final ExtensionClient extension, final DisplayViewData value) {
         putValue(extension, Arrays.asList(value));
     }
 
     /**
      * 値を一括で登録する
      */
-    public void putValue(final ExtensionClient extension, final List<DisplayDataImpl> impl) {
+    public void putValue(final ExtensionClient extension, final List<DisplayViewData> impl) {
         if (Util.isEmpty(impl)) {
             return;
         }
@@ -51,7 +51,7 @@ public class DisplayManager extends CycleComputerManager {
             @Override
             public void run() {
                 synchronized (values) {
-                    for (DisplayDataImpl value : impl) {
+                    for (DisplayViewData value : impl) {
                         values.put(createKey(extension, value), value);
                     }
                 }
@@ -66,12 +66,12 @@ public class DisplayManager extends CycleComputerManager {
     public void bindUI(final ExtensionClient extension, final DisplayInformation info, final ViewGroup slotStub) {
         AndroidThreadUtil.assertUIThread();
 
-        DisplayDataImpl impl;
+        DisplayViewData impl;
         synchronized (values) {
             impl = values.get(createKey(extension, info));
         }
         if (impl == null) {
-            DisplayDataImpl.bindNotAvailable(getContext(), slotStub);
+            DisplayViewData.bindNotAvailable(getContext(), slotStub);
         } else {
             impl.bindView(getContext(), slotStub);
         }

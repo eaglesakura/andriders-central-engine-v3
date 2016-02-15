@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.computer.extension.client;
 
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.display.DisplayManager;
-import com.eaglesakura.andriders.computer.display.computer.DisplayDataImpl;
+import com.eaglesakura.andriders.computer.display.computer.DisplayViewData;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
@@ -245,7 +245,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(DisplayCommand.CMD_setDisplayValue, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                List<DisplayDataImpl> list = DisplayDataImpl.deserialize(payload.getBuffer(), DisplayDataImpl.class);
+                List<DisplayViewData> list = DisplayViewData.deserialize(payload.getBuffer(), DisplayViewData.class);
                 displayManager.putValue(ExtensionClient.this, list);
                 return null;
             }
