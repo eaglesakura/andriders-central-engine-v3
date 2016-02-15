@@ -99,7 +99,7 @@
     <string name="Main.Menu.Profile">プロファイル</string>
     <string name="Main.Menu.CycleComputer">サイコン表示内容</string>
     <string name="Main.Menu.Extensions">サイコン機能詳細</string>
-    <string name="Main.Menu.Activity">走行ログ</string>
+    <string name="Main.Menu.Activity">走行ロ</string>
     <string name="Main.Menu.Information">アプリについて</string>
     <string name="Extension.Inner.BleSensor.Name">BLEセンサーから取得</string>
     <string name="Extension.Inner.Default.Name">ACE標準機能</string>
