@@ -49,6 +49,9 @@ public class DisplayViewData extends DisplayData {
         AQuery q = new AQuery(stub);
         resetView(q);
 
+        q.id(R.id.Service_Central_Display_NotConnected).gone()
+                .id(R.id.Service_Central_Display_Lines_Root).visible();
+
         LinearLayout root = q.id(R.id.Service_Central_Display_Lines_Root).getView(LinearLayout.class);
         // 子を必要に応じて登録する
         while (root.getChildCount() < LineValue.MAX_LINES) {
