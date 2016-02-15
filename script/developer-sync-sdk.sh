@@ -17,4 +17,3 @@ repo_sync() {
 }
 
 repo_sync "sdk" "develop"
-repo_sync "eglibrary" "develop"
