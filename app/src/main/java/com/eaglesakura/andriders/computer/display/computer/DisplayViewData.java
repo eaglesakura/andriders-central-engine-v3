@@ -6,19 +6,22 @@ import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.display.LineValue;
 import com.eaglesakura.andriders.protocol.internal.InternalData;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * アプリ内で使用するための拡張設定
  */
-public class DisplayDataImpl extends DisplayData {
+public class DisplayViewData extends DisplayData {
     final long createdDate = System.currentTimeMillis();
 
-    public DisplayDataImpl(InternalData.IdlCycleDisplayValue.Builder raw) {
+    public DisplayViewData(InternalData.IdlCycleDisplayValue.Builder raw) {
         super(raw);
     }
 
@@ -26,16 +29,48 @@ public class DisplayDataImpl extends DisplayData {
      * 標準内容のテキストを表示する
      */
     private void bind(Context context, View stub, BasicValue value) {
-        AQuery q = new AQuery(context);
+        AQuery q = new AQuery(stub);
         resetView(q);
+    }
+
+    private void updateOrGone(TextView view, String value) {
+        if (StringUtil.isEmpty(value)) {
+            view.setVisibility(View.GONE);
+        } else {
+            view.setText(value);
+            view.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
      * 行テキストを表示する
      */
     private void bind(Context context, View stub, LineValue value) {
-        AQuery q = new AQuery(context);
+        AQuery q = new AQuery(stub);
         resetView(q);
+
+        LinearLayout root = q.id(R.id.Service_Central_Display_Lines_Root).getView(LinearLayout.class);
+        // 子を必要に応じて登録する
+        while (root.getChildCount() < LineValue.MAX_LINES) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.weight = 1.0f;
+
+            View view = View.inflate(context, R.layout.service_cycle_keyvalue_row, null);
+            root.addView(view, params);
+        }
+
+        for (int i = 0; i < root.getChildCount(); ++i) {
+            View row = root.getChildAt(i);
+            if (i < value.getLineNum()) {
+                // 値を設定
+                row.setVisibility(View.VISIBLE);
+                updateOrGone((TextView) row.findViewById(R.id.Service_Central_Display_KeyValue_Title), value.getTitle(i));
+                updateOrGone((TextView) row.findViewById(R.id.Service_Central_Display_KeyValue_Value), value.getValue(i));
+            } else {
+                // 値がないので行を消す
+                row.setVisibility(View.GONE);
+            }
+        }
     }
 
     public void bindView(@NonNull Context context, @NonNull ViewGroup stub) {
@@ -48,6 +83,11 @@ public class DisplayDataImpl extends DisplayData {
         if (getBasicValue() != null) {
             bind(context, stub, getBasicValue());
             return;
+        } else if (getLineValue() != null) {
+            bind(context, stub, getLineValue());
+            return;
+        } else {
+            bindNotAvailable(context, stub);
         }
     }
 
