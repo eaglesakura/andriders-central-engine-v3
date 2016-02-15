@@ -114,4 +114,18 @@ public class DisplaySlot {
     public static int getSlotId(int x, int y) {
         return (y << 8 | x) & 0x0000FFFF;
     }
+
+    /**
+     * 左側のアイテムである場合true
+     */
+    public static boolean isLeft(int slotId) {
+        return (slotId % 2) == 0;
+    }
+
+    /**
+     * 右側のアイテムである場合true
+     */
+    public static boolean isRight(int slotId) {
+        return !isLeft(slotId);
+    }
 }

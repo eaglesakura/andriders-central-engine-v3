@@ -70,7 +70,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     }
 
     @Override
-    public ExtensionInformation getExtensionInformation() {
+    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
         ExtensionInformation info = new ExtensionInformation(this, "gps_loc");
         info.setSummary("現在位置をサイクルコンピュータに反映します。");
         info.setCategory(ExtensionCategory.CATEGORY_LOCATION);
@@ -79,11 +79,11 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation() {
+    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
 
         List<DisplayInformation> result = new ArrayList<>();
 
-        if (Settings.isDebugable()) {
+        if (session.isDebugable()) {
             // 位置情報をデバッグ表示
             {
                 DisplayInformation info = new DisplayInformation(this, "debug.loc");

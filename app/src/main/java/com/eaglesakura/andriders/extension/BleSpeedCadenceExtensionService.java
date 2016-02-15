@@ -42,7 +42,7 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
 
 
     @Override
-    public ExtensionInformation getExtensionInformation() {
+    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
         ExtensionInformation info = new ExtensionInformation(this, "ble_sc");
         info.setSummary("Bluetooth LE対応センサーから速度とケイデンスを取得します");
         info.setCategory(ExtensionCategory.CATEGORY_SPEED_AND_CADENCE);
@@ -50,7 +50,7 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation() {
+    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
         return null;
     }
 

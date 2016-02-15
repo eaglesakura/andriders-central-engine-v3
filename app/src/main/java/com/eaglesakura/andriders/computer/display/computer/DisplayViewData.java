@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.computer.display.computer;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.display.DisplaySlot;
 import com.eaglesakura.andriders.extension.display.BasicValue;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.display.LineValue;
@@ -31,7 +32,35 @@ public class DisplayViewData extends DisplayData {
      */
     private void bind(Context context, View stub, BasicValue value) {
         AQuery q = new AQuery(stub);
-        resetView(q);
+        resetView(q, VISIBLE_BASIC_VALUE);
+
+        updateOrGone(q.id(R.id.Service_Central_Display_Basic_Value).getTextView(), value.getValue());
+        updateOrGone(q.id(R.id.Service_Central_Display_Basic_Title).getTextView(), value.getTitle());
+        if (DisplaySlot.isLeft(stub.getId())) {
+            updateOrGone(q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Left).visible().getTextView(), value.getZoneText());
+            q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Right).gone();
+
+            // ゾーンカラーを設定する
+            if (value.hasZoneBar()) {
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).visible().backgroundColor(value.getBarColorARGB());
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+            } else {
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+            }
+        } else {
+            q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Left).gone();
+            updateOrGone(q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Right).visible().getTextView(), value.getZoneText());
+
+            // ゾーンカラーを設定する
+            if (value.hasZoneBar()) {
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).visible().backgroundColor(value.getBarColorARGB());
+            } else {
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
+                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+            }
+        }
     }
 
     private void updateOrGone(TextView view, String value) {
@@ -48,10 +77,7 @@ public class DisplayViewData extends DisplayData {
      */
     private void bind(Context context, View stub, LineValue value) {
         AQuery q = new AQuery(stub);
-        resetView(q);
-
-        q.id(R.id.Service_Central_Display_NotConnected).gone()
-                .id(R.id.Service_Central_Display_Lines_Root).visible();
+        resetView(q, VISIBLE_LINE_VALUE);
 
         LinearLayout root = q.id(R.id.Service_Central_Display_Lines_Root).getView(LinearLayout.class);
         // 子を必要に応じて登録する
@@ -114,14 +140,18 @@ public class DisplayViewData extends DisplayData {
             return;
         }
         AQuery q = new AQuery(stub);
-        resetView(q);
+        resetView(q, VISIBLE_NA_VALUE);
     }
+
+    static final int VISIBLE_BASIC_VALUE = 0x1 << 0;
+    static final int VISIBLE_LINE_VALUE = 0x1 << 1;
+    static final int VISIBLE_NA_VALUE = 0x1 << 2;
 
     /**
      * 表示内容をリセットさせる
      * 必要であれば、Stubに表示用のViewを入れ込む
      */
-    private static void resetView(AQuery q) {
+    private static void resetView(AQuery q, int visibleFlags) {
         ViewGroup root = q.getView(ViewGroup.class);
         if (root.getChildCount() == 0) {
             //
@@ -130,8 +160,21 @@ public class DisplayViewData extends DisplayData {
             root.addView(layout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
 
-        q.id(R.id.Service_Central_Display_Basic_Root).gone();
-        q.id(R.id.Service_Central_Display_Lines_Root).gone();
-        q.id(R.id.Service_Central_Display_NotConnected).visible();
+        if ((visibleFlags & VISIBLE_BASIC_VALUE) != 0) {
+            q.id(R.id.Service_Central_Display_Basic_Root).visible();
+        } else {
+            q.id(R.id.Service_Central_Display_Basic_Root).gone();
+        }
+        if ((visibleFlags & VISIBLE_LINE_VALUE) != 0) {
+            q.id(R.id.Service_Central_Display_Lines_Root).visible();
+        } else {
+            q.id(R.id.Service_Central_Display_Lines_Root).gone();
+        }
+
+        if ((visibleFlags & VISIBLE_NA_VALUE) != 0) {
+            q.id(R.id.Service_Central_Display_NotConnected).visible();
+        } else {
+            q.id(R.id.Service_Central_Display_NotConnected).gone();
+        }
     }
 }
