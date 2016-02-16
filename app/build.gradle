@@ -71,8 +71,6 @@ dependencies {
      */
     compile "com.google.android.gms:play-services-fitness:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile "com.google.android.gms:play-services-analytics:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.android.gms:play-services-plus:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.android.gms:play-services-gcm:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile 'com.android.support:support-annotations:+'
 
     // UI Library
@@ -195,3 +193,13 @@ def getArtifactVersionSuffix() {
 }
 
 apply from: "generator.gradle"
+
+apply plugin: 'com.getkeepsafe.dexcount'
+dexcount {
+    format = "json"
+    includeClasses = false
+    includeFieldCount = true
+    includeTotalMethodCount = true
+    orderByMethodCount = true
+    verbose = false
+}
