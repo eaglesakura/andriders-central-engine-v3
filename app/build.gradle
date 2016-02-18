@@ -166,7 +166,8 @@ android {
         disable "DuplicateIds"
         disable "NewApi"
         disable "InvalidPackage"
-        abortOnError false
+        disable "ProtectedPermissions"
+//        abortOnError false
     }
 
     // ignore include
