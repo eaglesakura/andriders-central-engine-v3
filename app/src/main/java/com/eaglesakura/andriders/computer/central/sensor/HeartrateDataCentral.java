@@ -40,7 +40,7 @@ public class HeartrateDataCentral extends SensorDataCentral {
         // 情報更新
         mHeartrateBuilder.bpm = (short) bpm;
         mHeartrateBuilder.date = System.currentTimeMillis();
-        mHeartrateBuilder._zone = (byte) mFitnessDataCalculator.getZone(bpm).ordinal();
+        mHeartrateBuilder.zone = mFitnessDataCalculator.getZone(bpm);
     }
 
     @Override
