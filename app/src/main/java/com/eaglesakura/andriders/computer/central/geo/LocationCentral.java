@@ -4,8 +4,8 @@ import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.base.BaseCentral;
 import com.eaglesakura.andriders.computer.central.calculator.AltitudeDataCalculator;
 import com.eaglesakura.andriders.computer.central.calculator.DistanceDataCalculator;
-import com.eaglesakura.andriders.protocol.GeoProtocol;
-import com.eaglesakura.andriders.protocol.internal.InternalData;
+import com.eaglesakura.andriders.internal.protocol.GeoProtocol;
+import com.eaglesakura.andriders.internal.protocol.IdlExtension;
 import com.eaglesakura.geo.Geohash;
 
 /**
@@ -13,9 +13,9 @@ import com.eaglesakura.geo.Geohash;
  */
 public class LocationCentral extends BaseCentral {
 
-    GeoProtocol.GeoPayload.Builder mGeoBuilder = GeoProtocol.GeoPayload.newBuilder();
+    GeoProtocol.GeoPayload mGeoPayload = new GeoProtocol.GeoPayload();
 
-    GeoProtocol.GeoPoint.Builder mLocation = GeoProtocol.GeoPoint.newBuilder();
+    GeoProtocol.GeoPoint mLocation = new GeoProtocol.GeoPoint();
 
     String mLastReceivedGeohash;
 
@@ -51,43 +51,43 @@ public class LocationCentral extends BaseCentral {
     /**
      * 位置情報を更新する
      */
-    public void setLocation(InternalData.IdlLocation loc) {
+    public void setLocation(IdlExtension.Location loc) {
         // 高さを更新
-        mAltitudeDataCalculator.onLocationUpdated(loc.getLatitude(), loc.getLongitude(), loc.getAltitude());
-        mDistanceDataCalculator.updateLocation(loc.getLatitude(), loc.getLongitude());
+        mAltitudeDataCalculator.onLocationUpdated(loc.latitude, loc.longitude, loc.altitude);
+        mDistanceDataCalculator.updateLocation(loc.latitude, loc.longitude);
 
         // 位置を更新
-        mLocation.setLatitude(loc.getLatitude());
-        mLocation.setLongitude(loc.getLongitude());
-        mLocation.setAltitude(mAltitudeDataCalculator.getCurrentAltitudeMeter());
+        mLocation.latitude = loc.latitude;
+        mLocation.longitude = loc.longitude;
+        mLocation.altitude = mAltitudeDataCalculator.getCurrentAltitudeMeter();
         if (mAltitudeDataCalculator.hasAltitude()) {
-            mGeoBuilder.setInclinationPercent((float) mAltitudeDataCalculator.getInclinationPercent());
+            mGeoPayload.inclinationPercent = (float) mAltitudeDataCalculator.getInclinationPercent();
         } else {
-            mGeoBuilder.setInclinationPercent((float) loc.getAltitude());
+            mGeoPayload.inclinationPercent = (float) loc.altitude;
         }
-        mGeoBuilder.setLocationAccuracy((float) loc.getAccuracyMeter());
+        mGeoPayload.locationAccuracy = (float) loc.accuracyMeter;
 
-        mLastReceivedGeohash = Geohash.encode(loc.getLatitude(), loc.getLongitude());
+        mLastReceivedGeohash = Geohash.encode(loc.latitude, loc.longitude);
     }
 
     @Override
     public void onUpdate(CentralDataManager parent) {
         if (hasLocation()) {
-            mGeoBuilder.setInclinationPercent((float) mAltitudeDataCalculator.getInclinationPercent());
-            final float absInclination = Math.abs(mGeoBuilder.getInclinationPercent());
+            mGeoPayload.inclinationPercent = ((float) mAltitudeDataCalculator.getInclinationPercent());
+            final float absInclination = Math.abs(mGeoPayload.inclinationPercent);
             if (absInclination < 4) {
                 // ゆるい傾斜は平坦として扱う
-                mGeoBuilder.setInclinationType(GeoProtocol.InclinationType.None);
+                mGeoPayload.inclinationType = GeoProtocol.GeoPayload.INCLINATION_NONE;
             } else if (absInclination < 8) {
                 // そこそこの坂はそこそこである。
-                mGeoBuilder.setInclinationType(GeoProtocol.InclinationType.Hill);
+                mGeoPayload.inclinationType = GeoProtocol.GeoPayload.INCLINATION_HILL;
             } else {
                 // ある程度を超えた傾斜は激坂として扱う
-                mGeoBuilder.setInclinationType(GeoProtocol.InclinationType.IntenseHill);
+                mGeoPayload.inclinationType = GeoProtocol.GeoPayload.INCLINATION_INTENSE_HILL;
             }
         } else {
-            mGeoBuilder.clearLocation();
-            mGeoBuilder.setInclinationType(GeoProtocol.InclinationType.None);
+            mGeoPayload.location = null;
+            mGeoPayload.inclinationType = GeoProtocol.GeoPayload.INCLINATION_NONE;
         }
     }
 

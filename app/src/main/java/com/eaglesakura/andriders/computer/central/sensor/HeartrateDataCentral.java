@@ -2,7 +2,8 @@ package com.eaglesakura.andriders.computer.central.sensor;
 
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.calculator.FitnessDataCalculator;
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.internal.protocol.SensorProtocol;
+import com.eaglesakura.andriders.sensor.SensorType;
 
 /**
  * センサー情報を集約する
@@ -10,40 +11,36 @@ import com.eaglesakura.andriders.protocol.SensorProtocol;
  * 現在は心拍とケイデンスを管理する
  */
 public class HeartrateDataCentral extends SensorDataCentral {
-    final SensorProtocol.RawHeartrate.Builder mHeartrateBuilder;
+    final SensorProtocol.RawHeartrate mHeartrateBuilder = new SensorProtocol.RawHeartrate();
 
     final FitnessDataCalculator mFitnessDataCalculator;
 
     public HeartrateDataCentral(FitnessDataCalculator fitnessDataCalculator) {
-        super(SensorProtocol.SensorType.HeartrateMonitor);
-
-        this.mHeartrateBuilder = SensorProtocol.RawHeartrate.newBuilder();
+        super(SensorType.HeartrateMonitor);
         this.mFitnessDataCalculator = fitnessDataCalculator;
-
-        mHeartrateBuilder.setDate(System.currentTimeMillis());
     }
 
     /**
      * 有効であればtrue
      */
     public boolean valid() {
-        return (System.currentTimeMillis() - mHeartrateBuilder.getDate()) < CentralDataManager.DATA_TIMEOUT_MS;
+        return (System.currentTimeMillis() - mHeartrateBuilder.date) < CentralDataManager.DATA_TIMEOUT_MS;
     }
 
     /**
      * 現在の心拍を更新する
      */
     public void setHeartrate(int bpm) {
-        final long oldTime = mHeartrateBuilder.getBpm();
+        final long oldTime = mHeartrateBuilder.date;
         final long nowTime = System.currentTimeMillis();
 
         // 消費カロリー更新
         mFitnessDataCalculator.updateHeartrate(bpm, nowTime - oldTime);
 
         // 情報更新
-        mHeartrateBuilder.setBpm(bpm);
-        mHeartrateBuilder.setDate(System.currentTimeMillis());
-        mHeartrateBuilder.setHeartrateZone(mFitnessDataCalculator.getZone(bpm));
+        mHeartrateBuilder.bpm = (short) bpm;
+        mHeartrateBuilder.date = System.currentTimeMillis();
+        mHeartrateBuilder._zone = (byte) mFitnessDataCalculator.getZone(bpm).ordinal();
     }
 
     @Override

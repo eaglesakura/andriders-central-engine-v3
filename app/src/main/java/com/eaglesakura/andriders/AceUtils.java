@@ -2,7 +2,7 @@ package com.eaglesakura.andriders;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import com.eaglesakura.andriders.protocol.GeoProtocol;
+import com.eaglesakura.andriders.internal.protocol.GeoProtocol;
 import com.eaglesakura.android.framework.FrameworkCentral;
 
 /**
@@ -54,16 +54,13 @@ public class AceUtils {
 
 
     public static LatLng toLatLng(GeoProtocol.GeoPayload geo) {
-        if (geo == null || !geo.hasLocation()) {
+        if (geo == null || geo.location == null) {
             return null;
         }
-        return new LatLng(geo.getLocation().getLatitude(), geo.getLocation().getLongitude());
+        return new LatLng(geo.location.latitude, geo.location.longitude);
     }
 
     public static GeoProtocol.GeoPoint toGeoPoint(double lat, double lng, double alt) {
-        return GeoProtocol.GeoPoint.newBuilder()
-                .setLatitude(lat)
-                .setLongitude(lng)
-                .setAltitude(alt).build();
+        return new GeoProtocol.GeoPoint(lat, lng, alt);
     }
 }

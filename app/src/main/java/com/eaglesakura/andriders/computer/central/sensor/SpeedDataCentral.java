@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.computer.central.sensor;
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.calculator.SpeedDataCalculator;
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.Timer;
 
@@ -52,7 +52,7 @@ public class SpeedDataCentral extends SensorDataCentral {
     final SpeedDataCalculator speedDataCalculator;
 
     public SpeedDataCentral(SpeedDataCalculator speedDataCalculator) {
-        super(SensorProtocol.SensorType.SpeedSensor);
+        super(SensorType.SpeedSensor);
         this.speedDataCalculator = speedDataCalculator;
     }
 

@@ -10,8 +10,8 @@ import com.eaglesakura.andriders.computer.central.sensor.CadenceDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.HeartrateDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.SensorDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.SpeedDataCentral;
-import com.eaglesakura.andriders.protocol.SensorProtocol;
-import com.eaglesakura.andriders.protocol.internal.InternalData;
+import com.eaglesakura.andriders.internal.protocol.IdlExtension;
+import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
@@ -36,7 +36,7 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * 登録されたセンサー情報一覧
      */
-    final Map<SensorProtocol.SensorType, SensorDataCentral> mSensorDatas = new HashMap<>();
+    final Map<SensorType, SensorDataCentral> mSensorDatas = new HashMap<>();
 
     /**
      * ロケーション情報
@@ -52,9 +52,9 @@ public class CentralDataManager extends CycleComputerManager {
 
         // センサー用マネージャを追加
         {
-            mSensorDatas.put(SensorProtocol.SensorType.HeartrateMonitor, new HeartrateDataCentral(mFitnessDataCalculator));
-            mSensorDatas.put(SensorProtocol.SensorType.SpeedSensor, new SpeedDataCentral(mSpeedDataCalculator));
-            mSensorDatas.put(SensorProtocol.SensorType.CadenceSensor, new CadenceDataCentral());
+            mSensorDatas.put(SensorType.HeartrateMonitor, new HeartrateDataCentral(mFitnessDataCalculator));
+            mSensorDatas.put(SensorType.SpeedSensor, new SpeedDataCentral(mSpeedDataCalculator));
+            mSensorDatas.put(SensorType.CadenceSensor, new CadenceDataCentral());
             mCentrals.addAll(mSensorDatas.values());
         }
 
@@ -87,7 +87,7 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * GPS座標を更新する
      */
-    public void setLocation(final InternalData.IdlLocation loc) {
+    public void setLocation(final IdlExtension.Location loc) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
@@ -96,11 +96,11 @@ public class CentralDataManager extends CycleComputerManager {
 
                 // GPS由来の速度を更新する
                 DistanceDataCalculator distanceDataCalculator = mLocationCentral.getDistanceDataCalculator();
-                ((SpeedDataCentral) mSensorDatas.get(SensorProtocol.SensorType.SpeedSensor))
+                ((SpeedDataCentral) mSensorDatas.get(SensorType.SpeedSensor))
                         .setGpsSensorSpeed(distanceDataCalculator.getGeoSpeedKmh());
 
                 LogUtil.log("GPS lat(%f) lng(%f) alt(%f) acc(%f) spd(%.1f km/h)",
-                        loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), loc.getAccuracyMeter(),
+                        loc.latitude, loc.longitude, loc.altitude, loc.accuracyMeter,
                         distanceDataCalculator.getGeoSpeedKmh()
                 );
             }
@@ -110,17 +110,17 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * Speed&Cadenceセンサーの情報を更新する
      */
-    public void setSpeedAndCadence(final InternalData.IdlSpeedAndCadence sc) {
+    public void setSpeedAndCadence(final IdlExtension.SpeedAndCadence sc) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
-                SpeedDataCentral speedDataCentral = ((SpeedDataCentral) mSensorDatas.get(SensorProtocol.SensorType.SpeedSensor));
-                CadenceDataCentral cadenceDataCentral = ((CadenceDataCentral) mSensorDatas.get(SensorProtocol.SensorType.CadenceSensor));
+                SpeedDataCentral speedDataCentral = ((SpeedDataCentral) mSensorDatas.get(SensorType.SpeedSensor));
+                CadenceDataCentral cadenceDataCentral = ((CadenceDataCentral) mSensorDatas.get(SensorType.CadenceSensor));
                 // ケイデンス設定を行う
-                cadenceDataCentral.setCadence(sc.getCrankRpm(), sc.getCrankRevolution());
+                cadenceDataCentral.setCadence(sc.crankRpm, sc.crankRevolution);
 
                 // S&Cセンサー由来の速度更新を行う
-                speedDataCentral.setBleSensorSpeed(sc.getWheelRpm(), sc.getWheelRevolution());
+                speedDataCentral.setBleSensorSpeed(sc.wheelRpm, sc.wheelRevolution);
             }
         });
     }
@@ -128,12 +128,12 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * 心拍を更新する
      */
-    public void setHeartrate(final InternalData.IdlHeartrate heartrate) {
+    public void setHeartrate(final IdlExtension.Heartrate heartrate) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
-                ((HeartrateDataCentral) mSensorDatas.get(SensorProtocol.SensorType.HeartrateMonitor))
-                        .setHeartrate(heartrate.getBpm());
+                ((HeartrateDataCentral) mSensorDatas.get(SensorType.HeartrateMonitor))
+                        .setHeartrate(heartrate.bpm);
             }
         });
     }

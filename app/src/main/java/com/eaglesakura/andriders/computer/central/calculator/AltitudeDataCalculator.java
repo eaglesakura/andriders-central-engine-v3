@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.computer.central.calculator;
 
 import com.eaglesakura.andriders.AceUtils;
-import com.eaglesakura.andriders.protocol.GeoProtocol;
+import com.eaglesakura.andriders.internal.protocol.GeoProtocol;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.MathUtil;
 
@@ -145,7 +145,7 @@ public class AltitudeDataCalculator extends BaseCalculator {
             GeoProtocol.GeoPoint before = mCalcPointLogs.get(i);
             GeoProtocol.GeoPoint current = mCalcPointLogs.get(i + 1);
             distanceMeter +=
-                    GeoUtil.calcDistanceKiloMeter(current.getLatitude(), current.getLongitude(), before.getLatitude(), before.getLongitude()) * 1000;
+                    GeoUtil.calcDistanceKiloMeter(current.latitude, current.longitude, before.latitude, before.longitude) * 1000;
         }
 
         if (distanceMeter <= 10) {
@@ -153,7 +153,7 @@ public class AltitudeDataCalculator extends BaseCalculator {
 //            return mInclinationPercent;
             return 0;
         } else {
-            double altitudeMeter = (getCurrentAltitudeMeter() - mCalcPointLogs.get(0).getAltitude());
+            double altitudeMeter = (getCurrentAltitudeMeter() - mCalcPointLogs.get(0).altitude);
             double result = (altitudeMeter / distanceMeter) * 100.0;
             return result;
         }
@@ -179,7 +179,7 @@ public class AltitudeDataCalculator extends BaseCalculator {
             // 標高を計算する
             mCurrentAltitude = 0;
             for (GeoProtocol.GeoPoint p : mAltPoints) {
-                mCurrentAltitude += p.getAltitude();
+                mCurrentAltitude += p.altitude;
             }
             mCurrentAltitude /= mAltPoints.size();
 
@@ -198,10 +198,10 @@ public class AltitudeDataCalculator extends BaseCalculator {
             roadState.onUpdateAltitude(mCurrentAltitude);
 
             // 最高/最低地点チェック
-            if (mMaxAltitudePoint == null || mCurrentAltitude > mMaxAltitudePoint.getAltitude()) {
+            if (mMaxAltitudePoint == null || mCurrentAltitude > mMaxAltitudePoint.altitude) {
                 mMaxAltitudePoint = calcCurrent;
             }
-            if (mMinAltitudePoint == null || mCurrentAltitude < mMinAltitudePoint.getAltitude()) {
+            if (mMinAltitudePoint == null || mCurrentAltitude < mMinAltitudePoint.altitude) {
                 mMinAltitudePoint = calcCurrent;
             }
 

@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.ble.cadence.BleCadenceSpeedSensor;
 import com.eaglesakura.andriders.ble.cadence.SpeedCadenceData;
 import com.eaglesakura.andriders.ble.cadence.SpeedCadenceGattReceiver;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
@@ -57,7 +57,7 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
     @Override
     public void onAceServiceConnected(ExtensionSession session) {
         final CentralDataExtension centralDataExtension = session.getCentralDataExtension();
-        String address = centralDataExtension.getGadgetAddress(SensorProtocol.SensorType.CadenceSensor);
+        String address = centralDataExtension.getGadgetAddress(SensorType.CadenceSensor);
         if (StringUtil.isEmpty(address)) {
             return;
         }

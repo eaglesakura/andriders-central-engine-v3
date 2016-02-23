@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.computer.central.calculator;
 
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.sensor.SpeedZone;
 
 /**
  * 速度ゾーンを計算する
@@ -9,7 +9,7 @@ public class SpeedDataCalculator extends BaseCalculator {
     /**
      * 現在の速度
      */
-    double speedKmh;
+    private double mSpeedKmh;
 
     public SpeedDataCalculator() {
     }
@@ -18,32 +18,32 @@ public class SpeedDataCalculator extends BaseCalculator {
      * 現在速度を取得する
      */
     public double getSpeedKmh() {
-        return speedKmh;
+        return mSpeedKmh;
     }
 
     /**
      * 現在速度を指定する
      */
     public void setSpeedKmh(double speedKmh) {
-        this.speedKmh = speedKmh;
+        this.mSpeedKmh = speedKmh;
     }
 
     /**
      * 速度ゾーンを取得する
      */
-    public SensorProtocol.RawSpeed.SpeedZone getSpeedZone() {
-        if (speedKmh < 8) {
+    public SpeedZone getSpeedZone() {
+        if (mSpeedKmh < 8) {
             // 適当な閾値よりも下は停止とみなす
-            return SensorProtocol.RawSpeed.SpeedZone.Stop;
-        } else if (speedKmh < getSettings().getUserProfiles().getSpeedZoneCruise()) {
+            return SpeedZone.Stop;
+        } else if (mSpeedKmh < getSettings().getUserProfiles().getSpeedZoneCruise()) {
             // 巡航速度よりも下は低速度域
-            return SensorProtocol.RawSpeed.SpeedZone.Slow;
-        } else if (speedKmh < getSettings().getUserProfiles().getSpeedZoneSprint()) {
+            return SpeedZone.Slow;
+        } else if (mSpeedKmh < getSettings().getUserProfiles().getSpeedZoneSprint()) {
             // スプリント速度よりも下は巡航速度
-            return SensorProtocol.RawSpeed.SpeedZone.Cruise;
+            return SpeedZone.Cruise;
         } else {
             // スプリント速度を超えたらスプリント
-            return SensorProtocol.RawSpeed.SpeedZone.Sprint;
+            return SpeedZone.Sprint;
         }
     }
 
@@ -57,7 +57,7 @@ public class SpeedDataCalculator extends BaseCalculator {
     /**
      * 現在の移動速度から推測した心拍を取得する
      */
-    public static int getEmulatedHeartrate(SensorProtocol.RawSpeed.SpeedZone zone, float normalHeartrate, float maxHeartrate) {
+    public static int getEmulatedHeartrate(SpeedZone zone, float normalHeartrate, float maxHeartrate) {
         float heartrateRange = (maxHeartrate - normalHeartrate);
         switch (zone) {
             case Stop:

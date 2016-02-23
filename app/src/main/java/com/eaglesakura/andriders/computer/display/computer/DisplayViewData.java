@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.display.DisplaySlot;
 import com.eaglesakura.andriders.extension.display.BasicValue;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.display.LineValue;
-import com.eaglesakura.andriders.protocol.internal.InternalData;
+import com.eaglesakura.andriders.internal.protocol.IdlExtension;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.StringUtil;
@@ -23,7 +23,7 @@ import android.widget.TextView;
 public class DisplayViewData extends DisplayData {
     final long createdDate = System.currentTimeMillis();
 
-    public DisplayViewData(InternalData.IdlCycleDisplayValue.Builder raw) {
+    public DisplayViewData(IdlExtension.CycleDisplayValue raw) {
         super(raw);
     }
 

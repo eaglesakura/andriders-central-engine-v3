@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.computer.central.calculator;
 
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.sensor.HeartrateZone;
 
 /**
  * 運動データの計算を行う
@@ -40,27 +40,27 @@ public class FitnessDataCalculator extends BaseCalculator {
         return getSettings().getUserProfiles().getNormalHeartrate();
     }
 
-    public SensorProtocol.RawHeartrate.HeartrateZone getZone(int currentHeartrate) {
+    public HeartrateZone getZone(int currentHeartrate) {
         final double userMaxHeartrate = (double) getMaxHeartrate();
 
         if (currentHeartrate < (int) (userMaxHeartrate * 0.5)) {
             // 安静
-            return SensorProtocol.RawHeartrate.HeartrateZone.Repose;
+            return HeartrateZone.Repose;
         } else if (currentHeartrate < (int) (userMaxHeartrate * 0.6)) {
             // イージー
-            return SensorProtocol.RawHeartrate.HeartrateZone.Easy;
+            return HeartrateZone.Easy;
         } else if (currentHeartrate < (int) (userMaxHeartrate * 0.7)) {
             // 脂肪燃焼
-            return SensorProtocol.RawHeartrate.HeartrateZone.FatCombustion;
+            return HeartrateZone.FatCombustion;
         } else if (currentHeartrate < (int) (userMaxHeartrate * 0.8)) {
             // 有酸素
-            return SensorProtocol.RawHeartrate.HeartrateZone.PossessionOxygenMotion;
+            return HeartrateZone.PossessionOxygenMotion;
         } else if (currentHeartrate < (int) (userMaxHeartrate * 0.9)) {
             // 無酸素
-            return SensorProtocol.RawHeartrate.HeartrateZone.NonOxygenatedMotion;
+            return HeartrateZone.NonOxygenatedMotion;
         } else {
             // オーバーワーク
-            return SensorProtocol.RawHeartrate.HeartrateZone.Overwork;
+            return HeartrateZone.Overwork;
         }
     }
 

@@ -11,6 +11,7 @@ apply plugin: 'com.eaglesakura.android-support'
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
     all*.exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
+    all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
 }
 
 dependencies {
@@ -109,7 +110,7 @@ android {
         main {
             java.srcDirs = [
                     'src/main/java',
-                    'src/main/generated/dao', 'src/main/generated/protobuf', 'src/main/generated/props',
+                    'src/main/generated/dao', 'src/main/generated/props',
             ]
             res.srcDirs = [
                     "src/main/res", "private/main/res"
@@ -204,3 +205,7 @@ dexcount {
     orderByMethodCount = true
     verbose = false
 }
+
+//task dexReportDebug(type: com.eaglesakura.gradle.dex.DexReportTask) {
+//
+//}
