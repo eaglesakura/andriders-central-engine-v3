@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.computer.central.calculator.AltitudeDataCalcula
 import com.eaglesakura.andriders.computer.central.calculator.DistanceDataCalculator;
 import com.eaglesakura.andriders.internal.protocol.GeoProtocol;
 import com.eaglesakura.andriders.internal.protocol.ExtensionProtocol;
+import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.geo.Geohash;
 
 /**
@@ -77,17 +78,17 @@ public class LocationCentral extends BaseCentral {
             final float absInclination = Math.abs(mGeoPayload.inclinationPercent);
             if (absInclination < 4) {
                 // ゆるい傾斜は平坦として扱う
-                mGeoPayload.inclinationType = GeoProtocol.GeoPayload.INCLINATION_NONE;
+                mGeoPayload.inclinationType = InclinationType.None;
             } else if (absInclination < 8) {
                 // そこそこの坂はそこそこである。
-                mGeoPayload.inclinationType = GeoProtocol.GeoPayload.INCLINATION_HILL;
+                mGeoPayload.inclinationType = InclinationType.Hill;
             } else {
                 // ある程度を超えた傾斜は激坂として扱う
-                mGeoPayload.inclinationType = GeoProtocol.GeoPayload.INCLINATION_INTENSE_HILL;
+                mGeoPayload.inclinationType = InclinationType.IntenseHill;
             }
         } else {
             mGeoPayload.location = null;
-            mGeoPayload.inclinationType = GeoProtocol.GeoPayload.INCLINATION_NONE;
+            mGeoPayload.inclinationType = InclinationType.None;
         }
     }
 
