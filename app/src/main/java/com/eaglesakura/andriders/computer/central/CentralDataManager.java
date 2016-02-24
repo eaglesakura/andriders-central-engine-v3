@@ -10,7 +10,7 @@ import com.eaglesakura.andriders.computer.central.sensor.CadenceDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.HeartrateDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.SensorDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.SpeedDataCentral;
-import com.eaglesakura.andriders.internal.protocol.IdlExtension;
+import com.eaglesakura.andriders.internal.protocol.ExtensionProtocol;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.util.LogUtil;
 
@@ -87,7 +87,7 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * GPS座標を更新する
      */
-    public void setLocation(final IdlExtension.Location loc) {
+    public void setLocation(final ExtensionProtocol.SrcLocation loc) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
@@ -110,7 +110,7 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * Speed&Cadenceセンサーの情報を更新する
      */
-    public void setSpeedAndCadence(final IdlExtension.SpeedAndCadence sc) {
+    public void setSpeedAndCadence(final ExtensionProtocol.SrcSpeedAndCadence sc) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
@@ -128,7 +128,7 @@ public class CentralDataManager extends CycleComputerManager {
     /**
      * 心拍を更新する
      */
-    public void setHeartrate(final IdlExtension.Heartrate heartrate) {
+    public void setHeartrate(final ExtensionProtocol.SrcHeartrate heartrate) {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {

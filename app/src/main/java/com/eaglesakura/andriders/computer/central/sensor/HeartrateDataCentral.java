@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.computer.central.sensor;
 
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.calculator.FitnessDataCalculator;
-import com.eaglesakura.andriders.internal.protocol.SensorProtocol;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.SensorType;
 
 /**
@@ -11,7 +11,7 @@ import com.eaglesakura.andriders.sensor.SensorType;
  * 現在は心拍とケイデンスを管理する
  */
 public class HeartrateDataCentral extends SensorDataCentral {
-    final SensorProtocol.RawHeartrate mHeartrateBuilder = new SensorProtocol.RawHeartrate();
+    final RawSensorData.RawHeartrate mHeartrateBuilder = new RawSensorData.RawHeartrate();
 
     final FitnessDataCalculator mFitnessDataCalculator;
 

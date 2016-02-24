@@ -1,13 +1,13 @@
 package com.eaglesakura.andriders.computer.central.sensor;
 
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
-import com.eaglesakura.andriders.internal.protocol.SensorProtocol;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 
 public class CadenceDataCentral extends SensorDataCentral {
-    final SensorProtocol.RawCadence raw = new SensorProtocol.RawCadence();
+    final RawSensorData.RawCadence raw = new RawSensorData.RawCadence();
 
     public CadenceDataCentral() {
         super(SensorType.CadenceSensor);
