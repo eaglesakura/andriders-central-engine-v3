@@ -1,10 +1,13 @@
 package com.eaglesakura.andriders.computer.central.geo;
 
+import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.base.BaseCentral;
 import com.eaglesakura.andriders.computer.central.calculator.AltitudeDataCalculator;
 import com.eaglesakura.andriders.computer.central.calculator.DistanceDataCalculator;
-import com.eaglesakura.andriders.internal.protocol.GeoProtocol;
+import com.eaglesakura.andriders.internal.protocol.ApplicationProtocol;
+import com.eaglesakura.andriders.internal.protocol.RawCentralData;
+import com.eaglesakura.andriders.internal.protocol.RawLocation;
 import com.eaglesakura.andriders.internal.protocol.ExtensionProtocol;
 import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.geo.Geohash;
@@ -14,9 +17,7 @@ import com.eaglesakura.geo.Geohash;
  */
 public class LocationCentral extends BaseCentral {
 
-    GeoProtocol.GeoPayload mGeoPayload = new GeoProtocol.GeoPayload();
-
-    GeoProtocol.GeoPoint mLocation = new GeoProtocol.GeoPoint();
+    RawLocation mRaw = new RawLocation();
 
     String mLastReceivedGeohash;
 
@@ -33,8 +34,7 @@ public class LocationCentral extends BaseCentral {
      * 位置情報が信じられる値であればtrue
      */
     public boolean hasLocation() {
-//        return (System.currentTimeMillis() - mGeoBuilder.getDateInt()) < CentralDataManager.DATA_TIMEOUT_MS;
-        return mLastReceivedGeohash != null;
+        return (System.currentTimeMillis() - mRaw.date) < CentralDataManager.DATA_TIMEOUT_MS;
     }
 
     public void setAltitudeDataCalculator(AltitudeDataCalculator altitudeDataCalculator) {
@@ -52,21 +52,22 @@ public class LocationCentral extends BaseCentral {
     /**
      * 位置情報を更新する
      */
-    public void setLocation(ExtensionProtocol.SrcLocation loc) {
+    public void setRaw(ExtensionProtocol.SrcLocation loc) {
         // 高さを更新
         mAltitudeDataCalculator.onLocationUpdated(loc.latitude, loc.longitude, loc.altitude);
         mDistanceDataCalculator.updateLocation(loc.latitude, loc.longitude);
 
         // 位置を更新
-        mLocation.latitude = loc.latitude;
-        mLocation.longitude = loc.longitude;
-        mLocation.altitude = mAltitudeDataCalculator.getCurrentAltitudeMeter();
+        mRaw.latitude = loc.latitude;
+        mRaw.longitude = loc.longitude;
+        mRaw.date = System.currentTimeMillis();
+        mRaw.altitude = mAltitudeDataCalculator.getCurrentAltitudeMeter();
         if (mAltitudeDataCalculator.hasAltitude()) {
-            mGeoPayload.inclinationPercent = (float) mAltitudeDataCalculator.getInclinationPercent();
+            mRaw.inclinationPercent = (float) mAltitudeDataCalculator.getInclinationPercent();
         } else {
-            mGeoPayload.inclinationPercent = (float) loc.altitude;
+            mRaw.inclinationPercent = (float) loc.altitude;
         }
-        mGeoPayload.locationAccuracy = (float) loc.accuracyMeter;
+        mRaw.locationAccuracy = (float) loc.accuracyMeter;
 
         mLastReceivedGeohash = Geohash.encode(loc.latitude, loc.longitude);
     }
@@ -74,21 +75,36 @@ public class LocationCentral extends BaseCentral {
     @Override
     public void onUpdate(CentralDataManager parent) {
         if (hasLocation()) {
-            mGeoPayload.inclinationPercent = ((float) mAltitudeDataCalculator.getInclinationPercent());
-            final float absInclination = Math.abs(mGeoPayload.inclinationPercent);
+            mRaw.inclinationPercent = ((float) mAltitudeDataCalculator.getInclinationPercent());
+            final float absInclination = Math.abs(mRaw.inclinationPercent);
             if (absInclination < 4) {
                 // ゆるい傾斜は平坦として扱う
-                mGeoPayload.inclinationType = InclinationType.None;
+                mRaw.inclinationType = InclinationType.None;
             } else if (absInclination < 8) {
                 // そこそこの坂はそこそこである。
-                mGeoPayload.inclinationType = InclinationType.Hill;
+                mRaw.inclinationType = InclinationType.Hill;
             } else {
                 // ある程度を超えた傾斜は激坂として扱う
-                mGeoPayload.inclinationType = InclinationType.IntenseHill;
+                mRaw.inclinationType = InclinationType.IntenseHill;
             }
         } else {
-            mGeoPayload.location = null;
-            mGeoPayload.inclinationType = InclinationType.None;
+            mRaw.date = 0;
+            mRaw.inclinationType = InclinationType.None;
+        }
+    }
+
+    /**
+     * データ構築を行う
+     *
+     * @param parent 呼び出し元
+     * @param result 構築先
+     */
+    @Override
+    public void buildData(CentralDataManager parent, RawCentralData result) {
+        if (hasLocation()) {
+            RawLocation loc = AceUtils.publicFieldClone(mRaw);
+            result.sensor.location = loc;
+            result.centralStatus.connectedFlags |= ApplicationProtocol.RawCentralStatus.CONNECTED_FLAG_GPS;
         }
     }
 

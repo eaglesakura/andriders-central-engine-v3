@@ -1,6 +1,9 @@
 package com.eaglesakura.andriders.computer.central.sensor;
 
+import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
+import com.eaglesakura.andriders.internal.protocol.ApplicationProtocol;
+import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.sensor.SensorType;
@@ -54,6 +57,14 @@ public class CadenceDataCentral extends SensorDataCentral {
     @Override
     public void onUpdate(CentralDataManager parent) {
 
+    }
+
+    @Override
+    public void buildData(CentralDataManager parent, RawCentralData result) {
+        if (valid()) {
+            result.sensor.cadence = AceUtils.publicFieldClone(raw);
+            result.centralStatus.connectedFlags |= ApplicationProtocol.RawCentralStatus.CONNECTED_FLAG_SPEED_SENSOR;
+        }
     }
 
     @Override
