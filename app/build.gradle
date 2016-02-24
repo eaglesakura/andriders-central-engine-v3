@@ -10,7 +10,8 @@ apply plugin: 'com.eaglesakura.android-support'
 
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
-    all*.exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
+//    all*.exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
+    all*.exclude group: "com.fasterxml.jackson.core"
     all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
 }
 
@@ -39,7 +40,6 @@ dependencies {
         compile 'com.eaglesakura:android-net:+'
         compile 'com.eaglesakura:android-framework:+'
         compile 'com.eaglesakura:onactivityresult-invoke:+'
-        compile 'com.eaglesakura:json-wrapper:+'
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
 

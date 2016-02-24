@@ -29,6 +29,7 @@ deployment:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
+      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
       - ./script/circleci-build-testing.sh
@@ -39,6 +40,7 @@ deployment:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
+      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
@@ -48,6 +50,7 @@ deployment:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
+      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
@@ -57,6 +60,7 @@ deployment:
       - rm -rf "/home/ubuntu/.m2"
       - rm -rf "/home/ubuntu/.ivy2"
       - rm -rf "/home/ubuntu/.gradle"
+      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
