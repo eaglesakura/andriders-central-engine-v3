@@ -3,7 +3,6 @@ package com.eaglesakura.andriders.computer.central.sensor;
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.calculator.SpeedDataCalculator;
-import com.eaglesakura.andriders.internal.protocol.ApplicationProtocol;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.SensorType;
@@ -90,18 +89,25 @@ public class SpeedDataCentral extends SensorDataCentral {
     }
 
     /**
+     * ホイールの外周サイズ（mm）を取得する
+     */
+    public float getWheelOuterLength() {
+        return getSettings().getUserProfiles().getWheelOuterLength();
+    }
+
+    /**
      * BLEセンサー由来の速度を更新する
      *
      * @param wheelRpm        ホイール回転数
      * @param wheelRevolution ホイール回転数合計
      */
-    public void setBleSensorSpeed(float wheelRpm, int wheelRevolution) {
+    public void setSensorSpeed(float wheelRpm, int wheelRevolution) {
         if (wheelRpm < 0 || wheelRevolution < 0) {
             return;
         }
 
         // スピードを計算する
-        mSensorNowSpeed = AceUtils.calcSpeedKmPerHour(wheelRpm, getSettings().getUserProfiles().getWheelOuterLength());
+        mSensorNowSpeed = AceUtils.calcSpeedKmPerHour(wheelRpm, getWheelOuterLength());
         mSensorWheelRevolution = wheelRevolution;
 
         if (mSensorTime == null) {
@@ -180,7 +186,7 @@ public class SpeedDataCentral extends SensorDataCentral {
             }
 
             result.sensor.speed = speed;
-            result.centralStatus.connectedFlags |= ApplicationProtocol.RawCentralStatus.CONNECTED_FLAG_SPEED_SENSOR;
+            result.centralStatus.connectedFlags |= RawCentralData.RawCentralStatus.CONNECTED_FLAG_SPEED_SENSOR;
         }
     }
 

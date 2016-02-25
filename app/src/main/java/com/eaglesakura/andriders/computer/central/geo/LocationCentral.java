@@ -5,7 +5,6 @@ import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.base.BaseCentral;
 import com.eaglesakura.andriders.computer.central.calculator.AltitudeDataCalculator;
 import com.eaglesakura.andriders.computer.central.calculator.DistanceDataCalculator;
-import com.eaglesakura.andriders.internal.protocol.ApplicationProtocol;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawLocation;
 import com.eaglesakura.andriders.internal.protocol.ExtensionProtocol;
@@ -52,7 +51,7 @@ public class LocationCentral extends BaseCentral {
     /**
      * 位置情報を更新する
      */
-    public void setRaw(ExtensionProtocol.SrcLocation loc) {
+    public void setLocation(ExtensionProtocol.SrcLocation loc) {
         // 高さを更新
         mAltitudeDataCalculator.onLocationUpdated(loc.latitude, loc.longitude, loc.altitude);
         mDistanceDataCalculator.updateLocation(loc.latitude, loc.longitude);
@@ -104,7 +103,7 @@ public class LocationCentral extends BaseCentral {
         if (hasLocation()) {
             RawLocation loc = AceUtils.publicFieldClone(mRaw);
             result.sensor.location = loc;
-            result.centralStatus.connectedFlags |= ApplicationProtocol.RawCentralStatus.CONNECTED_FLAG_GPS;
+            result.centralStatus.connectedFlags |= RawCentralData.RawCentralStatus.CONNECTED_FLAG_GPS;
         }
     }
 

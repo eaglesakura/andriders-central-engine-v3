@@ -2,7 +2,6 @@ package com.eaglesakura.andriders.computer.central.status;
 
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.andriders.internal.protocol.ApplicationProtocol;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.util.StringUtil;
 
@@ -49,9 +48,7 @@ public class SessionStatusCentral implements CentralDataManager.ICentral {
         if (StringUtil.isEmpty(mSessionId)) {
             throw new IllegalStateException("SessionId is null");
         }
-
-        result.centralStatus.sessionId = mSessionId;
-        result.centralStatus.debug = Settings.isDebugable();
+        result.session.sessionId = mSessionId;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
-import com.cocosw.bottomsheet.BottomSheet;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
@@ -15,7 +14,6 @@ import com.eaglesakura.material.widget.MaterialButton;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -178,45 +176,45 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * 表示内容の選択ダイアログをブート
      */
     private void showDisplaySelector(final DisplaySlotManager manager, final DisplaySlot slot) {
-        List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
-
-        BottomSheet.Builder builder = new BottomSheet.Builder(getActivity());
-        int index = 0;
-
-        // 最初は非表示
-        builder.sheet(-1, "非表示");
-
-        for (ExtensionClient client : displayClients) {
-            LogUtil.log("Display Extension name(%s)", client.getName());
-
-            builder.divider();
-            for (DisplayInformation info : client.getDisplayInformations()) {
-                builder.sheet(index, client.loadIcon(), info.getTitle());
-                ++index;
-            }
-        }
-
-        builder.listener(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which < 0) {
-                    // 非表示にする
-                    manager.removeLayout(slot);
-                } else {
-                    // スロットの値を上書き
-                    DisplayInformation information = displayValues.get(which);
-                    ExtensionClient client = mExtensionClientManager.findDisplayClient(information);
-                    manager.setLayout(slot, client.getInformation(), information);
-                }
-
-                // 内容を保存
-                manager.commitAsync();
-
-                // 再表示
-                updateSlotPreview(manager, slot);
-            }
-        });
-        builder.show();
+//        List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
+//
+//        BottomSheet.Builder builder = new BottomSheet.Builder(getActivity());
+//        int index = 0;
+//
+//        // 最初は非表示
+//        builder.sheet(-1, "非表示");
+//
+//        for (ExtensionClient client : displayClients) {
+//            LogUtil.log("Display Extension name(%s)", client.getName());
+//
+//            builder.divider();
+//            for (DisplayInformation info : client.getDisplayInformations()) {
+//                builder.sheet(index, client.loadIcon(), info.getTitle());
+//                ++index;
+//            }
+//        }
+//
+//        builder.listener(new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                if (which < 0) {
+//                    // 非表示にする
+//                    manager.removeLayout(slot);
+//                } else {
+//                    // スロットの値を上書き
+//                    DisplayInformation information = displayValues.get(which);
+//                    ExtensionClient client = mExtensionClientManager.findDisplayClient(information);
+//                    manager.setLayout(slot, client.getInformation(), information);
+//                }
+//
+//                // 内容を保存
+//                manager.commitAsync();
+//
+//                // 再表示
+//                updateSlotPreview(manager, slot);
+//            }
+//        });
+//        builder.show();
     }
 
 

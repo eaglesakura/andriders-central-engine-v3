@@ -29,7 +29,7 @@ task clean(type: Delete) {
 
 // リリースディレクトリ指定
 ext {
-    ANDROID_SUPPORT_LIB_VERSION = "23.1.+"
+    ANDROID_SUPPORT_LIB_VERSION = "23.2.+"
     ANDROID_PLAYSERVICE_LIB_VERSION = "8.4.+"
 }
 

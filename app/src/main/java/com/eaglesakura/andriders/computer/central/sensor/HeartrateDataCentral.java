@@ -3,7 +3,6 @@ package com.eaglesakura.andriders.computer.central.sensor;
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.calculator.FitnessDataCalculator;
-import com.eaglesakura.andriders.internal.protocol.ApplicationProtocol;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.SensorType;
@@ -54,7 +53,7 @@ public class HeartrateDataCentral extends SensorDataCentral {
     public void buildData(CentralDataManager parent, RawCentralData result) {
         if (valid()) {
             result.sensor.heartrate = AceUtils.publicFieldClone(raw);
-            result.centralStatus.connectedFlags |= ApplicationProtocol.RawCentralStatus.CONNECTED_FLAG_HEARTRATE_SENSOR;
+            result.centralStatus.connectedFlags |= RawCentralData.RawCentralStatus.CONNECTED_FLAG_HEARTRATE_SENSOR;
         }
     }
 

@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.computer;
 
+import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.android.thread.async.AsyncTaskController;
 
 import android.content.Context;
@@ -16,6 +17,8 @@ public abstract class CycleComputerManager {
     protected final AsyncTaskController mPipeline;
 
     protected final Context mContext;
+
+    protected final Settings mSettings = Settings.getInstance();
 
     protected CycleComputerManager(Context context) {
         mContext = context.getApplicationContext();
