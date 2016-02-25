@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 
 /**
  * ユーザープロファイル画面を管理する。
@@ -28,20 +28,25 @@ public class ProfileFragmentMain extends BaseNavigationFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            FragmentManager fragmentManager = getChildFragmentManager();
             {
                 RoadbikeSettingFragment fragment = new RoadbikeSettingFragment();
-                transaction.add(R.id.Content_List_Root, fragment, fragment.createSimpleTag());
+                fragmentManager.beginTransaction()
+                        .add(R.id.Content_List_Root, fragment, fragment.createSimpleTag())
+                        .commit();
             }
             {
                 UserZoneSettingFragment fragment = new UserZoneSettingFragment();
-                transaction.add(R.id.Content_List_Root, fragment, fragment.createSimpleTag());
+                fragmentManager.beginTransaction()
+                        .add(R.id.Content_List_Root, fragment, fragment.createSimpleTag())
+                        .commit();
             }
             {
                 FitnessSettingFragment fragment = new FitnessSettingFragment();
-                transaction.add(R.id.Content_List_Root, fragment, fragment.createSimpleTag());
+                fragmentManager.beginTransaction()
+                        .add(R.id.Content_List_Root, fragment, fragment.createSimpleTag())
+                        .commit();
             }
-            transaction.commit();
         }
     }
 
