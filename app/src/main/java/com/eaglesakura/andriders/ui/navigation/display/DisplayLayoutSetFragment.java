@@ -11,15 +11,21 @@ import com.eaglesakura.android.thread.async.AsyncTaskResult;
 import com.eaglesakura.android.thread.async.IAsyncTask;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.material.widget.MaterialButton;
+import com.eaglesakura.material.widget.MaterialTextView;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -176,23 +182,34 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * 表示内容の選択ダイアログをブート
      */
     private void showDisplaySelector(final DisplaySlotManager manager, final DisplaySlot slot) {
-//        List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
-//
+        List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
+
+        BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
+        LinearLayout layout = new LinearLayout(getActivity());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        for (ExtensionClient client : displayClients) {
+            LogUtil.log("Display Extension name(%s)", client.getName());
+
+//            builder.divider();
+            for (DisplayInformation info : client.getDisplayInformations()) {
+                TextView tv = new MaterialTextView(getActivity());
+                tv.setText(info.getTitle());
+                layout.addView(tv, ViewGroup.LayoutParams.MATCH_PARENT, 200);
+
+//                builder.sheet(index, client.loadIcon(), info.getTitle());
+//                ++index;
+            }
+        }
+        dialog.setContentView(layout);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
 //        BottomSheet.Builder builder = new BottomSheet.Builder(getActivity());
 //        int index = 0;
 //
 //        // 最初は非表示
 //        builder.sheet(-1, "非表示");
 //
-//        for (ExtensionClient client : displayClients) {
-//            LogUtil.log("Display Extension name(%s)", client.getName());
-//
-//            builder.divider();
-//            for (DisplayInformation info : client.getDisplayInformations()) {
-//                builder.sheet(index, client.loadIcon(), info.getTitle());
-//                ++index;
-//            }
-//        }
 //
 //        builder.listener(new DialogInterface.OnClickListener() {
 //            @Override
