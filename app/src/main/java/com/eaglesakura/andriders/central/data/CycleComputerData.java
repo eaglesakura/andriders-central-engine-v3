@@ -108,6 +108,12 @@ public class CycleComputerData {
         }
     }
 
+    public SpeedZone getSpeedZone() {
+        synchronized (lock) {
+            return mSpeedData.getSpeedZone();
+        }
+    }
+
     /**
      * 走行距離を取得する
      */

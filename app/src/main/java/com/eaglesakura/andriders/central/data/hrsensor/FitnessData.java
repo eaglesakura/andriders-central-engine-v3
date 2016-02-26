@@ -111,11 +111,11 @@ public class FitnessData extends BaseCalculator {
         final int maxHeartrate = getMaxHeartrate();
 
         // METsを計算
-        if (normalHeartrate <= 0 || maxHeartrate <= 0 || normalHeartrate >= maxHeartrate) {
+        if (mHeartrate <= normalHeartrate || normalHeartrate <= 0 || maxHeartrate <= 0 || normalHeartrate >= maxHeartrate) {
             // data error
             mCurrentMets = 1;
         } else {
-            final float mets = ((float) (mHeartrateDataTime - normalHeartrate) / (float) (maxHeartrate - normalHeartrate) * 10.0f);
+            final float mets = ((mHeartrate - normalHeartrate) / (float) (maxHeartrate - normalHeartrate) * 10.0f);
             mCurrentMets = Math.max(mets, 1.0f);
         }
 
