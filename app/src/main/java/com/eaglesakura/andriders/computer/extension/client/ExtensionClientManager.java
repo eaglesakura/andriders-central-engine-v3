@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.computer.extension.client;
 
-import com.eaglesakura.andriders.computer.central.CentralDataManager;
+import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.display.DisplayManager;
 import com.eaglesakura.andriders.computer.notification.NotificationManager;
 import com.eaglesakura.andriders.extension.DisplayInformation;

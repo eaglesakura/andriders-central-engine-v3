@@ -1,7 +1,7 @@
-package com.eaglesakura.andriders.computer.central.data.geo;
+package com.eaglesakura.andriders.central.data.geo;
 
-import com.eaglesakura.andriders.computer.central.data.CycleClock;
-import com.eaglesakura.andriders.computer.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.Timer;
@@ -71,6 +71,11 @@ public class GeoSpeedData extends BaseCalculator {
             return;
         }
 
+        if (timestamp <= mUpdatedTime) {
+            // 時刻エラー
+            return;
+        }
+
         // 前の地点からの差分を計算する
 //        final double diffKiloMeter = location.distanceTo(beforeLocation) / 1000.0; // m -> km単位に落とす
         final double diffKiloMeter = GeoUtil.calcDistanceKiloMeter(lat, lng, mLatitude, mLongitude);
@@ -86,11 +91,12 @@ public class GeoSpeedData extends BaseCalculator {
         LogUtil.log("diff move(%f km = %f m) time(%f sec) speed(%f km/h)",
                 diffKiloMeter,
                 diffKiloMeter * 1000,
-                Timer.msToMinute(timestamp - mUpdatedTime),
+                Timer.msToSec(timestamp - mUpdatedTime),
                 GEO_SPEED_KM_H);
 
         // 位置を更新する
         mLatitude = lat;
         mLongitude = lng;
+        mUpdatedTime = timestamp;
     }
 }

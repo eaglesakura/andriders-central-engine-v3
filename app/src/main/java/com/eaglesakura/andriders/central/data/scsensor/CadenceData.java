@@ -1,7 +1,7 @@
-package com.eaglesakura.andriders.computer.central.data.scsensor;
+package com.eaglesakura.andriders.central.data.scsensor;
 
-import com.eaglesakura.andriders.computer.central.data.CycleClock;
-import com.eaglesakura.andriders.computer.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 

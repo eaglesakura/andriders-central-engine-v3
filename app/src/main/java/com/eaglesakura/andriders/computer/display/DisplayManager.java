@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders.computer.display;
 
 import com.eaglesakura.andriders.computer.CycleComputerManager;
-import com.eaglesakura.andriders.computer.display.computer.DisplayViewData;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.display.DisplayData;

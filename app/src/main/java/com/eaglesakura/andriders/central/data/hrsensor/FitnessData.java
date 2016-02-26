@@ -1,7 +1,7 @@
-package com.eaglesakura.andriders.computer.central.data.hrsensor;
+package com.eaglesakura.andriders.central.data.hrsensor;
 
-import com.eaglesakura.andriders.computer.central.data.CycleClock;
-import com.eaglesakura.andriders.computer.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.util.Timer;
 

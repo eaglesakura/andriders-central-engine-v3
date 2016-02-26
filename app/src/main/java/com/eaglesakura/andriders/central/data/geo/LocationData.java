@@ -1,7 +1,8 @@
-package com.eaglesakura.andriders.computer.central.data.geo;
+package com.eaglesakura.andriders.central.data.geo;
 
-import com.eaglesakura.andriders.computer.central.data.CycleClock;
-import com.eaglesakura.andriders.computer.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.util.LogUtil;
 
 /**
@@ -54,6 +55,41 @@ public class LocationData extends BaseCalculator {
     }
 
     /**
+     * 現在の高度（メートル）を取得する
+     */
+    public double getAltitudeMeter() {
+        return mAltitudeData.getCurrentAltitudeMeter();
+    }
+
+    /**
+     * 現在の傾斜％を取得する
+     */
+    public double getInclinationPercent() {
+        if (valid()) {
+            return mAltitudeData.getInclinationPercent();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * 傾斜レベルを取得する
+     */
+    public InclinationType getInclinationType() {
+        final double absInclination = Math.abs(getInclinationPercent());
+        if (absInclination < 4) {
+            // ゆるい傾斜は平坦として扱う
+            return InclinationType.None;
+        } else if (absInclination < 8) {
+            // そこそこの坂はそこそこである。
+            return InclinationType.Hill;
+        } else {
+            // ある程度を超えた傾斜は激坂として扱う
+            return InclinationType.IntenseHill;
+        }
+    }
+
+    /**
      * 精度をチェックし、信頼できるならばtrueを返却する
      */
     public boolean isAccuracy(double accuracyMeter) {
@@ -75,7 +111,6 @@ public class LocationData extends BaseCalculator {
             LogUtil.log("Drop GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, alt, accuracyMeter);
             return false;
         }
-
         mAltitudeData.setLocation(lat, lng, alt);
         mGeoSpeedData.setLocation(timestamp, lat, lng);
 
@@ -83,6 +118,7 @@ public class LocationData extends BaseCalculator {
         mAccuracy = accuracyMeter;
         mUpdatedTime = timestamp;
 
+        LogUtil.log("GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, getAltitudeMeter(), accuracyMeter);
         return true;
     }
 }

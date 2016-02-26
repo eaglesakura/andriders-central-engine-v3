@@ -39,7 +39,7 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
 
     @Override
     public void onApplicationUpdated(int oldVersionCode, int newVersionCode, String oldVersionName, String newVersionName) {
-
+        LogUtil.log("App Updated old(%d:%s) new(%d:%s)", oldVersionCode, oldVersionName, newVersionCode, newVersionName);
     }
 
     private static AsyncTaskController gTaskController = new AsyncTaskController(3);

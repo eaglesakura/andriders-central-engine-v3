@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.computer.display.computer;
+package com.eaglesakura.andriders.computer.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.display.DisplaySlot;

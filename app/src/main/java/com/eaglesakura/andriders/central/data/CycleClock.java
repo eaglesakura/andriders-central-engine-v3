@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.computer.central.data;
+package com.eaglesakura.andriders.central.data;
 
 /**
  * サイコン内の時計を管理する
@@ -6,7 +6,7 @@ package com.eaglesakura.andriders.computer.central.data;
  * テスト用途を兼ねているため、時計を現在時刻からズラすこともできる。
  */
 public class CycleClock {
-    private long mCurrentTime =System.currentTimeMillis();
+    private long mCurrentTime = System.currentTimeMillis();
 
     public CycleClock(long currentTime) {
         mCurrentTime = currentTime;
@@ -24,9 +24,9 @@ public class CycleClock {
     }
 
     /**
-     * 現在時刻を設定する
+     * 時計を指定時刻だけ進める
      */
-    void setCurrentTime(long currentTime) {
-        mCurrentTime = currentTime;
+    public void offset(long ms) {
+        mCurrentTime += ms;
     }
 }

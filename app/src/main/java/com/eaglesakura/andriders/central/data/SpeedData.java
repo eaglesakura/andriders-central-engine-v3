@@ -1,8 +1,8 @@
-package com.eaglesakura.andriders.computer.central.data;
+package com.eaglesakura.andriders.central.data;
 
-import com.eaglesakura.andriders.computer.central.data.base.BaseCalculator;
-import com.eaglesakura.andriders.computer.central.data.geo.GeoSpeedData;
-import com.eaglesakura.andriders.computer.central.data.scsensor.SensorSpeedData;
+import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.data.geo.GeoSpeedData;
+import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 
 /**

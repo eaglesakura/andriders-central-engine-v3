@@ -1,11 +1,12 @@
-package com.eaglesakura.andriders.computer.central.data;
+package com.eaglesakura.andriders.central.data;
 
-import com.eaglesakura.andriders.computer.central.data.geo.GeoSpeedData;
-import com.eaglesakura.andriders.computer.central.data.geo.LocationData;
-import com.eaglesakura.andriders.computer.central.data.hrsensor.FitnessData;
-import com.eaglesakura.andriders.computer.central.data.scsensor.CadenceData;
-import com.eaglesakura.andriders.computer.central.data.scsensor.SensorSpeedData;
-import com.eaglesakura.andriders.computer.central.data.session.SessionData;
+import com.eaglesakura.andriders.central.data.geo.GeoSpeedData;
+import com.eaglesakura.andriders.central.data.geo.LocationData;
+import com.eaglesakura.andriders.central.data.hrsensor.FitnessData;
+import com.eaglesakura.andriders.central.data.scsensor.CadenceData;
+import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
+import com.eaglesakura.andriders.central.data.session.SessionData;
+import com.eaglesakura.andriders.sensor.SpeedZone;
 
 import android.content.Context;
 
@@ -67,7 +68,7 @@ public class CycleComputerData {
     /**
      * 時刻設定
      */
-    private final CycleClock mClock = new CycleClock(System.currentTimeMillis());
+    private final CycleClock mClock;
 
     /**
      * sync管理
@@ -78,17 +79,61 @@ public class CycleComputerData {
 
     public CycleComputerData(Context context, long sessionStartTime) {
         mContext = context.getApplicationContext();
+        mClock = new CycleClock(sessionStartTime);
         mSessionData = new SessionData(mClock, sessionStartTime);
         mFitnessData = new FitnessData(mClock);
         mSensorSpeedData = new SensorSpeedData(mClock);
         mCadenceData = new CadenceData(mClock);
         mDistanceData = new DistanceData(mClock);
 
-
         GeoSpeedData geoSpeedData = new GeoSpeedData(mClock); // 位置センサー由来の速度計
 
         mLocationData = new LocationData(mClock, geoSpeedData);
         mSpeedData = new SpeedData(mClock, geoSpeedData, mSensorSpeedData);
+    }
+
+    /**
+     * サイコンの時刻を取得する
+     */
+    public long now() {
+        return mClock.now();
+    }
+
+    /**
+     * 速度を取得する
+     */
+    public double getSpeedKmh() {
+        synchronized (lock) {
+            return mSpeedData.getSpeedKmh();
+        }
+    }
+
+    /**
+     * 走行距離を取得する
+     */
+    public double getDistanceKm() {
+        synchronized (lock) {
+            return mDistanceData.getDistanceKm();
+        }
+    }
+
+    /**
+     * 自走中であればtrue
+     */
+    public boolean isActiveMoving() {
+        synchronized (lock) {
+            if (mSpeedData.getSpeedZone() == SpeedZone.Stop) {
+                // 停止中なら自走ではない
+                return false;
+            }
+
+            if (mCadenceData.getCadenceRpm() <= 5) {
+                // 脚が止まっているなら自走ではない
+                return false;
+            }
+
+            return true;
+        }
     }
 
     /**
@@ -99,7 +144,6 @@ public class CycleComputerData {
             mFitnessData.setHeartrate(timestamp, bpm);
         }
     }
-
 
     /**
      * 位置情報を設定する
@@ -145,28 +189,33 @@ public class CycleComputerData {
      * 時間を更新する
      */
     public void onUpdateTime(long diffTimeMs) {
+        if (diffTimeMs <= 0) {
+            throw new IllegalArgumentException();
+        }
+
         synchronized (lock) {
+            // 時計を進める
+            mClock.offset(diffTimeMs);
+
             // 消費カロリーを更新する
             mFitnessData.onUpdateTime(diffTimeMs);
 
             // 走行距離を更新する
-            mDistanceData.onUpdate(diffTimeMs, mSpeedData.getSpeedKmh());
+            mDistanceData.onUpdate(diffTimeMs, getSpeedKmh());
+
+            // 自走中であれば走行距離を追加する
+            if (isActiveMoving()) {
+                mSessionData.addActiveTimeMs(diffTimeMs);
+            }
         }
     }
 
     /**
-     * サイコンの現在時刻を指定する
+     * ログを強制的に書き出す
+     *
+     * TODO 実装する
      */
-    public void setTime(long time) {
-        synchronized (lock) {
-            mClock.setCurrentTime(time);
-        }
-    }
+    public void commitLog() {
 
-    /**
-     * サイコンの現在時刻を現実時刻に同期する
-     */
-    public void syncTime() {
-        setTime(System.currentTimeMillis());
     }
 }

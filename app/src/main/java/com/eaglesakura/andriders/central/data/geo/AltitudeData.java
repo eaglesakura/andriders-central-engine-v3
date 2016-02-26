@@ -1,8 +1,8 @@
-package com.eaglesakura.andriders.computer.central.data.geo;
+package com.eaglesakura.andriders.central.data.geo;
 
 import com.eaglesakura.andriders.AceUtils;
-import com.eaglesakura.andriders.computer.central.data.CycleClock;
-import com.eaglesakura.andriders.computer.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.MathUtil;
