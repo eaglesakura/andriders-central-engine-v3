@@ -7,25 +7,22 @@ import com.eaglesakura.andriders.display.DisplaySlot;
 import com.eaglesakura.andriders.display.DisplaySlotManager;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.design.BottomSheetDialog;
 import com.eaglesakura.android.thread.async.AsyncTaskResult;
 import com.eaglesakura.android.thread.async.IAsyncTask;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.material.widget.MaterialButton;
-import com.eaglesakura.material.widget.MaterialTextView;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,54 +181,61 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     private void showDisplaySelector(final DisplaySlotManager manager, final DisplaySlot slot) {
         List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
 
-        BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
-        LinearLayout layout = new LinearLayout(getActivity());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        for (ExtensionClient client : displayClients) {
+        final BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.bottomsheet_root, null);
+        for (final ExtensionClient client : displayClients) {
             LogUtil.log("Display Extension name(%s)", client.getName());
 
-//            builder.divider();
-            for (DisplayInformation info : client.getDisplayInformations()) {
-                TextView tv = new MaterialTextView(getActivity());
-                tv.setText(info.getTitle());
-                layout.addView(tv, ViewGroup.LayoutParams.MATCH_PARENT, 200);
+            View extensionView = inflater.inflate(R.layout.card_displayinfo_root, null);
 
-//                builder.sheet(index, client.loadIcon(), info.getTitle());
-//                ++index;
+            AQuery q = new AQuery(extensionView);
+            q.id(R.id.Extension_ItemSelector_ExtensionName).text(client.getName());
+            q.id(R.id.Extension_ItemSelector_Icon).image(client.loadIcon());
+
+            ViewGroup insertRoot = q.id(R.id.Extension_ItemSelector_Root).getView(ViewGroup.class);
+
+            for (final DisplayInformation info : client.getDisplayInformations()) {
+                View item = inflater.inflate(R.layout.card_displayinfo_item, null);
+                ((TextView) item.findViewById(R.id.Extension_ItemSelector_Name)).setText(info.getTitle());
+                insertRoot.addView(item, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                item.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onSelectedDisplay(manager, slot, client, info);
+                        dialog.dismiss();
+                    }
+                });
             }
+
+            layout.addView(extensionView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
         dialog.setContentView(layout);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
         dialog.show();
-//        BottomSheet.Builder builder = new BottomSheet.Builder(getActivity());
-//        int index = 0;
-//
-//        // 最初は非表示
-//        builder.sheet(-1, "非表示");
-//
-//
-//        builder.listener(new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                if (which < 0) {
-//                    // 非表示にする
-//                    manager.removeLayout(slot);
-//                } else {
-//                    // スロットの値を上書き
-//                    DisplayInformation information = displayValues.get(which);
-//                    ExtensionClient client = mExtensionClientManager.findDisplayClient(information);
-//                    manager.setLayout(slot, client.getInformation(), information);
-//                }
-//
-//                // 内容を保存
-//                manager.commitAsync();
-//
-//                // 再表示
-//                updateSlotPreview(manager, slot);
-//            }
-//        });
-//        builder.show();
+    }
+
+    /**
+     * ディスプレイ表示内容が選択された
+     *
+     * @param slot        表示対象スロット
+     * @param client      拡張機能
+     * @param displayInfo 表示内容
+     */
+    private void onSelectedDisplay(DisplaySlotManager manager, DisplaySlot slot, ExtensionClient client, DisplayInformation displayInfo) {
+
+        if (client == null || displayInfo == null) {
+            // 非表示にする
+            manager.removeLayout(slot);
+        } else {
+            // スロットの値を上書き
+            manager.setLayout(slot, client.getInformation(), displayInfo);
+        }
+
+        // 内容を保存
+        manager.commitAsync();
+
+        // 再表示
+        updateSlotPreview(manager, slot);
     }
 
 
