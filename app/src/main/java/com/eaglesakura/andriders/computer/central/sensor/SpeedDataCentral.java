@@ -3,6 +3,8 @@ package com.eaglesakura.andriders.computer.central.sensor;
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.calculator.SpeedDataCalculator;
+import com.eaglesakura.andriders.internal.protocol.RawCentralData;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.Timer;
@@ -14,46 +16,53 @@ public class SpeedDataCentral extends SensorDataCentral {
     /**
      * 一定時間以上BLEセンサーが更新されなければ、GPS由来のデータに変更する
      */
-    final long SENSOR_TIMEOUT_MS = 1000 * 30;
+    private final long SENSOR_TIMEOUT_MS = 1000 * 30;
 
     /**
-     * BLEセンサーからの更新時刻
+     * センサーからの更新時刻
      */
-    Timer mBleSensorTime;
+    private Timer mSensorTime;
 
     /**
-     * BLE由来の現在速度
+     * センサー由来の現在速度
      */
-    double mBleNowSpeed;
+    private double mSensorNowSpeed;
 
     /**
-     * BLE由来のホイール回転数
+     * センサー由来のホイール回転数
      */
-    int mBleWheelRevolution;
+    private int mSensorWheelRevolution;
+
+    /**
+     * センサー由来の回転数
+     */
+    private float mSensorWheelRpm;
 
     /**
      * GPS由来の速度
      */
-    Timer mGpsSensorTime;
+    private Timer mGpsSensorTime;
 
     /**
      * GPS由来の現在速度
      */
-    double mGpsNowSpeed;
+    private double mGpsNowSpeed;
 
     /**
      * デバイス接続されていればtrue
      */
-    boolean mConnected;
+    private boolean mConnected;
 
     /**
      * 速度計算機
      */
-    final SpeedDataCalculator speedDataCalculator;
+    private final SpeedDataCalculator mSpeedDataCalculator;
+
+    private long mLastUpdatedTime;
 
     public SpeedDataCentral(SpeedDataCalculator speedDataCalculator) {
         super(SensorType.SpeedSensor);
-        this.speedDataCalculator = speedDataCalculator;
+        this.mSpeedDataCalculator = speedDataCalculator;
     }
 
     /**
@@ -62,7 +71,7 @@ public class SpeedDataCentral extends SensorDataCentral {
      * この速度は基本的にBLE由来を返すが、もしタイムアウトしていたらGPS由来に自動的に切り替える
      */
     public double getSpeedKmh() {
-        return Math.max(0, speedDataCalculator.getSpeedKmh());
+        return Math.max(0, mSpeedDataCalculator.getSpeedKmh());
     }
 
     /**
@@ -73,24 +82,38 @@ public class SpeedDataCentral extends SensorDataCentral {
     }
 
     /**
+     * 有効であればtrue
+     */
+    public boolean valid() {
+        return (System.currentTimeMillis() - mLastUpdatedTime) < CentralDataManager.DATA_TIMEOUT_MS;
+    }
+
+    /**
+     * ホイールの外周サイズ（mm）を取得する
+     */
+    public float getWheelOuterLength() {
+        return getSettings().getUserProfiles().getWheelOuterLength();
+    }
+
+    /**
      * BLEセンサー由来の速度を更新する
      *
      * @param wheelRpm        ホイール回転数
      * @param wheelRevolution ホイール回転数合計
      */
-    public void setBleSensorSpeed(float wheelRpm, int wheelRevolution) {
+    public void setSensorSpeed(float wheelRpm, int wheelRevolution) {
         if (wheelRpm < 0 || wheelRevolution < 0) {
             return;
         }
 
         // スピードを計算する
-        mBleNowSpeed = AceUtils.calcSpeedKmPerHour(wheelRpm, getSettings().getUserProfiles().getWheelOuterLength());
-        mBleWheelRevolution = wheelRevolution;
+        mSensorNowSpeed = AceUtils.calcSpeedKmPerHour(wheelRpm, getWheelOuterLength());
+        mSensorWheelRevolution = wheelRevolution;
 
-        if (mBleSensorTime == null) {
-            mBleSensorTime = new Timer();
+        if (mSensorTime == null) {
+            mSensorTime = new Timer();
         } else {
-            mBleSensorTime.start();
+            mSensorTime.start();
         }
     }
 
@@ -112,31 +135,59 @@ public class SpeedDataCentral extends SensorDataCentral {
 
     @Override
     public void onUpdate(CentralDataManager parent) {
-        if (mBleSensorTime != null) {
-            if (mBleSensorTime.end() < SENSOR_TIMEOUT_MS) {
+        if (mSensorTime != null) {
+            if (mSensorTime.end() < SENSOR_TIMEOUT_MS) {
                 // BLEセンサーがタイムアウトしていないのでBLEセンサーの速度で確定する
                 mConnected = true;
-                speedDataCalculator.setSpeedKmh(mBleNowSpeed);
+                mSpeedDataCalculator.setSpeedKmh(mSensorNowSpeed);
+                mLastUpdatedTime = mSensorTime.getStartTime();
                 return;
             }
 
             // タイムアウトした
-            LogUtil.log("BleSpeed Timeout");
-            mBleSensorTime = null;
+            LogUtil.log("SensorSpeed Timeout");
+            mSensorTime = null;
+            mSensorWheelRpm = 0;
+            mSensorWheelRevolution = 0;
         }
 
         if (mGpsSensorTime != null) {
             if (mGpsSensorTime.end() < SENSOR_TIMEOUT_MS) {
                 // GPSセンサーがタイムアウトしてないのでこっち
                 mConnected = true;
-                speedDataCalculator.setSpeedKmh(mGpsNowSpeed);
+                mSpeedDataCalculator.setSpeedKmh(mGpsNowSpeed);
+                mLastUpdatedTime = mGpsSensorTime.getStartTime();
                 return;
             }
         }
 
         // 両方のセンサーがタイムアウトしたので速度無効
-        speedDataCalculator.setSpeedKmh(0);
+        mSpeedDataCalculator.setSpeedKmh(0);
+        mSensorWheelRpm = 0;
+        mSensorWheelRevolution = 0;
         mConnected = false;
+    }
+
+    @Override
+    public void buildData(CentralDataManager parent, RawCentralData result) {
+        if (valid()) {
+            RawSensorData.RawSpeed speed = new RawSensorData.RawSpeed();
+            speed.date = mLastUpdatedTime;
+            speed.speedKmPerHour = (float) mSpeedDataCalculator.getSpeedKmh();
+            speed.zone = mSpeedDataCalculator.getSpeedZone();
+
+            speed.wheelRevolution = mSensorWheelRevolution;
+            speed.wheelRpm = mSensorWheelRpm;
+
+            if (mSensorTime != null) {
+                speed.flags |= RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_SENSOR;
+            } else {
+                speed.flags |= RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS;
+            }
+
+            result.sensor.speed = speed;
+            result.centralStatus.connectedFlags |= RawCentralData.RawCentralStatus.CONNECTED_FLAG_SPEED_SENSOR;
+        }
     }
 
     @Override

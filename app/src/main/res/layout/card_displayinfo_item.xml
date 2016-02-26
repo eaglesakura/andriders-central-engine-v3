@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:clickable="true"
+             android:background="@drawable/esm_button_transparent_fill"
+             android:layout_height="@dimen/EsMaterial.Button.MinHeight">
+
+    <com.eaglesakura.material.widget.MaterialTextView android:layout_width="match_parent"
+              style="@style/EsMaterial.Font.Normal"
+              android:id="@+id/Extension.ItemSelector.Name"
+              android:layout_margin="@dimen/EsMaterial.Button.Margin"
+              android:text="name"
+              android:maxLines="1"
+              android:layout_gravity="center_vertical"
+              android:ellipsize="end"
+              android:layout_height="wrap_content"/>
+</FrameLayout>

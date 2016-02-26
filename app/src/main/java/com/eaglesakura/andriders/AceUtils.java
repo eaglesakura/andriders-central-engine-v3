@@ -2,8 +2,10 @@ package com.eaglesakura.andriders;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import com.eaglesakura.andriders.internal.protocol.GeoProtocol;
+import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
+import com.eaglesakura.andriders.internal.protocol.RawLocation;
 import com.eaglesakura.android.framework.FrameworkCentral;
+import com.eaglesakura.util.SerializeUtil;
 
 /**
  *
@@ -53,14 +55,25 @@ public class AceUtils {
     }
 
 
-    public static LatLng toLatLng(GeoProtocol.GeoPayload geo) {
-        if (geo == null || geo.location == null) {
+    public static LatLng toLatLng(RawGeoPoint geo) {
+        if (geo == null) {
             return null;
         }
-        return new LatLng(geo.location.latitude, geo.location.longitude);
+        return new LatLng(geo.latitude, geo.longitude);
     }
 
-    public static GeoProtocol.GeoPoint toGeoPoint(double lat, double lng, double alt) {
-        return new GeoProtocol.GeoPoint(lat, lng, alt);
+    public static RawGeoPoint toGeoPoint(double lat, double lng, double alt) {
+        return new RawGeoPoint(lat, lng, alt);
+    }
+
+    /**
+     * Serialize -> Deserializeを行うことで簡易cloneを行う
+     */
+    public static <T> T publicFieldClone(T origin) {
+        try {
+            return SerializeUtil.deserializePublicFieldObject((Class<T>) origin.getClass(), SerializeUtil.serializePublicFieldObject(origin, false));
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

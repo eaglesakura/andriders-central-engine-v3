@@ -1,13 +1,15 @@
 package com.eaglesakura.andriders.computer.central.sensor;
 
+import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
-import com.eaglesakura.andriders.internal.protocol.SensorProtocol;
+import com.eaglesakura.andriders.internal.protocol.RawCentralData;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 
 public class CadenceDataCentral extends SensorDataCentral {
-    final SensorProtocol.RawCadence raw = new SensorProtocol.RawCadence();
+    final RawSensorData.RawCadence mRaw = new RawSensorData.RawCadence();
 
     public CadenceDataCentral() {
         super(SensorType.CadenceSensor);
@@ -20,24 +22,36 @@ public class CadenceDataCentral extends SensorDataCentral {
         if (crankRpm < 0 || crankRevolution < 0) {
             return;
         }
-        raw.rpm = (short) crankRpm;
-        raw.crankRevolution = crankRevolution;
-        raw.date = System.currentTimeMillis();
-        raw.cadenceZone = (byte) getZone().ordinal();
+        mRaw.rpm = (short) crankRpm;
+        mRaw.crankRevolution = crankRevolution;
+        mRaw.date = System.currentTimeMillis();
+        mRaw.zone = getZone();
     }
 
     /**
      * 有効であればtrue
      */
     public boolean valid() {
-        return (System.currentTimeMillis() - raw.date) < CentralDataManager.DATA_TIMEOUT_MS;
+        return (System.currentTimeMillis() - mRaw.date) < CentralDataManager.DATA_TIMEOUT_MS;
+    }
+
+    public int getRpm() {
+        if (valid()) {
+            return mRaw.rpm;
+        } else {
+            return 0;
+        }
     }
 
     /**
      * 現在のケイデンスの状態を指定する
      */
     public CadenceZone getZone() {
-        int rpm = raw.rpm;
+        int rpm = mRaw.rpm;
+        if (!valid()) {
+            return CadenceZone.Stop;
+        }
+
         UserProfiles userProfiles = getSettings().getUserProfiles();
         if (rpm < userProfiles.getCadenceZoneIdeal()) {
             // 遅い
@@ -53,7 +67,17 @@ public class CadenceDataCentral extends SensorDataCentral {
 
     @Override
     public void onUpdate(CentralDataManager parent) {
+        if (!valid()) {
+            setCadence(0, 0);
+        }
+    }
 
+    @Override
+    public void buildData(CentralDataManager parent, RawCentralData result) {
+        if (valid()) {
+            result.sensor.cadence = AceUtils.publicFieldClone(mRaw);
+            result.centralStatus.connectedFlags |= RawCentralData.RawCentralStatus.CONNECTED_FLAG_CADENCE_SENSOR;
+        }
     }
 
     @Override

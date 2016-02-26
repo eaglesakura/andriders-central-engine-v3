@@ -43,10 +43,6 @@ public class GadgetSettingFragment extends AppBaseFragment {
 
     UserProfiles personalDataSettings = Settings.getInstance().getUserProfiles();
 
-    CentralServiceSettings centralServiceSettings = Settings.getInstance().getCentralSettings();
-
-    List<BluetoothDevice> remoteCentralDevices = new ArrayList<>();
-
     public GadgetSettingFragment() {
         requestInjection(R.layout.fragment_setting_gadgets);
     }

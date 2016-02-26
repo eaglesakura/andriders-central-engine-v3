@@ -9,23 +9,23 @@ public class FitnessDataCalculator extends BaseCalculator {
     /**
      * 現在のMETs値
      */
-    float currentMets;
+    private float mCurrentMets;
 
     /**
      * 合計カロリー
      */
-    float sumCalories;
+    private float mSumCalories;
 
     /**
      * 合計エクササイズ
      */
-    float sumExercise;
+    private float mSumExercise;
 
     public FitnessDataCalculator() {
     }
 
     public float getCurrentMets() {
-        return currentMets;
+        return mCurrentMets;
     }
 
     public float getUserWeight() {
@@ -79,10 +79,10 @@ public class FitnessDataCalculator extends BaseCalculator {
         // METsを計算
         if (normalHeartrate <= 0 || maxHeartrate <= 0 || normalHeartrate >= maxHeartrate) {
             // data error
-            currentMets = 1;
+            mCurrentMets = 1;
         } else {
             final float mets = ((float) (currentHeartrate - normalHeartrate) / (float) (maxHeartrate - normalHeartrate) * 10.0f);
-            currentMets = Math.max(mets, 1.0f);
+            mCurrentMets = Math.max(mets, 1.0f);
         }
 
         final double diffTimeMs = diffTimeMilliSec;
@@ -91,18 +91,18 @@ public class FitnessDataCalculator extends BaseCalculator {
             // 消費カロリー = METs x 時間(h) x 体重(kg) x 1.05
             // MEMO 先に体重をかけておくことで、精度誤差をマシにする
             double diffTimeHour = ((diffTimeMs * (double) getUserWeight()) / 1000.0 / 60.0 / 60.0);
-            double diffCalories = currentMets * diffTimeHour * 1.05;
+            double diffCalories = mCurrentMets * diffTimeHour * 1.05;
 
-            sumCalories += diffCalories;
+            mSumCalories += diffCalories;
         }
 
         // 獲得エクササイズ値計算
         // 厚労省データでは3METs以上が活発な値となる
         // http://www.mhlw.go.jp/bunya/kenkou/undou01/pdf/data.pdf
-        if (currentMets >= 3) {
+        if (mCurrentMets >= 3) {
             // 獲得エクササイズ値
-            double diffExercise = ((currentMets * diffTimeMs) / 1000.0 / 60.0 / 60.0);
-            sumExercise += diffExercise;
+            double diffExercise = ((mCurrentMets * diffTimeMs) / 1000.0 / 60.0 / 60.0);
+            mSumExercise += diffExercise;
         }
     }
 }

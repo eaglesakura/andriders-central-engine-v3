@@ -58,6 +58,9 @@
 
     <!-- 内蔵拡張機能設定 -->
     <string name="Extension.Inner.Location.Name">GPSから取得</string>
+    <string name="Extension.Inner.BleSensor.Name">BLEセンサーから取得</string>
+    <string name="Extension.Inner.Default.Name">ACE標準機能</string>
+    <string name="Extension.Inner.Remove">非表示</string>
 
     <!-- アプリ情報 -->
     <string name="Information.Build.Title">ビルド情報</string>
@@ -101,6 +104,4 @@
     <string name="Main.Menu.Extensions">サイコン機能詳細</string>
     <string name="Main.Menu.Activity">走行ログ</string>
     <string name="Main.Menu.Information">アプリについて</string>
-    <string name="Extension.Inner.BleSensor.Name">BLEセンサーから取得</string>
-    <string name="Extension.Inner.Default.Name">ACE標準機能</string>
 </resources>
