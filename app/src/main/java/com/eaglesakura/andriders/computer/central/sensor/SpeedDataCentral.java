@@ -2,10 +2,12 @@ package com.eaglesakura.andriders.computer.central.sensor;
 
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
-import com.eaglesakura.andriders.computer.central.calculator.SpeedDataCalculator;
+import com.eaglesakura.andriders.computer.central.data.DistanceData;
+import com.eaglesakura.andriders.computer.central.data.geo.GeoSpeedData;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.SensorType;
+import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.Timer;
 
@@ -17,6 +19,17 @@ public class SpeedDataCentral extends SensorDataCentral {
      * 一定時間以上BLEセンサーが更新されなければ、GPS由来のデータに変更する
      */
     private final long SENSOR_TIMEOUT_MS = 1000 * 30;
+
+    enum SpeedSource {
+        None,
+        Sensor,
+        Gps,
+    }
+
+    /**
+     * どのセンサーで速度をとっているか
+     */
+    private SpeedSource mSpeedSource = SpeedSource.None;
 
     /**
      * センサーからの更新時刻
@@ -48,21 +61,16 @@ public class SpeedDataCentral extends SensorDataCentral {
      */
     private double mGpsNowSpeed;
 
-    /**
-     * デバイス接続されていればtrue
-     */
-    private boolean mConnected;
-
-    /**
-     * 速度計算機
-     */
-    private final SpeedDataCalculator mSpeedDataCalculator;
-
     private long mLastUpdatedTime;
 
-    public SpeedDataCentral(SpeedDataCalculator speedDataCalculator) {
+    /**
+     * 距離計算
+     */
+    private final DistanceData mDistanceCalculator;
+
+    public SpeedDataCentral(DistanceData distanceCalculator) {
         super(SensorType.SpeedSensor);
-        this.mSpeedDataCalculator = speedDataCalculator;
+        mDistanceCalculator = distanceCalculator;
     }
 
     /**
@@ -71,14 +79,22 @@ public class SpeedDataCentral extends SensorDataCentral {
      * この速度は基本的にBLE由来を返すが、もしタイムアウトしていたらGPS由来に自動的に切り替える
      */
     public double getSpeedKmh() {
-        return Math.max(0, mSpeedDataCalculator.getSpeedKmh());
+        if (valid()) {
+            switch (mSpeedSource) {
+                case Sensor:
+                    return mSensorNowSpeed;
+                case Gps:
+                    return mGpsNowSpeed;
+            }
+        }
+        return 0;
     }
 
     /**
      * 速度取得可能なデバイスに接続されている場合はtrue
      */
     public boolean isConnectedDevices() {
-        return mConnected;
+        return valid() & mSpeedSource != SpeedSource.None;
     }
 
     /**
@@ -96,7 +112,7 @@ public class SpeedDataCentral extends SensorDataCentral {
     }
 
     /**
-     * BLEセンサー由来の速度を更新する
+     * センサー由来の速度を更新する
      *
      * @param wheelRpm        ホイール回転数
      * @param wheelRevolution ホイール回転数合計
@@ -119,13 +135,11 @@ public class SpeedDataCentral extends SensorDataCentral {
 
     /**
      * GPSセンサー由来の速度を更新する
+     *
+     * @param calc 位置からの速度計算
      */
-    public void setGpsSensorSpeed(double speedKmh) {
-        if (speedKmh < 0) {
-            return;
-        }
-
-        mGpsNowSpeed = speedKmh;
+    public void setGpsSpeed(GeoSpeedData calc) {
+        mGpsNowSpeed = calc.getSpeedKmh();
         if (mGpsSensorTime == null) {
             mGpsSensorTime = new Timer();
         } else {
@@ -133,13 +147,14 @@ public class SpeedDataCentral extends SensorDataCentral {
         }
     }
 
-    @Override
-    public void onUpdate(CentralDataManager parent) {
+    /**
+     * 速度を更新する
+     */
+    private void updateCurrentSpeed() {
         if (mSensorTime != null) {
             if (mSensorTime.end() < SENSOR_TIMEOUT_MS) {
                 // BLEセンサーがタイムアウトしていないのでBLEセンサーの速度で確定する
-                mConnected = true;
-                mSpeedDataCalculator.setSpeedKmh(mSensorNowSpeed);
+                mSpeedSource = SpeedSource.Sensor;
                 mLastUpdatedTime = mSensorTime.getStartTime();
                 return;
             }
@@ -154,18 +169,22 @@ public class SpeedDataCentral extends SensorDataCentral {
         if (mGpsSensorTime != null) {
             if (mGpsSensorTime.end() < SENSOR_TIMEOUT_MS) {
                 // GPSセンサーがタイムアウトしてないのでこっち
-                mConnected = true;
-                mSpeedDataCalculator.setSpeedKmh(mGpsNowSpeed);
+                mSpeedSource = SpeedSource.Gps;
                 mLastUpdatedTime = mGpsSensorTime.getStartTime();
                 return;
             }
         }
 
         // 両方のセンサーがタイムアウトしたので速度無効
-        mSpeedDataCalculator.setSpeedKmh(0);
         mSensorWheelRpm = 0;
         mSensorWheelRevolution = 0;
-        mConnected = false;
+        mSpeedSource = SpeedSource.None;
+    }
+
+    @Override
+    public void onUpdate(CentralDataManager parent, long diffTimeMs) {
+        updateCurrentSpeed();
+
     }
 
     @Override
@@ -173,8 +192,8 @@ public class SpeedDataCentral extends SensorDataCentral {
         if (valid()) {
             RawSensorData.RawSpeed speed = new RawSensorData.RawSpeed();
             speed.date = mLastUpdatedTime;
-            speed.speedKmPerHour = (float) mSpeedDataCalculator.getSpeedKmh();
-            speed.zone = mSpeedDataCalculator.getSpeedZone();
+            speed.speedKmPerHour = (float) getSpeedKmh();
+            speed.zone = getSpeedZone();
 
             speed.wheelRevolution = mSensorWheelRevolution;
             speed.wheelRpm = mSensorWheelRpm;
@@ -194,5 +213,26 @@ public class SpeedDataCentral extends SensorDataCentral {
     public boolean isDelete(CentralDataManager parent) {
         return false;
     }
+
+    /**
+     * 速度ゾーンを取得する
+     */
+    public SpeedZone getSpeedZone() {
+        final double speed = getSpeedKmh();
+        if (speed < 8) {
+            // 適当な閾値よりも下は停止とみなす
+            return SpeedZone.Stop;
+        } else if (speed < getSettings().getUserProfiles().getSpeedZoneCruise()) {
+            // 巡航速度よりも下は低速度域
+            return SpeedZone.Slow;
+        } else if (speed < getSettings().getUserProfiles().getSpeedZoneSprint()) {
+            // スプリント速度よりも下は巡航速度
+            return SpeedZone.Cruise;
+        } else {
+            // スプリント速度を超えたらスプリント
+            return SpeedZone.Sprint;
+        }
+    }
+
 }
 

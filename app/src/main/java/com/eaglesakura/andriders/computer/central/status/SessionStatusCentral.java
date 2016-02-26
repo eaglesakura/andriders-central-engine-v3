@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.computer.central.status;
 
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
-import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
+import com.eaglesakura.andriders.internal.protocol.RawSessionData;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -39,7 +39,7 @@ public class SessionStatusCentral implements CentralDataManager.ICentral {
     }
 
     @Override
-    public void onUpdate(CentralDataManager parent) {
+    public void onUpdate(CentralDataManager parent, long diffTime) {
 
     }
 
@@ -49,6 +49,11 @@ public class SessionStatusCentral implements CentralDataManager.ICentral {
             throw new IllegalStateException("SessionId is null");
         }
         result.session.sessionId = mSessionId;
+
+        // ユーザーが自走中の場合はフラグを立てる
+        if (parent.isActiveMoving()) {
+            result.session.flags |= RawSessionData.FLAG_ACTIVE;
+        }
     }
 
     @Override

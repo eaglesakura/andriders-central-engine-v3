@@ -3,11 +3,11 @@ package com.eaglesakura.andriders.computer.central.geo;
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.central.base.BaseCentral;
-import com.eaglesakura.andriders.computer.central.calculator.AltitudeDataCalculator;
-import com.eaglesakura.andriders.computer.central.calculator.DistanceDataCalculator;
+import com.eaglesakura.andriders.computer.central.data.geo.AltitudeData;
+import com.eaglesakura.andriders.computer.central.data.geo.GeoSpeedData;
+import com.eaglesakura.andriders.internal.protocol.ExtensionProtocol;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawLocation;
-import com.eaglesakura.andriders.internal.protocol.ExtensionProtocol;
 import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.geo.Geohash;
 
@@ -20,13 +20,13 @@ public class LocationCentral extends BaseCentral {
 
     String mLastReceivedGeohash;
 
-    AltitudeDataCalculator mAltitudeDataCalculator;
+    AltitudeData mAltitudeDataCalculator;
 
-    DistanceDataCalculator mDistanceDataCalculator;
+    GeoSpeedData mDistanceDataCalculator;
 
     public LocationCentral() {
-        mAltitudeDataCalculator = new AltitudeDataCalculator();
-        mDistanceDataCalculator = new DistanceDataCalculator();
+        mAltitudeDataCalculator = new AltitudeData();
+        mDistanceDataCalculator = new GeoSpeedData();
     }
 
     /**
@@ -36,15 +36,15 @@ public class LocationCentral extends BaseCentral {
         return (System.currentTimeMillis() - mRaw.date) < CentralDataManager.DATA_TIMEOUT_MS;
     }
 
-    public void setAltitudeDataCalculator(AltitudeDataCalculator altitudeDataCalculator) {
+    public void setAltitudeDataCalculator(AltitudeData altitudeDataCalculator) {
         this.mAltitudeDataCalculator = altitudeDataCalculator;
     }
 
-    public void setDistanceDataCalculator(DistanceDataCalculator distanceDataCalculator) {
+    public void setDistanceDataCalculator(GeoSpeedData distanceDataCalculator) {
         this.mDistanceDataCalculator = distanceDataCalculator;
     }
 
-    public DistanceDataCalculator getDistanceDataCalculator() {
+    public GeoSpeedData getDistanceDataCalculator() {
         return mDistanceDataCalculator;
     }
 
@@ -53,8 +53,8 @@ public class LocationCentral extends BaseCentral {
      */
     public void setLocation(ExtensionProtocol.SrcLocation loc) {
         // 高さを更新
-        mAltitudeDataCalculator.onLocationUpdated(loc.latitude, loc.longitude, loc.altitude);
-        mDistanceDataCalculator.updateLocation(loc.latitude, loc.longitude);
+        mAltitudeDataCalculator.setLocation(loc.latitude, loc.longitude, loc.altitude);
+//        mDistanceDataCalculator.onUpdateLocation(loc.latitude, loc.longitude);
 
         // 位置を更新
         mRaw.latitude = loc.latitude;
@@ -72,7 +72,7 @@ public class LocationCentral extends BaseCentral {
     }
 
     @Override
-    public void onUpdate(CentralDataManager parent) {
+    public void onUpdate(CentralDataManager parent, long diffTimeMs) {
         if (hasLocation()) {
             mRaw.inclinationPercent = ((float) mAltitudeDataCalculator.getInclinationPercent());
             final float absInclination = Math.abs(mRaw.inclinationPercent);
@@ -101,8 +101,7 @@ public class LocationCentral extends BaseCentral {
     @Override
     public void buildData(CentralDataManager parent, RawCentralData result) {
         if (hasLocation()) {
-            RawLocation loc = AceUtils.publicFieldClone(mRaw);
-            result.sensor.location = loc;
+            result.sensor.location = AceUtils.publicFieldClone(mRaw);
             result.centralStatus.connectedFlags |= RawCentralData.RawCentralStatus.CONNECTED_FLAG_GPS;
         }
     }

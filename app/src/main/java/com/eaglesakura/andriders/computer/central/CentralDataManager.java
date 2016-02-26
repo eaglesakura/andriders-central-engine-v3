@@ -2,10 +2,10 @@ package com.eaglesakura.andriders.computer.central;
 
 import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.computer.CycleComputerManager;
-import com.eaglesakura.andriders.computer.central.calculator.AltitudeDataCalculator;
-import com.eaglesakura.andriders.computer.central.calculator.DistanceDataCalculator;
-import com.eaglesakura.andriders.computer.central.calculator.FitnessDataCalculator;
-import com.eaglesakura.andriders.computer.central.calculator.SpeedDataCalculator;
+import com.eaglesakura.andriders.computer.central.data.geo.AltitudeData;
+import com.eaglesakura.andriders.computer.central.data.DistanceData;
+import com.eaglesakura.andriders.computer.central.data.hrsensor.FitnessData;
+import com.eaglesakura.andriders.computer.central.data.geo.GeoSpeedData;
 import com.eaglesakura.andriders.computer.central.geo.LocationCentral;
 import com.eaglesakura.andriders.computer.central.sensor.CadenceDataCentral;
 import com.eaglesakura.andriders.computer.central.sensor.HeartrateDataCentral;
@@ -19,6 +19,7 @@ import com.eaglesakura.andriders.internal.protocol.RawSessionData;
 import com.eaglesakura.andriders.internal.protocol.RawSpecs;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.util.Timer;
 
 import android.content.Context;
 
@@ -62,15 +63,19 @@ public class CentralDataManager extends CycleComputerManager {
      */
     private final LocationCentral mLocationCentral;
 
-    private final FitnessDataCalculator mFitnessDataCalculator = new FitnessDataCalculator();
+    private final FitnessData mFitnessDataCalculator = new FitnessData();
 
-    private final SpeedDataCalculator mSpeedDataCalculator = new SpeedDataCalculator();
+    private final DistanceData mDistanceCalculator = new DistanceData();
 
     /**
      * データsync用のロック
      */
     private final Object mLock = new Object();
 
+    /**
+     * 最後の更新時刻
+     */
+    private Timer mLastUpdatedTime = new Timer();
 
     public CentralDataManager(Context context) {
         super(context);
@@ -83,7 +88,7 @@ public class CentralDataManager extends CycleComputerManager {
             mHeartrateDataCentral = new HeartrateDataCentral(mFitnessDataCalculator);
             mCentrals.add(mHeartrateDataCentral);
 
-            mSpeedDataCentral = new SpeedDataCentral(mSpeedDataCalculator);
+            mSpeedDataCentral = new SpeedDataCentral(mDistanceCalculator);
             mCentrals.add(mSpeedDataCentral);
 
             mCadenceDataCentral = new CadenceDataCentral();
@@ -101,6 +106,7 @@ public class CentralDataManager extends CycleComputerManager {
      * 初期ロードを行う
      */
     private void initialize() {
+        startSession();
     }
 
     /**
@@ -127,12 +133,11 @@ public class CentralDataManager extends CycleComputerManager {
                     mLocationCentral.setLocation(loc);
 
                     // GPS由来の速度を更新する
-                    DistanceDataCalculator distanceDataCalculator = mLocationCentral.getDistanceDataCalculator();
-                    mSpeedDataCentral.setGpsSensorSpeed(distanceDataCalculator.getGeoSpeedKmh());
+                    mSpeedDataCentral.setGpsSpeed(mLocationCentral.getDistanceDataCalculator());
 
                     LogUtil.log("GPS lat(%f) lng(%f) alt(%f) acc(%f) spd(%.1f km/h)",
                             loc.latitude, loc.longitude, loc.altitude, loc.accuracyMeter,
-                            distanceDataCalculator.getGeoSpeedKmh()
+                            mLocationCentral.getDistanceDataCalculator().getSpeedKmh()
                     );
                 }
             }
@@ -180,8 +185,8 @@ public class CentralDataManager extends CycleComputerManager {
             public void run() {
                 synchronized (mLock) {
                     // 位置ステートをリセットする
-                    mLocationCentral.setAltitudeDataCalculator(new AltitudeDataCalculator());
-                    mLocationCentral.setDistanceDataCalculator(new DistanceDataCalculator());
+                    mLocationCentral.setAltitudeDataCalculator(new AltitudeData());
+                    mLocationCentral.setDistanceDataCalculator(new GeoSpeedData());
 
                     mSessionStatusCentral.onSessionStart();
                 }
@@ -194,7 +199,7 @@ public class CentralDataManager extends CycleComputerManager {
      */
     public boolean isActiveMoving() {
         synchronized (mLock) {
-            if (mSpeedDataCalculator.getSpeedZone() == SpeedZone.Stop) {
+            if (mSpeedDataCentral.getSpeedZone() == SpeedZone.Stop) {
                 // 停止中はアクティブではない
                 return false;
             }
@@ -218,10 +223,6 @@ public class CentralDataManager extends CycleComputerManager {
         result.specs.fitness.heartrateMax = (short) mSettings.getUserProfiles().getMaxHeartrate();
 
         result.centralStatus.debug = Settings.isDebugable();
-    }
-
-    private void buildSession(RawCentralData result) {
-
     }
 
     /**
@@ -267,15 +268,19 @@ public class CentralDataManager extends CycleComputerManager {
      */
     <T extends ICentral> void update(Iterable<T> datas) {
         synchronized (datas) {
+            long diffTimeMS = mLastUpdatedTime.end();
+
             Iterator<T> iterator = datas.iterator();
             while (iterator.hasNext()) {
                 T data = iterator.next();
                 if (data.isDelete(this)) {
                     iterator.remove();
                 } else {
-                    data.onUpdate(this);
+                    data.onUpdate(this, diffTimeMS);
                 }
             }
+
+            mLastUpdatedTime.end();
         }
     }
 
@@ -283,7 +288,12 @@ public class CentralDataManager extends CycleComputerManager {
      * サイコン情報として登録されたデータ
      */
     public interface ICentral {
-        void onUpdate(CentralDataManager parent);
+        /**
+         * 定期更新を行わせる
+         *
+         * @param diffTimeMs 前回の更新からの差分時間
+         */
+        void onUpdate(CentralDataManager parent, long diffTimeMs);
 
         /**
          * 送信するデータを構築する

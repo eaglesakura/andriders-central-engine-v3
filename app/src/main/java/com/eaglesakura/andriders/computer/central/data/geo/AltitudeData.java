@@ -1,8 +1,9 @@
-package com.eaglesakura.andriders.computer.central.calculator;
+package com.eaglesakura.andriders.computer.central.data.geo;
 
 import com.eaglesakura.andriders.AceUtils;
+import com.eaglesakura.andriders.computer.central.data.CycleClock;
+import com.eaglesakura.andriders.computer.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
-import com.eaglesakura.andriders.internal.protocol.RawLocation;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.MathUtil;
 
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * 高度情報をチェックする
  */
-public class AltitudeDataCalculator extends BaseCalculator {
+public class AltitudeData extends BaseCalculator {
 
     /**
      * エラーとして許容する回数
@@ -89,7 +90,8 @@ public class AltitudeDataCalculator extends BaseCalculator {
      */
     private RoadState mRoadState = new RoadState();
 
-    public AltitudeDataCalculator() {
+    public AltitudeData(CycleClock clock) {
+        super(clock);
     }
 
     /**
@@ -142,7 +144,6 @@ public class AltitudeDataCalculator extends BaseCalculator {
             return 0;
         }
 
-
         // ログ内で進んだ距離を合計する
         double distanceMeter = 0;
         for (int i = 0; i < (mCalcPointLogs.size() - 1); ++i) {
@@ -166,52 +167,50 @@ public class AltitudeDataCalculator extends BaseCalculator {
     /**
      * 位置を更新した
      */
-    public void onLocationUpdated(double lat, double lng, double alt) {
-        synchronized (this) {
-            if (((int) alt) <= 1) {
-                return;
-            }
-
-            // 位置を更新する
-            RawGeoPoint gp = AceUtils.toGeoPoint(lat, lng, alt);
-            mAltPoints.add(gp);
-            if (mAltPoints.size() > ALTITUDE_CALC_AVARAGE_NUM) {
-                // 計算に不要な地点は捨てる
-                mAltPoints.remove(0);
-            }
-
-            // 標高を計算する
-            mCurrentAltitude = 0;
-            for (RawGeoPoint p : mAltPoints) {
-                mCurrentAltitude += p.altitude;
-            }
-            mCurrentAltitude /= mAltPoints.size();
-
-            // 計算のために精度を下げる
-            mCurrentAltitude = (int) (mCurrentAltitude + 0.5);
-
-            // 計算済み地点ログを追加する
-            RawGeoPoint calcCurrent = AceUtils.toGeoPoint(lat, lng, mCurrentAltitude);
-            mCalcPointLogs.add(calcCurrent);
-            if (mCalcPointLogs.size() > INCLINATION_CALC_NUM) {
-                mCalcPointLogs.remove(0);
-            }
-
-            // 前の高度を持っていたら上昇分の計算を行う
-            // 獲得標高をチェックする
-            mRoadState.onUpdateAltitude(mCurrentAltitude);
-
-            // 最高/最低地点チェック
-            if (mMaxAltitudePoint == null || mCurrentAltitude > mMaxAltitudePoint.altitude) {
-                mMaxAltitudePoint = calcCurrent;
-            }
-            if (mMinAltitudePoint == null || mCurrentAltitude < mMinAltitudePoint.altitude) {
-                mMinAltitudePoint = calcCurrent;
-            }
-
-            // 傾斜を計算
-            mInclinationPercent = calcInclinationPercent();
+    public void setLocation(double lat, double lng, double alt) {
+        if (((int) alt) <= 1) {
+            return;
         }
+
+        // 位置を更新する
+        RawGeoPoint gp = AceUtils.toGeoPoint(lat, lng, alt);
+        mAltPoints.add(gp);
+        if (mAltPoints.size() > ALTITUDE_CALC_AVARAGE_NUM) {
+            // 計算に不要な地点は捨てる
+            mAltPoints.remove(0);
+        }
+
+        // 標高を計算する
+        mCurrentAltitude = 0;
+        for (RawGeoPoint p : mAltPoints) {
+            mCurrentAltitude += p.altitude;
+        }
+        mCurrentAltitude /= mAltPoints.size();
+
+        // 計算のために精度を下げる
+        mCurrentAltitude = (int) (mCurrentAltitude + 0.5);
+
+        // 計算済み地点ログを追加する
+        RawGeoPoint calcCurrent = AceUtils.toGeoPoint(lat, lng, mCurrentAltitude);
+        mCalcPointLogs.add(calcCurrent);
+        if (mCalcPointLogs.size() > INCLINATION_CALC_NUM) {
+            mCalcPointLogs.remove(0);
+        }
+
+        // 前の高度を持っていたら上昇分の計算を行う
+        // 獲得標高をチェックする
+        mRoadState.onUpdateAltitude(mCurrentAltitude);
+
+        // 最高/最低地点チェック
+        if (mMaxAltitudePoint == null || mCurrentAltitude > mMaxAltitudePoint.altitude) {
+            mMaxAltitudePoint = calcCurrent;
+        }
+        if (mMinAltitudePoint == null || mCurrentAltitude < mMinAltitudePoint.altitude) {
+            mMinAltitudePoint = calcCurrent;
+        }
+
+        // 傾斜を計算
+        mInclinationPercent = calcInclinationPercent();
     }
 
     /**

@@ -66,7 +66,7 @@ public class CadenceDataCentral extends SensorDataCentral {
     }
 
     @Override
-    public void onUpdate(CentralDataManager parent) {
+    public void onUpdate(CentralDataManager parent, long diffTimeMs) {
         if (!valid()) {
             setCadence(0, 0);
         }

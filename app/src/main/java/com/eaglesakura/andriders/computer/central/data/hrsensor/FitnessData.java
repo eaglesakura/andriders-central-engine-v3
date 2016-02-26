@@ -1,11 +1,14 @@
-package com.eaglesakura.andriders.computer.central.calculator;
+package com.eaglesakura.andriders.computer.central.data.hrsensor;
 
+import com.eaglesakura.andriders.computer.central.data.CycleClock;
+import com.eaglesakura.andriders.computer.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
+import com.eaglesakura.util.Timer;
 
 /**
  * 運動データの計算を行う
  */
-public class FitnessDataCalculator extends BaseCalculator {
+public class FitnessData extends BaseCalculator {
     /**
      * 現在のMETs値
      */
@@ -21,7 +24,18 @@ public class FitnessDataCalculator extends BaseCalculator {
      */
     private float mSumExercise;
 
-    public FitnessDataCalculator() {
+    /**
+     * 現在の心拍値
+     */
+    private float mHeartrate;
+
+    /**
+     * 心拍の更新時刻
+     */
+    private long mHeartrateDataTime;
+
+    public FitnessData(CycleClock clock) {
+        super(clock);
     }
 
     public float getCurrentMets() {
@@ -40,22 +54,32 @@ public class FitnessDataCalculator extends BaseCalculator {
         return getSettings().getUserProfiles().getNormalHeartrate();
     }
 
-    public HeartrateZone getZone(int currentHeartrate) {
+    /**
+     * 現在の心拍を取得する
+     */
+    public float getHeartrate() {
+        return mHeartrate;
+    }
+
+    /**
+     * 現在の心拍ゾーンを取得する
+     */
+    public HeartrateZone getZone() {
         final double userMaxHeartrate = (double) getMaxHeartrate();
 
-        if (currentHeartrate < (int) (userMaxHeartrate * 0.5)) {
+        if (mHeartrate < (userMaxHeartrate * 0.5)) {
             // 安静
             return HeartrateZone.Repose;
-        } else if (currentHeartrate < (int) (userMaxHeartrate * 0.6)) {
+        } else if (mHeartrate < (userMaxHeartrate * 0.6)) {
             // イージー
             return HeartrateZone.Easy;
-        } else if (currentHeartrate < (int) (userMaxHeartrate * 0.7)) {
+        } else if (mHeartrate < (userMaxHeartrate * 0.7)) {
             // 脂肪燃焼
             return HeartrateZone.FatCombustion;
-        } else if (currentHeartrate < (int) (userMaxHeartrate * 0.8)) {
+        } else if (mHeartrate < (userMaxHeartrate * 0.8)) {
             // 有酸素
             return HeartrateZone.PossessionOxygenMotion;
-        } else if (currentHeartrate < (int) (userMaxHeartrate * 0.9)) {
+        } else if (mHeartrate < (userMaxHeartrate * 0.9)) {
             // 無酸素
             return HeartrateZone.NonOxygenatedMotion;
         } else {
@@ -65,14 +89,24 @@ public class FitnessDataCalculator extends BaseCalculator {
     }
 
     /**
-     * 差分時間から計算を行う
+     * 心拍を更新する
+     *
+     * @param timestamp 心拍の打刻時刻
+     * @param bpm       心拍
      */
-    public void updateHeartrate(int currentHeartrate, long diffTimeMilliSec) {
-        if (diffTimeMilliSec < 500) {
-            // 計算に十分な差分時間が無ければ何もしない
-            return;
-        }
+    public void setHeartrate(long timestamp, int bpm) {
+        mHeartrateDataTime = timestamp;
+        mHeartrate = bpm;
+    }
 
+    /**
+     * データの更新を行う
+     *
+     * 最後にsetされた心拍が継続しているものと判断する。
+     *
+     * @param diffTimeMs 前回からの差分時間
+     */
+    public void onUpdateTime(long diffTimeMs) {
         final int normalHeartrate = getNormalHeartrate();
         final int maxHeartrate = getMaxHeartrate();
 
@@ -81,17 +115,16 @@ public class FitnessDataCalculator extends BaseCalculator {
             // data error
             mCurrentMets = 1;
         } else {
-            final float mets = ((float) (currentHeartrate - normalHeartrate) / (float) (maxHeartrate - normalHeartrate) * 10.0f);
+            final float mets = ((float) (mHeartrateDataTime - normalHeartrate) / (float) (maxHeartrate - normalHeartrate) * 10.0f);
             mCurrentMets = Math.max(mets, 1.0f);
         }
 
-        final double diffTimeMs = diffTimeMilliSec;
         // 消費カロリー計算
         {
             // 消費カロリー = METs x 時間(h) x 体重(kg) x 1.05
             // MEMO 先に体重をかけておくことで、精度誤差をマシにする
-            double diffTimeHour = ((diffTimeMs * (double) getUserWeight()) / 1000.0 / 60.0 / 60.0);
-            double diffCalories = mCurrentMets * diffTimeHour * 1.05;
+            final double diffTimeHour = Timer.msToHour(diffTimeMs);
+            final double diffCalories = mCurrentMets * diffTimeHour * 1.05;
 
             mSumCalories += diffCalories;
         }

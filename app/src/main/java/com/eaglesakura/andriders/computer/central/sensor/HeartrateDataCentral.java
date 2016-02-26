@@ -2,9 +2,10 @@ package com.eaglesakura.andriders.computer.central.sensor;
 
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
-import com.eaglesakura.andriders.computer.central.calculator.FitnessDataCalculator;
+import com.eaglesakura.andriders.computer.central.data.hrsensor.FitnessData;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.sensor.SensorType;
 
 /**
@@ -15,9 +16,9 @@ import com.eaglesakura.andriders.sensor.SensorType;
 public class HeartrateDataCentral extends SensorDataCentral {
     final RawSensorData.RawHeartrate raw = new RawSensorData.RawHeartrate();
 
-    final FitnessDataCalculator mFitnessDataCalculator;
+    final FitnessData mFitnessDataCalculator;
 
-    public HeartrateDataCentral(FitnessDataCalculator fitnessDataCalculator) {
+    public HeartrateDataCentral(FitnessData fitnessDataCalculator) {
         super(SensorType.HeartrateMonitor);
         this.mFitnessDataCalculator = fitnessDataCalculator;
     }
@@ -33,20 +34,25 @@ public class HeartrateDataCentral extends SensorDataCentral {
      * 現在の心拍を更新する
      */
     public void setHeartrate(int bpm) {
-        final long oldTime = raw.date;
-        final long nowTime = System.currentTimeMillis();
 
-        // 消費カロリー更新
-        mFitnessDataCalculator.updateHeartrate(bpm, nowTime - oldTime);
+//        mFitnessDataCalculator.setHeartrate(bpm);
 
         // 情報更新
         raw.bpm = (short) bpm;
         raw.date = System.currentTimeMillis();
-        raw.zone = mFitnessDataCalculator.getZone(bpm);
     }
 
     @Override
-    public void onUpdate(CentralDataManager parent) {
+    public void onUpdate(CentralDataManager parent, long diffTimeMs) {
+        if (!valid()) {
+            raw.bpm = 0;
+            raw.date = 0;
+            raw.zone = HeartrateZone.Repose;
+        } else {
+//            mFitnessDataCalculator.setHeartrate(raw.bpm);
+            raw.zone = mFitnessDataCalculator.getZone();
+        }
+
     }
 
     @Override
