@@ -11,16 +11,16 @@ public class DistanceDataCalculator extends BaseCalculator {
     /**
      * このセッションの移動距離（キロ単位）
      */
-    double mSessionDistanceKm;
+    private double mSessionDistanceKm;
 
     /**
      * 前の計算地点
      */
-    double mBeforeLatitude;
+    private double mBeforeLatitude;
 
-    double mBeforeLongitude;
+    private double mBeforeLongitude;
 
-    Timer mBeforeLocationTime = new Timer();
+    private Timer mBeforeLocationTime = new Timer();
 
 
     /**

@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.ble.heartrate.BleHeartRateMonitor;
 import com.eaglesakura.andriders.ble.heartrate.HeartrateData;
 import com.eaglesakura.andriders.ble.heartrate.HeartrateGattReceiver;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
@@ -40,22 +40,22 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
 
 
     @Override
-    public ExtensionInformation getExtensionInformation() {
+    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
         ExtensionInformation info = new ExtensionInformation(this, "ble_hr");
-        info.setText("Bluetooth LE対応センサーから心拍を取得します");
+        info.setSummary("Bluetooth LE対応センサーから心拍を取得します");
         info.setCategory(ExtensionCategory.CATEGORY_HEARTRATEMONITOR);
         return info;
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation() {
+    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
         return null;
     }
 
     @Override
     public void onAceServiceConnected(ExtensionSession session) {
         final CentralDataExtension centralDataExtension = session.getCentralDataExtension();
-        String address = centralDataExtension.getGadgetAddress(SensorProtocol.SensorType.HeartrateMonitor);
+        String address = centralDataExtension.getGadgetAddress(SensorType.HeartrateMonitor);
         if (StringUtil.isEmpty(address)) {
             return;
         }

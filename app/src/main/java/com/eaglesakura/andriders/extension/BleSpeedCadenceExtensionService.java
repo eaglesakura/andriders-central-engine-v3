@@ -3,12 +3,8 @@ package com.eaglesakura.andriders.extension;
 import com.eaglesakura.andriders.ble.cadence.BleCadenceSpeedSensor;
 import com.eaglesakura.andriders.ble.cadence.SpeedCadenceData;
 import com.eaglesakura.andriders.ble.cadence.SpeedCadenceGattReceiver;
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionCategory;
-import com.eaglesakura.andriders.extension.ExtensionInformation;
-import com.eaglesakura.andriders.extension.IExtensionService;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
@@ -46,22 +42,22 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
 
 
     @Override
-    public ExtensionInformation getExtensionInformation() {
+    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
         ExtensionInformation info = new ExtensionInformation(this, "ble_sc");
-        info.setText("Bluetooth LE対応センサーから速度とケイデンスを取得します");
+        info.setSummary("Bluetooth LE対応センサーから速度とケイデンスを取得します");
         info.setCategory(ExtensionCategory.CATEGORY_SPEED_AND_CADENCE);
         return info;
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation() {
+    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
         return null;
     }
 
     @Override
     public void onAceServiceConnected(ExtensionSession session) {
         final CentralDataExtension centralDataExtension = session.getCentralDataExtension();
-        String address = centralDataExtension.getGadgetAddress(SensorProtocol.SensorType.CadenceSensor);
+        String address = centralDataExtension.getGadgetAddress(SensorType.CadenceSensor);
         if (StringUtil.isEmpty(address)) {
             return;
         }

@@ -16,6 +16,7 @@ import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Util;
 
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -68,20 +70,20 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     }
 
     @Override
-    public ExtensionInformation getExtensionInformation() {
+    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
         ExtensionInformation info = new ExtensionInformation(this, "gps_loc");
-        info.setText("現在位置をサイクルコンピュータに反映します。");
+        info.setSummary("現在位置をサイクルコンピュータに反映します。");
         info.setCategory(ExtensionCategory.CATEGORY_LOCATION);
         info.setHasSetting(false);
         return info;
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation() {
+    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
 
         List<DisplayInformation> result = new ArrayList<>();
 
-        if (Settings.isDebugable()) {
+        if (session.isDebugable()) {
             // 位置情報をデバッグ表示
             {
                 DisplayInformation info = new DisplayInformation(this, "debug.loc");
@@ -114,12 +116,10 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
             return;
         }
 
-        mDebugGeohash = new DisplayData(this, "debug.geohash");
-        mDebugGeohash.setTimeoutMs(1000 * 30);
+        mDebugGeohash = new DisplayData(this, "debug.loc");
         mDebugGeohash.setValue(new LineValue(2)); // hash, time
 
         mDebugLocation = new DisplayData(this, "debug.geohash");
-        mDebugLocation.setTimeoutMs(1000 * 30);
         mDebugLocation.setValue(new LineValue(3)); // lat, lng, time
 
         mCentralDataManager = session.getCentralDataExtension();
@@ -208,7 +208,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
 
             // デバッグ情報を与える
             if (Settings.isDebugable()) {
-                String time = AceUtils.formatTimeMilliSecToString(newLocation.getTime());
+                String time = StringUtil.toString(new Date());
                 {
                     int index = 0;
                     mDebugGeohash.getLineValue().setLine(index++, "Hash", Geohash.encode(newLocation.getLatitude(), newLocation.getLongitude()));

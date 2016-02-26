@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.computer.notification;
 
 import com.eaglesakura.andriders.notification.NotificationData;
-import com.eaglesakura.andriders.protocol.CommandProtocol;
+import com.eaglesakura.andriders.notification.NotificationLength;
 import com.eaglesakura.android.framework.context.Resources;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
@@ -113,15 +113,12 @@ public class NotificationCard {
 
     /**
      * 通知時間から表示時間（ミリ秒）へ変換する
-     *
-     * MEMO 互換性のためにNeverは残すが、使うことが無いのでLongと同等に扱う
      */
-    public static long getNotificationTimeMs(CommandProtocol.NotificationLength length) {
+    public static long getNotificationTimeMs(NotificationLength length) {
         switch (length) {
             case Short:
                 return 1000 * 5;
             case Long:
-            case Never:
                 return 1000 * 30;
             default: // Normal:
                 return 1000 * 10;

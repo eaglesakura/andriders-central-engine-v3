@@ -1,19 +1,19 @@
 package com.eaglesakura.andriders.computer.central.sensor;
 
 import com.eaglesakura.andriders.computer.central.base.BaseCentral;
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.sensor.SensorType;
 
 public abstract class SensorDataCentral extends BaseCentral {
     /**
      * 識別用センサーデータ
      */
-    final SensorProtocol.SensorType mType;
+    final SensorType mType;
 
-    public SensorDataCentral(SensorProtocol.SensorType type) {
+    public SensorDataCentral(SensorType type) {
         this.mType = type;
     }
 
-    public SensorProtocol.SensorType getType() {
+    public SensorType getType() {
         return mType;
     }
 

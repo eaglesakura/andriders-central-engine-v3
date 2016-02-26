@@ -4,7 +4,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.eaglesakura:eglibrary-gradle-plugin:0.2.7")
+        classpath "com.eaglesakura:eglibrary-gradle-plugin:0.2.7"
         classpath "com.google.apis:google-api-services-androidpublisher:v2-rev18-1.20.0"
     }
 }

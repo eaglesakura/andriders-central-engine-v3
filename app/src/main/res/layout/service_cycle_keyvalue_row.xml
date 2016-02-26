@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+            style="@style/EsMaterial.Font.Normal"
+            android:id="@+id/Service.Central.Display.KeyValue.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/EsMaterial.Grey.800"
+            android:layout_gravity="center"
+            android:text="title"/>
+
+    <TextView
+            android:layout_weight="1"
+            android:id="@+id/Service.Central.Display.KeyValue.Value"
+            style="@style/EsMaterial.Font.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/EsMaterial.Grey.800"
+            android:text="@string/AceUI.Information.NotConnected"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="right"/>
+
+</LinearLayout>

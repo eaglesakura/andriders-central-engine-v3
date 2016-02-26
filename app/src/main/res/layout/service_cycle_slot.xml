@@ -40,7 +40,7 @@
                 android:text="@string/AceUI.Information.NotConnected"/>
 
         <TextView
-                android:id="@+id/Service.Central.Display.Basic.Information"
+                android:id="@+id/Service.Central.Display.Basic.Title"
                 style="@style/CycleComputer.Font.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -92,7 +92,6 @@
     <!-- Key-Value UI -->
     <LinearLayout
             android:id="@+id/Service.Central.Display.Lines.Root"
-            android:padding="3dp"
             android:layout_margin="@dimen/CycleComputer.Margin.Normal"
             android:orientation="vertical"
             android:layout_width="match_parent"

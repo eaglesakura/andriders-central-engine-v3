@@ -2,18 +2,16 @@ package com.eaglesakura.andriders.computer.extension.client;
 
 import com.eaglesakura.andriders.computer.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.display.DisplayManager;
-import com.eaglesakura.andriders.computer.display.computer.DisplayDataImpl;
+import com.eaglesakura.andriders.computer.display.computer.DisplayViewData;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
 import com.eaglesakura.andriders.extension.internal.CentralDataCommand;
 import com.eaglesakura.andriders.extension.internal.DisplayCommand;
 import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
-import com.eaglesakura.andriders.idl.remote.IdlHeartrate;
-import com.eaglesakura.andriders.idl.remote.IdlLocation;
-import com.eaglesakura.andriders.idl.remote.IdlSpeedAndCadence;
-import com.eaglesakura.andriders.protocol.SensorProtocol;
+import com.eaglesakura.andriders.internal.protocol.ExtensionProtocol;
 import com.eaglesakura.andriders.sdk.BuildConfig;
+import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.service.central.CentralService;
 import com.eaglesakura.android.service.CommandClient;
 import com.eaglesakura.android.service.CommandMap;
@@ -247,7 +245,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(DisplayCommand.CMD_setDisplayValue, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                List<DisplayDataImpl> list = DisplayDataImpl.deserialize(payload.getBuffer(), DisplayDataImpl.class);
+                List<DisplayViewData> list = DisplayViewData.deserialize(payload.getBuffer(), DisplayViewData.class);
                 displayManager.putValue(ExtensionClient.this, list);
                 return null;
             }
@@ -267,18 +265,18 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(CentralDataCommand.CMD_setBleGadgetAddress, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                SensorProtocol.SensorType sensorType = SensorProtocol.SensorType.valueOf(Payload.deserializeStringOrNull(payload));
+                SensorType sensorType = SensorType.valueOf(Payload.deserializeStringOrNull(payload));
 
                 String sensorAddress;
-                if (sensorType == SensorProtocol.SensorType.HeartrateMonitor) {
+                if (sensorType == SensorType.HeartrateMonitor) {
                     sensorAddress = Settings.getInstance().getUserProfiles().getBleHeartrateMonitorAddress();
-                } else if (sensorType == SensorProtocol.SensorType.CadenceSensor || sensorType == SensorProtocol.SensorType.SpeedSensor) {
+                } else if (sensorType == SensorType.CadenceSensor || sensorType == SensorType.SpeedSensor) {
                     sensorAddress = Settings.getInstance().getUserProfiles().getBleSpeedCadenceSensorAddress();
                 } else {
                     return null;
                 }
 
-                return new Payload(sensorAddress);
+                return Payload.fromString(sensorAddress);
             }
         });
 
@@ -288,7 +286,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(CentralDataCommand.CMD_setLocation, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                IdlLocation idl = payload.deserializePropOrNull(IdlLocation.class);
+                ExtensionProtocol.SrcLocation idl = payload.deserializePublicField(ExtensionProtocol.SrcLocation.class);
                 dataManager.setLocation(idl);
                 return null;
             }
@@ -300,7 +298,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(CentralDataCommand.CMD_setHeartrate, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                IdlHeartrate idl = payload.deserializePropOrNull(IdlHeartrate.class);
+                ExtensionProtocol.SrcHeartrate idl = payload.deserializePublicField(ExtensionProtocol.SrcHeartrate.class);
                 dataManager.setHeartrate(idl);
                 return null;
             }
@@ -312,7 +310,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, new CommandMap.Action() {
             @Override
             public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                IdlSpeedAndCadence idl = payload.deserializePropOrNull(IdlSpeedAndCadence.class);
+                ExtensionProtocol.SrcSpeedAndCadence idl = payload.deserializePublicField(ExtensionProtocol.SrcSpeedAndCadence.class);
                 dataManager.setSpeedAndCadence(idl);
                 return null;
             }

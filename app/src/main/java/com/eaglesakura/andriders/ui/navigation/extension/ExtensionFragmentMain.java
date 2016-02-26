@@ -30,11 +30,11 @@ public class ExtensionFragmentMain extends BaseNavigationFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
 
             {
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 GadgetSettingFragment fragment = new GadgetSettingFragment();
-                transaction.add(R.id.Content_List_Root, fragment, fragment.createSimpleTag());
+                transaction.add(R.id.Content_List_Root, fragment, fragment.createSimpleTag()).commit();
             }
 
             int[] ICON_TABLE = {
@@ -63,16 +63,14 @@ public class ExtensionFragmentMain extends BaseNavigationFragment {
                     ExtensionCategory.CATEGORY_OTHERS,
             };
 
-            List<Runnable> runners = new ArrayList<>();
-
             for (int i = 0; i < ICON_TABLE.length; ++i) {
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 ExtensionModuleSettingFragment fragment = new ExtensionModuleSettingFragment();
                 fragment.setResourceId(ICON_TABLE[i], TITLE_TABLE[i], INFO_TABLE[i]);
                 fragment.setCategoryName(CATEGORY_TABLE[i].getName());
 
-                transaction.add(R.id.Content_List_Root, fragment, fragment.createSimpleTag());
+                transaction.add(R.id.Content_List_Root, fragment, fragment.createSimpleTag()).commit();
             }
-            transaction.commit();
         }
 
     }

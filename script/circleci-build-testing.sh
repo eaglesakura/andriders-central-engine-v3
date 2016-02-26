@@ -9,7 +9,10 @@ mkdir "$CIRCLE_TEST_REPORTS/junit/googleplayRelease"
 find . -type f -regex ".*/build/test-results/googleplayDebug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/googleplayDebug/ \;
 find . -type f -regex ".*/build/test-results/googleplayRelease/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/googleplayRelease/ \;
 
-cp -r ./app/build/reports $CIRCLE_ARTIFACTS
+mkdir "$CIRCLE_ARTIFACTS/app"
+mkdir "$CIRCLE_ARTIFACTS/sdk"
+cp -r ./app/build/reports "$CIRCLE_ARTIFACTS/app"
+cp -r ./sdk/build/reports "$CIRCLE_ARTIFACTS/sdk"
 }
 
 # テスト実行

@@ -1,20 +1,26 @@
-*.wav
-test.mp4
-ci-release/
-.idea/
-*.iml
+# システムディレクトリ, システムファイル
+.gradle/
 build/
-bin
+.idea/
 .DS_Store
+Thumbs.db
+*.iml
+
+# 成果物ディレクトリ
+ci-release/
+
+# 中間ファイル
+bin
 local.properties
-obj/
 *.o
 *.o.d
 *.so
 gdb.setup
 gdbserver
-*.xcuserstate
-UserInterfaceState.xcuserstate
-.gradle/
+obj/
 latex/
+
+# 外部ライブラリ
+# 必要に応じてsyncする
 ace-private/
+eglibrary/

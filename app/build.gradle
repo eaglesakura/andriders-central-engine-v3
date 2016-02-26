@@ -10,7 +10,9 @@ apply plugin: 'com.eaglesakura.android-support'
 
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
-    all*.exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
+//    all*.exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
+    all*.exclude group: "com.fasterxml.jackson.core"
+    all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
 }
 
 dependencies {
@@ -24,6 +26,7 @@ dependencies {
         compile project(':eglibrary:android-framework')
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
+        compile project(':eglibrary:android-support-bottomsheet')
     } else {
         compile 'com.eaglesakura:simple-logger:+'
         compile 'com.eaglesakura:simple-utils:+'
@@ -38,9 +41,9 @@ dependencies {
         compile 'com.eaglesakura:android-net:+'
         compile 'com.eaglesakura:android-framework:+'
         compile 'com.eaglesakura:onactivityresult-invoke:+'
-        compile 'com.eaglesakura:json-wrapper:+'
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
+        compile 'com.eaglesakura:android-support-bottomsheet:1.0.+'	// add library
 
         /**
          * Injection / State
@@ -49,6 +52,7 @@ dependencies {
         compile 'frankiesardo:icepick:+'
         provided 'frankiesardo:icepick-processor:+'
     }
+
 
     if (ACESDK_COMPILE_LOCAL) {
         compile project(':sdk')
@@ -71,13 +75,11 @@ dependencies {
      */
     compile "com.google.android.gms:play-services-fitness:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile "com.google.android.gms:play-services-analytics:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.android.gms:play-services-plus:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.android.gms:play-services-gcm:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile 'com.android.support:support-annotations:+'
 
     // UI Library
     compile 'com.edmodo:rangebar:1.0.0' // Zone Setting
-    compile 'com.cocosw:bottomsheet:1.0@aar'    // sheet select
+//    compile 'com.cocosw:bottomsheet:1.0@aar'    // sheet select
 
     // Remote Debug
     debugCompile 'com.deploygate:sdk:3.1'
@@ -86,7 +88,6 @@ dependencies {
      * Unit Testing
      */
     testCompile 'junit:junit:4.12'
-//    testCompile "org.mockito:mockito-core:1.9.5"
     testCompile "org.robolectric:robolectric:3.0"
 }
 
@@ -112,7 +113,7 @@ android {
         main {
             java.srcDirs = [
                     'src/main/java',
-                    'src/main/generated/dao', 'src/main/generated/protobuf', 'src/main/generated/props',
+                    'src/main/generated/dao', 'src/main/generated/props',
             ]
             res.srcDirs = [
                     "src/main/res", "private/main/res"
@@ -169,7 +170,8 @@ android {
         disable "DuplicateIds"
         disable "NewApi"
         disable "InvalidPackage"
-        abortOnError false
+        disable "ProtectedPermissions"
+//        abortOnError false
     }
 
     // ignore include
@@ -196,3 +198,17 @@ def getArtifactVersionSuffix() {
 }
 
 apply from: "generator.gradle"
+
+apply plugin: 'com.getkeepsafe.dexcount'
+dexcount {
+    format = "json"
+    includeClasses = false
+    includeFieldCount = true
+    includeTotalMethodCount = true
+    orderByMethodCount = true
+    verbose = false
+}
+
+//task dexReportDebug(type: com.eaglesakura.gradle.dex.DexReportTask) {
+//
+//}

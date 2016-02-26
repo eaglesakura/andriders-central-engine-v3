@@ -22,22 +22,22 @@ import android.widget.CompoundButton;
  * そのため、menuリソースを使わず、プログラム側でコントロールを行う。
  */
 public class MenuController {
-    final Context context;
+    final Context mContext;
 
-    final NavigationView navigationView;
+    final NavigationView mNavigationView;
 
-    final DrawerLayout drawerLayout;
+    final DrawerLayout mDrawerLayout;
 
-    CompoundButton bootSwitch;
+    CompoundButton mBootSwitch;
 
-    MenuCallback callback;
+    MenuCallback mCallback;
 
     public MenuController(final Context context, NavigationView view, DrawerLayout drawerLayout) {
-        this.context = context;
-        this.navigationView = view;
-        this.drawerLayout = drawerLayout;
-        this.bootSwitch = (CompoundButton) navigationView.getHeaderView(0).findViewById(R.id.Main_Menu_BootService);
-        bootSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        this.mContext = context;
+        this.mNavigationView = view;
+        this.mDrawerLayout = drawerLayout;
+        this.mBootSwitch = (CompoundButton) mNavigationView.getHeaderView(0).findViewById(R.id.Main_Menu_BootService);
+        mBootSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -50,15 +50,15 @@ public class MenuController {
     }
 
     public void initialize() {
-        navigationView.setNavigationItemSelectedListener(naviItemSelectedImpl);
+        mNavigationView.setNavigationItemSelectedListener(naviItemSelectedImpl);
     }
 
     public void setCallback(MenuCallback callback) {
-        this.callback = callback;
+        this.mCallback = callback;
     }
 
     public void onResume() {
-        bootSwitch.setChecked(CentralService.isRunning(context));
+        mBootSwitch.setChecked(CentralService.isRunning(mContext));
     }
 
     public void onPause() {
@@ -74,23 +74,23 @@ public class MenuController {
         public boolean onNavigationItemSelected(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.Main_Menu_Profile:
-                    callback.requestChangeContent(ProfileFragmentMain.createInstance(context));
+                    mCallback.requestChangeContent(ProfileFragmentMain.createInstance(mContext));
                     break;
                 case R.id.Main_Menu_CycleComputer:
-                    callback.requestChangeContent(DisplaySettingFragmentMain.createInstance(context));
+                    mCallback.requestChangeContent(DisplaySettingFragmentMain.createInstance(mContext));
                     break;
                 case R.id.Main_Menu_Activity:
                     break;
                 case R.id.Main_Menu_Extensions:
-                    callback.requestChangeContent(ExtensionFragmentMain.createInstance(context));
+                    mCallback.requestChangeContent(ExtensionFragmentMain.createInstance(mContext));
                     break;
                 case R.id.Main_Menu_Information:
-                    callback.requestChangeContent(InformationFragmentMain.createInstance(context));
+                    mCallback.requestChangeContent(InformationFragmentMain.createInstance(mContext));
                     break;
                 default:
                     return false;
             }
-            drawerLayout.closeDrawer(Gravity.START);
+            mDrawerLayout.closeDrawer(Gravity.START);
             return true;
         }
     };

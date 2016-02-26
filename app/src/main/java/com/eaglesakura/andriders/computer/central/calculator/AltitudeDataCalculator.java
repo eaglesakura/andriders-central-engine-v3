@@ -1,7 +1,8 @@
 package com.eaglesakura.andriders.computer.central.calculator;
 
 import com.eaglesakura.andriders.AceUtils;
-import com.eaglesakura.andriders.protocol.GeoProtocol;
+import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
+import com.eaglesakura.andriders.internal.protocol.RawLocation;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.MathUtil;
 
@@ -50,40 +51,43 @@ public class AltitudeDataCalculator extends BaseCalculator {
     /**
      * 高度情報を含んだ地点
      */
-    List<GeoProtocol.GeoPoint> mAltPoints = new ArrayList<>();
+    private List<RawGeoPoint> mAltPoints = new ArrayList<>();
 
     /**
      * 地点ログリスト
      */
-    List<GeoProtocol.GeoPoint> mCalcPointLogs = new ArrayList<>();
+    private List<RawGeoPoint> mCalcPointLogs = new ArrayList<>();
 
 
     /**
      * 計算時点での最高高度
      */
-    GeoProtocol.GeoPoint mMaxAltitudePoint;
+    private RawGeoPoint mMaxAltitudePoint;
 
     /**
      * 計算時点での最低高度
      */
-    GeoProtocol.GeoPoint mMinAltitudePoint;
+    private RawGeoPoint mMinAltitudePoint;
 
     /**
      * 現在の標高
      */
-    double mCurrentAltitude = -1;
+    private double mCurrentAltitude = -1;
 
     /**
      * 今日の合計獲得標高
      */
-    double mSumAltitude = 0;
+    private double mSumAltitude = 0;
 
     /**
      * 傾斜％
      */
-    double mInclinationPercent;
+    private double mInclinationPercent;
 
-    RoadState roadState = new RoadState();
+    /**
+     * 道の状態管理
+     */
+    private RoadState mRoadState = new RoadState();
 
     public AltitudeDataCalculator() {
     }
@@ -107,16 +111,16 @@ public class AltitudeDataCalculator extends BaseCalculator {
 //        return currentPoint.getAltitudeMeter();
     }
 
-    public GeoProtocol.GeoPoint getMaxAltitudePoint() {
+    public RawGeoPoint getMaxAltitudePoint() {
         return mMaxAltitudePoint;
     }
 
-    public GeoProtocol.GeoPoint getMinAltitudePoint() {
+    public RawGeoPoint getMinAltitudePoint() {
         return mMinAltitudePoint;
     }
 
     public double getSessionSumAltitude() {
-        return mSumAltitude + roadState.getClimgUpAltitude();
+        return mSumAltitude + mRoadState.getClimgUpAltitude();
     }
 
     /**
@@ -142,10 +146,10 @@ public class AltitudeDataCalculator extends BaseCalculator {
         // ログ内で進んだ距離を合計する
         double distanceMeter = 0;
         for (int i = 0; i < (mCalcPointLogs.size() - 1); ++i) {
-            GeoProtocol.GeoPoint before = mCalcPointLogs.get(i);
-            GeoProtocol.GeoPoint current = mCalcPointLogs.get(i + 1);
+            RawGeoPoint before = mCalcPointLogs.get(i);
+            RawGeoPoint current = mCalcPointLogs.get(i + 1);
             distanceMeter +=
-                    GeoUtil.calcDistanceKiloMeter(current.getLatitude(), current.getLongitude(), before.getLatitude(), before.getLongitude()) * 1000;
+                    GeoUtil.calcDistanceKiloMeter(current.latitude, current.longitude, before.latitude, before.longitude) * 1000;
         }
 
         if (distanceMeter <= 10) {
@@ -153,7 +157,7 @@ public class AltitudeDataCalculator extends BaseCalculator {
 //            return mInclinationPercent;
             return 0;
         } else {
-            double altitudeMeter = (getCurrentAltitudeMeter() - mCalcPointLogs.get(0).getAltitude());
+            double altitudeMeter = (getCurrentAltitudeMeter() - mCalcPointLogs.get(0).altitude);
             double result = (altitudeMeter / distanceMeter) * 100.0;
             return result;
         }
@@ -169,7 +173,7 @@ public class AltitudeDataCalculator extends BaseCalculator {
             }
 
             // 位置を更新する
-            GeoProtocol.GeoPoint gp = AceUtils.toGeoPoint(lat, lng, alt);
+            RawGeoPoint gp = AceUtils.toGeoPoint(lat, lng, alt);
             mAltPoints.add(gp);
             if (mAltPoints.size() > ALTITUDE_CALC_AVARAGE_NUM) {
                 // 計算に不要な地点は捨てる
@@ -178,8 +182,8 @@ public class AltitudeDataCalculator extends BaseCalculator {
 
             // 標高を計算する
             mCurrentAltitude = 0;
-            for (GeoProtocol.GeoPoint p : mAltPoints) {
-                mCurrentAltitude += p.getAltitude();
+            for (RawGeoPoint p : mAltPoints) {
+                mCurrentAltitude += p.altitude;
             }
             mCurrentAltitude /= mAltPoints.size();
 
@@ -187,7 +191,7 @@ public class AltitudeDataCalculator extends BaseCalculator {
             mCurrentAltitude = (int) (mCurrentAltitude + 0.5);
 
             // 計算済み地点ログを追加する
-            GeoProtocol.GeoPoint calcCurrent = AceUtils.toGeoPoint(lat, lng, mCurrentAltitude);
+            RawGeoPoint calcCurrent = AceUtils.toGeoPoint(lat, lng, mCurrentAltitude);
             mCalcPointLogs.add(calcCurrent);
             if (mCalcPointLogs.size() > INCLINATION_CALC_NUM) {
                 mCalcPointLogs.remove(0);
@@ -195,13 +199,13 @@ public class AltitudeDataCalculator extends BaseCalculator {
 
             // 前の高度を持っていたら上昇分の計算を行う
             // 獲得標高をチェックする
-            roadState.onUpdateAltitude(mCurrentAltitude);
+            mRoadState.onUpdateAltitude(mCurrentAltitude);
 
             // 最高/最低地点チェック
-            if (mMaxAltitudePoint == null || mCurrentAltitude > mMaxAltitudePoint.getAltitude()) {
+            if (mMaxAltitudePoint == null || mCurrentAltitude > mMaxAltitudePoint.altitude) {
                 mMaxAltitudePoint = calcCurrent;
             }
-            if (mMinAltitudePoint == null || mCurrentAltitude < mMinAltitudePoint.getAltitude()) {
+            if (mMinAltitudePoint == null || mCurrentAltitude < mMinAltitudePoint.altitude) {
                 mMinAltitudePoint = calcCurrent;
             }
 

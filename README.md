@@ -6,7 +6,7 @@
 
 | ブランチ | 内容 | ビルドステータス |
 |---|---|---|
-| master | 最新のリリース版（予定） | - |
+| master | 最新ビルド（Nightly Build対象） |  [![Circle CI](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/master.svg?style=svg)](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/master) |
 | develop | 最新の開発版, DEBUG版デプロイ用 | [![Circle CI](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/develop.svg?style=svg)](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/develop) |
 | feature/id/{issue num} | issue対応 | - |
 | v3.0.x | リリースビルド（予定） | - |
@@ -18,6 +18,8 @@
 
  * デバッグ版のインストールは下記のリンクから行えます。
   * https://dply.me/o3nql5
+  * develop/v{メジャーバージョン}.{マイナーバージョン}.xブランチをビルドすると自動的にデプロイされます
+  * テストPASSの可否は問わないので、正常に動作しない可能性があります
 
 ![DeployGate](https://chart.googleapis.com/chart?chs=256x256&cht=qr&chl=https%3A%2F%2Fdeploygate.com%2Fdistributions%2F0e9f7d4a23ab9744856a5b1be5b2e353fe963baf)
 
