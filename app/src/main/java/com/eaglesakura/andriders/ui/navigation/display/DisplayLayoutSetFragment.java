@@ -184,6 +184,20 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         final BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.bottomsheet_root, null);
+
+        // 非表示を加える
+        {
+            View view = inflater.inflate(R.layout.card_displayinfo_remove, null);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onSelectedDisplay(manager, slot, null, null);
+                    dialog.dismiss();
+                }
+            });
+            layout.addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
         for (final ExtensionClient client : displayClients) {
             LogUtil.log("Display Extension name(%s)", client.getName());
 
