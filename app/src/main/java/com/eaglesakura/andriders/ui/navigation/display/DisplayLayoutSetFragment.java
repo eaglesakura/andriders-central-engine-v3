@@ -209,6 +209,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
             ViewGroup insertRoot = q.id(R.id.Extension_ItemSelector_Root).getView(ViewGroup.class);
 
+            // Extensionごとの表示内容を並べる
             for (final DisplayInformation info : client.getDisplayInformations()) {
                 View item = inflater.inflate(R.layout.card_displayinfo_item, null);
                 ((TextView) item.findViewById(R.id.Extension_ItemSelector_Name)).setText(info.getTitle());
