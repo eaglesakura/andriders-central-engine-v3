@@ -41,6 +41,13 @@ public class SessionData extends BaseCalculator {
     }
 
     /**
+     * セッション開始時刻を取得する
+     */
+    public long getStartDate() {
+        return mStartDate;
+    }
+
+    /**
      * セッション期間をミリ秒単位で取得する
      */
     public long getSessionDulationMs() {

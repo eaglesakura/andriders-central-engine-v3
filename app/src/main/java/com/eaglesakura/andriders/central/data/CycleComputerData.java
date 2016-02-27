@@ -174,15 +174,51 @@ public class CycleComputerData {
     }
 
     public float getSumExercise() {
-        return mFitnessData.getSumExercise();
+        synchronized (lock) {
+            return mFitnessData.getSumExercise();
+        }
     }
 
     public float getSumCalories() {
-        return mFitnessData.getSumCalories();
+        synchronized (lock) {
+            return mFitnessData.getSumCalories();
+        }
     }
 
     public HeartrateZone getHeartrateZone() {
-        return mFitnessData.getZone();
+        synchronized (lock) {
+            return mFitnessData.getZone();
+        }
+    }
+
+    public long getStartDate() {
+        synchronized (lock) {
+            return mSessionData.getStartDate();
+        }
+    }
+
+    public long getActiveTimeMs() {
+        synchronized (lock) {
+            return mSessionData.getActiveTimeMs();
+        }
+    }
+
+    /**
+     * セッションの経過時間を取得する
+     */
+    public long getSessionDulationMs() {
+        synchronized (lock) {
+            return mSessionData.getSessionDulationMs();
+        }
+    }
+
+    /**
+     * セッション識別子を取得する
+     *
+     * MEMO: 識別子は普遍なため、sync不要
+     */
+    public String getSessionId() {
+        return mSessionData.getSessionId();
     }
 
     /**

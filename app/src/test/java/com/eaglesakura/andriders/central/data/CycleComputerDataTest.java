@@ -46,6 +46,20 @@ public class CycleComputerDataTest extends AceJUnitTester {
         settings.getUserProfiles().setUserWeight(65);
         settings.getUserProfiles().setNormalHeartrate(90);
         settings.getUserProfiles().setMaxHeartrate(190);
+        settings.getUserProfiles().setWheelOuterLength(2096); // 700 x 23c
+    }
+
+    /**
+     * セッション開始時刻が正常であることを検証する
+     */
+    @Test
+    public void セッション開始時刻が正確であることを確認する() throws Exception {
+        final long START_TIME = System.currentTimeMillis();
+        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+
+        assertNotNull(data.getSessionId());
+        assertNotEquals(data.getSessionId(), "");
+        assertEquals(data.getStartDate(), START_TIME);
     }
 
     /**
@@ -91,7 +105,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
         LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.getDistanceKm(), data.getSpeedKmh(), data.getSpeedZone().name());
 
         // 約1時間経過していることを確認する
-        assertTrue((data.now() - START_TIME) >= (1000 * 60 * 60));
+        assertEquals(data.getSessionDulationMs(), 1000 * 60 * 60);
 
         // 最終的な移動距離をチェックする
         // 1時間分の動作分であるため、ほぼ一致するはずである
@@ -124,13 +138,13 @@ public class CycleComputerDataTest extends AceJUnitTester {
         LogUtil.setOutput(true);
 
         // 約1時間経過していることを確認する
-        assertTrue((data.now() - START_TIME) >= (1000 * 60 * 60));
+        assertEquals(data.getSessionDulationMs(), 1000 * 60 * 60);
 
 
         // 消費カロリー的には、300～400の間が妥当である
         // 獲得エクササイズは3.5～4.5程度が妥当な値となる
         LogUtil.log("Fitness %.1f kcal / %.1f Ex", data.getSumCalories(), data.getSumExercise());
-        assertTrue(data.getSumCalories() > 300);
+        assertTrue(data.getSumCalories() > 280);
         assertTrue(data.getSumCalories() < 400);
         assertTrue(data.getSumExercise() > 3.0);
         assertTrue(data.getSumExercise() < 5.0);
