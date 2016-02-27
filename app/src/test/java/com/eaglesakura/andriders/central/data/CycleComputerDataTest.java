@@ -60,6 +60,12 @@ public class CycleComputerDataTest extends AceJUnitTester {
         assertNotNull(data.getSessionId());
         assertNotEquals(data.getSessionId(), "");
         assertEquals(data.getStartDate(), START_TIME);
+
+        // 時間を分割して1分経過させる
+        for (int i = 0; i < 60; ++i) {
+            data.onUpdateTime(1000);
+        }
+        assertEquals(data.getSessionDulationMs(), 1000 * 60); // データも1分経過している
     }
 
     /**
