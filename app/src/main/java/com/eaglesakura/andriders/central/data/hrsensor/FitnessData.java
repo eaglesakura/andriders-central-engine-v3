@@ -61,6 +61,14 @@ public class FitnessData extends BaseCalculator {
         return mHeartrate;
     }
 
+    public float getSumCalories() {
+        return mSumCalories;
+    }
+
+    public float getSumExercise() {
+        return mSumExercise;
+    }
+
     /**
      * 現在の心拍ゾーンを取得する
      */
@@ -124,7 +132,7 @@ public class FitnessData extends BaseCalculator {
             // 消費カロリー = METs x 時間(h) x 体重(kg) x 1.05
             // MEMO 先に体重をかけておくことで、精度誤差をマシにする
             final double diffTimeHour = Timer.msToHour(diffTimeMs);
-            final double diffCalories = mCurrentMets * diffTimeHour * 1.05;
+            final double diffCalories = mCurrentMets * getUserWeight() * 1.05 * diffTimeHour;
 
             mSumCalories += diffCalories;
         }

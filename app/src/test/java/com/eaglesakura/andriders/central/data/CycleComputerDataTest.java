@@ -1,6 +1,8 @@
 package com.eaglesakura.andriders.central.data;
 
 import com.eaglesakura.andriders.AceJUnitTester;
+import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.MathUtil;
@@ -34,13 +36,29 @@ public class CycleComputerDataTest extends AceJUnitTester {
      */
     final double SAMPLE_DISTANCE_KM = 53.9622;
 
+    @Override
+    public void onSetup() {
+        super.onSetup();
+
+        // 計算を確定させるため、フィットネスデータを構築する
+        // 計算しやすくするため、データはキリの良い数にしておく
+        Settings settings = Settings.getInstance();
+        settings.getUserProfiles().setUserWeight(65);
+        settings.getUserProfiles().setNormalHeartrate(90);
+        settings.getUserProfiles().setMaxHeartrate(190);
+    }
+
+    /**
+     * AACRスタート～折り返し地点を適当な間隔で打刻する
+     *
+     * 採用している計算法では、2点間距離は約54kmである。
+     * 1時間で移動した場合、走行速度は54km/hにならなければならない。
+     */
     @Test
     public void GPS座標移動から距離と速度を測定する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
         CycleComputerData data = new CycleComputerData(mContext, START_TIME);
 
-
-        // AACRスタート～折り返し地点
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
         LogUtil.setOutput(false);
@@ -51,9 +69,9 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
 
                 final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-                long time = (START_TIME + OFFSET_TIME_MS);
+                final long NOW = (START_TIME + OFFSET_TIME_MS);
 
-                assertTrue(data.setLocation(time, lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                assertTrue(data.setLocation(NOW, lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
                 assertNotNull(data.getSpeedZone()); // ゾーンは必ず取得できる
@@ -72,8 +90,49 @@ public class CycleComputerDataTest extends AceJUnitTester {
         // 結果だけを出力
         LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.getDistanceKm(), data.getSpeedKmh(), data.getSpeedZone().name());
 
+        // 約1時間経過していることを確認する
+        assertTrue((data.now() - START_TIME) >= (1000 * 60 * 60));
+
         // 最終的な移動距離をチェックする
         // 1時間分の動作分であるため、ほぼ一致するはずである
         assertEquals(data.getDistanceKm(), data.getSpeedKmh(), 1.0);
+    }
+
+    @Test
+    public void 一時間の消費カロリーを計算する() throws Exception {
+        final long START_TIME = System.currentTimeMillis();
+        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+
+        final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
+        double current = 0.0;
+        LogUtil.setOutput(false);
+        {
+            while (current < 1.0) {
+                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
+                long time = (START_TIME + OFFSET_TIME_MS);
+
+                // 心拍140前後をキープさせる
+                data.setHeartrate(time, (int) (130.0 + 10.0 * Math.random()));
+                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+
+                assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
+                assertNotNull(data.getHeartrateZone()); // ゾーンは必ず取得できる
+                assertNotEquals(data.getHeartrateZone(), HeartrateZone.Repose);
+                current += OFFSET_TIME_HOUR;
+            }
+        }
+        LogUtil.setOutput(true);
+
+        // 約1時間経過していることを確認する
+        assertTrue((data.now() - START_TIME) >= (1000 * 60 * 60));
+
+
+        // 消費カロリー的には、300～400の間が妥当である
+        // 獲得エクササイズは3.5～4.5程度が妥当な値となる
+        LogUtil.log("Fitness %.1f kcal / %.1f Ex", data.getSumCalories(), data.getSumExercise());
+        assertTrue(data.getSumCalories() > 300);
+        assertTrue(data.getSumCalories() < 400);
+        assertTrue(data.getSumExercise() > 3.0);
+        assertTrue(data.getSumExercise() < 5.0);
     }
 }

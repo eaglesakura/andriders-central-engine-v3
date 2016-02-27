@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.central.data.hrsensor.FitnessData;
 import com.eaglesakura.andriders.central.data.scsensor.CadenceData;
 import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.data.session.SessionData;
+import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 
 import android.content.Context;
@@ -140,6 +141,48 @@ public class CycleComputerData {
 
             return true;
         }
+    }
+
+    public float getCurrentMets() {
+        synchronized (lock) {
+            return mFitnessData.getCurrentMets();
+        }
+    }
+
+    public float getUserWeight() {
+        synchronized (lock) {
+            return mFitnessData.getUserWeight();
+        }
+    }
+
+    public int getMaxHeartrate() {
+        synchronized (lock) {
+            return mFitnessData.getMaxHeartrate();
+        }
+    }
+
+    public int getNormalHeartrate() {
+        synchronized (lock) {
+            return mFitnessData.getNormalHeartrate();
+        }
+    }
+
+    public float getHeartrate() {
+        synchronized (lock) {
+            return mFitnessData.getHeartrate();
+        }
+    }
+
+    public float getSumExercise() {
+        return mFitnessData.getSumExercise();
+    }
+
+    public float getSumCalories() {
+        return mFitnessData.getSumCalories();
+    }
+
+    public HeartrateZone getHeartrateZone() {
+        return mFitnessData.getZone();
     }
 
     /**
