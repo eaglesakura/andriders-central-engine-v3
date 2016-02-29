@@ -1,6 +1,5 @@
 package com.eaglesakura.andriders.central.data.geo;
 
-import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.central.data.SharedClock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
@@ -168,7 +167,7 @@ public class AltitudeData extends BaseCalculator {
         }
 
         // 位置を更新する
-        RawGeoPoint gp = AceUtils.toGeoPoint(lat, lng, alt);
+        RawGeoPoint gp = new RawGeoPoint(lat, lng, alt);
         mAltPoints.add(gp);
         if (mAltPoints.size() > ALTITUDE_CALC_AVARAGE_NUM) {
             // 計算に不要な地点は捨てる
@@ -186,7 +185,7 @@ public class AltitudeData extends BaseCalculator {
         mCurrentAltitude = (int) (mCurrentAltitude + 0.5);
 
         // 計算済み地点ログを追加する
-        RawGeoPoint calcCurrent = AceUtils.toGeoPoint(lat, lng, mCurrentAltitude);
+        RawGeoPoint calcCurrent = new RawGeoPoint(lat, lng, mCurrentAltitude);
         mCalcPointLogs.add(calcCurrent);
         if (mCalcPointLogs.size() > INCLINATION_CALC_NUM) {
             mCalcPointLogs.remove(0);
@@ -289,10 +288,13 @@ public class AltitudeData extends BaseCalculator {
             } else if (currentAltitude < minAltitude) {
                 // 最低高度よりも下がったらリセットをかける
                 reset(currentAltitude);
-            } else if (currentAltitude > maxAltitude) {
-                // 最高標高を超えたら上昇モードに切り替える
-                climb = true;
-                maxAltitude = currentAltitude;
+            } else {
+                if (currentAltitude > maxAltitude) {
+                    // 最高標高を超えたら上昇モードに切り替える
+                    climb = true;
+                    maxAltitude = currentAltitude;
+                }
+                lastAltitude = currentAltitude;
             }
         }
     }

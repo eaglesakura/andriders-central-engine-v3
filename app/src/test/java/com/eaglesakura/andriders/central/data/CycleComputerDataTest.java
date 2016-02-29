@@ -121,7 +121,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
         // 獲得標高が目的値とほぼ同等でなければならない
         // MEMO 標高は適当な回数だけ平均を取るので、完全一致はしなくて良い
-        assertEquals(data.getSumAltitude(), SAMPLE_END_ALTITUDE, 1.0);
+        assertEquals(data.getSumAltitude(), (SAMPLE_END_ALTITUDE - SAMPLE_START_ALTITUDE), 25.0);
     }
 
     @Test

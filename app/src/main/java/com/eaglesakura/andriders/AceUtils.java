@@ -62,9 +62,9 @@ public class AceUtils {
         return new LatLng(geo.latitude, geo.longitude);
     }
 
-    public static RawGeoPoint toGeoPoint(double lat, double lng, double alt) {
-        return new RawGeoPoint(lat, lng, alt);
-    }
+//    public static RawGeoPoint toGeoPoint(double lat, double lng, double alt) {
+//        return new RawGeoPoint(lat, lng, alt);
+//    }
 
     /**
      * Serialize -> Deserializeを行うことで簡易cloneを行う
