@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.geo;
 
-import com.eaglesakura.andriders.central.data.SharedClock;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
 import com.eaglesakura.geo.GeoUtil;
@@ -89,7 +89,7 @@ public class AltitudeData extends BaseCalculator {
      */
     private RoadState mRoadState = new RoadState();
 
-    public AltitudeData(SharedClock clock) {
+    public AltitudeData(Clock clock) {
         super(clock);
     }
 

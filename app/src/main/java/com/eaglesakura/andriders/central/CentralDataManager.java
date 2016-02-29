@@ -29,10 +29,6 @@ public class CentralDataManager extends CycleComputerManager {
         mCycleComputerData = new CycleComputerData(context, System.currentTimeMillis());
     }
 
-    private long now() {
-        return System.currentTimeMillis();
-    }
-
     /**
      * 定時処理を行う
      * <p/>
@@ -50,7 +46,7 @@ public class CentralDataManager extends CycleComputerManager {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
-                mCycleComputerData.setLocation(now(), loc.latitude, loc.longitude, loc.altitude, loc.accuracyMeter);
+                mCycleComputerData.setLocation(loc.latitude, loc.longitude, loc.altitude, loc.accuracyMeter);
             }
         });
     }
@@ -62,7 +58,7 @@ public class CentralDataManager extends CycleComputerManager {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
-                mCycleComputerData.setSpeedAndCadence(now(), sc.crankRpm, sc.crankRevolution, sc.wheelRpm, sc.wheelRevolution);
+                mCycleComputerData.setSpeedAndCadence(sc.crankRpm, sc.crankRevolution, sc.wheelRpm, sc.wheelRevolution);
             }
         });
     }
@@ -74,7 +70,7 @@ public class CentralDataManager extends CycleComputerManager {
         mPipeline.pushBack(new Runnable() {
             @Override
             public void run() {
-                mCycleComputerData.setHeartrate(now(), heartrate.bpm);
+                mCycleComputerData.setHeartrate(heartrate.bpm);
             }
         });
     }

@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.geo;
 
-import com.eaglesakura.andriders.central.data.SharedClock;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.LogUtil;
@@ -35,7 +35,7 @@ public class GeoSpeedData extends BaseCalculator {
      */
     private double mMaxSpeedKmh;
 
-    public GeoSpeedData(SharedClock clock) {
+    public GeoSpeedData(Clock clock) {
         super(clock);
     }
 
@@ -75,7 +75,8 @@ public class GeoSpeedData extends BaseCalculator {
     /**
      * 現在地点を更新する
      */
-    public void setLocation(long timestamp, double lat, double lng) {
+    public void setLocation(double lat, double lng) {
+        final long timestamp = now();
         if (mUpdatedTime == 0) {
             mLatitude = lat;
             mLongitude = lng;

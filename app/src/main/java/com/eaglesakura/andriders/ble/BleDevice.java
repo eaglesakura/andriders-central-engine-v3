@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.ble;
 
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
 
 import android.bluetooth.BluetoothDevice;
@@ -8,7 +9,6 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.util.Log;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,19 +16,24 @@ import java.util.UUID;
 
 public abstract class BleDevice {
     /**
+     * センサーが停止したと判断するタイムアウト時間
+     */
+    public static final int SENSOR_TIMEOUT_MS = 1000 * 5;
+
+    /**
      * 接続されたデバイス
      */
-    protected BluetoothDevice device;
+    protected BluetoothDevice mDevice;
 
     /**
      *
      */
-    protected final Context context;
+    protected final Context mContext;
 
     /**
      * GATT
      */
-    protected BluetoothGatt bleGatt;
+    protected BluetoothGatt mBleGatt;
 
     /**
      * 排他制御用
@@ -38,16 +43,16 @@ public abstract class BleDevice {
     private Set<BleDeviceListener> listeners = new HashSet<>();
 
     public BleDevice(Context context, BluetoothDevice device) {
-        this.context = context.getApplicationContext();
-        this.device = device;
+        this.mContext = context.getApplicationContext();
+        this.mDevice = device;
     }
 
     public BluetoothGatt getBleGatt() {
-        return bleGatt;
+        return mBleGatt;
     }
 
     public BluetoothDevice getDevice() {
-        return device;
+        return mDevice;
     }
 
     /**
@@ -61,9 +66,9 @@ public abstract class BleDevice {
     public void connect() {
         synchronized (lock) {
             gattConnected = false;
-            bleGatt = device.connectGatt(context, false, getCallback());
+            mBleGatt = mDevice.connectGatt(mContext, false, getCallback());
 
-            log("connect completed");
+            AppLog.ble("connect completed(%s)", getClass().getSimpleName());
         }
     }
 
@@ -73,12 +78,12 @@ public abstract class BleDevice {
     public void disconnect() {
         synchronized (lock) {
             gattConnected = false;
-            if (bleGatt != null) {
-                bleGatt.disconnect();
-                bleGatt.close();
-                bleGatt = null;
+            if (mBleGatt != null) {
+                mBleGatt.disconnect();
+                mBleGatt.close();
+                mBleGatt = null;
 
-                log("disconnect completed");
+                AppLog.ble("disconnect completed(%s)", getClass().getSimpleName());
                 onDisconnected();
             }
         }
@@ -103,7 +108,7 @@ public abstract class BleDevice {
      */
     protected void onConnected() {
         for (BleDeviceListener listener : listeners) {
-            listener.onDeviceConnected(this, device);
+            listener.onDeviceConnected(this, mDevice);
         }
     }
 
@@ -140,13 +145,13 @@ public abstract class BleDevice {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             synchronized (lock) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    log("onConnectionStateChange connected :: " + device.getName());
+                    AppLog.ble("onConnectionStateChange connected :: " + mDevice.getName());
                     onGattConneted(gatt);
                     onConnected();
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     // disconnected
-                    log("onConnectionStateChange disconnected :: " + device.getName());
-                    bleGatt = null;
+                    AppLog.ble("onConnectionStateChange disconnected :: " + mDevice.getName());
+                    mBleGatt = null;
                     onDisconnected();
                 }
             }
@@ -157,13 +162,13 @@ public abstract class BleDevice {
      * 指定したServiceを持っていればtrue
      */
     protected boolean hasService(UUID serviceUUID) {
-        return bleGatt.getService(serviceUUID) != null;
+        return mBleGatt.getService(serviceUUID) != null;
     }
 
     protected boolean notificationEnable(UUID serviceUuid, UUID characteristicUuid) {
-        BluetoothGattCharacteristic characteristic = BluetoothLeUtil.findBluetoothGattCharacteristic(bleGatt, serviceUuid, characteristicUuid);
+        BluetoothGattCharacteristic characteristic = BluetoothLeUtil.findBluetoothGattCharacteristic(mBleGatt, serviceUuid, characteristicUuid);
         if (characteristic != null) {
-            BluetoothLeUtil.notificationEnable(bleGatt, characteristic);
+            BluetoothLeUtil.notificationEnable(mBleGatt, characteristic);
             return true;
         } else {
             return false;
@@ -171,17 +176,13 @@ public abstract class BleDevice {
     }
 
     protected boolean notificationDisable(UUID serviceUuid, UUID characteristicUuid) {
-        BluetoothGattCharacteristic characteristic = BluetoothLeUtil.findBluetoothGattCharacteristic(bleGatt, serviceUuid, characteristicUuid);
+        BluetoothGattCharacteristic characteristic = BluetoothLeUtil.findBluetoothGattCharacteristic(mBleGatt, serviceUuid, characteristicUuid);
         if (characteristic != null) {
-            BluetoothLeUtil.notificationDisable(bleGatt, characteristic);
+            BluetoothLeUtil.notificationDisable(mBleGatt, characteristic);
             return true;
         } else {
             return false;
         }
-    }
-
-    protected void log(String msg) {
-        Log.d("BLE", msg);
     }
 
     public interface BleDeviceListener {

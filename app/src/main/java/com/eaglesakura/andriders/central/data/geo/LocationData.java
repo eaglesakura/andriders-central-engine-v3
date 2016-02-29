@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.geo;
 
-import com.eaglesakura.andriders.central.data.SharedClock;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.util.LogUtil;
@@ -34,7 +34,7 @@ public class LocationData extends BaseCalculator {
      */
     private long mUpdatedTime;
 
-    public LocationData(SharedClock clock, GeoSpeedData geoSpeedData) {
+    public LocationData(Clock clock, GeoSpeedData geoSpeedData) {
         super(clock);
         mAltitudeData = new AltitudeData(clock);
         mGeoSpeedData = geoSpeedData;
@@ -107,24 +107,23 @@ public class LocationData extends BaseCalculator {
     /**
      * 位置情報を更新する
      *
-     * @param timestamp     センサー時刻
      * @param lat           緯度
      * @param lng           経度
      * @param alt           高度(クラス内部で適度に補正される)
      * @param accuracyMeter メートル単位の精度
      */
-    public boolean setLocation(long timestamp, double lat, double lng, double alt, double accuracyMeter) {
+    public boolean setLocation(double lat, double lng, double alt, double accuracyMeter) {
         if (!isAccuracy(accuracyMeter)) {
             // 信頼出来ないデータなのでdropする
             LogUtil.log("Drop GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, alt, accuracyMeter);
             return false;
         }
         mAltitudeData.setLocation(lat, lng, alt);
-        mGeoSpeedData.setLocation(timestamp, lat, lng);
+        mGeoSpeedData.setLocation(lat, lng);
 
         mRawAltitude = alt;
         mAccuracy = accuracyMeter;
-        mUpdatedTime = timestamp;
+        mUpdatedTime = now();
 
         LogUtil.log("GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, getAltitudeMeter(), accuracyMeter);
         return true;

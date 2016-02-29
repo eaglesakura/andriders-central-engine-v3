@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.scsensor;
 
-import com.eaglesakura.andriders.central.data.SharedClock;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
@@ -18,7 +18,7 @@ public class CadenceData extends BaseCalculator {
      */
     private long mUpdatedDate;
 
-    public CadenceData(SharedClock clock) {
+    public CadenceData(Clock clock) {
         super(clock);
     }
 
@@ -70,14 +70,14 @@ public class CadenceData extends BaseCalculator {
      *
      * @return 更新したらtrue
      */
-    public boolean setCadence(long timestamp, float crankRpm, int crankRevolution) {
+    public boolean setCadence(float crankRpm, int crankRevolution) {
         if (crankRpm < 0 || crankRevolution < 0) {
             return false;
         }
 
         mCadenceRpm = crankRpm;
         mCrankRevolution = crankRevolution;
-        mUpdatedDate = timestamp;
+        mUpdatedDate = now();
         return true;
     }
 }

@@ -26,7 +26,7 @@ public class SpeedData extends BaseCalculator {
         GPS,
     }
 
-    public SpeedData(SharedClock clock, GeoSpeedData geoSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
+    public SpeedData(Clock clock, GeoSpeedData geoSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
         super(clock);
         mLocationSpeedCalculator = geoSpeedCalculator;
         mSensorSpeedCalculator = sensorSpeedCalculator;

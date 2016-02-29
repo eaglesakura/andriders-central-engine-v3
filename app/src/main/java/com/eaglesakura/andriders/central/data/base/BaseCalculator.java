@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.base;
 
-import com.eaglesakura.andriders.central.data.SharedClock;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.db.Settings;
 
 public abstract class BaseCalculator {
@@ -9,9 +9,9 @@ public abstract class BaseCalculator {
      */
     public static final long DATA_TIMEOUT_MS = 1000 * 15;
 
-    private final SharedClock mClock;
+    private final Clock mClock;
 
-    public BaseCalculator(SharedClock clock) {
+    public BaseCalculator(Clock clock) {
         mClock = clock;
     }
 

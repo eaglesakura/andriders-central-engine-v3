@@ -12,7 +12,7 @@ public class DistanceData extends BaseCalculator {
      */
     private double mDistanceKm;
 
-    public DistanceData(SharedClock clock) {
+    public DistanceData(Clock clock) {
         super(clock);
     }
 

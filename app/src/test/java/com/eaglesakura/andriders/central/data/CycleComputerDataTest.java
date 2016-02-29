@@ -95,12 +95,9 @@ public class CycleComputerDataTest extends AceJUnitTester {
         int crankRevolution = 0;
         {
             while (current < 1.0) {
-                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-                final long NOW = (START_TIME + OFFSET_TIME_MS);
-
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
-                assertEquals(data.setSpeedAndCadence(NOW, SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
+                assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
 
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
@@ -142,11 +139,10 @@ public class CycleComputerDataTest extends AceJUnitTester {
         {
             while (current < 1.0) {
                 final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-                final long NOW = (START_TIME + OFFSET_TIME_MS);
 
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
-                assertEquals(data.setSpeedAndCadence(NOW, 0, 0, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
+                assertEquals(data.setSpeedAndCadence(0, 0, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
 
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
@@ -195,9 +191,8 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
 
                 final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-                final long NOW = (START_TIME + OFFSET_TIME_MS);
 
-                assertTrue(data.setLocation(NOW, lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
@@ -260,12 +255,11 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
 
                 final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-                final long NOW = (START_TIME + OFFSET_TIME_MS);
 
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
-                assertEquals(data.setSpeedAndCadence(NOW, SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
-                assertTrue(data.setLocation(NOW, lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
+                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
@@ -320,16 +314,15 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
 
                 final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-                final long NOW = (START_TIME + OFFSET_TIME_MS);
 
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
 
                 if (current < 0.5) {
                     // 最初の30分はケイデンスセンサーの値を入力する
-                    assertEquals(data.setSpeedAndCadence(NOW, SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
+                    assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
                 }
-                assertTrue(data.setLocation(NOW, lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
@@ -377,11 +370,8 @@ public class CycleComputerDataTest extends AceJUnitTester {
         LogUtil.setOutput(false);
         {
             while (current < 1.0) {
-                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-                long time = (START_TIME + OFFSET_TIME_MS);
-
                 // 心拍140前後をキープさせる
-                data.setHeartrate(time, (int) (130.0 + 10.0 * Math.random()));
+                data.setHeartrate((int) (130.0 + 10.0 * Math.random()));
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
 
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである

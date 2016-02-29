@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.central.data.scsensor;
 
 import com.eaglesakura.andriders.AceUtils;
-import com.eaglesakura.andriders.central.data.SharedClock;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 
 public class SensorSpeedData extends BaseCalculator {
@@ -31,7 +31,7 @@ public class SensorSpeedData extends BaseCalculator {
      */
     private double mMaxSpeedKmh;
 
-    public SensorSpeedData(SharedClock clock) {
+    public SensorSpeedData(Clock clock) {
         super(clock);
     }
 
@@ -79,7 +79,7 @@ public class SensorSpeedData extends BaseCalculator {
      * @param wheelRevolution ホイール回転数合計
      * @return 更新したらtrue
      */
-    public boolean setSensorSpeed(long timestamp, float wheelRpm, int wheelRevolution) {
+    public boolean setSensorSpeed(float wheelRpm, int wheelRevolution) {
         if (wheelRpm < 0 || wheelRevolution < 0) {
             return false;
         }
@@ -88,7 +88,7 @@ public class SensorSpeedData extends BaseCalculator {
         mSpeedKmh = (float) AceUtils.calcSpeedKmPerHour(wheelRpm, getWheelOuterLength());
         mMaxSpeedKmh = Math.max(mSpeedKmh, mMaxSpeedKmh);
         mWheelRevolution = wheelRevolution;
-        mUpdatedTime = timestamp;
+        mUpdatedTime = now();
         return true;
     }
 }

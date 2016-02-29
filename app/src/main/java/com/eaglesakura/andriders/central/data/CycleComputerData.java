@@ -70,7 +70,7 @@ public class CycleComputerData {
     /**
      * 時刻設定
      */
-    private final SharedClock mClock;
+    private final Clock mClock;
 
     /**
      * sync管理
@@ -81,7 +81,7 @@ public class CycleComputerData {
 
     public CycleComputerData(Context context, long sessionStartTime) {
         mContext = context.getApplicationContext();
-        mClock = new SharedClock(sessionStartTime);
+        mClock = new Clock(sessionStartTime);
         mSessionData = new SessionData(mClock, sessionStartTime);
         mFitnessData = new FitnessData(mClock);
         mSensorSpeedData = new SensorSpeedData(mClock);
@@ -132,9 +132,9 @@ public class CycleComputerData {
     /**
      * 心拍を設定する
      */
-    public void setHeartrate(long timestamp, int bpm) {
+    public void setHeartrate(int bpm) {
         synchronized (lock) {
-            mFitnessData.setHeartrate(timestamp, bpm);
+            mFitnessData.setHeartrate(bpm);
         }
     }
 
@@ -143,36 +143,34 @@ public class CycleComputerData {
      *
      * MEMO : 位置情報はLocationDataが一括して管理する。速度計はLocData.GeoSpeed経由で検証する
      *
-     * @param timestamp     センサー時刻
      * @param lat           緯度
      * @param lng           経度
      * @param alt           高度(クラス内部で適度に補正される)
      * @param accuracyMeter メートル単位の精度
      */
-    public boolean setLocation(long timestamp, double lat, double lng, double alt, double accuracyMeter) {
+    public boolean setLocation(double lat, double lng, double alt, double accuracyMeter) {
         synchronized (lock) {
-            return mLocationData.setLocation(timestamp, lat, lng, alt, accuracyMeter);
+            return mLocationData.setLocation(lat, lng, alt, accuracyMeter);
         }
     }
 
     /**
      * S&Cセンサーの情報を設定する
      *
-     * @param timestamp       センサー時刻
      * @param crankRpm        クランク回転数 / min
      * @param crankRevolution クランク合計回転数
      * @param wheelRpm        ホイール回転数 / min
      * @param wheelRevolution ホイール合計回転数
      * @return 更新した情報数
      */
-    public int setSpeedAndCadence(long timestamp, float crankRpm, int crankRevolution, float wheelRpm, int wheelRevolution) {
+    public int setSpeedAndCadence(float crankRpm, int crankRevolution, float wheelRpm, int wheelRevolution) {
         synchronized (lock) {
             int result = 0;
-            if (mSensorSpeedData.setSensorSpeed(timestamp, wheelRpm, wheelRevolution)) {
+            if (mSensorSpeedData.setSensorSpeed(wheelRpm, wheelRevolution)) {
                 ++result;
             }
 
-            if (mCadenceData.setCadence(timestamp, crankRpm, crankRevolution)) {
+            if (mCadenceData.setCadence(crankRpm, crankRevolution)) {
                 ++result;
             }
 
