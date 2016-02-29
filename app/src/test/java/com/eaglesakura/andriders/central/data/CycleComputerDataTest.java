@@ -124,6 +124,53 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
         // 最高速度が一致する
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
+        // 常に自走であるので、セッション時間と自走時間は一致する
+        assertEquals(data.mSessionData.getSessionDulationMs(), data.mSessionData.getActiveTimeMs());
+    }
+
+    @Test
+    public void ケイデンス停止で速度が得られている場合はアクティブとして扱わない() throws Exception {
+        final long START_TIME = System.currentTimeMillis();
+        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+
+        final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
+        double current = 0.0;
+        double maxSpeed = 0.0;
+        LogUtil.setOutput(false);
+
+        int crankRevolution = 0;
+        {
+            while (current < 1.0) {
+                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
+                final long NOW = (START_TIME + OFFSET_TIME_MS);
+
+                final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
+                final float gear = 2.05f; // 19T-39T
+                assertEquals(data.setSpeedAndCadence(NOW, 0, 0, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
+
+                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
+                current += OFFSET_TIME_HOUR;
+
+                // 速度をチェックする
+                assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+                // このギア比では速度は20～25km/h程度になるはずである
+                assertTrue(data.mSpeedData.getSpeedKmh() > 20.0);
+                assertTrue(data.mSpeedData.getSpeedKmh() < 30.0);
+                assertFalse(data.isActiveMoving()); // 速度は出ているがケイデンスは止まっている。つまり坂道や慣性移動である
+
+                maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
+            }
+        }
+        LogUtil.setOutput(true);
+
+        // 結果だけを出力
+        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
+
+        // 最高速度が一致する
+        assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
+        // 自走していない。アクティブ0である。
+        assertEquals(data.mSessionData.getActiveTimeMs(), 0);
     }
 
     /**
@@ -195,7 +242,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
     }
 
     @Test
-    public void GPS座標とケイデンスセンサーが与えられた場合GPSが優先される() throws Exception {
+    public void GPS座標とケイデンスセンサーが与えられた場合ケイデンスが優先される() throws Exception {
 
         final long START_TIME = System.currentTimeMillis();
         CycleComputerData data = new CycleComputerData(mContext, START_TIME);
@@ -250,6 +297,9 @@ public class CycleComputerDataTest extends AceJUnitTester {
         // 最高速度はケイデンスの値である必要がある
         assertTrue(data.mSpeedData.getMaxSpeedKmh() > 20.0);
         assertTrue(data.mSpeedData.getMaxSpeedKmh() < 30.0);
+
+        // 常にアクティブ移動である
+        assertEquals(data.mSessionData.getSessionDulationMs(), data.mSessionData.getActiveTimeMs());
     }
 
     @Test
@@ -312,6 +362,9 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
         // 最高速度はGPS由来である必要がある
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
+
+        // アクティブ時間は全体の半分である
+        assertEquals(((double) data.mSessionData.getActiveTimeMs() / (double) data.mSessionData.getSessionDulationMs()), 0.5, 0.05);
     }
 
     @Test
