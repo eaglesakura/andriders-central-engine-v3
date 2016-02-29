@@ -58,6 +58,7 @@ public class SpeedCadenceSensorDataTest extends AceJUnitTester {
             double sumRpm = 0;
             final double SAMPLE_RPM = 200.0;
             int oldRevolve = 0;
+            boolean validData = false;
             while (current < 60.0) {
                 final double OFFSET_MINUTE = (1.0 / 60.0 * (1.5 + Math.random())); // 2.5秒以内の適当なインターバル秒でデータが飛んできていることにする
 //            final double SAMPLE_RPM = 190.0 + (Math.random() * 10.0);
@@ -82,7 +83,11 @@ public class SpeedCadenceSensorDataTest extends AceJUnitTester {
                     // 平均計算用
                     ++sumUpdated;
                     sumRpm += data.getRpm();
+
+                    validData = true;
                 }
+
+                assertEquals(data.valid(), validData);
             }
 
             // 平均値は誤差を小さく見積もるする
