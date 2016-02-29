@@ -57,6 +57,7 @@ public class SpeedCadenceSensorDataTest extends AceJUnitTester {
             int sumUpdated = 0;
             double sumRpm = 0;
             final double SAMPLE_RPM = 200.0;
+            int oldRevolve = 0;
             while (current < 60.0) {
                 final double OFFSET_MINUTE = (1.0 / 60.0 * (1.5 + Math.random())); // 2.5秒以内の適当なインターバル秒でデータが飛んできていることにする
 //            final double SAMPLE_RPM = 190.0 + (Math.random() * 10.0);
@@ -68,6 +69,11 @@ public class SpeedCadenceSensorDataTest extends AceJUnitTester {
 
                 // データを流してみる
                 if (data.update(((int) revolveCount) & BleSpeedCadenceUtil.SENSOR_16BIT_MASK, ((int) sensorTime) & BleSpeedCadenceUtil.SENSOR_16BIT_MASK)) {
+                    // 合計回転数が上がらなければならない
+                    assertNotEquals(data.getSumRevolveCount(), oldRevolve);
+                    assertThat("SumRevolve :: " + data.getSumRevolveCount(), data.getSumRevolveCount() > oldRevolve, CoreMatchers.is(true));
+                    oldRevolve = data.getSumRevolveCount();
+
                     assertTrue(data.valid());
                     assertNotEquals(data.getRpm(), 0.0);
                     // 誤差があるので適当に上下1割は許容する
@@ -81,7 +87,7 @@ public class SpeedCadenceSensorDataTest extends AceJUnitTester {
 
             // 平均値は誤差を小さく見積もるする
             final double AVG_RPM = (sumRpm / sumUpdated);
-            assertThat("AVG RPM :: " + AVG_RPM, AVG_RPM > (SAMPLE_RPM * 0.975) && AVG_RPM < (SAMPLE_RPM * 1.025), CoreMatchers.is(true));
+            assertThat("AVG RPM :: " + AVG_RPM, AVG_RPM > (SAMPLE_RPM * 0.99) && AVG_RPM < (SAMPLE_RPM * 1.01), CoreMatchers.is(true));
         }
     }
 }
