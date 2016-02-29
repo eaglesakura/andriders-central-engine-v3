@@ -78,6 +78,9 @@ public class CycleComputerDataTest extends AceJUnitTester {
      * ケイデンスセンサーのテストでは、速度が計算通りになることを検証する。
      *
      * ケイデンスセンサーが利用されている場合、アクティブ時間も同時にカウントアップされなければならない。
+     *
+     * ケイデンスと速度のリファレンス : http://dirtjapan.com/modules/pico/content0003.html
+     * 39T-19Tギアの場合、クランクに対してホイール倍率が2.05となる。
      */
     @Test
     public void ケイデンスセンサーによる速度を測定する() throws Exception {
@@ -97,10 +100,10 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
-                data.setSpeedAndCadence(NOW, SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear));
+                assertEquals(data.setSpeedAndCadence(NOW, SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
 
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
-                assertTrue(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
+                assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
 
@@ -160,6 +163,9 @@ public class CycleComputerDataTest extends AceJUnitTester {
                     assertNotEquals(Math.abs(data.mLocationData.getInclinationPercent()), 0.0, 0.1); // 標高1000mに向かって走るので、傾斜が存在しなければならない
                     assertTrue(data.mLocationData.getSumAltitude() > 0); // 獲得標高がなければならない
                     assertEquals(data.mSpeedData.getSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
+
+                    // S&Cセンサー由来のデータである
+                    assertEquals(data.mSpeedData.getSource(), SpeedData.SpeedSource.GPS);
                 }
 
                 maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
@@ -186,6 +192,126 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
         // 最高速度が一致する
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
+    }
+
+    @Test
+    public void GPS座標とケイデンスセンサーが与えられた場合GPSが優先される() throws Exception {
+
+        final long START_TIME = System.currentTimeMillis();
+        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+
+        final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
+        double current = 0.0;
+        double maxSpeed = 0.0;
+
+        int crankRevolution = 0;
+        LogUtil.setOutput(false);
+        {
+            while (current < 1.0) {
+                double lat = MathUtil.blendValue(SAMPLE_START_LATITUDE, SAMPLE_END_LATITUDE, 1.0 - current);
+                double lng = MathUtil.blendValue(SAMPLE_START_LONGITUDE, SAMPLE_END_LONGITUDE, 1.0 - current);
+                double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
+
+                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
+                final long NOW = (START_TIME + OFFSET_TIME_MS);
+
+                final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
+                final float gear = 2.05f; // 19T-39T
+                assertEquals(data.setSpeedAndCadence(NOW, SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
+                assertTrue(data.setLocation(NOW, lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
+                assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
+                current += OFFSET_TIME_HOUR;
+
+                // 速度をチェックする
+                // 時速1kmの誤差を認める
+                if (current > 0.1) {
+                    assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+                    assertNotEquals(Math.abs(data.mLocationData.getInclinationPercent()), 0.0, 0.1); // 標高1000mに向かって走るので、傾斜が存在しなければならない
+                    assertTrue(data.mLocationData.getSumAltitude() > 0); // 獲得標高がなければならない
+                    // このギア比では速度は20～25km/h程度になるはずである
+                    assertTrue(data.mSpeedData.getSpeedKmh() > 20.0);
+                    assertTrue(data.mSpeedData.getSpeedKmh() < 30.0);
+                    assertTrue(data.isActiveMoving());
+                }
+
+                // S&Cセンサー由来のデータである
+                assertEquals(data.mSpeedData.getSource(), SpeedData.SpeedSource.Sensor);
+
+                maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
+            }
+        }
+        LogUtil.setOutput(true);
+
+        // 結果だけを出力
+        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
+
+        // 最高速度はケイデンスの値である必要がある
+        assertTrue(data.mSpeedData.getMaxSpeedKmh() > 20.0);
+        assertTrue(data.mSpeedData.getMaxSpeedKmh() < 30.0);
+    }
+
+    @Test
+    public void ケイデンスセンサーの値がタイムアウトしたら自動的にGPS速度に切り替わる() throws Exception {
+
+        final long START_TIME = System.currentTimeMillis();
+        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+
+        final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
+        double current = 0.0;
+
+        int crankRevolution = 0;
+        LogUtil.setOutput(false);
+        {
+            while (current < 1.0) {
+                double lat = MathUtil.blendValue(SAMPLE_START_LATITUDE, SAMPLE_END_LATITUDE, 1.0 - current);
+                double lng = MathUtil.blendValue(SAMPLE_START_LONGITUDE, SAMPLE_END_LONGITUDE, 1.0 - current);
+                double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
+
+                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
+                final long NOW = (START_TIME + OFFSET_TIME_MS);
+
+                final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
+                final float gear = 2.05f; // 19T-39T
+
+                if (current < 0.5) {
+                    // 最初の30分はケイデンスセンサーの値を入力する
+                    assertEquals(data.setSpeedAndCadence(NOW, SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
+                }
+                assertTrue(data.setLocation(NOW, lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
+                current += OFFSET_TIME_HOUR;
+
+                if (current < 0.5) {
+                    // 最初の30分はS&Cセンサー由来の速度
+                    assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+                    // S&Cセンサー由来のデータである
+                    assertEquals(data.mSpeedData.getSource(), SpeedData.SpeedSource.Sensor);
+                    assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
+                    // このギア比では速度は20～25km/h程度になるはずである
+                    assertTrue(data.mSpeedData.getSpeedKmh() > 20.0);
+                    assertTrue(data.mSpeedData.getSpeedKmh() < 30.0);
+                    assertTrue(data.isActiveMoving());
+                } else if (current > 0.6) {
+                    // 後半30分はGPS由来の速度である
+                    assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+                    assertFalse(data.isActiveMoving()); // ケイデンスから値が得られていないため、非アクティブである
+                    // S&Cセンサー由来のデータである
+                    assertEquals(data.mSpeedData.getSource(), SpeedData.SpeedSource.GPS);
+
+                    assertEquals(data.mSpeedData.getSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
+                }
+            }
+        }
+        LogUtil.setOutput(true);
+
+        // 結果だけを出力
+        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
+
+        // 最高速度はGPS由来である必要がある
+        assertEquals(data.mSpeedData.getMaxSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
     }
 
     @Test
