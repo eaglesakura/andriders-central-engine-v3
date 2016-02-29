@@ -6,14 +6,14 @@ import com.eaglesakura.andriders.central.data.hrsensor.FitnessData;
 import com.eaglesakura.andriders.central.data.scsensor.CadenceData;
 import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.data.session.SessionData;
-import com.eaglesakura.andriders.sensor.HeartrateZone;
-import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 
 import android.content.Context;
 
 /**
  * サイコンが持つべき情報を統括する
+ *
+ * 各種Data系クラスへのアクセサはUnitTestのためpackage privateとして扱う
  */
 public class CycleComputerData {
     /**
@@ -26,7 +26,7 @@ public class CycleComputerData {
      *
      * 心拍から計算される
      */
-    private final FitnessData mFitnessData;
+    final FitnessData mFitnessData;
 
     /**
      * 速度情報管理
@@ -34,38 +34,38 @@ public class CycleComputerData {
      * S&Cセンサーが有効であればセンサーを、無効であれば位置情報をソースにして速度を取得する。
      * 位置情報が無効である場合は速度0となる。
      */
-    private final SpeedData mSpeedData;
+    final SpeedData mSpeedData;
 
     /**
      * センサー由来の速度情報
      *
      * S&Cセンサーの取得時に更新される
      */
-    private final SensorSpeedData mSensorSpeedData;
+    final SensorSpeedData mSensorSpeedData;
 
     /**
      * ケイデンス情報
      *
      * S&Cセンサーの取得時に更新される
      */
-    private final CadenceData mCadenceData;
+    final CadenceData mCadenceData;
 
     /**
      * 移動距離管理
      *
      * 現在速度と時間経過から自動的に計算される
      */
-    private final DistanceData mDistanceData;
+    final DistanceData mDistanceData;
 
     /**
      * 位置情報管理
      */
-    private final LocationData mLocationData;
+    final LocationData mLocationData;
 
     /**
      * セッション情報管理
      */
-    private final SessionData mSessionData;
+    final SessionData mSessionData;
 
     /**
      * 時刻設定
@@ -102,42 +102,6 @@ public class CycleComputerData {
     }
 
     /**
-     * 速度を取得する
-     */
-    public double getSpeedKmh() {
-        synchronized (lock) {
-            return mSpeedData.getSpeedKmh();
-        }
-    }
-
-    /**
-     * 最高速度を取得する
-     */
-    public double getMaxSpeedKmh() {
-        synchronized (lock) {
-            return mSpeedData.getMaxSpeedKmh();
-        }
-    }
-
-    /**
-     * 速度域を取得する
-     */
-    public SpeedZone getSpeedZone() {
-        synchronized (lock) {
-            return mSpeedData.getSpeedZone();
-        }
-    }
-
-    /**
-     * 走行距離を取得する
-     */
-    public double getDistanceKm() {
-        synchronized (lock) {
-            return mDistanceData.getDistanceKm();
-        }
-    }
-
-    /**
      * 自走中であればtrue
      */
     public boolean isActiveMoving() {
@@ -153,111 +117,6 @@ public class CycleComputerData {
             }
 
             return true;
-        }
-    }
-
-    /**
-     * 現在の高度をメートル単位で取得する
-     */
-    public double getAltitudeMeter() {
-        synchronized (lock) {
-            return mLocationData.getAltitudeMeter();
-        }
-    }
-
-    /**
-     * 現在の傾斜を％単位で取得する
-     */
-    public double getInclinationPercent() {
-        synchronized (lock) {
-            return mLocationData.getInclinationPercent();
-        }
-    }
-
-    /**
-     * 現在の傾斜タイプを取得する
-     */
-    public InclinationType getInclinationType() {
-        synchronized (lock) {
-            return mLocationData.getInclinationType();
-        }
-    }
-
-    /**
-     * セッション内の獲得標高を取得する
-     */
-    public double getSumAltitude() {
-        synchronized (lock) {
-            return mLocationData.getSumAltitude();
-        }
-    }
-
-    public float getCurrentMets() {
-        synchronized (lock) {
-            return mFitnessData.getCurrentMets();
-        }
-    }
-
-    public float getUserWeight() {
-        synchronized (lock) {
-            return mFitnessData.getUserWeight();
-        }
-    }
-
-    public int getMaxHeartrate() {
-        synchronized (lock) {
-            return mFitnessData.getMaxHeartrate();
-        }
-    }
-
-    public int getNormalHeartrate() {
-        synchronized (lock) {
-            return mFitnessData.getNormalHeartrate();
-        }
-    }
-
-    public float getHeartrate() {
-        synchronized (lock) {
-            return mFitnessData.getHeartrate();
-        }
-    }
-
-    public float getSumExercise() {
-        synchronized (lock) {
-            return mFitnessData.getSumExercise();
-        }
-    }
-
-    public float getSumCalories() {
-        synchronized (lock) {
-            return mFitnessData.getSumCalories();
-        }
-    }
-
-    public HeartrateZone getHeartrateZone() {
-        synchronized (lock) {
-            return mFitnessData.getZone();
-        }
-    }
-
-    public long getStartDate() {
-        synchronized (lock) {
-            return mSessionData.getStartDate();
-        }
-    }
-
-    public long getActiveTimeMs() {
-        synchronized (lock) {
-            return mSessionData.getActiveTimeMs();
-        }
-    }
-
-    /**
-     * セッションの経過時間を取得する
-     */
-    public long getSessionDulationMs() {
-        synchronized (lock) {
-            return mSessionData.getSessionDulationMs();
         }
     }
 
@@ -337,7 +196,7 @@ public class CycleComputerData {
             mFitnessData.onUpdateTime(diffTimeMs);
 
             // 走行距離を更新する
-            mDistanceData.onUpdate(diffTimeMs, getSpeedKmh());
+            mDistanceData.onUpdate(diffTimeMs, mSpeedData.getSpeedKmh());
 
             // 自走中であれば走行距離を追加する
             if (isActiveMoving()) {
@@ -354,4 +213,5 @@ public class CycleComputerData {
     public void commitLog() {
 
     }
+
 }

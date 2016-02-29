@@ -64,14 +64,14 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
         assertNotNull(data.getSessionId());
         assertNotEquals(data.getSessionId(), "");
-        assertEquals(data.getStartDate(), START_TIME);
-        assertEquals(data.getUserWeight(), USER_WEIGHT, 0.1);
+        assertEquals(data.mSessionData.getStartDate(), START_TIME);
+        assertEquals(data.mFitnessData.getUserWeight(), USER_WEIGHT, 0.1);
 
         // 時間を分割して1分経過させる
         for (int i = 0; i < 60; ++i) {
             data.onUpdateTime(1000);
         }
-        assertEquals(data.getSessionDulationMs(), 1000 * 60); // データも1分経過している
+        assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60); // データも1分経過している
     }
 
     /**
@@ -101,26 +101,26 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertTrue(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
-                assertNotNull(data.getSpeedZone()); // ゾーンは必ず取得できる
+                assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
 
                 // 速度をチェックする
-                assertNotEquals(data.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+                assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
                 // このギア比では速度は20～25km/h程度になるはずである
-                assertTrue(data.getSpeedKmh() > 20.0);
-                assertTrue(data.getSpeedKmh() < 30.0);
+                assertTrue(data.mSpeedData.getSpeedKmh() > 20.0);
+                assertTrue(data.mSpeedData.getSpeedKmh() < 30.0);
                 assertTrue(data.isActiveMoving());
 
-                maxSpeed = Math.max(data.getSpeedKmh(), maxSpeed);
+                maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
             }
         }
         LogUtil.setOutput(true);
 
         // 結果だけを出力
-        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.getDistanceKm(), data.getSpeedKmh(), data.getSpeedZone().name());
+        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
 
         // 最高速度が一致する
-        assertEquals(data.getMaxSpeedKmh(), maxSpeed, 0.1);
+        assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
     }
 
     /**
@@ -150,42 +150,42 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 assertTrue(data.setLocation(NOW, lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
-                assertNotNull(data.getSpeedZone()); // ゾーンは必ず取得できる
+                assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
 
                 // 速度をチェックする
                 // 時速1kmの誤差を認める
                 if (current > 0.1) {
-                    assertNotEquals(data.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
-                    assertNotEquals(Math.abs(data.getInclinationPercent()), 0.0, 0.1); // 標高1000mに向かって走るので、傾斜が存在しなければならない
-                    assertTrue(data.getSumAltitude() > 0); // 獲得標高がなければならない
-                    assertEquals(data.getSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
+                    assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+                    assertNotEquals(Math.abs(data.mLocationData.getInclinationPercent()), 0.0, 0.1); // 標高1000mに向かって走るので、傾斜が存在しなければならない
+                    assertTrue(data.mLocationData.getSumAltitude() > 0); // 獲得標高がなければならない
+                    assertEquals(data.mSpeedData.getSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
                 }
 
-                maxSpeed = Math.max(data.getSpeedKmh(), maxSpeed);
+                maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
             }
         }
         LogUtil.setOutput(true);
 
         // 結果だけを出力
-        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.getDistanceKm(), data.getSpeedKmh(), data.getSpeedZone().name());
+        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
 
         // 約1時間経過していることを確認する
-        assertEquals(data.getSessionDulationMs(), 1000 * 60 * 60);
+        assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60 * 60);
 
         // 最終的な移動距離をチェックする
         // 1時間分の動作分であるため、ほぼ一致するはずである
-        assertEquals(data.getDistanceKm(), data.getSpeedKmh(), 1.0);
+        assertEquals(data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), 1.0);
 
         // GPS走行なので、自走時間は0でなければならない
-        assertEquals(data.getActiveTimeMs(), 0);
+        assertEquals(data.mSessionData.getActiveTimeMs(), 0);
 
         // 獲得標高が目的値とほぼ同等でなければならない
         // MEMO 標高は適当な回数だけ平均を取るので、完全一致はしなくて良い
-        assertEquals(data.getSumAltitude(), (SAMPLE_END_ALTITUDE - SAMPLE_START_ALTITUDE), 25.0);
+        assertEquals(data.mLocationData.getSumAltitude(), (SAMPLE_END_ALTITUDE - SAMPLE_START_ALTITUDE), 25.0);
 
         // 最高速度が一致する
-        assertEquals(data.getMaxSpeedKmh(), maxSpeed, 0.1);
+        assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
     }
 
     @Test
@@ -206,23 +206,23 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
 
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
-                assertNotNull(data.getHeartrateZone()); // ゾーンは必ず取得できる
-                assertNotEquals(data.getHeartrateZone(), HeartrateZone.Repose);
+                assertNotNull(data.mFitnessData.getZone()); // ゾーンは必ず取得できる
+                assertNotEquals(data.mFitnessData.getZone(), HeartrateZone.Repose);
                 current += OFFSET_TIME_HOUR;
             }
         }
         LogUtil.setOutput(true);
 
         // 約1時間経過していることを確認する
-        assertEquals(data.getSessionDulationMs(), 1000 * 60 * 60);
+        assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60 * 60);
 
 
         // 消費カロリー的には、300～400の間が妥当である
         // 獲得エクササイズは3.5～4.5程度が妥当な値となる
-        LogUtil.log("Fitness %.1f kcal / %.1f Ex", data.getSumCalories(), data.getSumExercise());
-        assertTrue(data.getSumCalories() > 280);
-        assertTrue(data.getSumCalories() < 400);
-        assertTrue(data.getSumExercise() > 3.0);
-        assertTrue(data.getSumExercise() < 5.0);
+        LogUtil.log("Fitness %.1f kcal / %.1f Ex", data.mFitnessData.getSumCalories(), data.mFitnessData.getSumExercise());
+        assertTrue(data.mFitnessData.getSumCalories() > 280);
+        assertTrue(data.mFitnessData.getSumCalories() < 400);
+        assertTrue(data.mFitnessData.getSumExercise() > 3.0);
+        assertTrue(data.mFitnessData.getSumExercise() < 5.0);
     }
 }
