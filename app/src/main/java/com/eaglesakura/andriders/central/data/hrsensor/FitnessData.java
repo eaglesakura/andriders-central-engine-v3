@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.hrsensor;
 
-import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.SharedClock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.util.Timer;
@@ -34,7 +34,7 @@ public class FitnessData extends BaseCalculator {
      */
     private long mHeartrateDataTime;
 
-    public FitnessData(CycleClock clock) {
+    public FitnessData(SharedClock clock) {
         super(clock);
     }
 

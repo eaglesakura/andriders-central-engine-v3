@@ -101,6 +101,8 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 // 時速1kmの誤差を認める
                 if (current > 0.1) {
                     assertNotEquals(data.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+                    assertNotEquals(Math.abs(data.getInclinationPercent()), 0.0, 0.1); // 標高1000mに向かって走るので、傾斜が存在しなければならない
+                    assertTrue(data.getSumAltitude() > 0); // 獲得標高がなければならない
                     assertEquals(data.getSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
                 }
             }
@@ -116,6 +118,10 @@ public class CycleComputerDataTest extends AceJUnitTester {
         // 最終的な移動距離をチェックする
         // 1時間分の動作分であるため、ほぼ一致するはずである
         assertEquals(data.getDistanceKm(), data.getSpeedKmh(), 1.0);
+
+        // 獲得標高が目的値とほぼ同等でなければならない
+        // MEMO 標高は適当な回数だけ平均を取るので、完全一致はしなくて良い
+        assertEquals(data.getSumAltitude(), SAMPLE_END_ALTITUDE, 1.0);
     }
 
     @Test

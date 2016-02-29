@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.central.data.scsensor;
 
 import com.eaglesakura.andriders.AceUtils;
-import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.SharedClock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 
 public class SensorSpeedData extends BaseCalculator {
@@ -24,9 +24,9 @@ public class SensorSpeedData extends BaseCalculator {
     /**
      * 計算済みの速度
      */
-    double mSpeedKmh;
+    private double mSpeedKmh;
 
-    public SensorSpeedData(CycleClock clock) {
+    public SensorSpeedData(SharedClock clock) {
         super(clock);
     }
 

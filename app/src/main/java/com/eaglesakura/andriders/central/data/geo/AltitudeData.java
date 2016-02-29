@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.central.data.geo;
 
 import com.eaglesakura.andriders.AceUtils;
-import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.SharedClock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
 import com.eaglesakura.geo.GeoUtil;
@@ -90,7 +90,7 @@ public class AltitudeData extends BaseCalculator {
      */
     private RoadState mRoadState = new RoadState();
 
-    public AltitudeData(CycleClock clock) {
+    public AltitudeData(SharedClock clock) {
         super(clock);
     }
 
@@ -113,15 +113,10 @@ public class AltitudeData extends BaseCalculator {
 //        return currentPoint.getAltitudeMeter();
     }
 
-    public RawGeoPoint getMaxAltitudePoint() {
-        return mMaxAltitudePoint;
-    }
-
-    public RawGeoPoint getMinAltitudePoint() {
-        return mMinAltitudePoint;
-    }
-
-    public double getSessionSumAltitude() {
+    /**
+     * 合計獲得標高をメートル単位で取得する
+     */
+    public double getSumAltitude() {
         return mSumAltitude + mRoadState.getClimgUpAltitude();
     }
 

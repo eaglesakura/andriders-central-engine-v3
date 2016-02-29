@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.geo;
 
-import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.SharedClock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.LogUtil;
@@ -30,7 +30,7 @@ public class GeoSpeedData extends BaseCalculator {
      */
     double mSpeedKmh;
 
-    public GeoSpeedData(CycleClock clock) {
+    public GeoSpeedData(SharedClock clock) {
         super(clock);
     }
 

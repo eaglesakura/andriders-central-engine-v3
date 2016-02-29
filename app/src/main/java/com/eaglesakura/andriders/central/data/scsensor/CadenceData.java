@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.scsensor;
 
-import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.SharedClock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
@@ -18,7 +18,7 @@ public class CadenceData extends BaseCalculator {
      */
     private long mUpdatedDate;
 
-    public CadenceData(CycleClock clock) {
+    public CadenceData(SharedClock clock) {
         super(clock);
     }
 

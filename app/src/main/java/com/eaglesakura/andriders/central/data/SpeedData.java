@@ -20,10 +20,29 @@ public class SpeedData extends BaseCalculator {
      */
     private final SensorSpeedData mSensorSpeedCalculator;
 
-    public SpeedData(CycleClock clock, GeoSpeedData locationSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
+    public enum SpeedSource {
+        None,
+        Sensor,
+        GPS,
+    }
+
+    public SpeedData(SharedClock clock, GeoSpeedData geoSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
         super(clock);
-        mLocationSpeedCalculator = locationSpeedCalculator;
+        mLocationSpeedCalculator = geoSpeedCalculator;
         mSensorSpeedCalculator = sensorSpeedCalculator;
+    }
+
+    /**
+     * 速度由来を取得する
+     */
+    public SpeedSource getSource() {
+        if (mSensorSpeedCalculator.valid()) {
+            return SpeedSource.Sensor;
+        } else if (mLocationSpeedCalculator.valid()) {
+            return SpeedSource.GPS;
+        } else {
+            return SpeedSource.None;
+        }
     }
 
     /**
@@ -32,8 +51,10 @@ public class SpeedData extends BaseCalculator {
     public double getSpeedKmh() {
         if (mSensorSpeedCalculator.valid()) {
             return mSensorSpeedCalculator.getSpeedKmh();
-        } else {
+        } else if (mLocationSpeedCalculator.valid()) {
             return mLocationSpeedCalculator.getSpeedKmh();
+        } else {
+            return 0;
         }
     }
 

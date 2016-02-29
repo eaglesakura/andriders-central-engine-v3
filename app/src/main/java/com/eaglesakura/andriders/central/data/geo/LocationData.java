@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.geo;
 
-import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.SharedClock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.util.LogUtil;
@@ -34,7 +34,7 @@ public class LocationData extends BaseCalculator {
      */
     private long mUpdatedTime;
 
-    public LocationData(CycleClock clock, GeoSpeedData geoSpeedData) {
+    public LocationData(SharedClock clock, GeoSpeedData geoSpeedData) {
         super(clock);
         mAltitudeData = new AltitudeData(clock);
         mGeoSpeedData = geoSpeedData;
@@ -62,6 +62,13 @@ public class LocationData extends BaseCalculator {
     }
 
     /**
+     * 獲得標高（メートル）を取得する
+     */
+    public double getSumAltitude() {
+        return mAltitudeData.getSumAltitude();
+    }
+
+    /**
      * 現在の傾斜％を取得する
      */
     public double getInclinationPercent() {
@@ -71,6 +78,7 @@ public class LocationData extends BaseCalculator {
             return 0;
         }
     }
+
 
     /**
      * 傾斜レベルを取得する

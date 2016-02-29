@@ -1,14 +1,14 @@
 package com.eaglesakura.andriders.central.data;
 
 /**
- * サイコン内の時計を管理する
+ * 各種クラスで共有する時計を管理する
  *
  * テスト用途を兼ねているため、時計を現在時刻からズラすこともできる。
  */
-public class CycleClock {
-    private long mCurrentTime = System.currentTimeMillis();
+public class SharedClock {
+    private long mCurrentTime;
 
-    public CycleClock(long currentTime) {
+    public SharedClock(long currentTime) {
         mCurrentTime = currentTime;
     }
 

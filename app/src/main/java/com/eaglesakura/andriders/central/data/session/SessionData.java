@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.data.session;
 
-import com.eaglesakura.andriders.central.data.CycleClock;
+import com.eaglesakura.andriders.central.data.SharedClock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +34,7 @@ public class SessionData extends BaseCalculator {
      *
      * @param startDate 開始時刻
      */
-    public SessionData(CycleClock clock, long startDate) {
+    public SessionData(SharedClock clock, long startDate) {
         super(clock);
         mStartDate = startDate;
         mSessionId = String.format("ssn.%s", SESSION_KEY_FORMAT.format(new Date(startDate)));

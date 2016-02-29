@@ -7,6 +7,7 @@ import com.eaglesakura.andriders.central.data.scsensor.CadenceData;
 import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.data.session.SessionData;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
+import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 
 import android.content.Context;
@@ -69,7 +70,7 @@ public class CycleComputerData {
     /**
      * 時刻設定
      */
-    private final CycleClock mClock;
+    private final SharedClock mClock;
 
     /**
      * sync管理
@@ -80,7 +81,7 @@ public class CycleComputerData {
 
     public CycleComputerData(Context context, long sessionStartTime) {
         mContext = context.getApplicationContext();
-        mClock = new CycleClock(sessionStartTime);
+        mClock = new SharedClock(sessionStartTime);
         mSessionData = new SessionData(mClock, sessionStartTime);
         mFitnessData = new FitnessData(mClock);
         mSensorSpeedData = new SensorSpeedData(mClock);
@@ -140,6 +141,42 @@ public class CycleComputerData {
             }
 
             return true;
+        }
+    }
+
+    /**
+     * 現在の高度をメートル単位で取得する
+     */
+    public double getAltitudeMeter() {
+        synchronized (lock) {
+            return mLocationData.getAltitudeMeter();
+        }
+    }
+
+    /**
+     * 現在の傾斜を％単位で取得する
+     */
+    public double getInclinationPercent() {
+        synchronized (lock) {
+            return mLocationData.getInclinationPercent();
+        }
+    }
+
+    /**
+     * 現在の傾斜タイプを取得する
+     */
+    public InclinationType getInclinationType() {
+        synchronized (lock) {
+            return mLocationData.getInclinationType();
+        }
+    }
+
+    /**
+     * セッション内の獲得標高を取得する
+     */
+    public double getSumAltitude() {
+        synchronized (lock) {
+            return mLocationData.getSumAltitude();
         }
     }
 
@@ -232,6 +269,8 @@ public class CycleComputerData {
 
     /**
      * 位置情報を設定する
+     *
+     * MEMO : 位置情報はLocationDataが一括して管理する。速度計はLocData.GeoSpeed経由で検証する
      *
      * @param timestamp     センサー時刻
      * @param lat           緯度

@@ -12,7 +12,7 @@ public class DistanceData extends BaseCalculator {
      */
     private double mDistanceKm;
 
-    public DistanceData(CycleClock clock) {
+    public DistanceData(SharedClock clock) {
         super(clock);
     }
 
@@ -24,7 +24,7 @@ public class DistanceData extends BaseCalculator {
     }
 
     /**
-     * 更新された
+     * 差分時間と速度から、走行距離を求める
      */
     public void onUpdate(long diffTimeMs, double nowSpeedKmh) {
         if (diffTimeMs <= 0 || nowSpeedKmh <= 0) {
