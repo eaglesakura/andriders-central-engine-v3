@@ -48,7 +48,7 @@ public class SpeedCadenceSensorDataTest extends AceJUnitTester {
         for (int i = 0; i < 128; ++i) {
             final long START_TIME = System.currentTimeMillis();
             Clock clock = new Clock(START_TIME);
-            SpeedCadenceSensorData data = new SpeedCadenceSensorData(clock, BleDevice.SENSOR_TIMEOUT_MS, 5 * 1000);
+            SpeedCadenceSensorData data = new SpeedCadenceSensorData(clock, BleDevice.SENSOR_TIMEOUT_MS, (int) (1000.0 * 7.5));
 
             float current = 0;  // 経過時間（分）
             double sensorTime = 12345;    // センサー時間

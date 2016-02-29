@@ -18,7 +18,7 @@ public abstract class BleDevice {
     /**
      * センサーが停止したと判断するタイムアウト時間
      */
-    public static final int SENSOR_TIMEOUT_MS = 1000 * 5;
+    public static final int SENSOR_TIMEOUT_MS = 1000 * 15;
 
     /**
      * 接続されたデバイス
