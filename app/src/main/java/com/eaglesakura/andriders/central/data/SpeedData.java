@@ -59,6 +59,20 @@ public class SpeedData extends BaseCalculator {
     }
 
     /**
+     * 最高速度を取得する。
+     *
+     * MEMO: センサーごとに分離して最高速度は保持しているが、接続されているセンサーの値を優先して取得する。
+     * ユースケースとしてはGPS OFFで室内トレーニングが考えられるため、センサーが反応しないかつGPSが有効のみGPS最高速度を取り出すことになる。
+     */
+    public double getMaxSpeedKmh() {
+        if (!mSensorSpeedCalculator.valid() && mLocationSpeedCalculator.valid()) {
+            return mLocationSpeedCalculator.getMaxSpeedKmh();
+        } else {
+            return mSensorSpeedCalculator.getMaxSpeedKmh();
+        }
+    }
+
+    /**
      * 速度ゾーンを取得する
      */
     public SpeedZone getSpeedZone() {

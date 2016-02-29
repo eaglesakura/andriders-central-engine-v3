@@ -110,6 +110,18 @@ public class CycleComputerData {
         }
     }
 
+    /**
+     * 最高速度を取得する
+     */
+    public double getMaxSpeedKmh() {
+        synchronized (lock) {
+            return mSpeedData.getMaxSpeedKmh();
+        }
+    }
+
+    /**
+     * 速度域を取得する
+     */
     public SpeedZone getSpeedZone() {
         synchronized (lock) {
             return mSpeedData.getSpeedZone();

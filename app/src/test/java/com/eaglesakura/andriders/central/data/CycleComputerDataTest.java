@@ -36,6 +36,11 @@ public class CycleComputerDataTest extends AceJUnitTester {
      */
     final double SAMPLE_DISTANCE_KM = 53.9622;
 
+    /**
+     * ユーザー体重
+     */
+    final double USER_WEIGHT = 65;
+
     @Override
     public void onSetup() {
         super.onSetup();
@@ -43,7 +48,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
         // 計算を確定させるため、フィットネスデータを構築する
         // 計算しやすくするため、データはキリの良い数にしておく
         Settings settings = Settings.getInstance();
-        settings.getUserProfiles().setUserWeight(65);
+        settings.getUserProfiles().setUserWeight(USER_WEIGHT);
         settings.getUserProfiles().setNormalHeartrate(90);
         settings.getUserProfiles().setMaxHeartrate(190);
         settings.getUserProfiles().setWheelOuterLength(2096); // 700 x 23c
@@ -60,6 +65,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
         assertNotNull(data.getSessionId());
         assertNotEquals(data.getSessionId(), "");
         assertEquals(data.getStartDate(), START_TIME);
+        assertEquals(data.getUserWeight(), USER_WEIGHT, 0.1);
 
         // 時間を分割して1分経過させる
         for (int i = 0; i < 60; ++i) {
@@ -81,6 +87,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
+        double maxSpeed = 0.0;
         LogUtil.setOutput(false);
         {
             while (current < 1.0) {
@@ -105,6 +112,8 @@ public class CycleComputerDataTest extends AceJUnitTester {
                     assertTrue(data.getSumAltitude() > 0); // 獲得標高がなければならない
                     assertEquals(data.getSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
                 }
+
+                maxSpeed = Math.max(data.getSpeedKmh(), maxSpeed);
             }
         }
         LogUtil.setOutput(true);
@@ -119,9 +128,15 @@ public class CycleComputerDataTest extends AceJUnitTester {
         // 1時間分の動作分であるため、ほぼ一致するはずである
         assertEquals(data.getDistanceKm(), data.getSpeedKmh(), 1.0);
 
+        // GPS走行なので、自走時間は0でなければならない
+        assertEquals(data.getActiveTimeMs(), 0);
+
         // 獲得標高が目的値とほぼ同等でなければならない
         // MEMO 標高は適当な回数だけ平均を取るので、完全一致はしなくて良い
         assertEquals(data.getSumAltitude(), (SAMPLE_END_ALTITUDE - SAMPLE_START_ALTITUDE), 25.0);
+
+        // 最高速度が一致する
+        assertEquals(data.getMaxSpeedKmh(), maxSpeed, 0.1);
     }
 
     @Test

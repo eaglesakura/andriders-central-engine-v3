@@ -28,7 +28,12 @@ public class GeoSpeedData extends BaseCalculator {
     /**
      * 計算済みの速度
      */
-    double mSpeedKmh;
+    private double mSpeedKmh;
+
+    /**
+     * 最高速度
+     */
+    private double mMaxSpeedKmh;
 
     public GeoSpeedData(SharedClock clock) {
         super(clock);
@@ -58,6 +63,13 @@ public class GeoSpeedData extends BaseCalculator {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * GPS由来の最高速度を取得する
+     */
+    public double getMaxSpeedKmh() {
+        return mMaxSpeedKmh;
     }
 
     /**
@@ -98,5 +110,6 @@ public class GeoSpeedData extends BaseCalculator {
         mLatitude = lat;
         mLongitude = lng;
         mUpdatedTime = timestamp;
+        mMaxSpeedKmh = Math.max(mMaxSpeedKmh, mSpeedKmh);
     }
 }

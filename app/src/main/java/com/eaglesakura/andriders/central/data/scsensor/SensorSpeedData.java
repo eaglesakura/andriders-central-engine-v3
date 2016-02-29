@@ -26,6 +26,11 @@ public class SensorSpeedData extends BaseCalculator {
      */
     private double mSpeedKmh;
 
+    /**
+     * 最高速度
+     */
+    private double mMaxSpeedKmh;
+
     public SensorSpeedData(SharedClock clock) {
         super(clock);
     }
@@ -43,6 +48,13 @@ public class SensorSpeedData extends BaseCalculator {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * 最高速度を取得する
+     */
+    public double getMaxSpeedKmh() {
+        return mMaxSpeedKmh;
     }
 
     public float getWheelRpm() {
@@ -74,6 +86,7 @@ public class SensorSpeedData extends BaseCalculator {
 
         // スピードを計算する
         mSpeedKmh = (float) AceUtils.calcSpeedKmPerHour(wheelRpm, getWheelOuterLength());
+        mMaxSpeedKmh = Math.max(mSpeedKmh, mMaxSpeedKmh);
         mWheelRevolution = wheelRevolution;
         mUpdatedTime = timestamp;
         return true;
