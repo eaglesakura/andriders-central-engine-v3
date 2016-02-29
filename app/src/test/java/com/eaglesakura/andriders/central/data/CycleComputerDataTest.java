@@ -75,6 +75,55 @@ public class CycleComputerDataTest extends AceJUnitTester {
     }
 
     /**
+     * ケイデンスセンサーのテストでは、速度が計算通りになることを検証する。
+     *
+     * ケイデンスセンサーが利用されている場合、アクティブ時間も同時にカウントアップされなければならない。
+     */
+    @Test
+    public void ケイデンスセンサーによる速度を測定する() throws Exception {
+        final long START_TIME = System.currentTimeMillis();
+        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+
+        final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
+        double current = 0.0;
+        double maxSpeed = 0.0;
+        LogUtil.setOutput(false);
+
+        int crankRevolution = 0;
+        {
+            while (current < 1.0) {
+                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
+                final long NOW = (START_TIME + OFFSET_TIME_MS);
+
+                final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
+                final float gear = 2.05f; // 19T-39T
+                data.setSpeedAndCadence(NOW, SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear));
+
+                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                assertTrue(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
+                assertNotNull(data.getSpeedZone()); // ゾーンは必ず取得できる
+                current += OFFSET_TIME_HOUR;
+
+                // 速度をチェックする
+                assertNotEquals(data.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+                // このギア比では速度は20～25km/h程度になるはずである
+                assertTrue(data.getSpeedKmh() > 20.0);
+                assertTrue(data.getSpeedKmh() < 30.0);
+                assertTrue(data.isActiveMoving());
+
+                maxSpeed = Math.max(data.getSpeedKmh(), maxSpeed);
+            }
+        }
+        LogUtil.setOutput(true);
+
+        // 結果だけを出力
+        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.getDistanceKm(), data.getSpeedKmh(), data.getSpeedZone().name());
+
+        // 最高速度が一致する
+        assertEquals(data.getMaxSpeedKmh(), maxSpeed, 0.1);
+    }
+
+    /**
      * AACRスタート～折り返し地点を適当な間隔で打刻する
      *
      * 採用している計算法では、2点間距離は約54kmである。
