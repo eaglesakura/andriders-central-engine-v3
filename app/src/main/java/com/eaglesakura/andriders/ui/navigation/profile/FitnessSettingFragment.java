@@ -12,7 +12,6 @@ import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.playservice.GoogleApiTask;
-import com.eaglesakura.android.rx.LifecycleTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialInputDialog;
@@ -158,7 +157,7 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
      * Google Fitのデータと同期を行う
      */
     void syncFitnessData() {
-        async(LifecycleTarget.Forground, (RxTask<Float> task) -> {
+        asyncUI((RxTask<Float> task) -> {
             GoogleApiClientToken token = getGoogleApiClientToken();
             if (token == null) {
                 throw new IllegalStateException();
@@ -171,13 +170,10 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
                     if (userWeight > 0 && userWeight != personalDataSettings.getUserWeight()) {
                         personalDataSettings.setUserWeight(userWeight);
                         personalDataSettings.commit();
-                        updatePersonalUI();
-
                         toast(R.string.Setting_Fitness_Weight_SyncCompleted);
                     } else if (userWeight <= 0) {
                         toast(R.string.Setting_Fitness_Weight_SyncFailed);
                     }
-
                     return userWeight;
                 }
 
@@ -192,7 +188,8 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
                 }
             });
         }).completed((weight, task) -> {
-        }).error((err, task) -> {
+            updatePersonalUI();
+        }).errored((err, task) -> {
             if (!googleFitFailedMessageBooted) {
                 toast(R.string.Setting_Fitness_Weight_SyncFailed);
                 googleFitFailedMessageBooted = true;

@@ -3,7 +3,7 @@ package com.eaglesakura.android.rx;
 import com.eaglesakura.android.thread.async.AsyncTaskResult;
 
 import rx.Observable;
-import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -11,10 +11,8 @@ import rx.functions.Action1;
 /**
  *
  */
-public class RxActionCreator<T> {
-    final SubscriptionWrapper mSubscription;
-
-    final Scheduler mScheduler;
+public class RxTaskBuilder<T> {
+    final SubscriptionController mSubscription;
 
     Observable<T> mObservable;
 
@@ -39,26 +37,50 @@ public class RxActionCreator<T> {
     AsyncTaskResult.CancelSignal mCancelSignal;
 
     /**
+     * 標準ではプロセス共有スレッドで実行される
+     */
+    SubscribeTarget mThreadTarget = SubscribeTarget.GlobalParallels;
+
+    /**
      * Task
      */
     RxTask<T> mTask = new RxTask<>();
 
-    public RxActionCreator(SubscriptionWrapper subscription, Scheduler scheduler) {
-        mSubscription = subscription;
-        mScheduler = scheduler;
+    public RxTaskBuilder(SubscriptionController subscriptionController) {
+        mSubscription = subscriptionController;
     }
 
-    public RxActionCreator<T> async(final RxTask.Async<T> subscribe) {
-        mTask.mSubscribe = it -> {
+    /**
+     * 処理対象のスレッドを指定する
+     */
+    public RxTaskBuilder<T> subscribeOn(SubscribeTarget target) {
+        mThreadTarget = target;
+        return this;
+    }
+
+    /**
+     * コールバック対象のタイミングを指定する
+     */
+    public RxTaskBuilder<T> observeOn(ObserveTarget target) {
+        mTask.mObserveTarget = target;
+        return this;
+    }
+
+    /**
+     * 非同期処理を指定する
+     */
+    public RxTaskBuilder<T> async(RxTask.Async<T> subscribe) {
+        mObservable = Observable.create((Subscriber<? super T> it) -> {
             try {
+                mTask.mState = RxTask.State.Running;
+
                 it.onNext(subscribe.call(mTask));
                 it.onCompleted();
             } catch (Throwable e) {
                 it.onError(e);
             }
-        };
-        mObservable = Observable.create(mTask.mSubscribe)
-                .subscribeOn(mScheduler)
+        })
+                .subscribeOn(mSubscription.getThreadController().getScheduler(mThreadTarget))
                 .observeOn(AndroidSchedulers.mainThread());
         return this;
     }
@@ -66,7 +88,7 @@ public class RxActionCreator<T> {
     /**
      * Observableを直接更新する
      */
-    public RxActionCreator<T> update(final Action1<Observable<T>> callback) {
+    public RxTaskBuilder<T> update(final Action1<Observable<T>> callback) {
         callback.call(mObservable);
         return this;
     }
@@ -74,7 +96,7 @@ public class RxActionCreator<T> {
     /**
      * 戻り値からの処理を記述する
      */
-    public RxActionCreator<T> completed(RxTask.Action1<T> callback) {
+    public RxTaskBuilder<T> completed(RxTask.Action1<T> callback) {
         mCompletedCallback = callback;
         return this;
     }
@@ -82,7 +104,7 @@ public class RxActionCreator<T> {
     /**
      * エラーハンドリングを記述する
      */
-    public RxActionCreator<T> error(RxTask.ErrorAction<T> callback) {
+    public RxTaskBuilder<T> errored(RxTask.ErrorAction<T> callback) {
         mErrorCallback = callback;
         return this;
     }
@@ -90,35 +112,33 @@ public class RxActionCreator<T> {
     /**
      * 終了時の処理を記述する
      */
-    public RxActionCreator<T> finalized(RxTask.Action0<T> callback) {
+    public RxTaskBuilder<T> finalized(RxTask.Action0<T> callback) {
         mFinalizeCallback = callback;
         return this;
     }
 
     /**
-     * 処理完了待ちを行い、結果を受け取る
-     */
-    public T await() throws Throwable {
-        return start().toBlocking().first();
-    }
-
-    /**
      * セットアップを完了し、処理を開始する
      */
-    public Observable<T> start() {
+    public RxTask<T> start() {
+        mTask.mState = RxTask.State.Pending;
+        // キャンセルを購読対象と同期させる
+        mTask.mSubscribeCancelSignal = () -> mSubscription.isCanceled(mTask.mObserveTarget);
+
         final Subscription subscribe = mObservable.subscribe(
                 // next = completeed
                 next -> {
                     mTask.mResult = next;
+                    mTask.mState = RxTask.State.Finished;
 
                     if (mCompletedCallback != null) {
-                        mSubscription.run(() -> {
+                        mSubscription.run(mTask.mObserveTarget, () -> {
                             mCompletedCallback.call(next, mTask);
                         });
                     }
 
                     if (mFinalizeCallback != null) {
-                        mSubscription.run(() -> {
+                        mSubscription.run(mTask.mObserveTarget, () -> {
                             mFinalizeCallback.call(mTask);
                         });
                     }
@@ -126,15 +146,16 @@ public class RxActionCreator<T> {
                 // error
                 error -> {
                     mTask.mError = error;
+                    mTask.mState = RxTask.State.Finished;
 
                     if (mErrorCallback != null) {
-                        mSubscription.run(() -> {
+                        mSubscription.run(mTask.mObserveTarget, () -> {
                             mErrorCallback.call(error, mTask);
                         });
                     }
 
                     if (mFinalizeCallback != null) {
-                        mSubscription.run(() -> {
+                        mSubscription.run(mTask.mObserveTarget, () -> {
                             mFinalizeCallback.call(mTask);
                         });
                     }
@@ -142,14 +163,7 @@ public class RxActionCreator<T> {
         );
 
         // 購読対象に追加
-        mSubscription.getSubscription().add(subscribe);
-
-        return mObservable;
+        mSubscription.add(subscribe);
+        return mTask;
     }
-
-//    public static <T> RxActionCreator<T> create(SubscriptionWrapper subscription, Executor executor, RxTask.Async<T> subscribe) {
-//        RxActionCreator<T> result = new RxActionCreator<>();
-//        result.init(subscription, Schedulers.from(executor), subscribe);
-//        return result;
-//    }
 }

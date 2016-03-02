@@ -3,7 +3,7 @@ package com.eaglesakura.android.rx;
 /**
  * 非同期処理のコールバック待ちを行う場所
  */
-public enum LifecycleTarget {
+public enum ObserveTarget {
     /**
      * onResume - onPauseの間のみコールバックを受け付ける
      */

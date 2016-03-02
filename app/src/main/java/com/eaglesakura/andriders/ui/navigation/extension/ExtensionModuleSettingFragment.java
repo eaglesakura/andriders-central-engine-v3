@@ -8,7 +8,6 @@ import com.eaglesakura.andriders.extension.ExtensionInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.ui.SupportAQuery;
-import com.eaglesakura.android.rx.LifecycleTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.util.Util;
 
@@ -88,7 +87,7 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
     }
 
     void updateExtensionViews() {
-        async(LifecycleTarget.Alive, (RxTask<ExtensionClientManager> it) -> {
+        asyncUI((RxTask<ExtensionClientManager> it) -> {
             while (!it.isCanceled()) {
                 ExtensionClientManager manager = parent.getClientManager();
                 if (manager != null) {

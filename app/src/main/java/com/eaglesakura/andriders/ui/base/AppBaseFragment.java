@@ -10,10 +10,12 @@ import com.eaglesakura.android.framework.ui.BaseFragment;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
-import com.eaglesakura.android.rx.LifecycleTarget;
-import com.eaglesakura.android.rx.RxActionCreator;
+import com.eaglesakura.android.rx.LifecycleState;
+import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.android.rx.SubscriptionWrapper;
+import com.eaglesakura.android.rx.RxTaskBuilder;
+import com.eaglesakura.android.rx.SubscribeTarget;
+import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.thread.async.AsyncTaskController;
 import com.eaglesakura.android.thread.async.AsyncTaskResult;
 import com.eaglesakura.android.thread.async.CachedTaskHandler;
@@ -27,9 +29,7 @@ import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.widget.Toast;
 
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import rx.subjects.BehaviorSubject;
 
 
 public abstract class AppBaseFragment extends BaseFragment {
@@ -39,15 +39,19 @@ public abstract class AppBaseFragment extends BaseFragment {
      */
     protected static final int REQUEST_GOOGLE_AUTH = 0x2400;
 
-    private SubscriptionWrapper mForegroundSubscription = new SubscriptionWrapper(new CompositeSubscription());
 
-    private SubscriptionWrapper mAliveSubscription = new SubscriptionWrapper(new CompositeSubscription());
+    private BehaviorSubject<LifecycleState> mLifecycleSubject = BehaviorSubject.create(LifecycleState.NewObject);
 
-    private SubscriptionWrapper mFireAndForgetSubscription = new SubscriptionWrapper(new CompositeSubscription());
+    private SubscriptionController mSubscription = new SubscriptionController();
 
     private AsyncTaskController localTasks;
 
     private CachedTaskHandler localTaskHandler = new CachedTaskHandler();
+
+
+    public AppBaseFragment() {
+        mSubscription.bind(mLifecycleSubject);
+    }
 
     public GoogleApiClientToken getGoogleApiClientToken() {
         Activity activity = getActivity();
@@ -58,38 +62,52 @@ public abstract class AppBaseFragment extends BaseFragment {
         }
     }
 
+    /**
+     * 現在のライフサイクル状態を取得する
+     */
+    public LifecycleState getLifecycleState() {
+        return mLifecycleSubject.getValue();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAliveSubscription.onResume();
-        mFireAndForgetSubscription.onResume();
+        mLifecycleSubject.onNext(LifecycleState.OnCreated);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mLifecycleSubject.onNext(LifecycleState.OnStarted);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mForegroundSubscription.onPause();
-        localTaskHandler.onPause();
+        mLifecycleSubject.onNext(LifecycleState.OnPaused);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mForegroundSubscription.onResume();
-        localTaskHandler.onResume();
+        mLifecycleSubject.onNext(LifecycleState.OnResumed);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mLifecycleSubject.onNext(LifecycleState.OnStopped);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        mForegroundSubscription.unsubscribe();
-        mAliveSubscription.unsubscribe();
-
         if (localTasks != null) {
             localTasks.cancelListeners();
             localTasks.dispose();
         }
+        mLifecycleSubject.onNext(LifecycleState.OnDestroyed);
     }
 
     public AppBaseActivity getBaseActivity() {
@@ -114,28 +132,22 @@ public abstract class AppBaseFragment extends BaseFragment {
 //    }
 
     /**
-     * 非同期処理を行う
+     * UIに関わる処理を非同期で実行する。
+     *
+     * 処理順を整列するため、非同期・直列処理されたあと、アプリがフォアグラウンドのタイミングでコールバックされる。
      */
-    public <T> RxActionCreator<T> async(LifecycleTarget target, RxTask.Async<T> background) {
-        if (target == null) {
-            throw new IllegalArgumentException();
-        }
+    public <T> RxTaskBuilder<T> asyncUI(RxTask.Async<T> background) {
+        return async(SubscribeTarget.Pipeline, ObserveTarget.Forground, background);
+    }
 
-        Scheduler scheduler = Schedulers.from(getTaskController().getExecutor());
-
-        switch (target) {
-            case Forground:
-                return new RxActionCreator<T>(mForegroundSubscription, scheduler)
-                        .async(background);
-            case Alive:
-                return new RxActionCreator<T>(mAliveSubscription, scheduler)
-                        .async(background);
-            case FireAndForget:
-                return new RxActionCreator<T>(mFireAndForgetSubscription, scheduler)
-                        .async(background);
-        }
-
-        throw new IllegalArgumentException();
+    /**
+     * 規定のスレッドとタイミングで非同期処理を行う
+     */
+    public <T> RxTaskBuilder<T> async(SubscribeTarget subscribe, ObserveTarget observe, RxTask.Async<T> background) {
+        return new RxTaskBuilder<T>(mSubscription)
+                .subscribeOn(subscribe)
+                .observeOn(observe)
+                .async(background);
     }
 
     /**

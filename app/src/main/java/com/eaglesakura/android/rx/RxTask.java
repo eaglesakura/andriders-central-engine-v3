@@ -1,18 +1,61 @@
 package com.eaglesakura.android.rx;
 
-import rx.Observable;
-
 /**
  *
  */
 public class RxTask<T> {
-    CancelSignal mCancelSignal;
 
-    Observable.OnSubscribe<T> mSubscribe;
+    /**
+     * 外部から指定されたキャンセルチェック
+     */
+    CancelSignal mUserCancelSignal;
+
+    /**
+     * 購読対象からのキャンセルチェック
+     */
+    CancelSignal mSubscribeCancelSignal;
 
     Throwable mError;
 
     T mResult;
+
+    State mState = State.Building;
+
+    /**
+     * コールバック対象を指定する
+     *
+     * デフォルトはFire And Forget
+     */
+    ObserveTarget mObserveTarget = ObserveTarget.FireAndForget;
+
+    public enum State {
+        /**
+         * タスクを生成中
+         */
+        Building,
+
+        /**
+         * まだ実行されていない
+         */
+        Pending,
+
+        /**
+         * タスクが実行中
+         */
+        Running,
+
+        /**
+         * 完了
+         */
+        Finished,
+    }
+
+    /**
+     * 現在のタスク状態を取得する
+     */
+    public State getState() {
+        return mState;
+    }
 
     /**
      * 戻り値を取得する
@@ -37,11 +80,19 @@ public class RxTask<T> {
         }
     }
 
+    /**
+     * タスクがキャンセル状態であればtrue
+     */
     public boolean isCanceled() {
-        if (mCancelSignal == null) {
-            return false;
+        if (mUserCancelSignal != null && mUserCancelSignal.isCanceled()) {
+            return true;
         }
-        return mCancelSignal.isCanceled();
+
+        if (mSubscribeCancelSignal != null & mSubscribeCancelSignal.isCanceled()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
