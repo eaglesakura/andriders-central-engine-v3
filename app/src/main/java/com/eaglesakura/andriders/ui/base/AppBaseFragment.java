@@ -10,6 +10,10 @@ import com.eaglesakura.android.framework.ui.BaseFragment;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
+import com.eaglesakura.android.rx.LifecycleTarget;
+import com.eaglesakura.android.rx.RxActionCreator;
+import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.SubscriptionWrapper;
 import com.eaglesakura.android.thread.async.AsyncTaskController;
 import com.eaglesakura.android.thread.async.AsyncTaskResult;
 import com.eaglesakura.android.thread.async.CachedTaskHandler;
@@ -19,8 +23,13 @@ import com.eaglesakura.material.widget.MaterialAlertDialog;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.widget.Toast;
+
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 
 public abstract class AppBaseFragment extends BaseFragment {
@@ -29,6 +38,12 @@ public abstract class AppBaseFragment extends BaseFragment {
      * Googleの認証を行う
      */
     protected static final int REQUEST_GOOGLE_AUTH = 0x2400;
+
+    private SubscriptionWrapper mForegroundSubscription = new SubscriptionWrapper(new CompositeSubscription());
+
+    private SubscriptionWrapper mAliveSubscription = new SubscriptionWrapper(new CompositeSubscription());
+
+    private SubscriptionWrapper mFireAndForgetSubscription = new SubscriptionWrapper(new CompositeSubscription());
 
     private AsyncTaskController localTasks;
 
@@ -44,20 +59,33 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAliveSubscription.onResume();
+        mFireAndForgetSubscription.onResume();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
+        mForegroundSubscription.onPause();
         localTaskHandler.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mForegroundSubscription.onResume();
         localTaskHandler.onResume();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        mForegroundSubscription.unsubscribe();
+        mAliveSubscription.unsubscribe();
+
         if (localTasks != null) {
             localTasks.cancelListeners();
             localTasks.dispose();
@@ -70,6 +98,44 @@ public abstract class AppBaseFragment extends BaseFragment {
 
     public Settings getSettings() {
         return Settings.getInstance();
+    }
+
+//    /**
+//     * 戻り値のない非同期処理を行う
+//     * @param target コールバック対象
+//     * @param background バックグラウンドタスク
+//     * @return
+//     */
+//    public RxActionCreator<Void> async(LifecycleTarget target, RxTask.Action0 background) {
+//        return async(target, Void.class, (RxTask<Void> it) -> {
+//            background.call(it);
+//            return null;
+//        });
+//    }
+
+    /**
+     * 非同期処理を行う
+     */
+    public <T> RxActionCreator<T> async(LifecycleTarget target, RxTask.Async<T> background) {
+        if (target == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Scheduler scheduler = Schedulers.from(getTaskController().getExecutor());
+
+        switch (target) {
+            case Forground:
+                return new RxActionCreator<T>(mForegroundSubscription, scheduler)
+                        .async(background);
+            case Alive:
+                return new RxActionCreator<T>(mAliveSubscription, scheduler)
+                        .async(background);
+            case FireAndForget:
+                return new RxActionCreator<T>(mFireAndForgetSubscription, scheduler)
+                        .async(background);
+        }
+
+        throw new IllegalArgumentException();
     }
 
     /**

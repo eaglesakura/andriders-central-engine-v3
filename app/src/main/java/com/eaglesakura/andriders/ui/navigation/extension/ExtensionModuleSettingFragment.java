@@ -8,6 +8,8 @@ import com.eaglesakura.andriders.extension.ExtensionInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.ui.SupportAQuery;
+import com.eaglesakura.android.rx.LifecycleTarget;
+import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.util.Util;
 
 import android.content.Context;
@@ -82,42 +84,30 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        waitExtensionLoading();
+        updateExtensionViews();
     }
 
-    void waitExtensionLoading() {
-        runBackground(new Runnable() {
-            @Override
-            public void run() {
-                while (isFragmentResumed()) {
-                    ExtensionClientManager manager = parent.getClientManager();
-                    if (manager != null) {
-                        onLoadedExtensions(manager);
-                        return;
-                    }
-                    Util.sleep(10);
+    void updateExtensionViews() {
+        async(LifecycleTarget.Alive, (RxTask<ExtensionClientManager> it) -> {
+            while (!it.isCanceled()) {
+                ExtensionClientManager manager = parent.getClientManager();
+                if (manager != null) {
+                    return manager;
                 }
+                Util.sleep(1);
             }
-        });
-    }
 
-    /**
-     * 拡張機能のロードが完了した
-     */
-    void onLoadedExtensions(final ExtensionClientManager manager) {
-        runUI(new Runnable() {
-            @Override
-            public void run() {
-                // モジュールを空にする
-                modulesRoot.removeAllViews();
+            throw new IllegalStateException();
+        }).completed((manager, task) -> {
+            // 取得成功したらViewに反映する
+            modulesRoot.removeAllViews();
 
-                List<ExtensionClient> clients = manager.listClients(ExtensionCategory.fromName(categoryName));
-                for (ExtensionClient client : clients) {
-                    // クライアント表示を追加する
-                    addClientSetting(client);
-                }
+            List<ExtensionClient> clients = manager.listClients(ExtensionCategory.fromName(categoryName));
+            for (ExtensionClient client : clients) {
+                // クライアント表示を追加する
+                addClientSetting(client);
             }
-        });
+        }).start();
     }
 
     /**

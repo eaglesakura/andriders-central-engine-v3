@@ -33,6 +33,15 @@
 
 アプリの動作確認は可能です。
 
+### 必要環境
+
+ 1. JDK 1.8
+ 1. Cygwin(Windows環境の場合) / Terminal(Mac/Ubuntu環境の場合)
+ 1. Android SDK(可能な限り最新版)
+ 1. 環境変数: ANDROID_HOME
+
+### ビルド手順
+
 <pre>
 
 # Android SDKの内容を同期する

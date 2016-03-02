@@ -7,6 +7,7 @@ def ACES_APP_VERSION = "3.0"
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.eaglesakura.android-support'
+apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
@@ -80,6 +81,9 @@ dependencies {
     // UI Library
     compile 'com.edmodo:rangebar:1.0.0' // Zone Setting
 //    compile 'com.cocosw:bottomsheet:1.0@aar'    // sheet select
+    // Thread library
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex:rxjava:1.1.0'
 
     // Remote Debug
     debugCompile 'com.deploygate:sdk:3.1'
@@ -94,6 +98,11 @@ dependencies {
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
@@ -184,6 +193,23 @@ android {
         exclude 'services/com.fasterxml.jackson.core.ObjectCodec'
     }
 }
+
+/**
+ * UnitTest & retro lambda
+ */
+tasks.withType(Test) {
+    project.tasks
+            .findAll {
+        task -> (task.name ==~ /compile.*?TestJava.*?/)
+    }
+    .each { task ->
+        task.doFirst {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+}
+
 /**
  * バージョンを取得する
  * CircleCIの場合、バージョン末尾にビルド番号を付与する
