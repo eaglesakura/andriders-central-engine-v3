@@ -79,6 +79,21 @@ public enum SubscribeTarget {
         int getThreadPoolNum() {
             return 3;
         }
+    },
+
+    /**
+     * 専用スレッドを生成する
+     */
+    NewThread {
+        @Override
+        int getKeepAliveMs() {
+            return 0;
+        }
+
+        @Override
+        int getThreadPoolNum() {
+            return 0;
+        }
     };
 
     /**

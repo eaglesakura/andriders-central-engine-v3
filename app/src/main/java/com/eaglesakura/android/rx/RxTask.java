@@ -1,5 +1,7 @@
 package com.eaglesakura.android.rx;
 
+import rx.Observable;
+
 /**
  *
  */
@@ -15,8 +17,14 @@ public class RxTask<T> {
      */
     CancelSignal mSubscribeCancelSignal;
 
+    /**
+     * 受信したエラー
+     */
     Throwable mError;
 
+    /**
+     * 戻り値
+     */
     T mResult;
 
     State mState = State.Building;
@@ -27,6 +35,11 @@ public class RxTask<T> {
      * デフォルトはFire And Forget
      */
     ObserveTarget mObserveTarget = ObserveTarget.FireAndForget;
+
+    /**
+     * 処理本体
+     */
+    Observable<T> mObservable;
 
     public enum State {
         /**
@@ -62,6 +75,13 @@ public class RxTask<T> {
      */
     public T getResult() {
         return mResult;
+    }
+
+    /**
+     * 処理の完了待ちを行う
+     */
+    public T await() throws Throwable {
+        return mObservable.toBlocking().first();
     }
 
     /**

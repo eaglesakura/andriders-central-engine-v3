@@ -46,6 +46,9 @@ class ThreadController {
      * MEMO : スケジューラの実際のnew処理はこの呼出まで遅延される
      */
     public Scheduler getScheduler(SubscribeTarget target) {
+        if (target == SubscribeTarget.NewThread) {
+            return Schedulers.newThread();
+        }
         return mThreads.get(target.ordinal()).getScheduler();
     }
 

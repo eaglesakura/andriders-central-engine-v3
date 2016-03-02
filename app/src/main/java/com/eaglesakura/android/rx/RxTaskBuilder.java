@@ -1,6 +1,6 @@
 package com.eaglesakura.android.rx;
 
-import com.eaglesakura.android.thread.async.AsyncTaskResult;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -32,11 +32,6 @@ public class RxTaskBuilder<T> {
     RxTask.Action0 mFinalizeCallback;
 
     /**
-     * キャンセルチェック
-     */
-    AsyncTaskResult.CancelSignal mCancelSignal;
-
-    /**
      * 標準ではプロセス共有スレッドで実行される
      */
     SubscribeTarget mThreadTarget = SubscribeTarget.GlobalParallels;
@@ -63,6 +58,14 @@ public class RxTaskBuilder<T> {
      */
     public RxTaskBuilder<T> observeOn(ObserveTarget target) {
         mTask.mObserveTarget = target;
+        return this;
+    }
+
+    /**
+     * 処理にタイムアウトを付与する
+     */
+    public RxTaskBuilder<T> timeout(long timeoutMs) {
+        mObservable.timeout(timeoutMs, TimeUnit.MILLISECONDS);
         return this;
     }
 

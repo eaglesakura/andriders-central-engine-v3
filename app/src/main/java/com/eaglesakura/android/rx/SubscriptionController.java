@@ -1,6 +1,8 @@
 package com.eaglesakura.android.rx;
 
-import com.eaglesakura.android.thread.ui.UIHandler;
+
+import android.os.Handler;
+import android.os.Looper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,11 @@ public class SubscriptionController {
     private LifecycleState mState;
 
     private ThreadController mThreadController = new ThreadController();
+
+    /**
+     * 処理をワンテンポ遅らせるためのハンドラ
+     */
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     public SubscriptionController() {
         mStateControllers.add(new StateController(ObserveTarget.Forground));
@@ -45,17 +52,20 @@ public class SubscriptionController {
      */
     public SubscriptionController bind(BehaviorSubject<LifecycleState> behavior) {
         behavior.asObservable().subscribe(next -> {
-            mState = next;
-            // 廃棄されたらスレッドと購読処理も廃棄する
-            if (next == LifecycleState.OnDestroyed) {
-                mThreadController.dispose();
-                mSubscription.unsubscribe();
-            }
+            // 継承されたActivityやFragmentはsuper.onの呼び出しで前後が生じるため、統一させるために必ずワンテンポ処理を遅らせる
+            mHandler.post(() -> {
+                mState = next;
 
-            // 保留タスクがあれば流すように促す
-            for (StateController ctrl : mStateControllers) {
-                ctrl.onNext();
-            }
+                if (next == LifecycleState.OnDestroyed) {
+                    mThreadController.dispose();
+                    mSubscription.unsubscribe();
+                }
+
+                // 保留タスクがあれば流すように促す
+                for (StateController ctrl : mStateControllers) {
+                    ctrl.onNext();
+                }
+            });
         });
         return this;
     }
@@ -139,7 +149,7 @@ public class SubscriptionController {
                 // 保留から解除されたら、保留されていたタスクを流す
                 List<Runnable> executes = new ArrayList<>(mPendings);
                 mPendings.clear();
-                UIHandler.postUI(() -> {
+                mHandler.post(() -> {
                     if (mSubscription.isUnsubscribed()) {
                         // 未購読状態になっているので何もしない
                         return;
