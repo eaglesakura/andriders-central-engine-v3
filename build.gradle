@@ -7,7 +7,6 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:1.5.0'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath "com.eaglesakura:eglibrary-gradle-plugin:0.2.7"
         classpath 'com.deploygate:gradle:0.6'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.4.1'
@@ -27,7 +26,7 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-// リリースディレクトリ指定
+// 各グローバル設定
 ext {
     ANDROID_SUPPORT_LIB_VERSION = "23.2.+"
     ANDROID_PLAYSERVICE_LIB_VERSION = "8.4.+"
