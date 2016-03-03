@@ -5,9 +5,12 @@ import com.eaglesakura.andriders.v2.db.DebugSettings;
 import com.eaglesakura.andriders.v2.db.DefaultCommandSettings;
 import com.eaglesakura.andriders.v2.db.UpdateCheckProps;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
-import com.eaglesakura.android.db.BasePropertiesDatabase;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.thread.async.AsyncTaskResult;
+import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.RxTaskBuilder;
+import com.eaglesakura.android.rx.SubscribeTarget;
+import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
@@ -74,57 +77,38 @@ public class Settings {
      * リロードを行う
      */
     public void load() {
-        try {
-            BasePropertiesDatabase.runInTaskQueue(new Runnable() {
-                @Override
-                public void run() {
-                    debugSettings.load();
-                    centralSettings.load();
-                    userProfiles.load();
-                    updateCheckProps.load();
-                    defaultCommandSettings.load();
-                }
-            }).await(1000);
-        } catch (Exception e) {
-
-        }
+        debugSettings.load();
+        centralSettings.load();
+        userProfiles.load();
+        updateCheckProps.load();
+        defaultCommandSettings.load();
     }
 
     /**
      * 全てのデータを最新版に更新する
      */
     public void commitAndLoad() {
-        final Object lock = new Object();
-        BasePropertiesDatabase.runInTaskQueue(new Runnable() {
-            @Override
-            public void run() {
-                debugSettings.commitAndLoad();
-                centralSettings.commitAndLoad();
-                userProfiles.commitAndLoad();
-                updateCheckProps.commitAndLoad();
-                defaultCommandSettings.commitAndLoad();
-            }
-        });
-        synchronized (lock) {
-            try {
-                lock.wait(1000);
-            } catch (Exception e) {
-            }
-        }
+        debugSettings.commitAndLoad();
+        centralSettings.commitAndLoad();
+        userProfiles.commitAndLoad();
+        updateCheckProps.commitAndLoad();
+        defaultCommandSettings.commitAndLoad();
     }
 
-    /**
-     * 非同期で最新版に更新する
-     */
-    public AsyncTaskResult<Settings> commitAndLoadAsync() {
-        BasePropertiesDatabase.runInTaskQueue(new Runnable() {
-            @Override
-            public void run() {
-                commitAndLoad();
-            }
-        });
-        return null;
-    }
+//    /**
+//     * 非同期で最新版に更新する
+//     */
+//    public void commitAndLoadAsync(SubscriptionController subscriptionController, RxTask.Action1<Settings> completed) {
+//        new RxTaskBuilder<Settings>(subscriptionController)
+//                .async(it -> {
+//                    commitAndLoad();
+//                    return Settings.this;
+//                })
+//                .observeOn(ObserveTarget.FireAndForget)
+//                .subscribeOn(SubscribeTarget.GlobalPipeline)
+//                .completed(completed)
+//                .start();
+//    }
 
     /**
      * データインストール用のパスを取得する

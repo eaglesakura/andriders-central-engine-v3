@@ -10,14 +10,12 @@ import com.eaglesakura.andriders.db.fit.FitnessDeviceCacheDatabase;
 import com.eaglesakura.andriders.google.FitnessDeviceController;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
-import com.eaglesakura.andriders.v2.db.CentralServiceSettings;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.util.LogUtil;
 
-import android.bluetooth.BluetoothDevice;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -130,92 +128,87 @@ public class GadgetSettingFragment extends AppBaseFragment {
      * デバイス情報を読み込む
      */
     void loadDeviceCache(final FitnessDeviceType type) {
-        runBackground(new Runnable() {
-            @Override
-            public void run() {
-                FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(getActivity());
-                try {
-                    pushProgress(R.string.Common_File_Load);
-                    db.openReadOnly();
+        asyncUI(it -> {
+            FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(getActivity());
+            try {
+                pushProgress(R.string.Common_File_Load);
+                db.openReadOnly();
 
-                    List<DbBleFitnessDevice> devices = db.listScanDevices(type);
+                List<DbBleFitnessDevice> devices = db.listScanDevices(type);
 
-                    String address;
-                    if (type == FitnessDeviceType.HEARTRATE_MONITOR) {
-                        address = personalDataSettings.getBleHeartrateMonitorAddress();
-                    } else if (type == FitnessDeviceType.SPEED_CADENCE_SENSOR) {
-                        address = personalDataSettings.getBleSpeedCadenceSensorAddress();
-                    } else {
-                        throw new IllegalStateException();
-                    }
-                    DbBleFitnessDevice selected = db.load(address);
-                    updateBleSelectorUI(type, devices, selected != null ? selected.getAddress() : null);
-                } finally {
-                    db.close();
-                    popProgress();
+                String address;
+                if (type == FitnessDeviceType.HEARTRATE_MONITOR) {
+                    address = personalDataSettings.getBleHeartrateMonitorAddress();
+                } else if (type == FitnessDeviceType.SPEED_CADENCE_SENSOR) {
+                    address = personalDataSettings.getBleSpeedCadenceSensorAddress();
+                } else {
+                    throw new IllegalStateException();
                 }
+                DbBleFitnessDevice selected = db.load(address);
+                updateBleSelectorUI(type, devices, selected != null ? selected.getAddress() : null);
+            } finally {
+                db.close();
+                popProgress();
             }
-        });
+            return null;
+        }).start();
     }
 
     /**
      * UIを更新する
      */
     void updateBleSelectorUI(final FitnessDeviceType fitnessDevice, final List<DbBleFitnessDevice> devices, final String selectedDeviceAddress) {
-        runUI(new Runnable() {
-            @Override
-            public void run() {
-                BasicSpinnerAdapter adapter;
-                int selectorLayoutId;
-                List<DbBleFitnessDevice> devicesList;
-                if (fitnessDevice == FitnessDeviceType.HEARTRATE_MONITOR) {
-                    adapter = heartrateAdapter;
-                    selectorLayoutId = R.id.Setting_RoadBikeProfile_HeartrateMonitor_Selector;
-                    devicesList = heartrateDevices;
-                } else if (fitnessDevice == FitnessDeviceType.SPEED_CADENCE_SENSOR) {
-                    adapter = cadenceAdapter;
-                    selectorLayoutId = R.id.Setting_RoadBikeProfile_SpeedAndCadence_Selector;
-                    devicesList = cadenceDevices;
-                } else {
-                    throw new IllegalArgumentException();
-                }
+        runOnUiThread(() -> {
+            BasicSpinnerAdapter adapter;
+            int selectorLayoutId;
+            List<DbBleFitnessDevice> devicesList;
+            if (fitnessDevice == FitnessDeviceType.HEARTRATE_MONITOR) {
+                adapter = heartrateAdapter;
+                selectorLayoutId = R.id.Setting_RoadBikeProfile_HeartrateMonitor_Selector;
+                devicesList = heartrateDevices;
+            } else if (fitnessDevice == FitnessDeviceType.SPEED_CADENCE_SENSOR) {
+                adapter = cadenceAdapter;
+                selectorLayoutId = R.id.Setting_RoadBikeProfile_SpeedAndCadence_Selector;
+                devicesList = cadenceDevices;
+            } else {
+                throw new IllegalArgumentException();
+            }
 
-                AQuery q = new AQuery(getView()).id(selectorLayoutId);
-                // デバイスリストに登録する
-                {
-                    // 先頭にnullを突っ込み、非選択版として扱う
-                    devices.add(null);
-                    devicesList.clear();
-                    devicesList.addAll(devices);
-                }
+            AQuery q = new AQuery(getView()).id(selectorLayoutId);
+            // デバイスリストに登録する
+            {
+                // 先頭にnullを突っ込み、非選択版として扱う
+                devices.add(null);
+                devicesList.clear();
+                devicesList.addAll(devices);
+            }
 
-                // 選択用のリストを生成する
-                adapter.clear();
-                int selected = -1;
-                int count = 0;
-                for (DbBleFitnessDevice device : devices) {
-                    if (device != null) {
+            // 選択用のリストを生成する
+            adapter.clear();
+            int selected = -1;
+            int count = 0;
+            for (DbBleFitnessDevice device : devices) {
+                if (device != null) {
 //                        adapter.add(getString(R.string.Setting_Gadgets_Sensors_Selector, device.getName(), device.getSelectedCount()));
-                        adapter.add(getString(R.string.Setting_Gadgets_Sensors_Selector, device.getName(), toDeviceId(device.getAddress())));
-                        if (device.getAddress().equals(selectedDeviceAddress)) {
-                            selected = count;
-                        }
-                        ++count;
-                    } else {
-                        adapter.add(getString(R.string.Setting_Gadgets_Sensors_Selector_None));
+                    adapter.add(getString(R.string.Setting_Gadgets_Sensors_Selector, device.getName(), toDeviceId(device.getAddress())));
+                    if (device.getAddress().equals(selectedDeviceAddress)) {
+                        selected = count;
                     }
+                    ++count;
+                } else {
+                    adapter.add(getString(R.string.Setting_Gadgets_Sensors_Selector_None));
                 }
+            }
 
-                if (selected < 0) {
-                    // 明示的な選択が無ければ最後を選択する
-                    selected = devices.size() - 1;
-                }
+            if (selected < 0) {
+                // 明示的な選択が無ければ最後を選択する
+                selected = devices.size() - 1;
+            }
 
-                adapter.notifyDataSetChanged();
-                // 既にされていれば、カーソルを選択する
-                if (selected >= 0) {
-                    q.setSelection(selected);
-                }
+            adapter.notifyDataSetChanged();
+            // 既にされていれば、カーソルを選択する
+            if (selected >= 0) {
+                q.setSelection(selected);
             }
         });
     }
@@ -256,23 +249,21 @@ public class GadgetSettingFragment extends AppBaseFragment {
         @Override
         public void onDeviceFound(final BleDevice bleDevice) {
             toast(getString(R.string.Setting_Gadgets_Sensors_Found, bleDevice.getName()));
-            runBackground(new Runnable() {
-                @Override
-                public void run() {
-                    FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(getActivity());
-                    try {
-                        db.openWritable();
-                        db.foundDevice(type, bleDevice);
-                    } catch (Exception e) {
-                        LogUtil.log(e);
-                    } finally {
-                        db.close();
-                    }
-
-                    // リロードを行う
-                    loadDeviceCache(type);
+            asyncUI(it -> {
+                FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(getActivity());
+                try {
+                    db.openWritable();
+                    db.foundDevice(type, bleDevice);
+                } catch (Exception e) {
+                    LogUtil.log(e);
+                } finally {
+                    db.close();
                 }
-            });
+
+                // リロードを行う
+                loadDeviceCache(type);
+                return null;
+            }).start();
         }
 
         @Override

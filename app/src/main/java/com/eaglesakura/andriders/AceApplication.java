@@ -6,7 +6,6 @@ import com.google.android.gms.location.LocationServices;
 
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.thread.async.AsyncTaskController;
 import com.eaglesakura.util.LogUtil;
 
 import android.app.Application;
@@ -40,15 +39,6 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
     @Override
     public void onApplicationUpdated(int oldVersionCode, int newVersionCode, String oldVersionName, String newVersionName) {
         LogUtil.log("App Updated old(%d:%s) new(%d:%s)", oldVersionCode, oldVersionName, newVersionCode, newVersionName);
-    }
-
-    private static AsyncTaskController gTaskController = new AsyncTaskController(3);
-
-    /**
-     * グローバルで処理されるタスクコントローラを取得する
-     */
-    public static AsyncTaskController getTaskController() {
-        return gTaskController;
     }
 
     public static GoogleApiClient.Builder newFullPermissionClientBuilder() {

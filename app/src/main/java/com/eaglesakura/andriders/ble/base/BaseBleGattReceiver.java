@@ -7,7 +7,6 @@ import com.eaglesakura.andriders.db.fit.FitnessDeviceCacheDatabase;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
 import com.eaglesakura.android.bluetooth.BluetoothDeviceScanner;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.thread.async.AsyncAction;
 import com.eaglesakura.android.thread.ui.UIHandler;
 
 import android.bluetooth.BluetoothAdapter;
@@ -63,42 +62,43 @@ public abstract class BaseBleGattReceiver {
         }
         onSensorScanStart();
 
-        new AsyncAction("BleConnectiong") {
-            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-
-            @Override
-            protected Object onBackgroundAction() throws Exception {
-                BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(targetFitnessDeviceAddress);
-                if (!adapter.isEnabled() || device == null) {
-                    throw new IllegalStateException();
-                } else {
-                    return device;
-                }
-            }
-
-            @Override
-            protected void onSuccess(Object object) {
-                BluetoothDevice device = (BluetoothDevice) object;
-                onSensorFound(device);
-                BaseBleGattReceiver.this.device = newBleDevice(device);
-                BaseBleGattReceiver.this.device.registerDeviceListener(baseDeviceListener);
-                BaseBleGattReceiver.this.device.connect();
-
-                // GATTへの接続タイムアウトチェックする
-                requestGattTimeoutCheck(GATT_CONNECT_TIMEOUT_MS);
-
-                // 再接続遅延時間をリセットする
-                reconnectWaitTime = DEFAULT_RECONNECT_DELAY_MS;
-            }
-
-            @Override
-            protected void onFailure(Exception exception) {
-                requestReScan(DEFAULT_RECONNECT_DELAY_MS);
-                if (!adapter.isEnabled()) {
-                    adapter.enable();
-                }
-            }
-        }.start();
+        throw new IllegalAccessError("not impl");
+//        new AsyncAction("BleConnectiong") {
+//            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+//
+//            @Override
+//            protected Object onBackgroundAction() throws Exception {
+//                BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(targetFitnessDeviceAddress);
+//                if (!adapter.isEnabled() || device == null) {
+//                    throw new IllegalStateException();
+//                } else {
+//                    return device;
+//                }
+//            }
+//
+//            @Override
+//            protected void onSuccess(Object object) {
+//                BluetoothDevice device = (BluetoothDevice) object;
+//                onSensorFound(device);
+//                BaseBleGattReceiver.this.device = newBleDevice(device);
+//                BaseBleGattReceiver.this.device.registerDeviceListener(baseDeviceListener);
+//                BaseBleGattReceiver.this.device.connect();
+//
+//                // GATTへの接続タイムアウトチェックする
+//                requestGattTimeoutCheck(GATT_CONNECT_TIMEOUT_MS);
+//
+//                // 再接続遅延時間をリセットする
+//                reconnectWaitTime = DEFAULT_RECONNECT_DELAY_MS;
+//            }
+//
+//            @Override
+//            protected void onFailure(Exception exception) {
+//                requestReScan(DEFAULT_RECONNECT_DELAY_MS);
+//                if (!adapter.isEnabled()) {
+//                    adapter.enable();
+//                }
+//            }
+//        }.start();
     }
 
     protected abstract BleDevice newBleDevice(BluetoothDevice device);
@@ -137,23 +137,24 @@ public abstract class BaseBleGattReceiver {
     };
 
     void incrementConnectCount(final BluetoothDevice device) {
-        FrameworkCentral.getTaskController().pushBack(new Runnable() {
-            @Override
-            public void run() {
-                FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(context);
-                try {
-                    db.openWritable();
-                    DbBleFitnessDevice fitnessDevice = db.load(device.getAddress());
-                    fitnessDevice.setSelectedCount(fitnessDevice.getSelectedCount() + 1);
-
-                    db.update(fitnessDevice);
-                } catch (Exception e) {
-
-                } finally {
-                    db.close();
-                }
-            }
-        });
+        throw new IllegalAccessError("not impl");
+//        FrameworkCentral.getTaskController().pushBack(new Runnable() {
+//            @Override
+//            public void run() {
+//                FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(context);
+//                try {
+//                    db.openWritable();
+//                    DbBleFitnessDevice fitnessDevice = db.load(device.getAddress());
+//                    fitnessDevice.setSelectedCount(fitnessDevice.getSelectedCount() + 1);
+//
+//                    db.update(fitnessDevice);
+//                } catch (Exception e) {
+//
+//                } finally {
+//                    db.close();
+//                }
+//            }
+//        });
     }
 
     void requestReScan(long delayTimeMs) {

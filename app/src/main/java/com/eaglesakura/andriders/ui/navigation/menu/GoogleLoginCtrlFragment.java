@@ -90,34 +90,32 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
     }
 
     void releaseMigration() {
-        runBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    pushProgress(R.string.Common_Update_Migration);
+        asyncUI(it -> {
+            try {
+                pushProgress(R.string.Common_Update_Migration);
 
-                    int initialVersion = Settings.getInstance().getUpdateCheckProps().getInitializeReleased();
+                int initialVersion = Settings.getInstance().getUpdateCheckProps().getInitializeReleased();
 
-                    // 初回起動時に初期セットアップを行う
-                    if (initialVersion < RELEASE_INITIALIZE_NUMBER_release1) {
-                        setupRelease1();
-                        initialVersion = RELEASE_INITIALIZE_NUMBER_release1;
-                    }
-
-                    // TODO マイグレーションが必要ならここに記述する
-                    if (initialVersion < RELEASE_INITIALIZE_NUMBER_release3) {
-
-                    }
-
-                    // リリース番号をコミット
-                    Settings settings = getSettings();
-                    settings.getUpdateCheckProps().setInitializeReleased(RELEASE_INITIALIZE_NUMBER);
-                    settings.commitAndLoadAsync();
-                } finally {
-                    popProgress();
+                // 初回起動時に初期セットアップを行う
+                if (initialVersion < RELEASE_INITIALIZE_NUMBER_release1) {
+                    setupRelease1();
+                    initialVersion = RELEASE_INITIALIZE_NUMBER_release1;
                 }
+
+                // TODO マイグレーションが必要ならここに記述する
+                if (initialVersion < RELEASE_INITIALIZE_NUMBER_release3) {
+
+                }
+
+                // リリース番号をコミット
+                Settings settings = getSettings();
+                settings.getUpdateCheckProps().setInitializeReleased(RELEASE_INITIALIZE_NUMBER);
+                settings.commitAndLoad();
+            } finally {
+                popProgress();
             }
-        });
+            return this;
+        }).start();
     }
 
     /**

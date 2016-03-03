@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.computer.CycleComputerManager;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.display.DisplayData;
+import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.Util;
 
@@ -27,8 +28,8 @@ public class DisplayManager extends CycleComputerManager {
      */
     Map<String, DisplayViewData> values = new HashMap<>();
 
-    public DisplayManager(Context context) {
-        super(context);
+    public DisplayManager(Context context, SubscriptionController subscriptionController) {
+        super(context, subscriptionController);
     }
 
     /**
@@ -46,15 +47,13 @@ public class DisplayManager extends CycleComputerManager {
             return;
         }
 
-        mPipeline.pushBack(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (values) {
-                    for (DisplayViewData value : impl) {
-                        values.put(createKey(extension, value), value);
-                    }
+        execute(it -> {
+            synchronized (values) {
+                for (DisplayViewData value : impl) {
+                    values.put(createKey(extension, value), value);
                 }
             }
+            return this;
         });
     }
 

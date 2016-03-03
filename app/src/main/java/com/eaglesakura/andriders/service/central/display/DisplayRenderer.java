@@ -7,13 +7,9 @@ import com.eaglesakura.andriders.display.DisplaySlot;
 import com.eaglesakura.andriders.display.DisplaySlotManager;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.service.central.CentralContext;
-import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.framework.service.BaseService;
-import com.eaglesakura.android.thread.async.AsyncTaskResult;
-import com.eaglesakura.android.thread.async.IAsyncTask;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
-import com.eaglesakura.util.LogUtil;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,25 +66,26 @@ public class DisplayRenderer {
             }
         }
 
-        FrameworkCentral.getTaskController().pushBack(new IAsyncTask<DisplaySlotManager>() {
-            @Override
-            public DisplaySlotManager doInBackground(AsyncTaskResult<DisplaySlotManager> result) throws Exception {
-                DisplaySlotManager slotManager = new DisplaySlotManager(mService, appPackageName, DisplaySlotManager.Mode.ReadOnly);
-                slotManager.load();
-                return slotManager;
-            }
-        }).setListener(new AsyncTaskResult.CompletedListener<DisplaySlotManager>() {
-            @Override
-            public void onTaskCompleted(AsyncTaskResult<DisplaySlotManager> task, DisplaySlotManager result) {
-                if (mDisplaySlotManager != null &&
-                        mDisplaySlotManager.getAppPackageName().equals(result.getAppPackageName())) {
-                    LogUtil.log("no change package(%s)", result.getAppPackageName());
-                    return;
-                }
-
-                mDisplaySlotManager = result;
-            }
-        });
+        throw new IllegalAccessError("not impl");
+//        FrameworkCentral.getTaskController().pushBack(new IAsyncTask<DisplaySlotManager>() {
+//            @Override
+//            public DisplaySlotManager doInBackground(AsyncTaskResult<DisplaySlotManager> result) throws Exception {
+//                DisplaySlotManager slotManager = new DisplaySlotManager(mService, appPackageName, DisplaySlotManager.Mode.ReadOnly);
+//                slotManager.load();
+//                return slotManager;
+//            }
+//        }).setListener(new AsyncTaskResult.CompletedListener<DisplaySlotManager>() {
+//            @Override
+//            public void onTaskCompleted(AsyncTaskResult<DisplaySlotManager> task, DisplaySlotManager result) {
+//                if (mDisplaySlotManager != null &&
+//                        mDisplaySlotManager.getAppPackageName().equals(result.getAppPackageName())) {
+//                    LogUtil.log("no change package(%s)", result.getAppPackageName());
+//                    return;
+//                }
+//
+//                mDisplaySlotManager = result;
+//            }
+//        });
     }
 
     /**

@@ -5,21 +5,20 @@ import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManage
 import com.eaglesakura.andriders.extension.ExtensionCategory;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.profile.GadgetSettingFragment;
-import com.eaglesakura.android.thread.async.AsyncTaskResult;
+import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.SubscribeTarget;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 拡張機能の設定を行う。
  */
 public class ExtensionFragmentMain extends BaseNavigationFragment {
 
-    ExtensionClientManager clientManager;
+    ExtensionClientManager mClientManager;
 
     public ExtensionFragmentMain() {
         requestInjection(R.layout.fragment_simiple_main);
@@ -79,45 +78,37 @@ public class ExtensionFragmentMain extends BaseNavigationFragment {
     public void onResume() {
         super.onResume();
 
-        reloadExtensions();
+        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<ExtensionClientManager> task) -> {
+            try {
+                pushProgress(R.string.Common_File_Load);
+
+                ExtensionClientManager clientManager = new ExtensionClientManager(getActivity());
+                clientManager.connect(ExtensionClientManager.ConnectMode.All);
+
+                return clientManager;
+            } finally {
+                popProgress();
+            }
+        }).completed((it, task) -> {
+            mClientManager = it;
+        }).start();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (clientManager != null) {
-            clientManager.disconnect();
-            clientManager = null;
-        }
+
+        async(SubscribeTarget.Pipeline, ObserveTarget.FireAndForget, it -> {
+            if (mClientManager != null) {
+                mClientManager.disconnect();
+                mClientManager = null;
+            }
+            return this;
+        }).start();
     }
 
     public ExtensionClientManager getClientManager() {
-        return clientManager;
-    }
-
-    void reloadExtensions() {
-        final ExtensionClientManager manager = new ExtensionClientManager(getActivity());
-        manager.connect(ExtensionClientManager.ConnectMode.All).setListener(new AsyncTaskResult.Listener<ExtensionClientManager>() {
-            @Override
-            public void onTaskCompleted(AsyncTaskResult<ExtensionClientManager> task, ExtensionClientManager result) {
-                clientManager = result;
-            }
-
-            @Override
-            public void onTaskFailed(AsyncTaskResult<ExtensionClientManager> task, Exception error) {
-
-            }
-
-            @Override
-            public void onTaskCanceled(AsyncTaskResult<ExtensionClientManager> task) {
-
-            }
-
-            @Override
-            public void onTaskFinalize(AsyncTaskResult<ExtensionClientManager> task) {
-
-            }
-        });
+        return mClientManager;
     }
 
     public static ExtensionFragmentMain createInstance(Context context) {

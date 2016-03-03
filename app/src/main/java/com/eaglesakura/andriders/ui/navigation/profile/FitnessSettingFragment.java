@@ -59,7 +59,7 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
      * 個人設定を更新する
      */
     void updatePersonalUI() {
-        runUI(() -> {
+        runOnUiThread(() -> {
             AQuery q = new AQuery(getView());
 
             // 体重設定
@@ -189,56 +189,12 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
             });
         }).completed((weight, task) -> {
             updatePersonalUI();
-        }).errored((err, task) -> {
+        }).failed((err, task) -> {
             if (!googleFitFailedMessageBooted) {
                 toast(R.string.Setting_Fitness_Weight_SyncFailed);
                 googleFitFailedMessageBooted = true;
             }
         }).start();
-
-//        runBackground(new Runnable() {
-//            @Override
-//            public void run() {
-//                LogUtil.log("sync fitness data start");
-//
-//                GoogleApiClientToken apiClientToken = getGoogleApiClientToken();
-//                if (apiClientToken == null) {
-//                    return;
-//                }
-//
-//                apiClientToken.executeGoogleApi(new GoogleApiTask<Object>() {
-//                    @Override
-//                    public Object executeTask(GoogleApiClient client) throws Exception {
-//                        float userWeight = GoogleApiUtil.getUserWeightFromFit(client);
-//                        if (userWeight > 0 && userWeight != personalDataSettings.getUserWeight()) {
-//                            personalDataSettings.setUserWeight(userWeight);
-//                            personalDataSettings.commit();
-//                            updatePersonalUI();
-//
-//                            toast(R.string.Setting_Fitness_Weight_SyncCompleted);
-//                        } else if (userWeight <= 0) {
-//                            toast(R.string.Setting_Fitness_Weight_SyncFailed);
-//                        }
-//
-//                        return null;
-//                    }
-//
-//                    @Override
-//                    public Object connectedFailed(GoogleApiClient client, ConnectionResult connectionResult) {
-//                        if (!googleFitFailedMessageBooted) {
-//                            toast(R.string.Setting_Fitness_Weight_SyncFailed);
-//                            googleFitFailedMessageBooted = true;
-//                        }
-//                        return null;
-//                    }
-//
-//                    @Override
-//                    public boolean isCanceled() {
-//                        return isFragmentDestroyed();
-//                    }
-//                });
-//            }
-//        });
     }
 
 
@@ -247,12 +203,10 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
         showHeartrateInputDialog(
                 R.string.Setting_Fitness_MaxHeartrate_DialogTitle, R.string.Setting_Fitness_MaxHeartrate_DialogHiht,
                 personalDataSettings.getMaxHeartrate(),
-                new HeartrateInputListener() {
-                    @Override
-                    public void onInputHeartrate(int bpm) {
-                        personalDataSettings.setMaxHeartrate(bpm);
-                        asyncCommitSettings();
-                    }
+                // 心拍受信ハンドリング
+                bpm -> {
+                    personalDataSettings.setMaxHeartrate(bpm);
+                    asyncCommitSettings();
                 }
         );
     }

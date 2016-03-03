@@ -1,7 +1,11 @@
 package com.eaglesakura.andriders.computer;
 
 import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.android.thread.async.AsyncTaskController;
+import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.RxTaskBuilder;
+import com.eaglesakura.android.rx.SubscribeTarget;
+import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 
@@ -9,32 +13,31 @@ import android.content.Context;
  *
  */
 public abstract class CycleComputerManager {
-    /**
-     * 処理用パイプライン
-     */
-    private static final AsyncTaskController gPipeline = new AsyncTaskController(1, 1000 * 5);
-
-    protected final AsyncTaskController mPipeline;
 
     protected final Context mContext;
 
     protected final Settings mSettings = Settings.getInstance();
 
-    protected CycleComputerManager(Context context) {
-        mContext = context.getApplicationContext();
-        mPipeline = gPipeline;
+    protected final SubscriptionController mSubscription;
+
+    public CycleComputerManager(Context context, SubscriptionController subscription) {
+        mContext = context;
+        mSubscription = subscription;
     }
 
     public Context getContext() {
         return mContext;
     }
 
-    public AsyncTaskController getPipeline() {
-        return mPipeline;
-    }
-
-    public static AsyncTaskController getGlobalPipeline() {
-        return gPipeline;
+    /**
+     * パイプラインで処理を行わせる
+     */
+    public <T> RxTask<T> execute(RxTask.Async<T> action) {
+        return new RxTaskBuilder<T>(mSubscription)
+                .async(action)
+                .subscribeOn(SubscribeTarget.Pipeline)
+                .observeOn(ObserveTarget.FireAndForget)
+                .start();
     }
 
     /**

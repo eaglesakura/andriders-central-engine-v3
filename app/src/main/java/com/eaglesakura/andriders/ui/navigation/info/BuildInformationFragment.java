@@ -98,16 +98,14 @@ public class BuildInformationFragment extends AppBaseFragment {
     @OnClick(R.id.Debug_Data_Dump)
     void debugClickDataDump() {
         pushProgress("pull");
-        runBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File dst = new File(StorageInfo.getExternalStorageRoot(getActivity()), "/debug/" + StringUtil.toString(new Date()));
-                    PackageUtil.dumpPackageDataDirectory(getActivity(), dst);
-                } finally {
-                    popProgress();
-                }
+        asyncUI(it -> {
+            try {
+                File dst = new File(StorageInfo.getExternalStorageRoot(getActivity()), "/debug/" + StringUtil.toString(new Date()));
+                PackageUtil.dumpPackageDataDirectory(getActivity(), dst);
+            } finally {
+                popProgress();
             }
-        });
+            return this;
+        }).start();
     }
 }

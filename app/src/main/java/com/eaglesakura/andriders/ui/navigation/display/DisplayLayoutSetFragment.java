@@ -9,8 +9,9 @@ import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.design.BottomSheetDialog;
+import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.android.thread.async.AsyncTaskResult;
+import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.material.widget.MaterialButton;
 import com.eaglesakura.util.LogUtil;
 
@@ -63,38 +64,32 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     public void onPause() {
         super.onPause();
         displayValues.clear();
-        mExtensionClientManager.disconnect();
-        mExtensionClientManager = null;
+        async(SubscribeTarget.Pipeline, ObserveTarget.FireAndForget, it -> {
+            if (mExtensionClientManager != null) {
+                mExtensionClientManager.disconnect();
+            }
+            return this;
+        }).start();
     }
 
     /**
      * 拡張機能を読み込む
      */
     private void loadExtensionClients() {
-        pushProgress(R.string.Common_File_Load);
-        mExtensionClientManager = new ExtensionClientManager(getContext());
         displayValues.clear();
-        mExtensionClientManager.connect(ExtensionClientManager.ConnectMode.Enabled).setListener(new AsyncTaskResult.Listener<ExtensionClientManager>() {
-            @Override
-            public void onTaskCompleted(AsyncTaskResult<ExtensionClientManager> task, ExtensionClientManager result) {
-                loadDisplayDatas(appPackageName);
-            }
-
-            @Override
-            public void onTaskCanceled(AsyncTaskResult<ExtensionClientManager> task) {
-
-            }
-
-            @Override
-            public void onTaskFailed(AsyncTaskResult<ExtensionClientManager> task, Exception error) {
-
-            }
-
-            @Override
-            public void onTaskFinalize(AsyncTaskResult<ExtensionClientManager> task) {
+        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<ExtensionClientManager> it) -> {
+            ExtensionClientManager clientManager = new ExtensionClientManager(getContext());
+            try {
+                pushProgress(R.string.Common_File_Load);
+                clientManager.connect(ExtensionClientManager.ConnectMode.Enabled);
+            } finally {
                 popProgress();
             }
-        });
+            return clientManager;
+        }).completed((manager, task) -> {
+            mExtensionClientManager = manager;
+            loadDisplayDatas(appPackageName);
+        }).start();
     }
 
     /**
@@ -224,7 +219,10 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         }
 
         // 内容を保存
-        manager.commitAsync();
+        asyncUI(it -> {
+            manager.commit();
+            return manager;
+        }).start();
 
         // 再表示
         updateSlotPreview(manager, slot);

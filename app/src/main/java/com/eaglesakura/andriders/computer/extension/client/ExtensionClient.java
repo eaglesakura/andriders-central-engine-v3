@@ -89,12 +89,7 @@ public class ExtensionClient extends CommandClient {
             intent.putExtra(ExtensionServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
         }
 
-        UIHandler.postUI(new Runnable() {
-            @Override
-            public void run() {
-                connectToSever(intent);
-            }
-        });
+        UIHandler.postUI(() -> connectToSever(intent));
     }
 
     /**

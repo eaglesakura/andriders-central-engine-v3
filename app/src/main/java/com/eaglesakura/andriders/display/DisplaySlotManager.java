@@ -5,7 +5,6 @@ import com.eaglesakura.andriders.dao.display.DbDisplayTarget;
 import com.eaglesakura.andriders.db.display.DisplayLayoutDatabase;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
-import com.eaglesakura.android.framework.FrameworkCentral;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -137,15 +136,6 @@ public class DisplaySlotManager {
         } finally {
             db.close();
         }
-    }
-
-    public void commitAsync() {
-        FrameworkCentral.getTaskController().pushBack(new Runnable() {
-            @Override
-            public void run() {
-                commit();
-            }
-        });
     }
 
     /**
