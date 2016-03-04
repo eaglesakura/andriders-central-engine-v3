@@ -21,6 +21,8 @@
   * develop/v{メジャーバージョン}.{マイナーバージョン}.xブランチをビルドすると自動的にデプロイされます
   * テストPASSの可否は問わないので、正常に動作しない可能性があります
 
+[<img src="https://dply.me/dkw7bo/button/large" alt="Try it on your device via DeployGate">](https://dply.me/dkw7bo#install)
+
 ![DeployGate](https://chart.googleapis.com/chart?chs=256x256&cht=qr&chl=https%3A%2F%2Fdeploygate.com%2Fdistributions%2F0e9f7d4a23ab9744856a5b1be5b2e353fe963baf)
 
 ## ビルド方法
