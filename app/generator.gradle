@@ -6,16 +6,14 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.eaglesakura:eglibrary-gradle-plugin:0.2.7"
+        classpath "com.eaglesakura:plugin-android-dbgenerator:1.0.2"
     }
 }
-
-apply plugin: 'com.eaglesakura.android-support'
 
 /**
  * 設定クラスを生成する
  */
-task generateProps(type: com.eaglesakura.gradle.tasks.AndroidPropsGenTask) {
+task generateProps(type: com.eaglesakura.gradle.task.AndroidPropsGenTask) {
     outDirectory file('src/main/generated/props')
 
     /**
@@ -110,17 +108,9 @@ task generateProps(type: com.eaglesakura.gradle.tasks.AndroidPropsGenTask) {
 }
 
 /**
- * Protocol Buffersファイルをビルドする
- */
-task compileProtobuf(type: com.eaglesakura.gradle.tasks.ProtobufCompileTask) {
-    src = file("src/main/protobuf")
-    javaOutput = file("src/main/generated/protobuf")
-}
-
-/**
  * ロードバイク設定用プロファイルを出力する
  */
-task generateUserProfileDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
+task generateUserProfileDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
@@ -168,7 +158,7 @@ task generateUserProfileDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask
 /**
  * サイクルコンピューター設定用プロファイルを出力する
  */
-task generateDisplayDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
+task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
@@ -199,7 +189,7 @@ task generateDisplayDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
 /**
  * 各種設定用DAOを出力
  */
-task generateSettingsDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
+task generateSettingsDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
@@ -214,7 +204,7 @@ task generateSettingsDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
     DbZoneSettings.addDoubleProperty("speedSprint").notNull();   // スプリント
 }
 
-task generateCycleLogDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
+task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
@@ -288,7 +278,7 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
 /**
  * Bluetoothデバイス保存用DAOを出力
  */
-task generateBluetoothDeviceDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
+task generateBluetoothDeviceDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
@@ -315,7 +305,7 @@ task generateBluetoothDeviceDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGen
 /**
  * 各種コマンド内容を保存するためのDAOを出力
  */
-task generateCommandControllDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
+task generateCommandControllDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "${android.defaultConfig.applicationId}.dao.command"
 
@@ -348,7 +338,7 @@ task generateCommandControllDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGen
 /**
  * デフォルトで用意するコマンドのDaoを出力
  */
-task generateAceDefaultCommandDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
+task generateAceDefaultCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "${android.defaultConfig.applicationId}.dao.command"
     def acesdefScheme = newSchema(2, "acesdef");
@@ -411,7 +401,7 @@ task generateAceDefaultCommandDao(type: com.eaglesakura.gradle.tasks.AndroidDaoG
 /**
  * サウンド情報を保存するためのDAOを出力
  */
-task generateSoundDao(type: com.eaglesakura.gradle.tasks.AndroidDaoGenTask) {
+task generateSoundDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "${android.defaultConfig.applicationId}.dao"
 

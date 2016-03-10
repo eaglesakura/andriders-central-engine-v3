@@ -1,13 +1,13 @@
 buildscript {
     repositories {
         maven { url "http://eaglesakura.github.io/maven/" }
-        mavenCentral()
         jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
-        classpath "com.eaglesakura:eglibrary-gradle-plugin:0.2.7"
+        classpath 'com.android.tools.build:gradle:2.1.+'
+        classpath "com.eaglesakura:plugin-ci-support:1.0.14"
         classpath 'com.deploygate:gradle:0.6'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.4.1'
         classpath 'me.tatarka:gradle-retrolambda:3.2.5' // support Lambda

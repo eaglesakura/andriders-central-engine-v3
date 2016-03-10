@@ -6,7 +6,7 @@
 def ACES_APP_VERSION = "3.0"
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.eaglesakura.android-support'
+apply plugin: 'com.eaglesakura.ci-support'
 apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
@@ -28,6 +28,7 @@ dependencies {
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
         compile project(':eglibrary:android-support-bottomsheet')
+        compile project(':eglibrary:rxandroid-support')
     } else {
         compile 'com.eaglesakura:simple-logger:+'
         compile 'com.eaglesakura:simple-utils:+'
@@ -41,6 +42,7 @@ dependencies {
         compile 'com.eaglesakura:android-canvas-graphics:+'
         compile 'com.eaglesakura:android-net:+'
         compile 'com.eaglesakura:android-framework:+'
+        compile 'com.eaglesakura:rxandroid-support:+'
         compile 'com.eaglesakura:onactivityresult-invoke:+'
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
@@ -80,10 +82,6 @@ dependencies {
 
     // UI Library
     compile 'com.edmodo:rangebar:1.0.0' // Zone Setting
-//    compile 'com.cocosw:bottomsheet:1.0@aar'    // sheet select
-    // Thread library
-    compile 'io.reactivex:rxandroid:1.1.+'
-    compile 'io.reactivex:rxjava:1.1.+'
 
     // Remote Debug
     debugCompile 'com.deploygate:sdk:3.1'
@@ -110,8 +108,8 @@ android {
         targetSdkVersion 23
 
 //        versionCode 99999;
-        versionCode eglibrary.ci.buildVersionCode as int;
-        versionName eglibrary.ci.buildVersionName;
+        versionCode eglibrary.ci.buildVersionCode as int
+        versionName "${ACES_APP_VERSION}${getArtifactVersionSuffix()}"
 
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
@@ -168,10 +166,6 @@ android {
     productFlavors {
         // for googleplay release
         googleplay {
-            // app idを特殊化する
-            applicationId android.defaultConfig.applicationId
-
-            versionName "${ACES_APP_VERSION}${getArtifactVersionSuffix()}";
         }
     }
 
