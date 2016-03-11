@@ -26,6 +26,11 @@ public class SessionData extends BaseCalculator {
      */
     private long mActiveTimeMs;
 
+    /**
+     * 合計自走距離
+     */
+    private double mActiveDistanceKm;
+
     private static final SimpleDateFormat SESSION_KEY_FORMAT = new SimpleDateFormat("yyyyMMdd.HH.mm.ss.SS");
 
 
@@ -62,6 +67,13 @@ public class SessionData extends BaseCalculator {
     }
 
     /**
+     * 自走時間をkm単位で取得する
+     */
+    public double getActiveDistanceKm() {
+        return mActiveDistanceKm;
+    }
+
+    /**
      * セッション情報
      */
     public String getSessionId() {
@@ -73,5 +85,12 @@ public class SessionData extends BaseCalculator {
      */
     public void addActiveTimeMs(long ms) {
         mActiveTimeMs += ms;
+    }
+
+    /**
+     * 自走距離を追加する
+     */
+    public void addActiveDistanceKm(double distanceKm) {
+        mActiveDistanceKm += distanceKm;
     }
 }

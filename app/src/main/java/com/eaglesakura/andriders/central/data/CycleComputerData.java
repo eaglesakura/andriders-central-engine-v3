@@ -85,6 +85,13 @@ public class CycleComputerData {
      */
     private final Object lock = new Object();
 
+    /**
+     * 最後に生成されたセントラル情報
+     *
+     * onUpdateの更新時に生成される
+     */
+    private RawCentralData mLatestCentralData;
+
     public CycleComputerData(Context context, long sessionStartTime) {
         mContext = context.getApplicationContext();
         mClock = new Clock(sessionStartTime);
@@ -200,12 +207,16 @@ public class CycleComputerData {
             mFitnessData.onUpdateTime(diffTimeMs);
 
             // 走行距離を更新する
-            mDistanceData.onUpdate(diffTimeMs, mSpeedData.getSpeedKmh());
+            final double moveDistanceKm = mDistanceData.onUpdate(diffTimeMs, mSpeedData.getSpeedKmh());
 
             // 自走中であれば走行距離を追加する
             if (isActiveMoving()) {
                 mSessionData.addActiveTimeMs(diffTimeMs);
+                mSessionData.addActiveDistanceKm(moveDistanceKm);
             }
+
+            // セントラル情報を生成する
+            mLatestCentralData = newCentralData();
         }
     }
 
@@ -217,6 +228,28 @@ public class CycleComputerData {
 
     private void getStatus(RawCentralData.RawCentralStatus dst) {
         dst.debug = Settings.isDebugable();
+    }
+
+    /**
+     * このセッションでの統計情報を取得する
+     */
+    private void getSession(RawSessionData dst) {
+        dst.flags |= (isActiveMoving() ? RawSessionData.FLAG_ACTIVE : 0x00);
+        dst.activeTimeMs = (int) mSessionData.getActiveTimeMs();
+        dst.activeDistanceKm = (float) mSessionData.getActiveDistanceKm();
+        dst.distanceKm = (float) mDistanceData.getDistanceKm();
+        dst.sessionId = mSessionData.getSessionId();
+        dst.startTime = mSessionData.getStartDate();
+
+        dst.fitness = new RawSessionData.RawFitnessStatus();
+        mFitnessData.getFitness(dst.fitness);
+    }
+
+    /**
+     * 最後にonUpdateTime()が呼び出された時点でのセントラル情報を取得する
+     */
+    public RawCentralData getLatestCentralData() {
+        return mLatestCentralData;
     }
 
     /**
@@ -235,6 +268,7 @@ public class CycleComputerData {
 
         getSpecs(result.specs.application);
         getStatus(result.centralStatus);
+        getSession(result.session);
 
         mFitnessData.getSpec(result.specs.fitness);
 

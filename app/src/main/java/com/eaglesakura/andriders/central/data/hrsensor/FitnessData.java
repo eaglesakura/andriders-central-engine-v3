@@ -2,8 +2,8 @@ package com.eaglesakura.andriders.central.data.hrsensor;
 
 import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
-import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.internal.protocol.RawSessionData;
 import com.eaglesakura.andriders.internal.protocol.RawSpecs;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.util.Timer;
@@ -124,6 +124,15 @@ public class FitnessData extends BaseCalculator {
         dst.weight = getUserWeight();
         dst.heartrateMax = (short) getMaxHeartrate();
         dst.heartrateNormal = (short) getNormalHeartrate();
+    }
+
+    /**
+     * フィットネス情報を取得する
+     */
+    public void getFitness(RawSessionData.RawFitnessStatus dst) {
+        dst.calorie = getSumCalories();
+        dst.exercise = getSumExercise();
+        dst.mets = getCurrentMets();
     }
 
     /**
