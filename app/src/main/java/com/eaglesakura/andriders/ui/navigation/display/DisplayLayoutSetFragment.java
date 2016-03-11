@@ -9,9 +9,9 @@ import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.design.BottomSheetDialog;
-import com.eaglesakura.android.thread.async.AsyncTaskResult;
-import com.eaglesakura.android.thread.async.IAsyncTask;
-import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.material.widget.MaterialButton;
 import com.eaglesakura.util.LogUtil;
 
@@ -64,83 +64,65 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     public void onPause() {
         super.onPause();
         displayValues.clear();
-        mExtensionClientManager.disconnect();
-        mExtensionClientManager = null;
+        async(SubscribeTarget.Pipeline, ObserveTarget.FireAndForget, it -> {
+            if (mExtensionClientManager != null) {
+                mExtensionClientManager.disconnect();
+            }
+            return this;
+        }).start();
     }
 
     /**
      * 拡張機能を読み込む
      */
     private void loadExtensionClients() {
-        pushProgress(R.string.Common_File_Load);
-        mExtensionClientManager = new ExtensionClientManager(getContext());
         displayValues.clear();
-        mExtensionClientManager.connect(ExtensionClientManager.ConnectMode.Enabled).setListener(new AsyncTaskResult.Listener<ExtensionClientManager>() {
-            @Override
-            public void onTaskCompleted(AsyncTaskResult<ExtensionClientManager> task, ExtensionClientManager result) {
-                loadDisplayDatas(appPackageName);
-            }
-
-            @Override
-            public void onTaskCanceled(AsyncTaskResult<ExtensionClientManager> task) {
-
-            }
-
-            @Override
-            public void onTaskFailed(AsyncTaskResult<ExtensionClientManager> task, Exception error) {
-
-            }
-
-            @Override
-            public void onTaskFinalize(AsyncTaskResult<ExtensionClientManager> task) {
+        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<ExtensionClientManager> it) -> {
+            ExtensionClientManager clientManager = new ExtensionClientManager(getContext());
+            try {
+                pushProgress(R.string.Common_File_Load);
+                clientManager.connect(ExtensionClientManager.ConnectMode.Enabled);
+            } finally {
                 popProgress();
             }
-        });
+            return clientManager;
+        }).completed((manager, task) -> {
+            mExtensionClientManager = manager;
+            loadDisplayDatas(appPackageName);
+        }).start();
     }
 
     /**
      * ディスプレイ表示内容を読み込む
      */
     private void loadDisplayDatas(final String newPackageName) {
-        runBackgroundTask(new IAsyncTask<DisplaySlotManager>() {
-            @Override
-            public DisplaySlotManager doInBackground(AsyncTaskResult<DisplaySlotManager> result) throws Exception {
-                DisplaySlotManager slotManager = null;
-                try {
-                    pushProgress(R.string.Common_File_Load);
+        asyncUI((RxTask<DisplaySlotManager> it) -> {
+            DisplaySlotManager slotManager = null;
+            try {
+                pushProgress(R.string.Common_File_Load);
 
-                    // 拡張機能のアイコンを読み込む
-                    displayValues.clear();
-                    for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
-                        client.loadIcon();
-                        for (DisplayInformation info : client.getDisplayInformations()) {
-                            displayValues.add(info);
-                        }
+                // 拡張機能のアイコンを読み込む
+                displayValues.clear();
+                for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
+                    client.loadIcon();
+                    for (DisplayInformation info : client.getDisplayInformations()) {
+                        displayValues.add(info);
                     }
-
-                    slotManager = new DisplaySlotManager(getActivity(), newPackageName, DisplaySlotManager.Mode.Edit);
-                    slotManager.load();
-                } finally {
-                    popProgress();
                 }
-                return slotManager;
-            }
-        }).setListener(new AsyncTaskResult.CompletedListener<DisplaySlotManager>() {
-            @Override
-            public void onTaskCompleted(AsyncTaskResult<DisplaySlotManager> task, DisplaySlotManager result) {
-                initializeLayouts(result);
-            }
-        });
-    }
 
-    private void initializeLayouts(DisplaySlotManager slotManager) {
-        AndroidThreadUtil.assertUIThread();
-
-        LogUtil.log("display load completed :: %s", slotManager.getAppPackageName());
-        mDisplaySlotManager = slotManager;
-        for (DisplaySlot slot : mDisplaySlotManager.listSlots()) {
-            updateSlotPreview(mDisplaySlotManager, slot);
-        }
+                slotManager = new DisplaySlotManager(getActivity(), newPackageName, DisplaySlotManager.Mode.Edit);
+                slotManager.load();
+            } finally {
+                popProgress();
+            }
+            return slotManager;
+        }).completed((slotManager, task) -> {
+            LogUtil.log("display load completed :: %s", slotManager.getAppPackageName());
+            mDisplaySlotManager = slotManager;
+            for (DisplaySlot slot : mDisplaySlotManager.listSlots()) {
+                updateSlotPreview(mDisplaySlotManager, slot);
+            }
+        }).start();
     }
 
     /**
@@ -165,12 +147,8 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             }
         } else {
         }
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDisplaySelector(slotManager, slot);
-            }
-        });
+
+        button.setOnClickListener(view -> showDisplaySelector(slotManager, slot));
 
         stub.addView(button, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
@@ -188,12 +166,9 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         // 非表示を加える
         {
             View view = inflater.inflate(R.layout.card_displayinfo_remove, null);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onSelectedDisplay(manager, slot, null, null);
-                    dialog.dismiss();
-                }
+            view.setOnClickListener(it -> {
+                onSelectedDisplay(manager, slot, null, null);
+                dialog.dismiss();
             });
             layout.addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
@@ -214,12 +189,9 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                 View item = inflater.inflate(R.layout.card_displayinfo_item, null);
                 ((TextView) item.findViewById(R.id.Extension_ItemSelector_Name)).setText(info.getTitle());
                 insertRoot.addView(item, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                item.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onSelectedDisplay(manager, slot, client, info);
-                        dialog.dismiss();
-                    }
+                item.setOnClickListener(it -> {
+                    onSelectedDisplay(manager, slot, client, info);
+                    dialog.dismiss();
                 });
             }
 
@@ -247,7 +219,10 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         }
 
         // 内容を保存
-        manager.commitAsync();
+        asyncUI(it -> {
+            manager.commit();
+            return manager;
+        }).start();
 
         // 再表示
         updateSlotPreview(manager, slot);

@@ -6,7 +6,8 @@
 def ACES_APP_VERSION = "3.0"
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.eaglesakura.android-support'
+apply plugin: 'com.eaglesakura.ci-support'
+apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
@@ -27,6 +28,7 @@ dependencies {
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
         compile project(':eglibrary:android-support-bottomsheet')
+        compile project(':eglibrary:rxandroid-support')
     } else {
         compile 'com.eaglesakura:simple-logger:+'
         compile 'com.eaglesakura:simple-utils:+'
@@ -40,6 +42,7 @@ dependencies {
         compile 'com.eaglesakura:android-canvas-graphics:+'
         compile 'com.eaglesakura:android-net:+'
         compile 'com.eaglesakura:android-framework:+'
+        compile 'com.eaglesakura:rxandroid-support:+'
         compile 'com.eaglesakura:onactivityresult-invoke:+'
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
@@ -79,7 +82,6 @@ dependencies {
 
     // UI Library
     compile 'com.edmodo:rangebar:1.0.0' // Zone Setting
-//    compile 'com.cocosw:bottomsheet:1.0@aar'    // sheet select
 
     // Remote Debug
     debugCompile 'com.deploygate:sdk:3.1'
@@ -95,14 +97,19 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
         minSdkVersion 21
         targetSdkVersion 23
 
 //        versionCode 99999;
-        versionCode eglibrary.ci.buildVersionCode as int;
-        versionName eglibrary.ci.buildVersionName;
+        versionCode eglibrary.ci.buildVersionCode as int
+        versionName "${ACES_APP_VERSION}${getArtifactVersionSuffix()}"
 
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
@@ -159,10 +166,6 @@ android {
     productFlavors {
         // for googleplay release
         googleplay {
-            // app idを特殊化する
-            applicationId android.defaultConfig.applicationId
-
-            versionName "${ACES_APP_VERSION}${getArtifactVersionSuffix()}";
         }
     }
 
@@ -184,6 +187,23 @@ android {
         exclude 'services/com.fasterxml.jackson.core.ObjectCodec'
     }
 }
+
+/**
+ * UnitTest & retro lambda
+ */
+tasks.withType(Test) {
+    project.tasks
+            .findAll {
+        task -> (task.name ==~ /compile.*?TestJava.*?/)
+    }
+    .each { task ->
+        task.doFirst {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+}
+
 /**
  * バージョンを取得する
  * CircleCIの場合、バージョン末尾にビルド番号を付与する

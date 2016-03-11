@@ -21,6 +21,8 @@
   * develop/v{メジャーバージョン}.{マイナーバージョン}.xブランチをビルドすると自動的にデプロイされます
   * テストPASSの可否は問わないので、正常に動作しない可能性があります
 
+[<img src="https://dply.me/dkw7bo/button/large" alt="Try it on your device via DeployGate">](https://dply.me/dkw7bo#install)
+
 ![DeployGate](https://chart.googleapis.com/chart?chs=256x256&cht=qr&chl=https%3A%2F%2Fdeploygate.com%2Fdistributions%2F0e9f7d4a23ab9744856a5b1be5b2e353fe963baf)
 
 ## ビルド方法
@@ -32,6 +34,15 @@
 署名ファイルやAPIキー等の重要情報は "app/private"配下に管理されます。ダミーファイルは"app/private.tmp"に保存されていますので、そのファイルを"app/private"配下にコピーする（もしくは"script/developer-install-private.sh"を実行することで所定の位置へファイルを移動できます。
 
 アプリの動作確認は可能です。
+
+### 必要環境
+
+ 1. JDK 1.8
+ 1. Cygwin(Windows環境の場合) / Terminal(Mac/Ubuntu環境の場合)
+ 1. Android SDK(可能な限り最新版)
+ 1. 環境変数: ANDROID_HOME
+
+### ビルド手順
 
 <pre>
 

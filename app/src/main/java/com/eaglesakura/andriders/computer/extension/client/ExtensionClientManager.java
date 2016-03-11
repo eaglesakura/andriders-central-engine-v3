@@ -1,16 +1,14 @@
 package com.eaglesakura.andriders.computer.extension.client;
 
-import com.eaglesakura.andriders.computer.central.CentralDataManager;
+import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.display.DisplayManager;
 import com.eaglesakura.andriders.computer.notification.NotificationManager;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionCategory;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
 import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
-import com.eaglesakura.android.thread.async.AsyncTaskController;
-import com.eaglesakura.android.thread.async.AsyncTaskResult;
-import com.eaglesakura.android.thread.async.IAsyncTask;
 import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.Timer;
 import com.eaglesakura.util.Util;
 
@@ -36,11 +34,6 @@ public class ExtensionClientManager {
      * 接続されたクライアント一覧
      */
     List<ExtensionClient> extensions = new ArrayList<>();
-
-    /**
-     * 処理を直列化するためのパイプライン
-     */
-    AsyncTaskController mPipeline = new AsyncTaskController(1);
 
     public enum ConnectMode {
         /**
@@ -193,39 +186,67 @@ public class ExtensionClientManager {
     /**
      * 拡張サービスに接続する
      * <p/>
-     * 接続完了はコールバックで受け取れる。
+     * ブロッキングで接続完了する。
      */
-    public AsyncTaskResult<ExtensionClientManager> connect(ConnectMode mode) {
-        return mPipeline.pushBack(new IAsyncTask<ExtensionClientManager>() {
-            @Override
-            public ExtensionClientManager doInBackground(AsyncTaskResult<ExtensionClientManager> result) throws Exception {
-                List<ResolveInfo> services = listExtensionServices(mContext);
-                for (ResolveInfo info : services) {
-                    connectService(info);
-                }
-                return ExtensionClientManager.this;
-            }
-        });
+    public void connect(ConnectMode mode) {
+        AndroidThreadUtil.assertBackgroundThread();
+
+        List<ResolveInfo> services = listExtensionServices(mContext);
+        for (ResolveInfo info : services) {
+            connectService(info);
+        }
     }
 
     /**
-     * 拡張サービスから切断する
+     * 全ての拡張サービスから切断する
      */
-    public AsyncTaskResult<ExtensionClientManager> disconnect() {
-        return mPipeline.pushBack(new IAsyncTask<ExtensionClientManager>() {
-            @Override
-            public ExtensionClientManager doInBackground(AsyncTaskResult<ExtensionClientManager> result) throws Exception {
-                for (final ExtensionClient impl : extensions) {
-                    UIHandler.postWithWait(new Runnable() {
-                        @Override
-                        public void run() {
-                            impl.disconnect();
-                        }
-                    }, 1000 * 5);
-                }
-                extensions.clear();
-                return null;
+    public void disconnect() {
+        AndroidThreadUtil.assertBackgroundThread();
+
+        UIHandler.postWithWait(() -> {
+            for (final ExtensionClient impl : extensions) {
+                impl.disconnect();
             }
-        });
+        }, 1000 * 5);
+        extensions.clear();
     }
+
+//    /**
+//     * 拡張サービスに接続する
+//     * <p/>
+//     * 接続完了はコールバックで受け取れる。
+//     */
+//    public AsyncTaskResult<ExtensionClientManager> connect(ConnectMode mode) {
+//        return mPipeline.pushBack(new IAsyncTask<ExtensionClientManager>() {
+//            @Override
+//            public ExtensionClientManager doInBackground(AsyncTaskResult<ExtensionClientManager> result) throws Exception {
+//                List<ResolveInfo> services = listExtensionServices(mContext);
+//                for (ResolveInfo info : services) {
+//                    connectService(info);
+//                }
+//                return ExtensionClientManager.this;
+//            }
+//        });
+//    }
+//
+//    /**
+//     * 拡張サービスから切断する
+//     */
+//    public AsyncTaskResult<ExtensionClientManager> disconnect() {
+//        return mPipeline.pushBack(new IAsyncTask<ExtensionClientManager>() {
+//            @Override
+//            public ExtensionClientManager doInBackground(AsyncTaskResult<ExtensionClientManager> result) throws Exception {
+//                for (final ExtensionClient impl : extensions) {
+//                    UIHandler.postWithWait(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            impl.disconnect();
+//                        }
+//                    }, 1000 * 5);
+//                }
+//                extensions.clear();
+//                return null;
+//            }
+//        });
+//    }
 }

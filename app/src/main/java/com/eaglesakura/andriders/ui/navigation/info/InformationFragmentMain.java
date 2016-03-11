@@ -1,11 +1,19 @@
 package com.eaglesakura.andriders.ui.navigation.info;
 
+import com.eaglesakura.andriders.AceApplication;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+
+import java.util.concurrent.Executor;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -33,7 +41,6 @@ public class InformationFragmentMain extends BaseNavigationFragment {
             transaction.commit();
         }
     }
-
 
     public static InformationFragmentMain createInstance(Context context) {
         return new InformationFragmentMain();

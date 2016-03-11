@@ -1,6 +1,8 @@
 package com.eaglesakura.andriders.ble.heartrate;
 
 import com.eaglesakura.andriders.ble.BleDevice;
+import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
 import com.eaglesakura.android.thread.ui.UIHandler;
 
@@ -9,7 +11,6 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
-import android.util.Log;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,36 +36,37 @@ public class BleHeartRateMonitor extends BleDevice {
     /**
      * 心拍リスナ
      */
-    private final Set<BleHeartrateListener> listeners = new HashSet<>();
+    private final Set<BleHeartrateListener> mListeners = new HashSet<>();
 
     /**
      * 心拍データ
      */
-    private HeartrateData heartrateData = new HeartrateData();
+    private final HeartrateSensorData mHeartrateData;
 
     /**
      * 心拍チェック用GATT
      */
-    private BluetoothGatt heartrateGatt;
+    private BluetoothGatt mHeartrateGatt;
 
-    public BleHeartRateMonitor(Context context, BluetoothDevice device) {
+    public BleHeartRateMonitor(Context context, BluetoothDevice device, Clock clock) {
         super(context, device);
+        mHeartrateData = new HeartrateSensorData(clock);
     }
 
     private final BluetoothGattCallback gattCallback = new BleDevice.BaseBluetoothGattCallback() {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            log("onServicesDiscovered :: " + status);
+            AppLog.ble("onServicesDiscovered :: " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
 
                 if (notificationEnable(BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT)) {
-                    heartrateGatt = gatt;
-                    log("enable cadence notification");
+                    mHeartrateGatt = gatt;
+                    AppLog.ble("enable cadence notification");
                     UIHandler.postUI(new Runnable() {
                         @Override
                         public void run() {
-                            for (BleHeartrateListener listener : listeners) {
-                                listener.onDeviceSupportedHeartrate(BleHeartRateMonitor.this, device);
+                            for (BleHeartrateListener listener : mListeners) {
+                                listener.onDeviceSupportedHeartrate(BleHeartRateMonitor.this, mDevice);
                             }
                         }
                     });
@@ -72,8 +74,8 @@ public class BleHeartRateMonitor extends BleDevice {
                     UIHandler.postUI(new Runnable() {
                         @Override
                         public void run() {
-                            for (BleHeartrateListener listener : listeners) {
-                                listener.onDeviceNotSupportedHeartrate(BleHeartRateMonitor.this, device);
+                            for (BleHeartrateListener listener : mListeners) {
+                                listener.onDeviceNotSupportedHeartrate(BleHeartRateMonitor.this, mDevice);
                             }
                         }
                     });
@@ -95,13 +97,13 @@ public class BleHeartRateMonitor extends BleDevice {
 //                    log("heart rate format UINT8");
                 }
 
-                int heartrate = characteristic.getIntValue(format, 1);
-//                log("heart rate value : " + heartrate);
+                final int heartrate = characteristic.getIntValue(format, 1);
+                AppLog.bleData("heart rate value(%d)", heartrate);
                 // 取得できていれば更新を必ず行うようにする
-                heartrateData.update(heartrate);
+                mHeartrateData.setHeartrate(heartrate);
                 // 心拍更新
-                for (BleHeartrateListener listener : listeners) {
-                    listener.onHeartrateUpdated(BleHeartRateMonitor.this, heartrateData);
+                for (BleHeartrateListener listener : mListeners) {
+                    listener.onHeartrateUpdated(BleHeartRateMonitor.this, mHeartrateData);
                 }
             }
         }
@@ -117,25 +119,20 @@ public class BleHeartRateMonitor extends BleDevice {
      * リスナを登録する
      */
     public void registerHeartrateListener(BleHeartrateListener listener) {
-        listeners.add(listener);
+        mListeners.add(listener);
     }
 
     /**
      * リスナを解放する
      */
     public void unregisterCadenceListener(BleHeartrateListener listener) {
-        listeners.remove(listener);
+        mListeners.remove(listener);
     }
 
     @Override
     public synchronized void disconnect() {
         notificationDisable(BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT);
         super.disconnect();
-    }
-
-    @Override
-    protected void log(String msg) {
-        Log.d("BLE-HR", msg);
     }
 
     /**
@@ -155,6 +152,6 @@ public class BleHeartRateMonitor extends BleDevice {
         /**
          * ハートレートモニターの値が更新された
          */
-        void onHeartrateUpdated(BleHeartRateMonitor sensor, HeartrateData heartrate);
+        void onHeartrateUpdated(BleHeartRateMonitor sensor, HeartrateSensorData heartrate);
     }
 }

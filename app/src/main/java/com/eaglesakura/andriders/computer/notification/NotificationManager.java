@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.computer.notification;
 
 import com.eaglesakura.andriders.computer.CycleComputerManager;
 import com.eaglesakura.android.graphics.Graphics;
+import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 
@@ -24,8 +25,8 @@ public class NotificationManager extends CycleComputerManager {
      */
     List<NotificationCard> mPendingNotifications = new ArrayList<>();
 
-    public NotificationManager(Context context) {
-        super(context);
+    public NotificationManager(Context context, SubscriptionController subscriptionController) {
+        super(context, subscriptionController);
     }
 
     @Override

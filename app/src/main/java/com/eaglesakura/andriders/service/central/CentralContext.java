@@ -1,15 +1,17 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.computer.CycleComputerManager;
-import com.eaglesakura.andriders.computer.central.CentralDataManager;
+import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.display.DisplayManager;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
 import com.eaglesakura.andriders.computer.notification.NotificationManager;
 import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.android.thread.async.AsyncTaskController;
+import com.eaglesakura.android.rx.LifecycleState;
+import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.io.Disposable;
 
 import android.app.Service;
+
+import rx.subjects.BehaviorSubject;
 
 /**
  * ACEの表示状態
@@ -54,22 +56,20 @@ public class CentralContext implements Disposable {
     private ExtensionClientManager mExtensionClientManager;
 
     /**
-     * 処理用のパイプライン
-     */
-    private final AsyncTaskController mPipeline;
-
-    /**
      * 廃棄済
      */
     private boolean mDisposed = false;
 
+    private BehaviorSubject<LifecycleState> mSubject = BehaviorSubject.create(LifecycleState.NewObject);
+
+    private SubscriptionController mSubscriptionController = new SubscriptionController().bind(mSubject);
+
     public CentralContext(Service context) {
         mContext = context;
-        mPipeline = CycleComputerManager.getGlobalPipeline();
 
-        mCentralDataManager = new CentralDataManager(mContext);
-        mDisplayManager = new DisplayManager(mContext);
-        mNotificationManager = new NotificationManager(mContext);
+        mCentralDataManager = new CentralDataManager(mContext, mSubscriptionController);
+        mDisplayManager = new DisplayManager(mContext, mSubscriptionController);
+        mNotificationManager = new NotificationManager(mContext, mSubscriptionController);
 
         mExtensionClientManager = new ExtensionClientManager(mContext);
         mExtensionClientManager.setCentralDataManager(mCentralDataManager);
@@ -96,49 +96,42 @@ public class CentralContext implements Disposable {
      * データ接続を開始する
      */
     public void onServiceInitializeCompleted() {
-        mExtensionClientManager
-                .connect(ExtensionClientManager.ConnectMode.Enabled);
+        throw new IllegalAccessError("not impl");
+//        mExtensionClientManager
+//                .connect(ExtensionClientManager.ConnectMode.Enabled);
     }
 
     /**
      * 定期更新を行う
      */
     public void onUpdated(final double deltaSec) {
-        mPipeline.pushBack(new Runnable() {
-            @Override
-            public void run() {
-                if (mDisposed) {
-                    return;
-                }
-
-                mCentralDataManager.updateInPipeline(deltaSec);
-                mDisplayManager.updateInPipeline(deltaSec);
-                mNotificationManager.updateInPipeline(deltaSec);
-            }
-        });
+        throw new IllegalAccessError("not impl");
+//        mPipeline.pushBack(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (mDisposed) {
+//                    return;
+//                }
+//
+//                mCentralDataManager.updateInPipeline(deltaSec);
+//                mDisplayManager.updateInPipeline(deltaSec);
+//                mNotificationManager.updateInPipeline(deltaSec);
+//            }
+//        });
     }
 
     @Override
     public void dispose() {
-        mPipeline.pushBack(new Runnable() {
-            @Override
-            public void run() {
-                mCentralDataManager.finishSession();
-                mExtensionClientManager.disconnect();
-                mDisposed = true;
-            }
-        });
+        mSubject.onNext(LifecycleState.OnDestroyed);
+        throw new IllegalAccessError("not impl");
+//        mPipeline.pushBack(new Runnable() {
+//            @Override
+//            public void run() {
+//                mCentralDataManager.finishSession();
+//                mExtensionClientManager.disconnect();
+//                mDisposed = true;
+//            }
+//        });
     }
 
-    /**
-     * 設定をリロードする
-     */
-    public void reloadAsync() {
-        mPipeline.pushBack(new Runnable() {
-            @Override
-            public void run() {
-                mSettings.commitAndLoad();
-            }
-        });
-    }
 }
