@@ -5,8 +5,6 @@
 /**
  * ライブラリをソースコード単位でビルドする場合はtrueを指定する。
  * 下記のコマンドを実行し、ライブラリがリンクしているsubmoduleを全て同期しなければならない。
- * cd eglibrary
- * git submodule update --init
  */
 ext.EGLIBRARY_COMPILE_LOCAL = false
 ext.ACESDK_COMPILE_LOCAL = true
