@@ -39,6 +39,10 @@ public class SensorSpeedData extends BaseCalculator {
         return (now() - mUpdatedTime) < DATA_TIMEOUT_MS;
     }
 
+    public long getUpdatedTime() {
+        return mUpdatedTime;
+    }
+
     /**
      * 現在の速度を取得する
      */

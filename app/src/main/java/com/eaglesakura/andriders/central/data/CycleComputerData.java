@@ -1,11 +1,17 @@
 package com.eaglesakura.andriders.central.data;
 
+import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.central.data.geo.GeoSpeedData;
 import com.eaglesakura.andriders.central.data.geo.LocationData;
 import com.eaglesakura.andriders.central.data.hrsensor.FitnessData;
 import com.eaglesakura.andriders.central.data.scsensor.CadenceData;
 import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.data.session.SessionData;
+import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.internal.protocol.RawCentralData;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.internal.protocol.RawSessionData;
+import com.eaglesakura.andriders.internal.protocol.RawSpecs;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 
 import android.content.Context;
@@ -201,6 +207,44 @@ public class CycleComputerData {
                 mSessionData.addActiveTimeMs(diffTimeMs);
             }
         }
+    }
+
+    private void getSpecs(RawSpecs.RawAppSpec dst) {
+        dst.appPackageName = BuildConfig.APPLICATION_ID;
+        dst.appVersionName = BuildConfig.VERSION_NAME;
+        dst.protocolVersion = com.eaglesakura.andriders.sdk.BuildConfig.ACE_PROTOCOL_VERSION;
+    }
+
+    private void getStatus(RawCentralData.RawCentralStatus dst) {
+        dst.debug = Settings.isDebugable();
+    }
+
+    /**
+     * 現在の状態からセントラルを生成する
+     */
+    public RawCentralData newCentralData() {
+        RawCentralData result = new RawCentralData();
+
+        result.specs = new RawSpecs();
+        result.specs.application = new RawSpecs.RawAppSpec();
+        result.specs.fitness = new RawSpecs.RawFitnessSpec();
+        result.centralStatus = new RawCentralData.RawCentralStatus();
+        result.sensor = new RawSensorData();
+        result.session = new RawSessionData();
+        result.today = new RawSessionData();
+
+        getSpecs(result.specs.application);
+        getStatus(result.centralStatus);
+
+        mFitnessData.getSpec(result.specs.fitness);
+
+        // 各種センサーデータを取得する
+        mFitnessData.getSensor(result.sensor);
+        mCadenceData.getSensor(result.sensor);
+        mSpeedData.getSensor(result.sensor);
+        mLocationData.getSensor(result.sensor);
+
+        return result;
     }
 
     /**

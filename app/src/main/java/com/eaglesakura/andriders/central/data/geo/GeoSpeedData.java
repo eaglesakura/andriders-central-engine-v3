@@ -54,6 +54,10 @@ public class GeoSpeedData extends BaseCalculator {
         return (now() - mUpdatedTime) < DATA_TIMEOUT_MS;
     }
 
+    public long getUpdatedTime() {
+        return mUpdatedTime;
+    }
+
     /**
      * GPS由来の速度情報
      */

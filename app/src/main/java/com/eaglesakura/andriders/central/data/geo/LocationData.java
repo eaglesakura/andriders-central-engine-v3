@@ -2,6 +2,8 @@ package com.eaglesakura.andriders.central.data.geo;
 
 import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.internal.protocol.RawLocation;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.util.LogUtil;
 
@@ -100,7 +102,7 @@ public class LocationData extends BaseCalculator {
     /**
      * 精度をチェックし、信頼できるならばtrueを返却する
      */
-    public boolean isAccuracy(double accuracyMeter) {
+    public boolean isReliance(double accuracyMeter) {
         return accuracyMeter < 150;
     }
 
@@ -113,7 +115,7 @@ public class LocationData extends BaseCalculator {
      * @param accuracyMeter メートル単位の精度
      */
     public boolean setLocation(double lat, double lng, double alt, double accuracyMeter) {
-        if (!isAccuracy(accuracyMeter)) {
+        if (!isReliance(accuracyMeter)) {
             // 信頼出来ないデータなのでdropする
             LogUtil.log("Drop GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, alt, accuracyMeter);
             return false;
@@ -126,6 +128,28 @@ public class LocationData extends BaseCalculator {
         mUpdatedTime = now();
 
         LogUtil.log("GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, getAltitudeMeter(), accuracyMeter);
+        return true;
+    }
+
+
+    /**
+     * センサー情報を取得する
+     *
+     * @return センサー情報を書き込んだ場合true
+     */
+    public boolean getSensor(RawSensorData dstSensor) {
+        if (!valid()) {
+            return false;
+        }
+        dstSensor.location = new RawLocation();
+        dstSensor.location.date = mUpdatedTime;
+        dstSensor.location.inclinationPercent = (float) mAltitudeData.getInclinationPercent();
+        dstSensor.location.inclinationType = getInclinationType();
+        dstSensor.location.locationAccuracy = (float) mAccuracy;
+        dstSensor.location.locationReliance = isReliance(mAccuracy);
+        dstSensor.location.altitude = getAltitudeMeter();
+        dstSensor.location.latitude = mGeoSpeedData.getLatitude();
+        dstSensor.location.longitude = mGeoSpeedData.getLongitude();
         return true;
     }
 }
