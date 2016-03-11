@@ -12,6 +12,7 @@ import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.playservice.GoogleApiTask;
+import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialInputDialog;
 import com.eaglesakura.util.LogUtil;
@@ -58,17 +59,14 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
      * 個人設定を更新する
      */
     void updatePersonalUI() {
-        runUI(new Runnable() {
-            @Override
-            public void run() {
-                AQuery q = new AQuery(getView());
+        runOnUiThread(() -> {
+            AQuery q = new AQuery(getView());
 
-                // 体重設定
-                q.id(R.id.Setting_Personal_WeightValue).text(String.format("%.1f", personalDataSettings.getUserWeight()));
-                // 心拍設定
-                q.id(R.id.Setting_Personal_NormalHeartrateValue).text(String.valueOf(personalDataSettings.getNormalHeartrate()));
-                q.id(R.id.Setting_Personal_MaxHeartrateValue).text(String.valueOf(personalDataSettings.getMaxHeartrate()));
-            }
+            // 体重設定
+            q.id(R.id.Setting_Personal_WeightValue).text(String.format("%.1f", personalDataSettings.getUserWeight()));
+            // 心拍設定
+            q.id(R.id.Setting_Personal_NormalHeartrateValue).text(String.valueOf(personalDataSettings.getNormalHeartrate()));
+            q.id(R.id.Setting_Personal_MaxHeartrateValue).text(String.valueOf(personalDataSettings.getMaxHeartrate()));
         });
     }
 
@@ -159,49 +157,44 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
      * Google Fitのデータと同期を行う
      */
     void syncFitnessData() {
-        runBackground(new Runnable() {
-            @Override
-            public void run() {
-                LogUtil.log("sync fitness data start");
+        asyncUI((RxTask<Float> task) -> {
+            GoogleApiClientToken token = getGoogleApiClientToken();
+            if (token == null) {
+                throw new IllegalStateException();
+            }
 
-                GoogleApiClientToken apiClientToken = getGoogleApiClientToken();
-                if (apiClientToken == null) {
-                    return;
+            return token.executeGoogleApi(new GoogleApiTask<Float>() {
+                @Override
+                public Float executeTask(GoogleApiClient client) throws Exception {
+                    float userWeight = GoogleApiUtil.getUserWeightFromFit(client);
+                    if (userWeight > 0 && userWeight != personalDataSettings.getUserWeight()) {
+                        personalDataSettings.setUserWeight(userWeight);
+                        personalDataSettings.commit();
+                        toast(R.string.Setting_Fitness_Weight_SyncCompleted);
+                    } else if (userWeight <= 0) {
+                        toast(R.string.Setting_Fitness_Weight_SyncFailed);
+                    }
+                    return userWeight;
                 }
 
-                apiClientToken.executeGoogleApi(new GoogleApiTask<Object>() {
-                    @Override
-                    public Object executeTask(GoogleApiClient client) throws Exception {
-                        float userWeight = GoogleApiUtil.getUserWeightFromFit(client);
-                        if (userWeight > 0 && userWeight != personalDataSettings.getUserWeight()) {
-                            personalDataSettings.setUserWeight(userWeight);
-                            personalDataSettings.commit();
-                            updatePersonalUI();
+                @Override
+                public Float connectedFailed(GoogleApiClient client, ConnectionResult connectionResult) {
+                    throw new IllegalStateException();
+                }
 
-                            toast(R.string.Setting_Fitness_Weight_SyncCompleted);
-                        } else if (userWeight <= 0) {
-                            toast(R.string.Setting_Fitness_Weight_SyncFailed);
-                        }
-
-                        return null;
-                    }
-
-                    @Override
-                    public Object connectedFailed(GoogleApiClient client, ConnectionResult connectionResult) {
-                        if (!googleFitFailedMessageBooted) {
-                            toast(R.string.Setting_Fitness_Weight_SyncFailed);
-                            googleFitFailedMessageBooted = true;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean isCanceled() {
-                        return isFragmentDestroyed();
-                    }
-                });
+                @Override
+                public boolean isCanceled() {
+                    return task.isCanceled();
+                }
+            });
+        }).completed((weight, task) -> {
+            updatePersonalUI();
+        }).failed((err, task) -> {
+            if (!googleFitFailedMessageBooted) {
+                toast(R.string.Setting_Fitness_Weight_SyncFailed);
+                googleFitFailedMessageBooted = true;
             }
-        });
+        }).start();
     }
 
 
@@ -210,12 +203,10 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
         showHeartrateInputDialog(
                 R.string.Setting_Fitness_MaxHeartrate_DialogTitle, R.string.Setting_Fitness_MaxHeartrate_DialogHiht,
                 personalDataSettings.getMaxHeartrate(),
-                new HeartrateInputListener() {
-                    @Override
-                    public void onInputHeartrate(int bpm) {
-                        personalDataSettings.setMaxHeartrate(bpm);
-                        asyncCommitSettings();
-                    }
+                // 心拍受信ハンドリング
+                bpm -> {
+                    personalDataSettings.setMaxHeartrate(bpm);
+                    asyncCommitSettings();
                 }
         );
     }

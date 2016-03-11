@@ -3,7 +3,6 @@ package com.eaglesakura.andriders;
 import com.google.android.gms.maps.model.LatLng;
 
 import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
-import com.eaglesakura.andriders.internal.protocol.RawLocation;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.util.SerializeUtil;
 
@@ -62,9 +61,6 @@ public class AceUtils {
         return new LatLng(geo.latitude, geo.longitude);
     }
 
-    public static RawGeoPoint toGeoPoint(double lat, double lng, double alt) {
-        return new RawGeoPoint(lat, lng, alt);
-    }
 
     /**
      * Serialize -> Deserializeを行うことで簡易cloneを行う

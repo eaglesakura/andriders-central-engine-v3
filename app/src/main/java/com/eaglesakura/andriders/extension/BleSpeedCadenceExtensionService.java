@@ -1,8 +1,9 @@
 package com.eaglesakura.andriders.extension;
 
 import com.eaglesakura.andriders.ble.cadence.BleCadenceSpeedSensor;
-import com.eaglesakura.andriders.ble.cadence.SpeedCadenceData;
 import com.eaglesakura.andriders.ble.cadence.SpeedCadenceGattReceiver;
+import com.eaglesakura.andriders.ble.cadence.SpeedCadenceSensorData;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.android.framework.service.BaseService;
@@ -19,7 +20,9 @@ import java.util.List;
 public class BleSpeedCadenceExtensionService extends BaseService implements IExtensionService {
 
 
-    SpeedCadenceGattReceiver receiver;
+    SpeedCadenceGattReceiver mReceiver;
+
+    Clock mClock = Clock.getRealtimeClock();
 
     @Nullable
     @Override
@@ -61,9 +64,9 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
         if (StringUtil.isEmpty(address)) {
             return;
         }
-        receiver = new SpeedCadenceGattReceiver(this);
-        receiver.setTargetFitnessDeviceAddress(address);
-        receiver.setSpeedCadenceListener(new BleCadenceSpeedSensor.BleSpeedCadenceListener() {
+        mReceiver = new SpeedCadenceGattReceiver(this, mClock);
+        mReceiver.setTargetFitnessDeviceAddress(address);
+        mReceiver.setSpeedCadenceListener(new BleCadenceSpeedSensor.BleSpeedCadenceListener() {
             @Override
             public void onDeviceNotSupportedSpeedCadence(BleCadenceSpeedSensor sensor, BluetoothDevice device) {
             }
@@ -74,23 +77,23 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
             }
 
             @Override
-            public void onCadenceUpdated(BleCadenceSpeedSensor sensor, SpeedCadenceData cadence) {
-                centralDataExtension.setSpeedAndCadence((float) cadence.getRpm(), cadence.getSumRevolutions(), -1, -1);
+            public void onCadenceUpdated(BleCadenceSpeedSensor sensor, SpeedCadenceSensorData cadence) {
+                centralDataExtension.setSpeedAndCadence((float) cadence.getRpm(), cadence.getSumRevolveCount(), -1, -1);
             }
 
             @Override
-            public void onSpeedUpdated(BleCadenceSpeedSensor sensor, SpeedCadenceData speed) {
-                centralDataExtension.setSpeedAndCadence(-1, -1, (float) speed.getRpm(), speed.getSumRevolutions());
+            public void onSpeedUpdated(BleCadenceSpeedSensor sensor, SpeedCadenceSensorData speed) {
+                centralDataExtension.setSpeedAndCadence(-1, -1, (float) speed.getRpm(), speed.getSumRevolveCount());
             }
         });
-        receiver.connect();
+        mReceiver.connect();
     }
 
     @Override
     public void onAceServiceDisconnected(ExtensionSession session) {
-        if (receiver != null) {
-            receiver.disconnect();
-            receiver = null;
+        if (mReceiver != null) {
+            mReceiver.disconnect();
+            mReceiver = null;
         }
     }
 

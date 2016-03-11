@@ -1,8 +1,9 @@
 package com.eaglesakura.andriders.extension;
 
 import com.eaglesakura.andriders.ble.heartrate.BleHeartRateMonitor;
-import com.eaglesakura.andriders.ble.heartrate.HeartrateData;
+import com.eaglesakura.andriders.ble.heartrate.HeartrateSensorData;
 import com.eaglesakura.andriders.ble.heartrate.HeartrateGattReceiver;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.android.framework.service.BaseService;
@@ -18,6 +19,11 @@ import java.util.List;
 
 public class BleHeartrateExtensionService extends BaseService implements IExtensionService {
     HeartrateGattReceiver receiver;
+
+    /**
+     * リアルタイム同期用時計
+     */
+    private final Clock mClock = Clock.getRealtimeClock();
 
     @Nullable
     @Override
@@ -60,7 +66,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
             return;
         }
 
-        receiver = new HeartrateGattReceiver(this);
+        receiver = new HeartrateGattReceiver(this, mClock);
         receiver.setTargetFitnessDeviceAddress(address);
         receiver.setHeartrateListener(new BleHeartRateMonitor.BleHeartrateListener() {
             @Override
@@ -72,7 +78,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
             }
 
             @Override
-            public void onHeartrateUpdated(BleHeartRateMonitor sensor, HeartrateData heartrate) {
+            public void onHeartrateUpdated(BleHeartRateMonitor sensor, HeartrateSensorData heartrate) {
                 centralDataExtension.setHeartrate(heartrate.getBpm());
             }
         });

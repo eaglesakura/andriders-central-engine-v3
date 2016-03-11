@@ -1,6 +1,5 @@
 package com.eaglesakura.andriders.ui.base;
 
-import com.eaglesakura.andriders.AceApplication;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.ui.auth.AcesAuthActivity;
@@ -10,10 +9,7 @@ import com.eaglesakura.android.framework.ui.BaseFragment;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
-import com.eaglesakura.android.thread.async.AsyncTaskController;
-import com.eaglesakura.android.thread.async.AsyncTaskResult;
-import com.eaglesakura.android.thread.async.CachedTaskHandler;
-import com.eaglesakura.android.thread.async.IAsyncTask;
+import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 
 import android.app.Activity;
@@ -30,9 +26,6 @@ public abstract class AppBaseFragment extends BaseFragment {
      */
     protected static final int REQUEST_GOOGLE_AUTH = 0x2400;
 
-    private AsyncTaskController localTasks;
-
-    private CachedTaskHandler localTaskHandler = new CachedTaskHandler();
 
     public GoogleApiClientToken getGoogleApiClientToken() {
         Activity activity = getActivity();
@@ -40,27 +33,6 @@ public abstract class AppBaseFragment extends BaseFragment {
             return ((AppBaseActivity) activity).getApiClientToken();
         } else {
             return null;
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        localTaskHandler.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        localTaskHandler.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (localTasks != null) {
-            localTasks.cancelListeners();
-            localTasks.dispose();
         }
     }
 
@@ -75,29 +47,23 @@ public abstract class AppBaseFragment extends BaseFragment {
     /**
      * ユーザーデータを非同期ロードする
      */
-    public AsyncTaskResult<Settings> asyncReloadSettings() {
-        return getTaskController().pushBack(new IAsyncTask<Settings>() {
-            @Override
-            public Settings doInBackground(AsyncTaskResult<Settings> result) throws Exception {
-                Settings settings = getSettings();
-                settings.load();
-                return settings;
-            }
-        });
+    public RxTask<Settings> asyncReloadSettings() {
+        return asyncUI((RxTask<Settings> task) -> {
+            Settings settings = getSettings();
+            settings.load();
+            return settings;
+        }).start();
     }
 
     /**
      * ユーザーデータを非同期保存する
      */
-    public AsyncTaskResult<Settings> asyncCommitSettings() {
-        return getTaskController().pushBack(new IAsyncTask<Settings>() {
-            @Override
-            public Settings doInBackground(AsyncTaskResult<Settings> result) throws Exception {
-                Settings settings = getSettings();
-                settings.commitAndLoad();
-                return settings;
-            }
-        });
+    public RxTask<Settings> asyncCommitSettings() {
+        return asyncUI((RxTask<Settings> task) -> {
+            Settings settings = getSettings();
+            settings.commitAndLoad();
+            return settings;
+        }).start();
     }
 
     /**
@@ -140,19 +106,6 @@ public abstract class AppBaseFragment extends BaseFragment {
         dialog.show();
     }
 
-    @Override
-    protected AsyncTaskController getTaskController() {
-        if (localTasks == null) {
-            synchronized (this) {
-                if (localTasks == null) {
-                    localTasks = new AsyncTaskController(AceApplication.getTaskController());
-                    localTasks.setTaskHandler(localTaskHandler);
-                }
-            }
-        }
-        return localTasks;
-    }
-
     public UserNotificationController getNotificationController() {
         Activity activity = getActivity();
         if (activity instanceof AppBaseActivity) {
@@ -175,7 +128,7 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     public void toast(@StringRes final int resId) {
-        runUI(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(FrameworkCentral.getApplication(), Resources.string(resId), Toast.LENGTH_SHORT).show();
@@ -184,7 +137,7 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     public void toast(@StringRes final String msg) {
-        runUI(new Runnable() {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(FrameworkCentral.getApplication(), msg, Toast.LENGTH_SHORT).show();

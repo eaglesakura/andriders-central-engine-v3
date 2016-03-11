@@ -64,7 +64,7 @@ public class BaseNavigationFragment extends AppBaseFragment {
             public void onDrawerOpened(View drawerView) {
             }
         };
-        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
     }
 

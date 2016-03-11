@@ -3,13 +3,13 @@ buildscript {
         maven { url "http://eaglesakura.github.io/maven/" }
         jcenter()
     }
+
     dependencies {
-        classpath "com.eaglesakura:eglibrary-gradle-plugin:0.2.7"
-        classpath "com.google.apis:google-api-services-androidpublisher:v2-rev18-1.20.0"
+        classpath "com.eaglesakura:plugin-ci-support:1.0.14"
     }
 }
 
-apply plugin: 'com.eaglesakura.android-support'
+apply plugin: 'com.eaglesakura.ci-support'
 apply plugin: 'deploygate'
 
 /**

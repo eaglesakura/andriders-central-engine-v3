@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.ble.BleDevice;
 import com.eaglesakura.andriders.ble.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.ble.base.BaseBleGattReceiver;
 import com.eaglesakura.andriders.ble.cadence.BleCadenceSpeedSensor.BleSpeedCadenceListener;
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
 
 import android.bluetooth.BluetoothDevice;
@@ -13,21 +14,24 @@ import android.content.Context;
  * Speed&Cadence sensor
  */
 public class SpeedCadenceGattReceiver extends BaseBleGattReceiver {
-    BleSpeedCadenceListener speedCadenceListener;
+    BleSpeedCadenceListener mSpeedCadenceListener;
 
-    public SpeedCadenceGattReceiver(Context context) {
+    final Clock mClock;
+
+    public SpeedCadenceGattReceiver(Context context, Clock clock) {
         super(context, FitnessDeviceType.SPEED_CADENCE_SENSOR);
+        mClock = clock;
     }
 
     public void setSpeedCadenceListener(BleSpeedCadenceListener speedCadenceListener) {
-        this.speedCadenceListener = speedCadenceListener;
+        this.mSpeedCadenceListener = speedCadenceListener;
     }
 
     @Override
     protected BleDevice newBleDevice(BluetoothDevice device) {
-        BleCadenceSpeedSensor sensor = new BleCadenceSpeedSensor(context, device);
+        BleCadenceSpeedSensor sensor = new BleCadenceSpeedSensor(context, device, mClock);
 
-        sensor.registerCadenceListener(speedCadenceListener);
+        sensor.registerCadenceListener(mSpeedCadenceListener);
         // デバイスの接続・切断に対して反応する
         sensor.registerDeviceListener(new BleDeviceListener() {
             @Override
