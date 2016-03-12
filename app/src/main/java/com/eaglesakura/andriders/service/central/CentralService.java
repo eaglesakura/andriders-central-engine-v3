@@ -1,9 +1,11 @@
 package com.eaglesakura.andriders.service.central;
 
+import com.eaglesakura.andriders.central.data.Clock;
 import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.andriders.service.central.display.DisplayRenderer;
 import com.eaglesakura.andriders.service.central.notification.NotificationRenderer;
 import com.eaglesakura.andriders.service.central.status.CentralUiManager;
+import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
@@ -44,6 +46,8 @@ public class CentralService extends AppBaseService {
      */
     HandlerLoopController mLoopController;
 
+    SubscriptionController mSubscriptionController = new SubscriptionController();
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -54,7 +58,7 @@ public class CentralService extends AppBaseService {
     public void onCreate() {
         super.onCreate();
 
-        mCentralContext = new CentralContext(this);  // データ初期化
+        mCentralContext = new CentralContext(this, new Clock(System.currentTimeMillis()));  // データ初期化
         initializeUiManagers();     // ディスプレイ表示
         initializeUpdateLoop();     // 更新ループを開始する
 

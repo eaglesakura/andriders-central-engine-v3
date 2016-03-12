@@ -108,6 +108,7 @@ public class CentralUiManager {
     public void disconnect() {
         mService.stopForeground(true);
         mWindowManager.removeView(mRootDisplay);
+        ButterKnife.unbind(this);
     }
 
 }

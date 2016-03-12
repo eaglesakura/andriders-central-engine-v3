@@ -291,5 +291,4 @@ public class CycleComputerData {
     public void commitLog() {
 
     }
-
 }

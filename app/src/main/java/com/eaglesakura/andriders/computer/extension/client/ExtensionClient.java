@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.computer.extension.client;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
+import com.eaglesakura.andriders.central.data.CycleComputerData;
 import com.eaglesakura.andriders.computer.display.DisplayManager;
 import com.eaglesakura.andriders.computer.display.DisplayViewData;
 import com.eaglesakura.andriders.db.Settings;
@@ -53,7 +54,16 @@ public class ExtensionClient extends CommandClient {
 
     final boolean mCentralServiceMode;
 
+    /**
+     * コネクションごとの一意に識別するID
+     */
     final String mSessionId;
+
+    /**
+     * サイコン情報を設定するためのコールバック
+     */
+    private Worker<CycleComputerData> mCycleComputerDataWorker = it -> {
+    };
 
     ExtensionClient(Context context, ExtensionClientManager parent, String sessionId) {
         super(context, String.format("%s", UUID.randomUUID().toString()));
@@ -70,6 +80,10 @@ public class ExtensionClient extends CommandClient {
 
     public DisplayManager getDisplayManager() {
         return mParent.mDisplayManager;
+    }
+
+    public void setWorker(Worker<CycleComputerData> cycleComputerDataWorker) {
+        mCycleComputerDataWorker = cycleComputerDataWorker;
     }
 
     /**
@@ -237,13 +251,10 @@ public class ExtensionClient extends CommandClient {
         /**
          * ディスプレイ情報を更新する
          */
-        cmdMap.addAction(DisplayCommand.CMD_setDisplayValue, new CommandMap.Action() {
-            @Override
-            public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                List<DisplayViewData> list = DisplayViewData.deserialize(payload.getBuffer(), DisplayViewData.class);
-                displayManager.putValue(ExtensionClient.this, list);
-                return null;
-            }
+        cmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
+            List<DisplayViewData> list = DisplayViewData.deserialize(payload.getBuffer(), DisplayViewData.class);
+            displayManager.putValue(ExtensionClient.this, list);
+            return null;
         });
     }
 
@@ -257,58 +268,59 @@ public class ExtensionClient extends CommandClient {
         /**
          * 接続先のBLEアドレスを問い合わせる
          */
-        cmdMap.addAction(CentralDataCommand.CMD_setBleGadgetAddress, new CommandMap.Action() {
-            @Override
-            public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                SensorType sensorType = SensorType.valueOf(Payload.deserializeStringOrNull(payload));
+        cmdMap.addAction(CentralDataCommand.CMD_setBleGadgetAddress, (sender, cmd, payload) -> {
+            SensorType sensorType = SensorType.valueOf(Payload.deserializeStringOrNull(payload));
 
-                String sensorAddress;
-                if (sensorType == SensorType.HeartrateMonitor) {
-                    sensorAddress = Settings.getInstance().getUserProfiles().getBleHeartrateMonitorAddress();
-                } else if (sensorType == SensorType.CadenceSensor || sensorType == SensorType.SpeedSensor) {
-                    sensorAddress = Settings.getInstance().getUserProfiles().getBleSpeedCadenceSensorAddress();
-                } else {
-                    return null;
-                }
-
-                return Payload.fromString(sensorAddress);
+            String sensorAddress;
+            if (sensorType == SensorType.HeartrateMonitor) {
+                sensorAddress = Settings.getInstance().getUserProfiles().getBleHeartrateMonitorAddress();
+            } else if (sensorType == SensorType.CadenceSensor || sensorType == SensorType.SpeedSensor) {
+                sensorAddress = Settings.getInstance().getUserProfiles().getBleSpeedCadenceSensorAddress();
+            } else {
+                return null;
             }
+
+            return Payload.fromString(sensorAddress);
+
         });
 
         /**
          * GPS座標を更新する
          */
-        cmdMap.addAction(CentralDataCommand.CMD_setLocation, new CommandMap.Action() {
-            @Override
-            public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                ExtensionProtocol.SrcLocation idl = payload.deserializePublicField(ExtensionProtocol.SrcLocation.class);
-                dataManager.setLocation(idl);
-                return null;
-            }
+        cmdMap.addAction(CentralDataCommand.CMD_setLocation, (Object sender, String cmd, Payload payload) -> {
+            ExtensionProtocol.SrcLocation idl = payload.deserializePublicField(ExtensionProtocol.SrcLocation.class);
+            dataManager.setLocation(idl);
+            return null;
         });
 
         /**
          * 心拍を設定する
          */
-        cmdMap.addAction(CentralDataCommand.CMD_setHeartrate, new CommandMap.Action() {
-            @Override
-            public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                ExtensionProtocol.SrcHeartrate idl = payload.deserializePublicField(ExtensionProtocol.SrcHeartrate.class);
-                dataManager.setHeartrate(idl);
-                return null;
-            }
+        cmdMap.addAction(CentralDataCommand.CMD_setHeartrate, (Object sender, String cmd, Payload payload) -> {
+            ExtensionProtocol.SrcHeartrate idl = payload.deserializePublicField(ExtensionProtocol.SrcHeartrate.class);
+            dataManager.setHeartrate(idl);
+            return null;
         });
 
         /**
          * S&Cセンサーを設定する
          */
-        cmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, new CommandMap.Action() {
-            @Override
-            public Payload execute(Object sender, String cmd, Payload payload) throws Exception {
-                ExtensionProtocol.SrcSpeedAndCadence idl = payload.deserializePublicField(ExtensionProtocol.SrcSpeedAndCadence.class);
-                dataManager.setSpeedAndCadence(idl);
-                return null;
-            }
+        cmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, (Object sender, String cmd, Payload payload) -> {
+            ExtensionProtocol.SrcSpeedAndCadence idl = payload.deserializePublicField(ExtensionProtocol.SrcSpeedAndCadence.class);
+            dataManager.setSpeedAndCadence(idl);
+            return null;
         });
     }
+
+    public interface Action<T> {
+        void callback(T it);
+    }
+
+    /**
+     * 処理を行わせるためのコールバックを登録する
+     */
+    public interface Worker<T> {
+        void request(Action<T> action);
+    }
+
 }
