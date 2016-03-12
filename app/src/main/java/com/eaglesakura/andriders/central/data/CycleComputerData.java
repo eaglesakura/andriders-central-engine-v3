@@ -18,7 +18,7 @@ import android.content.Context;
 
 /**
  * サイコンが持つべき情報を統括する
- *
+ * <p>
  * 各種Data系クラスへのアクセサはUnitTestのためpackage privateとして扱う
  */
 public class CycleComputerData {
@@ -29,14 +29,14 @@ public class CycleComputerData {
 
     /**
      * カロリー等のフィットネス情報管理
-     *
+     * <p>
      * 心拍から計算される
      */
     final FitnessData mFitnessData;
 
     /**
      * 速度情報管理
-     *
+     * <p>
      * S&Cセンサーが有効であればセンサーを、無効であれば位置情報をソースにして速度を取得する。
      * 位置情報が無効である場合は速度0となる。
      */
@@ -44,21 +44,21 @@ public class CycleComputerData {
 
     /**
      * センサー由来の速度情報
-     *
+     * <p>
      * S&Cセンサーの取得時に更新される
      */
     final SensorSpeedData mSensorSpeedData;
 
     /**
      * ケイデンス情報
-     *
+     * <p>
      * S&Cセンサーの取得時に更新される
      */
     final CadenceData mCadenceData;
 
     /**
      * 移動距離管理
-     *
+     * <p>
      * 現在速度と時間経過から自動的に計算される
      */
     final DistanceData mDistanceData;
@@ -80,14 +80,14 @@ public class CycleComputerData {
 
     /**
      * sync管理
-     *
+     * <p>
      * データは別なパイプラインから呼び出されるため、ロックを行ってデータがコンフリクトしないようにする。
      */
     private final Object lock = new Object();
 
     /**
      * 最後に生成されたセントラル情報
-     *
+     * <p>
      * onUpdateの更新時に生成される
      */
     private RawCentralData mLatestCentralData;
@@ -135,7 +135,7 @@ public class CycleComputerData {
 
     /**
      * セッション識別子を取得する
-     *
+     * <p>
      * MEMO: 識別子は普遍なため、sync不要
      */
     public String getSessionId() {
@@ -153,7 +153,7 @@ public class CycleComputerData {
 
     /**
      * 位置情報を設定する
-     *
+     * <p>
      * MEMO : 位置情報はLocationDataが一括して管理する。速度計はLocData.GeoSpeed経由で検証する
      *
      * @param lat           緯度
@@ -240,6 +240,7 @@ public class CycleComputerData {
         dst.distanceKm = (float) mDistanceData.getDistanceKm();
         dst.sessionId = mSessionData.getSessionId();
         dst.startTime = mSessionData.getStartDate();
+        dst.durationTimeMs = (int) (now() - dst.startTime);
 
         dst.fitness = new RawSessionData.RawFitnessStatus();
         mFitnessData.getFitness(dst.fitness);
@@ -283,7 +284,7 @@ public class CycleComputerData {
 
     /**
      * ログを強制的に書き出す
-     *
+     * <p>
      * TODO 実装する
      */
     public void commitLog() {
