@@ -79,6 +79,10 @@ public class FitnessData extends BaseCalculator {
         return mSumExercise;
     }
 
+    public long getHeartrateDataTime() {
+        return mHeartrateDataTime;
+    }
+
     /**
      * 現在の心拍ゾーンを取得する
      */

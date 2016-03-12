@@ -228,6 +228,7 @@ public class CycleComputerData {
 
     private void getStatus(RawCentralData.RawCentralStatus dst) {
         dst.debug = Settings.isDebugable();
+        dst.date = now();
     }
 
     /**

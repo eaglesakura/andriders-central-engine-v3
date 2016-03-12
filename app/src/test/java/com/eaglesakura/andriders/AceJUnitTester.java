@@ -5,11 +5,14 @@ import com.eaglesakura.util.LogUtil;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
+import org.hamcrest.core.Is;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import android.content.Context;
+
+import java.io.File;
 
 @RunWith(AceJUnitTestRunner.class)
 @Config(constants = BuildConfig.class, application = AceApplication.class, packageName = BuildConfig.DEFAULT_PACKAGE_NAME)
@@ -48,5 +51,14 @@ public abstract class AceJUnitTester {
     public void onSetup() {
         mContext = RuntimeEnvironment.application;
         initializeLogger();
+    }
+
+
+    protected File getTestAsset(String path) {
+        return new File("src/test/assets/" + path).getAbsoluteFile();
+    }
+
+    public static org.hamcrest.Matcher<Boolean> isTrue() {
+        return Is.is(true);
     }
 }

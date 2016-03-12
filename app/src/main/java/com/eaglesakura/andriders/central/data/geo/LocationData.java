@@ -14,7 +14,7 @@ public class LocationData extends BaseCalculator {
     /**
      * 位置精度
      */
-    private double mAccuracy;
+    private double mAccuracy = 500;
 
     /**
      * 高度情報
@@ -47,6 +47,18 @@ public class LocationData extends BaseCalculator {
      */
     public boolean valid() {
         return mUpdatedTime != 0;
+    }
+
+    public long getUpdatedTime() {
+        return mUpdatedTime;
+    }
+
+    public double getLongitude() {
+        return mGeoSpeedData.getLongitude();
+    }
+
+    public double getLatitude() {
+        return mGeoSpeedData.getLatitude();
     }
 
     /**
@@ -102,7 +114,11 @@ public class LocationData extends BaseCalculator {
     /**
      * 精度をチェックし、信頼できるならばtrueを返却する
      */
-    public boolean isReliance(double accuracyMeter) {
+    public boolean isReliance() {
+        return isReliance(mAccuracy);
+    }
+
+    boolean isReliance(double accuracyMeter) {
         return accuracyMeter < 150;
     }
 
