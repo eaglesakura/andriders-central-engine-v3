@@ -56,11 +56,6 @@ public class CentralContext implements Disposable {
     private CycleComputerData mCycleComputerData;
 
     /**
-     * サイコンデータ本体
-     */
-    private CentralDataManager mCentralDataManager;
-
-    /**
      * サイコン表示内容管理
      */
     private DisplayManager mDisplayManager;
@@ -98,13 +93,11 @@ public class CentralContext implements Disposable {
         mContext = context;
         mClock = updateClock;
 
-        mCentralDataManager = new CentralDataManager(mContext, mSubscriptionController);
+        mCycleComputerData = new CycleComputerData(context, mClock.now());
         mDisplayManager = new DisplayManager(mContext, mSubscriptionController);
         mNotificationManager = new NotificationManager(mContext, mSubscriptionController);
 
         mExtensionClientManager = new ExtensionClientManager(mContext);
-        mExtensionClientManager.setCentralDataManager(mCentralDataManager);
-        mExtensionClientManager.setDisplayManager(mDisplayManager);
     }
 
     /**
@@ -112,10 +105,6 @@ public class CentralContext implements Disposable {
      */
     public long now() {
         return mClock.now();
-    }
-
-    public CentralDataManager getCentralDataManager() {
-        return mCentralDataManager;
     }
 
     public DisplayManager getDisplayManager() {
@@ -154,7 +143,7 @@ public class CentralContext implements Disposable {
         for (ExtensionClient client : mExtensionClientManager.listClients()) {
             // サイコンデータ用コールバックを指定する
             client.setWorker((ExtensionClient.Action<CycleComputerData> action) -> {
-                mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                post(() -> {
                     action.callback(mCycleComputerData);
                 });
             });

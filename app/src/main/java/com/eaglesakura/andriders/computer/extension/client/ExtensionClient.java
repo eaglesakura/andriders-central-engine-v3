@@ -1,8 +1,6 @@
 package com.eaglesakura.andriders.computer.extension.client;
 
-import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.data.CycleComputerData;
-import com.eaglesakura.andriders.computer.display.DisplayManager;
 import com.eaglesakura.andriders.computer.display.DisplayViewData;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.extension.DisplayInformation;
@@ -74,14 +72,6 @@ public class ExtensionClient extends CommandClient {
         mParent = parent;
         buildCentralCommands();
         buildDisplayCommands();
-    }
-
-    public CentralDataManager getCentralDataManager() {
-        return mParent.mCentralDataManager;
-    }
-
-    public DisplayManager getDisplayManager() {
-        return mParent.mDisplayManager;
     }
 
     public void setWorker(Worker<CycleComputerData> cycleComputerDataWorker) {
@@ -245,28 +235,18 @@ public class ExtensionClient extends CommandClient {
     }
 
     private void buildDisplayCommands() {
-        final DisplayManager displayManager = getDisplayManager();
-        if (displayManager == null) {
-            return;
-        }
-
         /**
          * ディスプレイ情報を更新する
          */
         cmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
             List<DisplayViewData> list = DisplayViewData.deserialize(payload.getBuffer(), DisplayViewData.class);
-            displayManager.putValue(ExtensionClient.this, list);
+            // TODO: コールバック処理　
+//            displayManager.putValue(ExtensionClient.this, list)
             return null;
         });
     }
 
     private void buildCentralCommands() {
-        final CentralDataManager dataManager = getCentralDataManager();
-
-        if (dataManager == null) {
-            return;
-        }
-
         /**
          * 接続先のBLEアドレスを問い合わせる
          */
