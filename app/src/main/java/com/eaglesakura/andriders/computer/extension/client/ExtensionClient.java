@@ -17,6 +17,7 @@ import com.eaglesakura.android.service.CommandClient;
 import com.eaglesakura.android.service.CommandMap;
 import com.eaglesakura.android.service.data.Payload;
 import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.Util;
 
@@ -136,7 +137,7 @@ public class ExtensionClient extends CommandClient {
             }
         }
 
-        if (Util.isEmpty(mInformations)) {
+        if (CollectionUtil.isEmpty(mInformations)) {
             return null;
         } else {
             return mInformations.get(0);

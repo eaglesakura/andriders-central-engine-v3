@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
 import com.eaglesakura.android.thread.HandlerThreadExecuter;
 import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.Util;
 
 import android.bluetooth.BluetoothDevice;
@@ -184,7 +185,7 @@ public class BleCadenceSpeedSensor extends BleDevice {
      * リスナを登録する
      */
     public void registerCadenceListener(BleSpeedCadenceListener listener) {
-        Util.addUnique(mListeners, listener);
+        CollectionUtil.addUnique(mListeners, listener);
     }
 
     /**

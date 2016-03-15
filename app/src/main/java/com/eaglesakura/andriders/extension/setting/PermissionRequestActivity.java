@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.extension.setting;
 
 import com.eaglesakura.android.framework.ui.BaseActivity;
 import com.eaglesakura.android.util.PermissionUtil;
-import com.eaglesakura.util.Util;
+import com.eaglesakura.util.CollectionUtil;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,12 +19,12 @@ public class PermissionRequestActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         ArrayList<String> permissions = getIntent().getStringArrayListExtra(EXTRA_REQUEST_PERMISSIONS);
-        if (Util.isEmpty(permissions)) {
+        if (CollectionUtil.isEmpty(permissions)) {
             finish();
             return;
         }
 
-        if (!requestRuntimePermissions(Util.convert(permissions, new String[permissions.size()]))) {
+        if (!requestRuntimePermissions(CollectionUtil.asArray(permissions, new String[permissions.size()]))) {
             // RuntimePermissionが起動しなければ何もしない
             finish();
             return;

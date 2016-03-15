@@ -6,11 +6,11 @@ import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.SerializeUtil;
 import com.eaglesakura.util.Timer;
-import com.eaglesakura.util.Util;
 
 import org.junit.Test;
 
@@ -167,7 +167,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
 
         // シリアライズとデシリアライズが正常である
         byte[] bytes = SerializeUtil.serializePublicFieldObject(centralData, true);
-        assertFalse(Util.isEmpty(bytes));
+        assertFalse(CollectionUtil.isEmpty(bytes));
         RawCentralData deserialized = SerializeUtil.deserializePublicFieldObject(RawCentralData.class, bytes);
         assertEquals(centralData, deserialized);
     }

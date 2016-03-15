@@ -15,6 +15,7 @@ import com.eaglesakura.andriders.extension.setting.PermissionRequestActivity;
 import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.geo.Geohash;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Util;
@@ -98,7 +99,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
             }
         }
 
-        if (Util.isEmpty(result)) {
+        if (CollectionUtil.isEmpty(result)) {
             return null;
         } else {
             return result;

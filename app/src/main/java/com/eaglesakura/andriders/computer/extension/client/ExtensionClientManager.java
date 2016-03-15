@@ -11,6 +11,7 @@ import com.eaglesakura.andriders.extension.ExtensionInformation;
 import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.Timer;
 import com.eaglesakura.util.Util;
 
@@ -61,7 +62,7 @@ public class ExtensionClientManager {
      */
     public boolean isConnected() {
         synchronized (extensions) {
-            return !Util.isEmpty(extensions);
+            return !CollectionUtil.isEmpty(extensions);
         }
     }
 
@@ -72,7 +73,7 @@ public class ExtensionClientManager {
         synchronized (extensions) {
             List<ExtensionClient> result = new ArrayList<>();
             for (ExtensionClient client : extensions) {
-                if (!Util.isEmpty(client.getDisplayInformations())) {
+                if (!CollectionUtil.isEmpty(client.getDisplayInformations())) {
                     result.add(client);
                 }
             }
@@ -105,7 +106,7 @@ public class ExtensionClientManager {
         synchronized (extensions) {
             for (ExtensionClient client : extensions) {
                 List<DisplayInformation> informations = client.getDisplayInformations();
-                if (Util.isEmpty(informations)) {
+                if (CollectionUtil.isEmpty(informations)) {
                     continue;
                 }
 
