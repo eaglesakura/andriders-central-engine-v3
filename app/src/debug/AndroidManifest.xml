@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.eaglesakura.andriders">
+
+    <application>
+        <!-- デバッグ画面 -->
+        <activity
+                android:name="com.eaglesakura.android.debug.DebugMenuActivity"
+                android:theme="@style/EsMaterial.Theme.Grey.NoActionBar"
+                android:screenOrientation="portrait"/>
+    </application>
+</manifest>
