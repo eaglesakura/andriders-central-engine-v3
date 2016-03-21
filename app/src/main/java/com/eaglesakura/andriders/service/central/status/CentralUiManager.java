@@ -3,6 +3,8 @@ package com.eaglesakura.andriders.service.central.status;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.service.central.notification.NotificationView;
+import com.eaglesakura.android.margarine.Bind;
+import com.eaglesakura.android.margarine.MargarineKnife;
 
 import android.app.Notification;
 import android.app.Service;
@@ -11,9 +13,6 @@ import android.graphics.PixelFormat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 
 public class CentralUiManager {
     static final int NOTIFICATION_ID_FORGROUND_MENU = 0x3103;
@@ -72,7 +71,7 @@ public class CentralUiManager {
 
     private void initializeDisplayView() {
         mRootDisplay = (ViewGroup) View.inflate(mService, R.layout.service_cycle_display, null);
-        ButterKnife.bind(this, mRootDisplay);
+        MargarineKnife.bind(this, mRootDisplay);
         if (mDisplayStub == null || mNotificationView == null) {
             throw new IllegalStateException();
         }
@@ -108,7 +107,6 @@ public class CentralUiManager {
     public void disconnect() {
         mService.stopForeground(true);
         mWindowManager.removeView(mRootDisplay);
-        ButterKnife.unbind(this);
     }
 
 }

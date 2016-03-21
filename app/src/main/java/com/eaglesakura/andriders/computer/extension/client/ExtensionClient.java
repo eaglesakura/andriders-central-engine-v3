@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.computer.extension.client;
 
-import com.eaglesakura.andriders.central.data.CycleComputerData;
+import com.eaglesakura.andriders.central.CycleComputerData;
 import com.eaglesakura.andriders.computer.display.DisplayViewData;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.extension.DisplayInformation;
@@ -19,7 +19,6 @@ import com.eaglesakura.android.service.data.Payload;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.LogUtil;
-import com.eaglesakura.util.Util;
 
 import android.content.ComponentName;
 import android.content.Context;

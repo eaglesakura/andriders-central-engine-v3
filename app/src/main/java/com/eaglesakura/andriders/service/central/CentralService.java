@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.central.Clock;
 import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.andriders.service.central.display.DisplayRenderer;
 import com.eaglesakura.andriders.service.central.notification.NotificationRenderer;

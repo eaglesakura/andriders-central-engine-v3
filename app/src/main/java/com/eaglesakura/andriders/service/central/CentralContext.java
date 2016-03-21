@@ -1,8 +1,7 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.central.CentralDataManager;
-import com.eaglesakura.andriders.central.data.Clock;
-import com.eaglesakura.andriders.central.data.CycleComputerData;
+import com.eaglesakura.andriders.central.Clock;
+import com.eaglesakura.andriders.central.CycleComputerData;
 import com.eaglesakura.andriders.computer.display.DisplayManager;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;

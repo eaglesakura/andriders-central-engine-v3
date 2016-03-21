@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.extension.ExtensionInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.ui.SupportAQuery;
+import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.util.Util;
 
@@ -21,7 +22,6 @@ import android.widget.LinearLayout;
 
 import java.util.List;
 
-import butterknife.Bind;
 import icepick.State;
 
 public class ExtensionModuleSettingFragment extends AppBaseFragment {

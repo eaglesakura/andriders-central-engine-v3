@@ -1,12 +1,12 @@
-package com.eaglesakura.andriders.central.data;
+package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.BuildConfig;
-import com.eaglesakura.andriders.central.data.geo.GeoSpeedData;
-import com.eaglesakura.andriders.central.data.geo.LocationData;
-import com.eaglesakura.andriders.central.data.hrsensor.FitnessData;
-import com.eaglesakura.andriders.central.data.scsensor.CadenceData;
-import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
-import com.eaglesakura.andriders.central.data.session.SessionData;
+import com.eaglesakura.andriders.central.geo.GeoSpeedData;
+import com.eaglesakura.andriders.central.geo.LocationData;
+import com.eaglesakura.andriders.central.hrsensor.FitnessData;
+import com.eaglesakura.andriders.central.scsensor.CadenceData;
+import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
+import com.eaglesakura.andriders.central.session.SessionData;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;

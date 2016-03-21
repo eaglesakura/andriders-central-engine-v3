@@ -1,6 +1,8 @@
-package com.eaglesakura.andriders.central.data;
+package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.AceJUnitTester;
+import com.eaglesakura.andriders.central.CycleComputerData;
+import com.eaglesakura.andriders.central.SpeedData;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;

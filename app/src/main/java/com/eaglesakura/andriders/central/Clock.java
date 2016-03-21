@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.central.data;
+package com.eaglesakura.andriders.central;
 
 /**
  * 各種クラスで共有する時計を管理する

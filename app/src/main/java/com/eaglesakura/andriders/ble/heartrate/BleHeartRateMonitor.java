@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.ble.heartrate;
 
 import com.eaglesakura.andriders.ble.BleDevice;
-import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.central.Clock;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
 import com.eaglesakura.android.thread.ui.UIHandler;

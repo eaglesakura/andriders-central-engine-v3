@@ -1,7 +1,7 @@
-package com.eaglesakura.andriders.central.data.hrsensor;
+package com.eaglesakura.andriders.central.hrsensor;
 
-import com.eaglesakura.andriders.central.data.Clock;
-import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.Clock;
+import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.internal.protocol.RawSessionData;
 import com.eaglesakura.andriders.internal.protocol.RawSpecs;

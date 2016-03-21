@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.extension;
 import com.eaglesakura.andriders.ble.heartrate.BleHeartRateMonitor;
 import com.eaglesakura.andriders.ble.heartrate.HeartrateSensorData;
 import com.eaglesakura.andriders.ble.heartrate.HeartrateGattReceiver;
-import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.central.Clock;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.android.framework.service.BaseService;

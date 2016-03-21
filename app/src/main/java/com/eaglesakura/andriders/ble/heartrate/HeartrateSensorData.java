@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.ble.heartrate;
 
 import com.eaglesakura.andriders.ble.BleDevice;
-import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.central.Clock;
 
 /**
  * センサーから受け取った直値の心拍データ

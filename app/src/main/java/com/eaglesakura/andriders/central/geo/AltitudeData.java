@@ -1,7 +1,7 @@
-package com.eaglesakura.andriders.central.data.geo;
+package com.eaglesakura.andriders.central.geo;
 
-import com.eaglesakura.andriders.central.data.Clock;
-import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.Clock;
+import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.MathUtil;
