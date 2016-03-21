@@ -1,7 +1,10 @@
-package com.eaglesakura.andriders.central.data.hrsensor;
+package com.eaglesakura.andriders.central.hrsensor;
 
-import com.eaglesakura.andriders.central.data.Clock;
-import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.andriders.central.base.BaseCalculator;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.internal.protocol.RawSessionData;
+import com.eaglesakura.andriders.internal.protocol.RawSpecs;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.util.Timer;
 
@@ -38,6 +41,13 @@ public class FitnessData extends BaseCalculator {
         super(clock);
     }
 
+    /**
+     * データが有効であればtrue
+     */
+    public boolean valid() {
+        return (now() - mHeartrateDataTime) < DATA_TIMEOUT_MS;
+    }
+
     public float getCurrentMets() {
         return mCurrentMets;
     }
@@ -67,6 +77,10 @@ public class FitnessData extends BaseCalculator {
 
     public float getSumExercise() {
         return mSumExercise;
+    }
+
+    public long getHeartrateDataTime() {
+        return mHeartrateDataTime;
     }
 
     /**
@@ -99,11 +113,47 @@ public class FitnessData extends BaseCalculator {
     /**
      * 心拍を更新する
      *
-     * @param bpm       心拍
+     * @param bpm 心拍
      */
     public void setHeartrate(int bpm) {
         mHeartrateDataTime = now();
         mHeartrate = bpm;
+    }
+
+
+    /**
+     * フィットネス情報を取得する
+     */
+    public void getSpec(RawSpecs.RawFitnessSpec dst) {
+        dst.weight = getUserWeight();
+        dst.heartrateMax = (short) getMaxHeartrate();
+        dst.heartrateNormal = (short) getNormalHeartrate();
+    }
+
+    /**
+     * フィットネス情報を取得する
+     */
+    public void getFitness(RawSessionData.RawFitnessStatus dst) {
+        dst.calorie = getSumCalories();
+        dst.exercise = getSumExercise();
+        dst.mets = getCurrentMets();
+    }
+
+    /**
+     * センサー情報を取得する
+     *
+     * @return センサー情報を書き込んだ場合true
+     */
+    public boolean getSensor(RawSensorData dstSensor) {
+        if (!valid()) {
+            return false;
+        }
+
+        dstSensor.heartrate = new RawSensorData.RawHeartrate();
+        dstSensor.heartrate.bpm = (short) getHeartrate();
+        dstSensor.heartrate.date = mHeartrateDataTime;
+        dstSensor.heartrate.zone = getZone();
+        return true;
     }
 
     /**

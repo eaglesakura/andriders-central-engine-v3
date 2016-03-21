@@ -1,11 +1,17 @@
-package com.eaglesakura.andriders.central.data;
+package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.AceJUnitTester;
+import com.eaglesakura.andriders.central.CycleComputerData;
+import com.eaglesakura.andriders.central.SpeedData;
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.internal.protocol.RawCentralData;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.MathUtil;
+import com.eaglesakura.util.SerializeUtil;
 import com.eaglesakura.util.Timer;
 
 import org.junit.Test;
@@ -14,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class CycleComputerDataTest extends AceJUnitTester {
@@ -74,6 +82,98 @@ public class CycleComputerDataTest extends AceJUnitTester {
         assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60); // データも1分経過している
     }
 
+    void assertObject(CycleComputerData data, RawCentralData centralData) throws Exception {
+        assertNotNull(data);
+        assertNotNull(data.mSpeedData.getSpeedZone());
+        assertNotNull(data.mFitnessData.getZone());
+        assertNotNull(data.mCadenceData.getZone());
+
+        assertNotNull(centralData);
+        assertNotNull(centralData.session);
+        assertNotNull(centralData.centralStatus);
+        assertNotNull(centralData.specs);
+
+        assertNotNull(centralData.session.fitness);
+        assertEquals(data.isActiveMoving(), centralData.session.isActiveMoving());
+        assertEquals(centralData.centralStatus.date, data.now());
+
+        if (data.mFitnessData.valid()) {
+            assertNotNull(centralData.sensor.heartrate);
+            assertThat("HR : " + data.mFitnessData.getHeartrate(),
+                    data.mFitnessData.getHeartrate() > 50 && data.mFitnessData.getHeartrate() < 220,
+                    isTrue());
+
+            assertEquals((short) data.mFitnessData.getHeartrate(), centralData.sensor.heartrate.bpm);
+            assertEquals(data.mFitnessData.getHeartrateDataTime(), centralData.sensor.heartrate.date);
+            assertEquals(data.mFitnessData.getZone(), centralData.sensor.heartrate.zone);
+        } else {
+            assertNull(centralData.sensor.heartrate);
+        }
+
+        if (data.mCadenceData.valid()) {
+            assertThat("cadence : " + data.mCadenceData.getCadenceRpm(),
+                    data.mCadenceData.getCadenceRpm() >= 0 && data.mCadenceData.getCadenceRpm() <= 200,
+                    isTrue());
+
+            assertNotNull(centralData.sensor.cadence);
+            assertEquals((short) data.mCadenceData.getCadenceRpm(), centralData.sensor.cadence.rpm);
+            assertEquals(data.mCadenceData.getCrankRevolution(), centralData.sensor.cadence.crankRevolution);
+            assertEquals(data.mCadenceData.getZone(), centralData.sensor.cadence.zone);
+            assertEquals(data.mCadenceData.getUpdatedDate(), centralData.sensor.cadence.date);
+        } else {
+            assertNull(centralData.sensor.cadence);
+        }
+
+        if (data.mLocationData.valid()) {
+            assertNotNull(centralData.sensor.location);
+            assertNotNull(data.mLocationData.getInclinationType());
+            assertThat("latitude : " + data.mLocationData.getLatitude(),
+                    Math.abs(data.mLocationData.getLatitude()) <= 90, // 北緯は90度までしか存在しない
+                    isTrue());
+            assertThat("longitude : " + data.mLocationData.getLongitude(),
+                    Math.abs(data.mLocationData.getLongitude()) <= 180, // 東経180度までしか存在しない
+                    isTrue());
+            assertThat("altitude : " + data.mLocationData.getAltitudeMeter(),
+                    Math.abs(data.mLocationData.getAltitudeMeter()) <= 8000, // エベレストよりも高い場所には登れない
+                    isTrue());
+
+
+            assertEquals(data.mLocationData.getLatitude(), centralData.sensor.location.latitude, 0.001);
+            assertEquals(data.mLocationData.getLongitude(), centralData.sensor.location.longitude, 0.001);
+            assertEquals(data.mLocationData.getAltitudeMeter(), centralData.sensor.location.altitude, 0.001);
+            assertEquals(data.mLocationData.getAccuracyMeter(), centralData.sensor.location.locationAccuracy, 0.001);
+            assertEquals(data.mLocationData.isReliance(), centralData.sensor.location.locationReliance);
+            assertEquals(data.mLocationData.getUpdatedTime(), centralData.sensor.location.date);
+            assertEquals(data.mLocationData.getInclinationPercent(), centralData.sensor.location.inclinationPercent, 0.001);
+            assertEquals(data.mLocationData.getInclinationType(), centralData.sensor.location.inclinationType);
+        } else {
+            assertNull(centralData.sensor.location);
+        }
+
+        if (data.mSpeedData.getSource() != SpeedData.SpeedSource.None) {
+            assertNotNull(centralData.sensor.speed);
+            switch (data.mSpeedData.getSource()) {
+                case GPS:
+                    assertEquals(centralData.sensor.speed.flags & RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS, RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS);
+                    break;
+                case Sensor:
+                    assertEquals(centralData.sensor.speed.flags & RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_SENSOR, RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_SENSOR);
+                    break;
+            }
+
+            assertEquals(data.mSpeedData.getSpeedZone(), centralData.sensor.speed.zone);
+            assertEquals(data.mSpeedData.getSpeedKmh(), centralData.sensor.speed.speedKmPerHour, 0.1);
+        } else {
+            assertNull(centralData.sensor.speed);
+        }
+
+        // シリアライズとデシリアライズが正常である
+        byte[] bytes = SerializeUtil.serializePublicFieldObject(centralData, true);
+        assertFalse(CollectionUtil.isEmpty(bytes));
+        RawCentralData deserialized = SerializeUtil.deserializePublicFieldObject(RawCentralData.class, bytes);
+        assertEquals(centralData, deserialized);
+    }
+
     /**
      * ケイデンスセンサーのテストでは、速度が計算通りになることを検証する。
      *
@@ -98,14 +198,17 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
                 assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
-
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
-                assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
-                assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
+
+
+                assertObject(data, data.getLatestCentralData());
+
+                assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
 
                 // 速度をチェックする
                 assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
+
                 // このギア比では速度は20～25km/h程度になるはずである
                 assertTrue(data.mSpeedData.getSpeedKmh() > 20.0);
                 assertTrue(data.mSpeedData.getSpeedKmh() < 30.0);
@@ -143,10 +246,10 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
                 assertEquals(data.setSpeedAndCadence(0, 0, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
-
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
-                assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
+
+                assertObject(data, data.getLatestCentralData());
 
                 // 速度をチェックする
                 assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
@@ -197,6 +300,8 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
+
+                assertObject(data, data.getLatestCentralData());
 
                 // 速度をチェックする
                 // 時速1kmの誤差を認める
@@ -254,8 +359,6 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 double lng = MathUtil.blendValue(SAMPLE_START_LONGITUDE, SAMPLE_END_LONGITUDE, 1.0 - current);
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
 
-                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
                 assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
@@ -264,6 +367,8 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
+
+                assertObject(data, data.getLatestCentralData());
 
                 // 速度をチェックする
                 // 時速1kmの誤差を認める
@@ -313,8 +418,6 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 double lng = MathUtil.blendValue(SAMPLE_START_LONGITUDE, SAMPLE_END_LONGITUDE, 1.0 - current);
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
 
-                final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
-
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
 
@@ -326,6 +429,8 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
+
+                assertObject(data, data.getLatestCentralData());
 
                 if (current < 0.5) {
                     // 最初の30分はS&Cセンサー由来の速度
@@ -373,11 +478,13 @@ public class CycleComputerDataTest extends AceJUnitTester {
                 // 心拍140前後をキープさせる
                 data.setHeartrate((int) (130.0 + 10.0 * Math.random()));
                 data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                current += OFFSET_TIME_HOUR;
+
+                assertObject(data, data.getLatestCentralData());
 
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
                 assertNotNull(data.mFitnessData.getZone()); // ゾーンは必ず取得できる
                 assertNotEquals(data.mFitnessData.getZone(), HeartrateZone.Repose);
-                current += OFFSET_TIME_HOUR;
             }
         }
         LogUtil.setOutput(true);

@@ -9,6 +9,8 @@ import com.eaglesakura.andriders.v2.db.DebugSettings;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.device.external.StorageInfo;
 import com.eaglesakura.android.framework.ui.license.LicenseViewActivity;
+import com.eaglesakura.android.margarine.OnCheckedChanged;
+import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 import com.eaglesakura.util.StringUtil;
@@ -18,9 +20,6 @@ import android.widget.CompoundButton;
 
 import java.io.File;
 import java.util.Date;
-
-import butterknife.OnCheckedChanged;
-import butterknife.OnClick;
 
 public class BuildInformationFragment extends AppBaseFragment {
 

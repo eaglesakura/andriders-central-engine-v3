@@ -56,16 +56,6 @@ task generateProps(type: com.eaglesakura.gradle.task.AndroidPropsGenTask) {
     CentralServiceSettings.booleanProperty "gpsEnable", true // GPS座標による更新を行う場合
     CentralServiceSettings.floatProperty "gpsAccuracy", 50 // 信頼できるGPS精度（メートル）
 
-    // サウンド情報
-    CentralServiceSettings.booleanProperty "soundEnable", true // Serviceからサウンドを鳴らす場合はtrue
-    CentralServiceSettings.booleanProperty "customSoundEnable", true // カスタマイズされたサウンドを鳴らす場合はtrue
-
-    /**
-     * デフォルトコマンドの各種設定
-     */
-    def DefaultCommandSettings = newProps("${android.defaultConfig.applicationId}.db.DefaultCommandSettings");
-    DefaultCommandSettings.intProperty "videoMaxRecordTimeMs", (1000 * 60 * 10); // デフォルトの最大録画時間
-
     /**
      * プロファイル設定
      */
@@ -85,18 +75,6 @@ task generateProps(type: com.eaglesakura.gradle.task.AndroidPropsGenTask) {
 
     // サイクルコンピューター
     UserProfiles.booleanProperty "cycleComputerInterfaceEnable", true
-
-    /**
-     * Twitter設定用
-     */
-    def TwitterConnectSettings = newProps("${android.defaultConfig.applicationId}.db.TwitterConnectSettings");
-    TwitterConnectSettings.stringProperty "fullName", "";
-    TwitterConnectSettings.stringProperty "id", "";
-    TwitterConnectSettings.stringProperty "token", "";
-    TwitterConnectSettings.stringProperty "tokenSecret", "";
-    TwitterConnectSettings.stringProperty "smallIconUrl", "";
-    TwitterConnectSettings.stringProperty "largeIconUrl", "";
-    TwitterConnectSettings.bitmapProperty "icon"
 
     /**
      * デバッグ設定用
@@ -226,21 +204,17 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
         it.addDoubleProperty("sumDistanceKm").notNull().index();   // 移動距離合計（キロ単位）
 
         // 延べ消費Calorie
-        // added ver 2
-        it.addDoubleProperty("calories");
+        it.addDoubleProperty("calories").notNull();
         // 延べエクササイズ
-        // added ver 3
-        it.addDoubleProperty("exercise");
+        it.addDoubleProperty("exercise").notNull();
 
         // 獲得標高
-        // added ver 4
-        it.addDoubleProperty("sumAltitude");
+        it.addDoubleProperty("sumAltitude").notNull();
         // 検索性を必要としない拡張データ
-        // added ver 4
-        it.addByteArrayProperty("extraPayload");
+        it.addByteArrayProperty("extraPayload").notNull();
     }
 
-    def sessionSchema = newSchema(4, "session");
+    def sessionSchema = newSchema(1, "session");
 
     /**
      * 日毎のログ

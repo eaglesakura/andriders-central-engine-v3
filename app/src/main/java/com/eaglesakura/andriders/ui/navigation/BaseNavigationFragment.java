@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.ui.navigation;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.framework.ui.BaseActivity;
+import com.eaglesakura.android.margarine.Bind;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -12,8 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-
-import butterknife.Bind;
 
 /**
  * 各画面を統括するFragmentのsuper class

@@ -1,7 +1,8 @@
-package com.eaglesakura.andriders.central.data.scsensor;
+package com.eaglesakura.andriders.central.scsensor;
 
-import com.eaglesakura.andriders.central.data.Clock;
-import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.andriders.central.base.BaseCalculator;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 
@@ -20,6 +21,10 @@ public class CadenceData extends BaseCalculator {
 
     public CadenceData(Clock clock) {
         super(clock);
+    }
+
+    public long getUpdatedDate() {
+        return mUpdatedDate;
     }
 
     /**
@@ -45,6 +50,26 @@ public class CadenceData extends BaseCalculator {
      */
     public int getCrankRevolution() {
         return mCrankRevolution;
+    }
+
+
+    /**
+     * センサー情報を取得する
+     *
+     * @return センサー情報を書き込んだ場合true
+     */
+    public boolean getSensor(RawSensorData dstSensor) {
+        if (!valid()) {
+            return false;
+        }
+
+        dstSensor.cadence = new RawSensorData.RawCadence();
+        dstSensor.cadence.date = mUpdatedDate;
+        dstSensor.cadence.rpm = (short) getCadenceRpm();
+        dstSensor.cadence.crankRevolution = getCrankRevolution();
+        dstSensor.cadence.zone = getZone();
+
+        return true;
     }
 
     /**

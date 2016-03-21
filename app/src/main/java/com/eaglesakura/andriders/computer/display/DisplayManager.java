@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.Util;
 
 import android.content.Context;
@@ -43,7 +44,7 @@ public class DisplayManager extends CycleComputerManager {
      * 値を一括で登録する
      */
     public void putValue(final ExtensionClient extension, final List<DisplayViewData> impl) {
-        if (Util.isEmpty(impl)) {
+        if (CollectionUtil.isEmpty(impl)) {
             return;
         }
 

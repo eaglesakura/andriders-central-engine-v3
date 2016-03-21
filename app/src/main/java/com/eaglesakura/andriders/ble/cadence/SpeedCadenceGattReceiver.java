@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.ble.BleDevice;
 import com.eaglesakura.andriders.ble.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.ble.base.BaseBleGattReceiver;
 import com.eaglesakura.andriders.ble.cadence.BleCadenceSpeedSensor.BleSpeedCadenceListener;
-import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
 
 import android.bluetooth.BluetoothDevice;

@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.extension;
 import com.eaglesakura.andriders.ble.cadence.BleCadenceSpeedSensor;
 import com.eaglesakura.andriders.ble.cadence.SpeedCadenceGattReceiver;
 import com.eaglesakura.andriders.ble.cadence.SpeedCadenceSensorData;
-import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.android.framework.service.BaseService;

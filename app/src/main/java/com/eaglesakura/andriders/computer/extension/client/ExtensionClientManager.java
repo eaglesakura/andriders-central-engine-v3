@@ -1,21 +1,19 @@
 package com.eaglesakura.andriders.computer.extension.client;
 
-import com.eaglesakura.andriders.central.CentralDataManager;
-import com.eaglesakura.andriders.computer.display.DisplayManager;
-import com.eaglesakura.andriders.computer.notification.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionCategory;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
 import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.Timer;
 import com.eaglesakura.util.Util;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +21,6 @@ import java.util.UUID;
 
 public class ExtensionClientManager {
     final Context mContext;
-
-    CentralDataManager mCentralDataManager;
-
-    DisplayManager mDisplayManager;
-
-    NotificationManager mNotificationManager;
 
     /**
      * 接続されたクライアント一覧
@@ -55,14 +47,6 @@ public class ExtensionClientManager {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 4) + (System.nanoTime() % 1000);
     }
 
-    public void setCentralDataManager(CentralDataManager centralDataManager) {
-        mCentralDataManager = centralDataManager;
-    }
-
-    public void setDisplayManager(DisplayManager displayManager) {
-        mDisplayManager = displayManager;
-    }
-
     /**
      * 拡張Service一覧を取得する
      */
@@ -78,7 +62,7 @@ public class ExtensionClientManager {
      */
     public boolean isConnected() {
         synchronized (extensions) {
-            return !Util.isEmpty(extensions);
+            return !CollectionUtil.isEmpty(extensions);
         }
     }
 
@@ -89,7 +73,7 @@ public class ExtensionClientManager {
         synchronized (extensions) {
             List<ExtensionClient> result = new ArrayList<>();
             for (ExtensionClient client : extensions) {
-                if (!Util.isEmpty(client.getDisplayInformations())) {
+                if (!CollectionUtil.isEmpty(client.getDisplayInformations())) {
                     result.add(client);
                 }
             }
@@ -122,7 +106,7 @@ public class ExtensionClientManager {
         synchronized (extensions) {
             for (ExtensionClient client : extensions) {
                 List<DisplayInformation> informations = client.getDisplayInformations();
-                if (Util.isEmpty(informations)) {
+                if (CollectionUtil.isEmpty(informations)) {
                     continue;
                 }
 
@@ -185,7 +169,7 @@ public class ExtensionClientManager {
 
     /**
      * 拡張サービスに接続する
-     * <p/>
+     * <p>
      * ブロッキングで接続完了する。
      */
     public void connect(ConnectMode mode) {
@@ -207,46 +191,8 @@ public class ExtensionClientManager {
             for (final ExtensionClient impl : extensions) {
                 impl.disconnect();
             }
-        }, 1000 * 5);
+        }, 1000 * 15);
         extensions.clear();
     }
 
-//    /**
-//     * 拡張サービスに接続する
-//     * <p/>
-//     * 接続完了はコールバックで受け取れる。
-//     */
-//    public AsyncTaskResult<ExtensionClientManager> connect(ConnectMode mode) {
-//        return mPipeline.pushBack(new IAsyncTask<ExtensionClientManager>() {
-//            @Override
-//            public ExtensionClientManager doInBackground(AsyncTaskResult<ExtensionClientManager> result) throws Exception {
-//                List<ResolveInfo> services = listExtensionServices(mContext);
-//                for (ResolveInfo info : services) {
-//                    connectService(info);
-//                }
-//                return ExtensionClientManager.this;
-//            }
-//        });
-//    }
-//
-//    /**
-//     * 拡張サービスから切断する
-//     */
-//    public AsyncTaskResult<ExtensionClientManager> disconnect() {
-//        return mPipeline.pushBack(new IAsyncTask<ExtensionClientManager>() {
-//            @Override
-//            public ExtensionClientManager doInBackground(AsyncTaskResult<ExtensionClientManager> result) throws Exception {
-//                for (final ExtensionClient impl : extensions) {
-//                    UIHandler.postWithWait(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            impl.disconnect();
-//                        }
-//                    }, 1000 * 5);
-//                }
-//                extensions.clear();
-//                return null;
-//            }
-//        });
-//    }
 }

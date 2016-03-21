@@ -1,7 +1,7 @@
-package com.eaglesakura.andriders.central.data.geo;
+package com.eaglesakura.andriders.central.geo;
 
-import com.eaglesakura.andriders.central.data.Clock;
-import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.geo.GeoUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.Timer;
@@ -52,6 +52,10 @@ public class GeoSpeedData extends BaseCalculator {
      */
     public boolean valid() {
         return (now() - mUpdatedTime) < DATA_TIMEOUT_MS;
+    }
+
+    public long getUpdatedTime() {
+        return mUpdatedTime;
     }
 
     /**

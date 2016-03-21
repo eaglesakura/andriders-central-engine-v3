@@ -1,6 +1,7 @@
-package com.eaglesakura.andriders.central.data;
+package com.eaglesakura.andriders.central;
 
-import com.eaglesakura.andriders.central.data.base.BaseCalculator;
+import com.eaglesakura.andriders.central.base.BaseCalculator;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.util.Timer;
 
 /**
@@ -25,10 +26,12 @@ public class DistanceData extends BaseCalculator {
 
     /**
      * 差分時間と速度から、走行距離を求める
+     *
+     * @return 移動した距離（km）
      */
-    public void onUpdate(long diffTimeMs, double nowSpeedKmh) {
+    public double onUpdate(long diffTimeMs, double nowSpeedKmh) {
         if (diffTimeMs <= 0 || nowSpeedKmh <= 0) {
-            return;
+            return 0;
         }
         // 差分を取得する
         final double diffHour = Timer.msToHour(diffTimeMs);
@@ -36,5 +39,6 @@ public class DistanceData extends BaseCalculator {
 
         // 差分を加算してタイマーを再開する
         mDistanceKm += diffDistance;
+        return diffDistance;
     }
 }

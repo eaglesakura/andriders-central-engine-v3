@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ble.cadence;
 
-import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.AppLog;
 
 /**

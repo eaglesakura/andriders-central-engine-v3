@@ -27,7 +27,6 @@ dependencies {
         compile project(':eglibrary:android-framework')
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
-        compile project(':eglibrary:android-support-bottomsheet')
         compile project(':eglibrary:rxandroid-support')
     } else {
         compile 'com.eaglesakura:simple-logger:+'
@@ -46,7 +45,6 @@ dependencies {
         compile 'com.eaglesakura:onactivityresult-invoke:+'
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
-        compile 'com.eaglesakura:android-support-bottomsheet:1.0.+'	// add library
 
         /**
          * Injection / State

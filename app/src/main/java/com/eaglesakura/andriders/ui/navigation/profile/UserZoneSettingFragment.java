@@ -6,9 +6,8 @@ import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.context.Resources;
+import com.eaglesakura.android.margarine.Bind;
 import com.edmodo.rangebar.RangeBar;
-
-import butterknife.Bind;
 
 public class UserZoneSettingFragment extends AppBaseFragment {
 

@@ -1,9 +1,11 @@
-package com.eaglesakura.andriders.central.data;
+package com.eaglesakura.andriders.central;
 
-import com.eaglesakura.andriders.central.data.base.BaseCalculator;
-import com.eaglesakura.andriders.central.data.geo.GeoSpeedData;
-import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
+import com.eaglesakura.andriders.central.base.BaseCalculator;
+import com.eaglesakura.andriders.central.geo.GeoSpeedData;
+import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.andriders.util.Clock;
 
 /**
  * GPSやセンサーの速度を統括し、適度な情報を取得する
@@ -21,9 +23,26 @@ public class SpeedData extends BaseCalculator {
     private final SensorSpeedData mSensorSpeedCalculator;
 
     public enum SpeedSource {
-        None,
-        Sensor,
-        GPS,
+        None {
+            @Override
+            public int getFlag() {
+                return 0;
+            }
+        },
+        Sensor {
+            @Override
+            public int getFlag() {
+                return RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_SENSOR;
+            }
+        },
+        GPS {
+            @Override
+            public int getFlag() {
+                return RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS;
+            }
+        };
+
+        public abstract int getFlag();
     }
 
     public SpeedData(Clock clock, GeoSpeedData geoSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
@@ -92,4 +111,32 @@ public class SpeedData extends BaseCalculator {
         }
     }
 
+
+    /**
+     * センサー情報を取得する
+     *
+     * @return センサー情報を書き込んだ場合true
+     */
+    public boolean getSensor(RawSensorData dstSensor) {
+        SpeedSource speedSrc = getSource();
+        if (speedSrc == SpeedSource.None) {
+            // 速度が取得できない
+            return false;
+        }
+
+        dstSensor.speed = new RawSensorData.RawSpeed();
+        dstSensor.speed.flags |= speedSrc.getFlag();
+        dstSensor.speed.speedKmPerHour = (float) getSpeedKmh();
+        dstSensor.speed.zone = getSpeedZone();
+
+        if (speedSrc == SpeedSource.GPS) {
+            dstSensor.speed.date = mLocationSpeedCalculator.getUpdatedTime();
+        } else {
+            dstSensor.speed.date = mSensorSpeedCalculator.getUpdatedTime();
+            dstSensor.speed.wheelRpm = mSensorSpeedCalculator.getWheelRpm();
+            dstSensor.speed.wheelRevolution = mSensorSpeedCalculator.getWheelRevolution();
+        }
+
+        return true;
+    }
 }

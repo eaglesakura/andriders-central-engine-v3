@@ -3,10 +3,10 @@ package com.eaglesakura.andriders.ui.navigation;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseActivity;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
-import com.eaglesakura.andriders.ui.navigation.extension.ExtensionFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.menu.GoogleLoginCtrlFragment;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.android.framework.ui.BaseFragment;
+import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.util.LogUtil;
@@ -20,8 +20,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-
-import butterknife.Bind;
 
 public class MainContentActivity extends AppBaseActivity {
 
@@ -72,11 +70,8 @@ public class MainContentActivity extends AppBaseActivity {
 //            }
 //        };
 
-        UIHandler.postDelayedUI(new Runnable() {
-            @Override
-            public void run() {
-                drawerLayout.openDrawer(Gravity.START);
-            }
+        UIHandler.postDelayedUI(() -> {
+            drawerLayout.openDrawer(Gravity.START);
         }, 500);
     }
 

@@ -4,14 +4,13 @@ import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
+import com.eaglesakura.android.margarine.Bind;
+import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialInputDialog;
 
 import android.widget.EditText;
 import android.widget.TextView;
-
-import butterknife.Bind;
-import butterknife.OnClick;
 
 public class RoadbikeSettingFragment extends AppBaseFragment {
 

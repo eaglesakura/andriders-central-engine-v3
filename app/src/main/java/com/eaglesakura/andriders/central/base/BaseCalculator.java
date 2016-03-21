@@ -1,6 +1,6 @@
-package com.eaglesakura.andriders.central.data.base;
+package com.eaglesakura.andriders.central.base;
 
-import com.eaglesakura.andriders.central.data.Clock;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.db.Settings;
 
 public abstract class BaseCalculator {

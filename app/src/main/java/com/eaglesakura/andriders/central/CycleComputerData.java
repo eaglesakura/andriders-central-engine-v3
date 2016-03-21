@@ -1,18 +1,25 @@
-package com.eaglesakura.andriders.central.data;
+package com.eaglesakura.andriders.central;
 
-import com.eaglesakura.andriders.central.data.geo.GeoSpeedData;
-import com.eaglesakura.andriders.central.data.geo.LocationData;
-import com.eaglesakura.andriders.central.data.hrsensor.FitnessData;
-import com.eaglesakura.andriders.central.data.scsensor.CadenceData;
-import com.eaglesakura.andriders.central.data.scsensor.SensorSpeedData;
-import com.eaglesakura.andriders.central.data.session.SessionData;
+import com.eaglesakura.andriders.BuildConfig;
+import com.eaglesakura.andriders.central.geo.GeoSpeedData;
+import com.eaglesakura.andriders.central.geo.LocationData;
+import com.eaglesakura.andriders.central.hrsensor.FitnessData;
+import com.eaglesakura.andriders.central.scsensor.CadenceData;
+import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
+import com.eaglesakura.andriders.central.session.SessionData;
+import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.internal.protocol.RawCentralData;
+import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.internal.protocol.RawSessionData;
+import com.eaglesakura.andriders.internal.protocol.RawSpecs;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.andriders.util.Clock;
 
 import android.content.Context;
 
 /**
  * サイコンが持つべき情報を統括する
- *
+ * <p>
  * 各種Data系クラスへのアクセサはUnitTestのためpackage privateとして扱う
  */
 public class CycleComputerData {
@@ -23,14 +30,14 @@ public class CycleComputerData {
 
     /**
      * カロリー等のフィットネス情報管理
-     *
+     * <p>
      * 心拍から計算される
      */
     final FitnessData mFitnessData;
 
     /**
      * 速度情報管理
-     *
+     * <p>
      * S&Cセンサーが有効であればセンサーを、無効であれば位置情報をソースにして速度を取得する。
      * 位置情報が無効である場合は速度0となる。
      */
@@ -38,21 +45,21 @@ public class CycleComputerData {
 
     /**
      * センサー由来の速度情報
-     *
+     * <p>
      * S&Cセンサーの取得時に更新される
      */
     final SensorSpeedData mSensorSpeedData;
 
     /**
      * ケイデンス情報
-     *
+     * <p>
      * S&Cセンサーの取得時に更新される
      */
     final CadenceData mCadenceData;
 
     /**
      * 移動距離管理
-     *
+     * <p>
      * 現在速度と時間経過から自動的に計算される
      */
     final DistanceData mDistanceData;
@@ -74,10 +81,17 @@ public class CycleComputerData {
 
     /**
      * sync管理
-     *
+     * <p>
      * データは別なパイプラインから呼び出されるため、ロックを行ってデータがコンフリクトしないようにする。
      */
     private final Object lock = new Object();
+
+    /**
+     * 最後に生成されたセントラル情報
+     * <p>
+     * onUpdateの更新時に生成される
+     */
+    private RawCentralData mLatestCentralData;
 
     public CycleComputerData(Context context, long sessionStartTime) {
         mContext = context.getApplicationContext();
@@ -122,7 +136,7 @@ public class CycleComputerData {
 
     /**
      * セッション識別子を取得する
-     *
+     * <p>
      * MEMO: 識別子は普遍なため、sync不要
      */
     public String getSessionId() {
@@ -140,7 +154,7 @@ public class CycleComputerData {
 
     /**
      * 位置情報を設定する
-     *
+     * <p>
      * MEMO : 位置情報はLocationDataが一括して管理する。速度計はLocData.GeoSpeed経由で検証する
      *
      * @param lat           緯度
@@ -194,22 +208,88 @@ public class CycleComputerData {
             mFitnessData.onUpdateTime(diffTimeMs);
 
             // 走行距離を更新する
-            mDistanceData.onUpdate(diffTimeMs, mSpeedData.getSpeedKmh());
+            final double moveDistanceKm = mDistanceData.onUpdate(diffTimeMs, mSpeedData.getSpeedKmh());
 
             // 自走中であれば走行距離を追加する
             if (isActiveMoving()) {
                 mSessionData.addActiveTimeMs(diffTimeMs);
+                mSessionData.addActiveDistanceKm(moveDistanceKm);
             }
+
+            // セントラル情報を生成する
+            mLatestCentralData = newCentralData();
         }
+    }
+
+    private void getSpecs(RawSpecs.RawAppSpec dst) {
+        dst.appPackageName = BuildConfig.APPLICATION_ID;
+        dst.appVersionName = BuildConfig.VERSION_NAME;
+        dst.protocolVersion = com.eaglesakura.andriders.sdk.BuildConfig.ACE_PROTOCOL_VERSION;
+    }
+
+    private void getStatus(RawCentralData.RawCentralStatus dst) {
+        dst.debug = Settings.isDebugable();
+        dst.date = now();
+    }
+
+    /**
+     * このセッションでの統計情報を取得する
+     */
+    private void getSession(RawSessionData dst) {
+        dst.flags |= (isActiveMoving() ? RawSessionData.FLAG_ACTIVE : 0x00);
+        dst.activeTimeMs = (int) mSessionData.getActiveTimeMs();
+        dst.activeDistanceKm = (float) mSessionData.getActiveDistanceKm();
+        dst.distanceKm = (float) mDistanceData.getDistanceKm();
+        dst.sessionId = mSessionData.getSessionId();
+        dst.startTime = mSessionData.getStartDate();
+        dst.durationTimeMs = (int) (now() - dst.startTime);
+
+        dst.fitness = new RawSessionData.RawFitnessStatus();
+        mFitnessData.getFitness(dst.fitness);
+    }
+
+    /**
+     * 最後にonUpdateTime()が呼び出された時点でのセントラル情報を取得する
+     */
+    public RawCentralData getLatestCentralData() {
+        return mLatestCentralData;
+    }
+
+    /**
+     * 現在の状態からセントラルを生成する
+     */
+    public RawCentralData newCentralData() {
+        RawCentralData result = new RawCentralData();
+
+        result.specs = new RawSpecs();
+        result.specs.application = new RawSpecs.RawAppSpec();
+        result.specs.fitness = new RawSpecs.RawFitnessSpec();
+        result.centralStatus = new RawCentralData.RawCentralStatus();
+        result.sensor = new RawSensorData();
+        result.session = new RawSessionData();
+        result.today = new RawSessionData();
+
+        getSpecs(result.specs.application);
+        getStatus(result.centralStatus);
+        getSession(result.session);
+
+        mFitnessData.getSpec(result.specs.fitness);
+
+        // 各種センサーデータを取得する
+        mFitnessData.getSensor(result.sensor);
+        mCadenceData.getSensor(result.sensor);
+        mSpeedData.getSensor(result.sensor);
+        mLocationData.getSensor(result.sensor);
+
+        return result;
     }
 
     /**
      * ログを強制的に書き出す
-     *
+     * <p>
      * TODO 実装する
      */
     public void commitLog() {
 
     }
-
 }
