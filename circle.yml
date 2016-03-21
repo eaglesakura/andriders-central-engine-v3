@@ -12,12 +12,17 @@ machine:
   java:
     version: oraclejdk8
   environment:
-    ANDROID_HOME: /usr/local/android-sdk-linux
+    ANDROID_HOME: /home/ubuntu/android-sdk
     GRADLE_OPTS: -Xmx4G -Dorg.gradle.daemon=true
     JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx4096m -XX:MaxPermSize=2048m
 dependencies:
+  cache_directories:
+    - "/home/ubuntu/android-sdk"
   override:
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk.sh)"
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk-install-circle.sh)"
+    - rm -rf "/home/ubuntu/.m2"
+    - rm -rf "/home/ubuntu/.ivy2"
+    - rm -rf "/home/ubuntu/.gradle"
     - ./script/developer-install-private.sh
 test:
   override:
@@ -26,9 +31,6 @@ deployment:
   canary:
     branch: /^v[0-9]\..*$/
     commands:
-      - rm -rf "/home/ubuntu/.m2"
-      - rm -rf "/home/ubuntu/.ivy2"
-      - rm -rf "/home/ubuntu/.gradle"
       - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
@@ -37,9 +39,6 @@ deployment:
   feature:
     branch: /^feature\/id\/.*$/
     commands:
-      - rm -rf "/home/ubuntu/.m2"
-      - rm -rf "/home/ubuntu/.ivy2"
-      - rm -rf "/home/ubuntu/.gradle"
       - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-build-testing.sh
@@ -47,9 +46,6 @@ deployment:
   develop:
     branch: develop
     commands:
-      - rm -rf "/home/ubuntu/.m2"
-      - rm -rf "/home/ubuntu/.ivy2"
-      - rm -rf "/home/ubuntu/.gradle"
       - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
@@ -57,9 +53,6 @@ deployment:
   develop:
     branch: master
     commands:
-      - rm -rf "/home/ubuntu/.m2"
-      - rm -rf "/home/ubuntu/.ivy2"
-      - rm -rf "/home/ubuntu/.gradle"
       - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-build-testing.sh
