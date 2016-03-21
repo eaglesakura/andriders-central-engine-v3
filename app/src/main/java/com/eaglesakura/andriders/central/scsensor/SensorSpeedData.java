@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.central.scsensor;
 
 import com.eaglesakura.andriders.AceUtils;
-import com.eaglesakura.andriders.central.Clock;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 
 public class SensorSpeedData extends BaseCalculator {

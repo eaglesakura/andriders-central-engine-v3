@@ -68,11 +68,14 @@ public class DisplaySlotManager {
         }
     }
 
+    /**
+     * 現在レイアウト中のパッケージ名を取得する
+     */
     public String getAppPackageName() {
         return displayTarget != null ? displayTarget.getTargetPackage() : mAppPackageName;
     }
 
-    public void load() {
+    public DisplaySlotManager load() {
         DisplayLayoutDatabase db = new DisplayLayoutDatabase(context);
         try {
             db.openWritable();
@@ -96,6 +99,7 @@ public class DisplaySlotManager {
         } finally {
             db.close();
         }
+        return this;
     }
 
     /**

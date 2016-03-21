@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.central.geo.GeoSpeedData;
 import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.andriders.util.Clock;
 
 /**
  * GPSやセンサーの速度を統括し、適度な情報を取得する

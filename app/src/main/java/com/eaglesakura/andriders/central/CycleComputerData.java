@@ -13,6 +13,7 @@ import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.internal.protocol.RawSessionData;
 import com.eaglesakura.andriders.internal.protocol.RawSpecs;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.andriders.util.Clock;
 
 import android.content.Context;
 

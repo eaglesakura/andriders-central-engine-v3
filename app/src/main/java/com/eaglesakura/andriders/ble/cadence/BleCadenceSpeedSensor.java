@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ble.cadence;
 
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.ble.BleDevice;
-import com.eaglesakura.andriders.central.Clock;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;

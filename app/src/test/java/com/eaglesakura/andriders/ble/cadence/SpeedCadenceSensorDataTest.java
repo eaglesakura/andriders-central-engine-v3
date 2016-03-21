@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ble.cadence;
 
 import com.eaglesakura.andriders.AceJUnitTester;
 import com.eaglesakura.andriders.ble.BleDevice;
-import com.eaglesakura.andriders.central.Clock;
+import com.eaglesakura.andriders.util.Clock;
 
 import org.junit.Test;
 

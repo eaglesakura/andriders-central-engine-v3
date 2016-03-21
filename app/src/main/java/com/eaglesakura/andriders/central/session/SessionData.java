@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.session;
 
-import com.eaglesakura.andriders.central.Clock;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 
 import java.text.SimpleDateFormat;

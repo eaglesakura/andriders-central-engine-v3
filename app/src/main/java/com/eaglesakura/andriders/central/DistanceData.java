@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.central.base.BaseCalculator;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.util.Timer;
 
 /**
