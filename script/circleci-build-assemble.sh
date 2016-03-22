@@ -23,7 +23,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # 成果物収集
-./gradlew ciCollect
+./gradlew ciCollectAndroidApps
 
 if [ $? -ne 0 ]; then
     echo "unit test failed..."

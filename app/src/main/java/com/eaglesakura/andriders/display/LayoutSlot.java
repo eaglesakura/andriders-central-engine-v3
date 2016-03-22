@@ -8,17 +8,17 @@ import com.eaglesakura.andriders.extension.ExtensionInformation;
 /**
  * ディスプレイの表示位置
  */
-public class DisplaySlot {
+public class LayoutSlot {
     private final int x;
     private final int y;
     private DbDisplayLayout db;
 
-    DisplaySlot(int x, int y) {
+    LayoutSlot(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    DisplaySlot(int x, int y, DbDisplayLayout db) {
+    LayoutSlot(int x, int y, DbDisplayLayout db) {
         this.x = x;
         this.y = y;
         this.db = db;
@@ -88,7 +88,7 @@ public class DisplaySlot {
      * 右側のスロットである場合true
      */
     public boolean isRight() {
-        return x == (DisplaySlotManager.MAX_HORIZONTAL_SLOTS - 1);
+        return x == (DisplayLayoutManager.MAX_HORIZONTAL_SLOTS - 1);
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.computer.display;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.display.DisplaySlot;
+import com.eaglesakura.andriders.display.LayoutSlot;
 import com.eaglesakura.andriders.extension.display.BasicValue;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.display.LineValue;
@@ -36,7 +36,7 @@ public class DisplayViewData extends DisplayData {
 
         updateOrGone(q.id(R.id.Service_Central_Display_Basic_Value).getTextView(), value.getValue());
         updateOrGone(q.id(R.id.Service_Central_Display_Basic_Title).getTextView(), value.getTitle());
-        if (DisplaySlot.isLeft(stub.getId())) {
+        if (LayoutSlot.isLeft(stub.getId())) {
             updateOrGone(q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Left).visible().getTextView(), value.getZoneText());
             q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Right).gone();
 

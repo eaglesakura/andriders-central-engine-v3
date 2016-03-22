@@ -1,10 +1,10 @@
 package com.eaglesakura.andriders.service.central.display;
 
-import com.eaglesakura.andriders.computer.display.DisplayManager;
+import com.eaglesakura.andriders.computer.display.DisplayViewManager;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
-import com.eaglesakura.andriders.display.DisplaySlot;
-import com.eaglesakura.andriders.display.DisplaySlotManager;
+import com.eaglesakura.andriders.display.LayoutSlot;
+import com.eaglesakura.andriders.display.DisplayLayoutManager;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.android.framework.service.BaseService;
@@ -32,7 +32,7 @@ public class DisplayRenderer {
     /**
      * ディスプレイのスロット管理
      */
-    DisplaySlotManager mDisplaySlotManager;
+    DisplayLayoutManager mDisplaySlotManager;
 
     /**
      * 表示対象のStub格納先
@@ -98,14 +98,14 @@ public class DisplayRenderer {
         }
 
         if (mDisplayStub.getChildCount() == 0) {
-            ViewGroup root = DisplaySlotManager.newStubLayout(mService);
+            ViewGroup root = DisplayLayoutManager.newStubLayout(mService);
             mDisplayStub.addView(root, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
 
         ExtensionClientManager extensionClientManager = mCentralContext.getExtensionClientManager();
-        DisplayManager displayManager = mCentralContext.getDisplayManager();
+        DisplayViewManager displayManager = mCentralContext.getDisplayManager();
 
-        for (DisplaySlot slot : mDisplaySlotManager.listSlots()) {
+        for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
             ViewGroup viewSlot = (ViewGroup) mDisplayStub.findViewById(slot.getId());
             DisplayInformation information = null;
             if (slot.hasLink()) {

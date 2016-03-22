@@ -3,8 +3,8 @@ package com.eaglesakura.andriders.ui.navigation.display;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
-import com.eaglesakura.andriders.display.DisplaySlot;
-import com.eaglesakura.andriders.display.DisplaySlotManager;
+import com.eaglesakura.andriders.display.LayoutSlot;
+import com.eaglesakura.andriders.display.DisplayLayoutManager;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class DisplayLayoutSetFragment extends AppBaseFragment {
 
-    DisplaySlotManager mDisplaySlotManager;
+    DisplayLayoutManager mDisplaySlotManager;
 
     String appPackageName;
 
@@ -50,7 +50,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = DisplaySlotManager.newStubLayout(inflater.getContext());
+        View view = DisplayLayoutManager.newStubLayout(inflater.getContext());
         return view;
     }
 
@@ -96,8 +96,8 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * ディスプレイ表示内容を読み込む
      */
     private void loadDisplayDatas(final String newPackageName) {
-        asyncUI((RxTask<DisplaySlotManager> it) -> {
-            DisplaySlotManager slotManager = null;
+        asyncUI((RxTask<DisplayLayoutManager> it) -> {
+            DisplayLayoutManager slotManager = null;
             try {
                 pushProgress(R.string.Common_File_Load);
 
@@ -110,7 +110,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                     }
                 }
 
-                slotManager = new DisplaySlotManager(getActivity(), newPackageName, DisplaySlotManager.Mode.Edit);
+                slotManager = new DisplayLayoutManager(getActivity(), newPackageName, DisplayLayoutManager.Mode.Edit);
                 slotManager.load();
             } finally {
                 popProgress();
@@ -119,7 +119,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         }).completed((slotManager, task) -> {
             LogUtil.log("display load completed :: %s", slotManager.getAppPackageName());
             mDisplaySlotManager = slotManager;
-            for (DisplaySlot slot : mDisplaySlotManager.listSlots()) {
+            for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
                 updateSlotPreview(mDisplaySlotManager, slot);
             }
         }).start();
@@ -128,7 +128,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     /**
      * ディスプレイスロットを更新する
      */
-    void updateSlotPreview(final DisplaySlotManager slotManager, final DisplaySlot slot) {
+    void updateSlotPreview(final DisplayLayoutManager slotManager, final LayoutSlot slot) {
         ViewGroup stub = findViewById(ViewGroup.class, slot.getId());
 
         // 一旦個をすべて削除する
@@ -156,7 +156,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     /**
      * 表示内容の選択ダイアログをブート
      */
-    private void showDisplaySelector(final DisplaySlotManager manager, final DisplaySlot slot) {
+    private void showDisplaySelector(final DisplayLayoutManager manager, final LayoutSlot slot) {
         List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
 
         final BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
@@ -208,7 +208,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * @param client      拡張機能
      * @param displayInfo 表示内容
      */
-    private void onSelectedDisplay(DisplaySlotManager manager, DisplaySlot slot, ExtensionClient client, DisplayInformation displayInfo) {
+    private void onSelectedDisplay(DisplayLayoutManager manager, LayoutSlot slot, ExtensionClient client, DisplayInformation displayInfo) {
 
         if (client == null || displayInfo == null) {
             // 非表示にする

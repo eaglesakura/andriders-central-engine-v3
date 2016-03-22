@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.service.central;
 
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.andriders.central.CycleComputerData;
-import com.eaglesakura.andriders.computer.display.DisplayManager;
+import com.eaglesakura.andriders.central.CentralDataManager;
+import com.eaglesakura.andriders.computer.display.DisplayViewManager;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
 import com.eaglesakura.andriders.computer.notification.NotificationManager;
@@ -52,12 +52,12 @@ public class CentralContext implements Disposable {
     /**
      * サイコンデータ本体
      */
-    private CycleComputerData mCycleComputerData;
+    private CentralDataManager mCycleComputerData;
 
     /**
      * サイコン表示内容管理
      */
-    private DisplayManager mDisplayManager;
+    private DisplayViewManager mDisplayManager;
 
     /**
      * 通知内容管理
@@ -92,8 +92,8 @@ public class CentralContext implements Disposable {
         mContext = context;
         mClock = updateClock;
 
-        mCycleComputerData = new CycleComputerData(context, mClock.now());
-        mDisplayManager = new DisplayManager(mContext, mSubscriptionController);
+        mCycleComputerData = new CentralDataManager(context, mClock.now());
+        mDisplayManager = new DisplayViewManager(mContext, mSubscriptionController);
         mNotificationManager = new NotificationManager(mContext, mSubscriptionController);
 
         mExtensionClientManager = new ExtensionClientManager(mContext);
@@ -106,7 +106,7 @@ public class CentralContext implements Disposable {
         return mClock.now();
     }
 
-    public DisplayManager getDisplayManager() {
+    public DisplayViewManager getDisplayManager() {
         return mDisplayManager;
     }
 
@@ -141,7 +141,7 @@ public class CentralContext implements Disposable {
         mExtensionClientManager.connect(ExtensionClientManager.ConnectMode.Enabled);
         for (ExtensionClient client : mExtensionClientManager.listClients()) {
             // サイコンデータ用コールバックを指定する
-            client.setWorker((ExtensionClient.Action<CycleComputerData> action) -> {
+            client.setWorker((ExtensionClient.Action<CentralDataManager> action) -> {
                 post(() -> {
                     action.callback(mCycleComputerData);
                 });

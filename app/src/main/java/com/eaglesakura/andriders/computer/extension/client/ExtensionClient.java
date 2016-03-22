@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.computer.extension.client;
 
-import com.eaglesakura.andriders.central.CycleComputerData;
+import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.computer.display.DisplayViewData;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.extension.DisplayInformation;
@@ -62,7 +62,7 @@ public class ExtensionClient extends CommandClient {
      * サイコン情報を設定するためのコールバック
      * デフォルトでは何もしない。
      */
-    private Worker<CycleComputerData> mCycleComputerDataWorker = it -> {
+    private Worker<CentralDataManager> mCycleComputerDataWorker = it -> {
     };
 
     ExtensionClient(Context context, ExtensionClientManager parent, String sessionId) {
@@ -74,7 +74,7 @@ public class ExtensionClient extends CommandClient {
         buildDisplayCommands();
     }
 
-    public void setWorker(Worker<CycleComputerData> cycleComputerDataWorker) {
+    public void setWorker(Worker<CentralDataManager> cycleComputerDataWorker) {
         mCycleComputerDataWorker = cycleComputerDataWorker;
     }
 

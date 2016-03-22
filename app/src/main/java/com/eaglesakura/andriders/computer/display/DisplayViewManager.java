@@ -22,14 +22,14 @@ import java.util.Map;
  *
  * 処理自体はコンストラクタで指定されたパイプラインに投げ込まれるため、非同期かつ直列的に行われる。
  */
-public class DisplayManager extends CycleComputerManager {
+public class DisplayViewManager extends CycleComputerManager {
 
     /**
      * 表示内容一覧
      */
     Map<String, DisplayViewData> values = new HashMap<>();
 
-    public DisplayManager(Context context, SubscriptionController subscriptionController) {
+    public DisplayViewManager(Context context, SubscriptionController subscriptionController) {
         super(context, subscriptionController);
     }
 

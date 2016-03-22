@@ -22,7 +22,7 @@ import android.content.Context;
  * <p>
  * 各種Data系クラスへのアクセサはUnitTestのためpackage privateとして扱う
  */
-public class CycleComputerData {
+public class CentralDataManager {
     /**
      * app context
      */
@@ -93,7 +93,7 @@ public class CycleComputerData {
      */
     private RawCentralData mLatestCentralData;
 
-    public CycleComputerData(Context context, long sessionStartTime) {
+    public CentralDataManager(Context context, long sessionStartTime) {
         mContext = context.getApplicationContext();
         mClock = new Clock(sessionStartTime);
         mSessionData = new SessionData(mClock, sessionStartTime);

@@ -1,8 +1,6 @@
 package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.AceJUnitTester;
-import com.eaglesakura.andriders.central.CycleComputerData;
-import com.eaglesakura.andriders.central.SpeedData;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
@@ -24,7 +22,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class CycleComputerDataTest extends AceJUnitTester {
+public class CentralDataManagerTest extends AceJUnitTester {
     /**
      * サンプルの距離はAACR開始～折り返しとなっている。
      * 計算上、約53km程度となる。
@@ -68,7 +66,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
     @Test
     public void セッション開始時刻が正確であることを確認する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+        CentralDataManager data = new CentralDataManager(mContext, START_TIME);
 
         assertNotNull(data.getSessionId());
         assertNotEquals(data.getSessionId(), "");
@@ -82,7 +80,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
         assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60); // データも1分経過している
     }
 
-    void assertObject(CycleComputerData data, RawCentralData centralData) throws Exception {
+    void assertObject(CentralDataManager data, RawCentralData centralData) throws Exception {
         assertNotNull(data);
         assertNotNull(data.mSpeedData.getSpeedZone());
         assertNotNull(data.mFitnessData.getZone());
@@ -185,7 +183,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
     @Test
     public void ケイデンスセンサーによる速度を測定する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+        CentralDataManager data = new CentralDataManager(mContext, START_TIME);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -231,7 +229,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
     @Test
     public void ケイデンス停止で速度が得られている場合はアクティブとして扱わない() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+        CentralDataManager data = new CentralDataManager(mContext, START_TIME);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -281,7 +279,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
     @Test
     public void GPS座標移動から距離と速度を測定する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+        CentralDataManager data = new CentralDataManager(mContext, START_TIME);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -345,7 +343,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
     public void GPS座標とケイデンスセンサーが与えられた場合ケイデンスが優先される() throws Exception {
 
         final long START_TIME = System.currentTimeMillis();
-        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+        CentralDataManager data = new CentralDataManager(mContext, START_TIME);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -405,7 +403,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
     public void ケイデンスセンサーの値がタイムアウトしたら自動的にGPS速度に切り替わる() throws Exception {
 
         final long START_TIME = System.currentTimeMillis();
-        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+        CentralDataManager data = new CentralDataManager(mContext, START_TIME);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -468,7 +466,7 @@ public class CycleComputerDataTest extends AceJUnitTester {
     @Test
     public void 一時間の消費カロリーを計算する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CycleComputerData data = new CycleComputerData(mContext, START_TIME);
+        CentralDataManager data = new CentralDataManager(mContext, START_TIME);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
