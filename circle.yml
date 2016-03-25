@@ -1,6 +1,7 @@
 checkout:
   post:
     - chmod 755 ./gradlew
+    - chmod 755 ./script/circleci-invalidate-cache.sh
     - chmod 755 ./script/circleci-build-assemble.sh
     - chmod 755 ./script/circleci-build-testing.sh
     - chmod 755 ./script/circleci-deploy-deploygate.sh
@@ -18,11 +19,11 @@ machine:
 dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
+    - "/home/ubuntu/build-cache"
   override:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk-install-circle.sh)"
-    - rm -rf "/home/ubuntu/.m2"
-    - rm -rf "/home/ubuntu/.ivy2"
-    - rm -rf "/home/ubuntu/.gradle"
+    - ./script/circleci-invalidate-cache.sh
+    - ./gradlew dependencies
     - ./script/developer-install-private.sh
 test:
   override:
@@ -31,7 +32,6 @@ deployment:
   canary:
     branch: /^v[0-9]\..*$/
     commands:
-      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
       - ./script/circleci-build-testing.sh
@@ -39,21 +39,18 @@ deployment:
   feature:
     branch: /^feature\/id\/.*$/
     commands:
-      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
     commands:
-      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: master
     commands:
-      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
       - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
