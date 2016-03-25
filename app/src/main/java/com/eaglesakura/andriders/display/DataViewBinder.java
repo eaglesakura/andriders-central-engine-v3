@@ -47,14 +47,14 @@ public class DataViewBinder {
         }
 
         AQuery q = new AQuery(slotRoot);
-        if (data == null || mClock.absDiff(dataTime) > data.getTimeoutMs()) {
+        if (data == null || (data.hasTimeout() && mClock.absDiff(dataTime) > data.getTimeoutMs())) {
             // タイムアウトしている
             resetView(q, VISIBLE_NA_VALUE);
             return (result | BIND_RESULT_NAVLUE);
         }
 
         if (data.getBasicValue() != null) {
-            bind(q, data.getBasicValue());
+            bind(slotRoot.getId(), q, data.getBasicValue());
             result |= BIND_RESULT_BASICVALUE;
         } else if (data.getLineValue() != null) {
             bind(q, data.getLineValue());
@@ -91,12 +91,12 @@ public class DataViewBinder {
     /**
      * 標準内容のテキストを表示する
      */
-    private void bind(AQuery q, BasicValue value) {
+    private void bind(int slotId, AQuery q, BasicValue value) {
         resetView(q, VISIBLE_BASIC_VALUE);
 
         updateOrGone(q.id(R.id.Service_Central_Display_Basic_Value).getTextView(), value.getValue());
         updateOrGone(q.id(R.id.Service_Central_Display_Basic_Title).getTextView(), value.getTitle());
-        if (LayoutSlot.isLeft(q.getView().getId())) {
+        if (LayoutSlot.isLeft(slotId)) {
             updateOrGone(q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Left).visible().getTextView(), value.getZoneText());
             q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Right).gone();
 

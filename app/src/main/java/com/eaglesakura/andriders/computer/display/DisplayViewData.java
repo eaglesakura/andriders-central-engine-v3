@@ -20,7 +20,8 @@ import android.widget.TextView;
 /**
  * アプリ内で使用するための拡張設定
  */
-public class DisplayViewData extends DisplayData {
+@Deprecated
+class DisplayViewData extends DisplayData {
     final long createdDate = System.currentTimeMillis();
 
     public DisplayViewData(ExtensionProtocol.RawCycleDisplayValue raw) {

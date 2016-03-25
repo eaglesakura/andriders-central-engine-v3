@@ -1,12 +1,12 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.CentralDataManager;
-import com.eaglesakura.andriders.computer.display.DisplayViewManager;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
 import com.eaglesakura.andriders.computer.notification.NotificationManager;
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.display.DataDisplayManager;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.LifecycleState;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
@@ -57,7 +57,7 @@ public class CentralContext implements Disposable {
     /**
      * サイコン表示内容管理
      */
-    private DisplayViewManager mDisplayManager;
+    private DataDisplayManager mDisplayManager;
 
     /**
      * 通知内容管理
@@ -93,7 +93,7 @@ public class CentralContext implements Disposable {
         mClock = updateClock;
 
         mCycleComputerData = new CentralDataManager(context, mClock.now());
-        mDisplayManager = new DisplayViewManager(mContext, mSubscriptionController);
+        mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationManager(mContext, mSubscriptionController);
 
         mExtensionClientManager = new ExtensionClientManager(mContext);
@@ -106,7 +106,7 @@ public class CentralContext implements Disposable {
         return mClock.now();
     }
 
-    public DisplayViewManager getDisplayManager() {
+    public DataDisplayManager getDisplayManager() {
         return mDisplayManager;
     }
 
@@ -141,13 +141,18 @@ public class CentralContext implements Disposable {
         mExtensionClientManager.connect(ExtensionClientManager.ConnectMode.Enabled);
         for (ExtensionClient client : mExtensionClientManager.listClients()) {
             // サイコンデータ用コールバックを指定する
-            client.setWorker((ExtensionClient.Action<CentralDataManager> action) -> {
+            client.setCentralWorker((ExtensionClient.Action<CentralDataManager> action) -> {
                 post(() -> {
                     action.callback(mCycleComputerData);
                 });
             });
 
             // TODO ディスプレイ設定用コールバックを指定する
+            client.setDisplayWorker((ExtensionClient.Action<DataDisplayManager> action) -> {
+                post(() -> {
+                    action.callback(mDisplayManager);
+                });
+            });
         }
     }
 

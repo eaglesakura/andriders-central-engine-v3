@@ -98,23 +98,18 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     private void loadDisplayDatas(final String newPackageName) {
         asyncUI((RxTask<DataLayoutManager> it) -> {
             DataLayoutManager slotManager = null;
-            try {
-                pushProgress(R.string.Common_File_Load);
-
-                // 拡張機能のアイコンを読み込む
-                displayValues.clear();
-                for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
-                    client.loadIcon();
-                    for (DisplayInformation info : client.getDisplayInformations()) {
-                        displayValues.add(info);
-                    }
+            pushProgress(R.string.Common_File_Load);
+            // 拡張機能のアイコンを読み込む
+            displayValues.clear();
+            for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
+                client.loadIcon();
+                for (DisplayInformation info : client.getDisplayInformations()) {
+                    displayValues.add(info);
                 }
-
-                slotManager = new DataLayoutManager(getActivity());
-                slotManager.load(DataLayoutManager.Mode.Edit, newPackageName);
-            } finally {
-                popProgress();
             }
+
+            slotManager = new DataLayoutManager(getActivity());
+            slotManager.load(DataLayoutManager.Mode.Edit, newPackageName);
             return slotManager;
         }).completed((slotManager, task) -> {
             LogUtil.log("display load completed :: %s", newPackageName);
@@ -122,6 +117,8 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
                 updateSlotPreview(mDisplaySlotManager, slot);
             }
+        }).finalized(task -> {
+            popProgress();
         }).start();
     }
 

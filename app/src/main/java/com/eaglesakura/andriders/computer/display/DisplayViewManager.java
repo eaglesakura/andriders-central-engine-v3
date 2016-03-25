@@ -7,7 +7,6 @@ import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.CollectionUtil;
-import com.eaglesakura.util.Util;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -22,7 +21,8 @@ import java.util.Map;
  *
  * 処理自体はコンストラクタで指定されたパイプラインに投げ込まれるため、非同期かつ直列的に行われる。
  */
-public class DisplayViewManager extends CycleComputerManager {
+@Deprecated
+class DisplayViewManager extends CycleComputerManager {
 
     /**
      * 表示内容一覧

@@ -1,12 +1,14 @@
 package com.eaglesakura.andriders.service.central.display;
 
-import com.eaglesakura.andriders.computer.display.DisplayViewManager;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
+import com.eaglesakura.andriders.display.DataDisplayManager;
 import com.eaglesakura.andriders.display.DataLayoutManager;
+import com.eaglesakura.andriders.display.DataViewBinder;
 import com.eaglesakura.andriders.display.LayoutSlot;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.service.central.CentralContext;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
@@ -47,8 +49,11 @@ public class DisplayRenderer {
      */
     String mCurrentAppPackageName;
 
+    DataViewBinder mDataViewBinder;
+
     public DisplayRenderer(BaseService service, CentralContext centralContext) {
         mService = service;
+        mDataViewBinder = new DataViewBinder(service, Clock.getRealtimeClock());
         mCentralContext = centralContext;
     }
 
@@ -97,7 +102,7 @@ public class DisplayRenderer {
         }
 
         ExtensionClientManager extensionClientManager = mCentralContext.getExtensionClientManager();
-        DisplayViewManager displayManager = mCentralContext.getDisplayManager();
+        DataDisplayManager displayManager = mCentralContext.getDisplayManager();
 
         for (LayoutSlot slot : mDisplayLayoutManager.listSlots()) {
             ViewGroup viewSlot = (ViewGroup) mDisplayStub.findViewById(slot.getId());
@@ -114,7 +119,7 @@ public class DisplayRenderer {
             } else {
                 ExtensionClient client = extensionClientManager.findClient(slot.getExtensionId());
                 // ディスプレイに対して表示内容を更新させる
-                displayManager.bindUI(client, information, viewSlot);
+                displayManager.bind(client, information, mDataViewBinder, viewSlot);
             }
         }
     }

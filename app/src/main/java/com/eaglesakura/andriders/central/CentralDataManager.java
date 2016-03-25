@@ -93,6 +93,13 @@ public class CentralDataManager {
      */
     private RawCentralData mLatestCentralData;
 
+    /**
+     * サイコンデータを生成する
+     *
+     * 内部時計は定期更新でupdateされるため、リアルタイムクロックとは独立している。
+     *
+     * @param sessionStartTime 現在時刻
+     */
     public CentralDataManager(Context context, long sessionStartTime) {
         mContext = context.getApplicationContext();
         mClock = new Clock(sessionStartTime);

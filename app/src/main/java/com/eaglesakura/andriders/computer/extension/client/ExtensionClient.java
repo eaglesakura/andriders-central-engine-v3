@@ -1,10 +1,11 @@
 package com.eaglesakura.andriders.computer.extension.client;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
-import com.eaglesakura.andriders.computer.display.DisplayViewData;
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.display.DataDisplayManager;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
+import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.internal.CentralDataCommand;
 import com.eaglesakura.andriders.extension.internal.DisplayCommand;
 import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
@@ -65,6 +66,14 @@ public class ExtensionClient extends CommandClient {
     private Worker<CentralDataManager> mCycleComputerDataWorker = it -> {
     };
 
+    /**
+     * ディスプレイ情報を設定するためのコールバック
+     *
+     * デフォルトでは何もしない
+     */
+    private Worker<DataDisplayManager> mDataDisplayManagerWorker = it -> {
+    };
+
     ExtensionClient(Context context, ExtensionClientManager parent, String sessionId) {
         super(context, String.format("%s", UUID.randomUUID().toString()));
         mCentralServiceMode = (context instanceof CentralService);
@@ -74,8 +83,12 @@ public class ExtensionClient extends CommandClient {
         buildDisplayCommands();
     }
 
-    public void setWorker(Worker<CentralDataManager> cycleComputerDataWorker) {
+    public void setCentralWorker(Worker<CentralDataManager> cycleComputerDataWorker) {
         mCycleComputerDataWorker = cycleComputerDataWorker;
+    }
+
+    public void setDisplayWorker(Worker<DataDisplayManager> worker) {
+        mDataDisplayManagerWorker = worker;
     }
 
     /**
@@ -239,9 +252,11 @@ public class ExtensionClient extends CommandClient {
          * ディスプレイ情報を更新する
          */
         cmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
-            List<DisplayViewData> list = DisplayViewData.deserialize(payload.getBuffer(), DisplayViewData.class);
-            // TODO: コールバック処理　
-//            displayManager.putValue(ExtensionClient.this, list)
+            List<DisplayData> list = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
+            // 表示内容を更新する
+            mDataDisplayManagerWorker.request(it -> {
+                it.putValue(ExtensionClient.this, list);
+            });
             return null;
         });
     }
