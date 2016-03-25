@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
 import com.eaglesakura.andriders.display.LayoutSlot;
-import com.eaglesakura.andriders.display.DisplayLayoutManager;
+import com.eaglesakura.andriders.display.DataLayoutManager;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class DisplayLayoutSetFragment extends AppBaseFragment {
 
-    DisplayLayoutManager mDisplaySlotManager;
+    DataLayoutManager mDisplaySlotManager;
 
     String appPackageName;
 
@@ -50,7 +50,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = DisplayLayoutManager.newStubLayout(inflater.getContext());
+        View view = DataLayoutManager.newStubLayout(inflater.getContext());
         return view;
     }
 
@@ -96,8 +96,8 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * ディスプレイ表示内容を読み込む
      */
     private void loadDisplayDatas(final String newPackageName) {
-        asyncUI((RxTask<DisplayLayoutManager> it) -> {
-            DisplayLayoutManager slotManager = null;
+        asyncUI((RxTask<DataLayoutManager> it) -> {
+            DataLayoutManager slotManager = null;
             try {
                 pushProgress(R.string.Common_File_Load);
 
@@ -110,7 +110,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                     }
                 }
 
-                slotManager = new DisplayLayoutManager(getActivity(), newPackageName, DisplayLayoutManager.Mode.Edit);
+                slotManager = new DataLayoutManager(getActivity(), newPackageName, DataLayoutManager.Mode.Edit);
                 slotManager.load();
             } finally {
                 popProgress();
@@ -128,7 +128,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     /**
      * ディスプレイスロットを更新する
      */
-    void updateSlotPreview(final DisplayLayoutManager slotManager, final LayoutSlot slot) {
+    void updateSlotPreview(final DataLayoutManager slotManager, final LayoutSlot slot) {
         ViewGroup stub = findViewById(ViewGroup.class, slot.getId());
 
         // 一旦個をすべて削除する
@@ -156,7 +156,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     /**
      * 表示内容の選択ダイアログをブート
      */
-    private void showDisplaySelector(final DisplayLayoutManager manager, final LayoutSlot slot) {
+    private void showDisplaySelector(final DataLayoutManager manager, final LayoutSlot slot) {
         List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
 
         final BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
@@ -208,7 +208,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * @param client      拡張機能
      * @param displayInfo 表示内容
      */
-    private void onSelectedDisplay(DisplayLayoutManager manager, LayoutSlot slot, ExtensionClient client, DisplayInformation displayInfo) {
+    private void onSelectedDisplay(DataLayoutManager manager, LayoutSlot slot, ExtensionClient client, DisplayInformation displayInfo) {
 
         if (client == null || displayInfo == null) {
             // 非表示にする

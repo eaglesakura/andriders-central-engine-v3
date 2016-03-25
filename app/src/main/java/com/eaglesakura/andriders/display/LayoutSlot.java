@@ -88,7 +88,7 @@ public class LayoutSlot {
      * 右側のスロットである場合true
      */
     public boolean isRight() {
-        return x == (DisplayLayoutManager.MAX_HORIZONTAL_SLOTS - 1);
+        return x == (DataLayoutManager.MAX_HORIZONTAL_SLOTS - 1);
     }
 
     /**

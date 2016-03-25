@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * サイコン表示窓のスロットを管理する
  */
-public class DisplayLayoutManager {
+public class DataLayoutManager {
     /**
      * 横方向の最大スロット数
      */
@@ -55,7 +55,7 @@ public class DisplayLayoutManager {
 
     Mode mMode;
 
-    public DisplayLayoutManager(Context context, String packageName, Mode mode) {
+    public DataLayoutManager(Context context, String packageName, Mode mode) {
         this.context = context.getApplicationContext();
         this.mAppPackageName = packageName;
         this.mMode = mode;
@@ -75,7 +75,7 @@ public class DisplayLayoutManager {
         return displayTarget != null ? displayTarget.getTargetPackage() : mAppPackageName;
     }
 
-    public DisplayLayoutManager load() {
+    public DataLayoutManager load() {
         DisplayLayoutDatabase db = new DisplayLayoutDatabase(context);
         try {
             db.openWritable();

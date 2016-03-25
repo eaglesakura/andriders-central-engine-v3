@@ -11,8 +11,6 @@ apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
-//    all*.exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
-    all*.exclude group: "com.fasterxml.jackson.core"
     all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
 }
 
