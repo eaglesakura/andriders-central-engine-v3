@@ -3,8 +3,8 @@ package com.eaglesakura.andriders.ui.navigation.display;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
-import com.eaglesakura.andriders.display.LayoutSlot;
 import com.eaglesakura.andriders.display.DataLayoutManager;
+import com.eaglesakura.andriders.display.LayoutSlot;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
@@ -110,14 +110,14 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                     }
                 }
 
-                slotManager = new DataLayoutManager(getActivity(), newPackageName, DataLayoutManager.Mode.Edit);
-                slotManager.load();
+                slotManager = new DataLayoutManager(getActivity());
+                slotManager.load(DataLayoutManager.Mode.Edit, newPackageName);
             } finally {
                 popProgress();
             }
             return slotManager;
         }).completed((slotManager, task) -> {
-            LogUtil.log("display load completed :: %s", slotManager.getAppPackageName());
+            LogUtil.log("display load completed :: %s", newPackageName);
             mDisplaySlotManager = slotManager;
             for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
                 updateSlotPreview(mDisplaySlotManager, slot);

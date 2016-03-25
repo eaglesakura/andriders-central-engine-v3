@@ -37,8 +37,6 @@ public class DataLayoutManager {
 
     private final Context context;
 
-    private final String mAppPackageName;
-
     private DbDisplayTarget displayTarget;
 
     public enum Mode {
@@ -53,12 +51,8 @@ public class DataLayoutManager {
         Edit,
     }
 
-    Mode mMode;
-
-    public DataLayoutManager(Context context, String packageName, Mode mode) {
+    public DataLayoutManager(Context context) {
         this.context = context.getApplicationContext();
-        this.mAppPackageName = packageName;
-        this.mMode = mode;
 
         for (int x = 0; x < MAX_HORIZONTAL_SLOTS; ++x) {
             for (int y = 0; y < MAX_VERTICAL_SLOTS; ++y) {
@@ -68,21 +62,14 @@ public class DataLayoutManager {
         }
     }
 
-    /**
-     * 現在レイアウト中のパッケージ名を取得する
-     */
-    public String getAppPackageName() {
-        return displayTarget != null ? displayTarget.getTargetPackage() : mAppPackageName;
-    }
-
-    public DataLayoutManager load() {
+    public DataLayoutManager load(Mode mode, String appPackage) {
         DisplayLayoutDatabase db = new DisplayLayoutDatabase(context);
         try {
             db.openWritable();
-            if (mMode == Mode.ReadOnly) {
-                displayTarget = db.loadTarget(mAppPackageName);
+            if (mode == Mode.ReadOnly) {
+                displayTarget = db.loadTarget(appPackage);
             } else {
-                displayTarget = db.loadTargetOrCreate(mAppPackageName);
+                displayTarget = db.loadTargetOrCreate(appPackage);
             }
             List<DbDisplayLayout> layouts = db.listLayouts(displayTarget);
 

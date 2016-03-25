@@ -67,7 +67,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
         String uniqueId = "target:" + packageName;
 
         DbDisplayTarget result = session.getDbDisplayTargetDao().load(uniqueId);
-        // DBがなければ作成して返す
+        // DBがなければ作成して返すが、insertは行わない
         if (result == null) {
             result = new DbDisplayTarget("target:" + PACKAGE_NAME_DEFAULT);
             result.setCreatedDate(new Date());

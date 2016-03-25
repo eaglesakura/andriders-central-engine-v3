@@ -3,13 +3,16 @@ package com.eaglesakura.andriders.service.central.display;
 import com.eaglesakura.andriders.computer.display.DisplayViewManager;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
 import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
-import com.eaglesakura.andriders.display.LayoutSlot;
 import com.eaglesakura.andriders.display.DataLayoutManager;
+import com.eaglesakura.andriders.display.LayoutSlot;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.android.framework.service.BaseService;
+import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.util.Util;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,12 +35,17 @@ public class DisplayRenderer {
     /**
      * ディスプレイのスロット管理
      */
-    DataLayoutManager mDisplaySlotManager;
+    DataLayoutManager mDisplayLayoutManager;
 
     /**
      * 表示対象のStub格納先
      */
     ViewGroup mDisplayStub;
+
+    /**
+     * 現在表示中のアプリパッケージ名
+     */
+    String mCurrentAppPackageName;
 
     public DisplayRenderer(BaseService service, CentralContext centralContext) {
         mService = service;
@@ -59,33 +67,19 @@ public class DisplayRenderer {
      * スロット情報のリロードを行う
      */
     public void reloadSlots(final String appPackageName) {
-        if (mDisplaySlotManager != null) {
-            if (mDisplaySlotManager.getAppPackageName().equals(appPackageName)) {
+        AndroidThreadUtil.assertBackgroundThread();
+
+        if (mDisplayLayoutManager != null) {
+            if (Util.equals(appPackageName, mCurrentAppPackageName)) {
                 // 同じアプリ名なので何もしなくて良い
                 return;
             }
         }
 
-        throw new IllegalAccessError("not impl");
-//        FrameworkCentral.getTaskController().pushBack(new IAsyncTask<DisplaySlotManager>() {
-//            @Override
-//            public DisplaySlotManager doInBackground(AsyncTaskResult<DisplaySlotManager> result) throws Exception {
-//                DisplaySlotManager slotManager = new DisplaySlotManager(mService, appPackageName, DisplaySlotManager.Mode.ReadOnly);
-//                slotManager.load();
-//                return slotManager;
-//            }
-//        }).setListener(new AsyncTaskResult.CompletedListener<DisplaySlotManager>() {
-//            @Override
-//            public void onTaskCompleted(AsyncTaskResult<DisplaySlotManager> task, DisplaySlotManager result) {
-//                if (mDisplaySlotManager != null &&
-//                        mDisplaySlotManager.getAppPackageName().equals(result.getAppPackageName())) {
-//                    LogUtil.log("no change package(%s)", result.getAppPackageName());
-//                    return;
-//                }
-//
-//                mDisplaySlotManager = result;
-//            }
-//        });
+        DataLayoutManager layoutManager = new DataLayoutManager(mService);
+        layoutManager.load(DataLayoutManager.Mode.ReadOnly, appPackageName);
+        mDisplayLayoutManager = layoutManager;
+        mCurrentAppPackageName = appPackageName;
     }
 
     /**
@@ -105,7 +99,7 @@ public class DisplayRenderer {
         ExtensionClientManager extensionClientManager = mCentralContext.getExtensionClientManager();
         DisplayViewManager displayManager = mCentralContext.getDisplayManager();
 
-        for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
+        for (LayoutSlot slot : mDisplayLayoutManager.listSlots()) {
             ViewGroup viewSlot = (ViewGroup) mDisplayStub.findViewById(slot.getId());
             DisplayInformation information = null;
             if (slot.hasLink()) {
@@ -138,7 +132,10 @@ public class DisplayRenderer {
         mLoopController.setFrameRate(DISPLAY_REFRESH_SEC);
         mLoopController.connect();
 
-        reloadSlots(mService.getPackageName());
+        mCentralContext.newTask(SubscribeTarget.Pipeline, task -> {
+            reloadSlots(mService.getPackageName());
+            return this;
+        }).start();
     }
 
     /**
@@ -162,7 +159,7 @@ public class DisplayRenderer {
     private void onDisplayRefresh() {
         ExtensionClientManager extensionClientManager = mCentralContext.getExtensionClientManager();
 
-        if (mDisplaySlotManager == null || !extensionClientManager.isConnected()) {
+        if (mDisplayLayoutManager == null || !extensionClientManager.isConnected()) {
             return;
         }
         // 毎フレーム更新をかける
