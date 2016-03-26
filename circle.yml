@@ -28,8 +28,8 @@ dependencies:
     - ./gradlew :app:dependencies
 test:
   override:
-      - ./script/circleci-build-testing.sh
       - ./script/circleci-build-assemble.sh
+      - ./script/circleci-build-testing.sh
 deployment:
   feature:
     branch: /^feature\/id\/.*$/
