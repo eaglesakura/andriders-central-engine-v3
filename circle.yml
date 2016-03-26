@@ -27,31 +27,24 @@ dependencies:
     - ./script/developer-install-private.sh
 test:
   override:
-    - echo "Skip test task"
-deployment:
-  canary:
-    branch: /^v[0-9]\..*$/
-    commands:
-      - ./script/circleci-build-assemble.sh
-      - ./script/circleci-deploy-deploygate.sh
       - ./script/circleci-build-testing.sh
-      - cp -r ./ci-release $CIRCLE_ARTIFACTS
+      - ./script/circleci-build-assemble.sh
+deployment:
   feature:
     branch: /^feature\/id\/.*$/
     commands:
-      - ./script/circleci-build-assemble.sh
-      - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
     commands:
-      - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
-  develop:
+  nightly:
     branch: master
     commands:
-      - ./script/circleci-build-assemble.sh
-      - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
-
+  release:
+    branch: /^v[0-9]\..*$/
+    commands:
+      - ./script/circleci-deploy-deploygate.sh
+      - cp -r ./ci-release $CIRCLE_ARTIFACTS
