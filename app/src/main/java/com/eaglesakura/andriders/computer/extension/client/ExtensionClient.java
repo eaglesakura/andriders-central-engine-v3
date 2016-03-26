@@ -50,6 +50,9 @@ public class ExtensionClient extends CommandClient {
      */
     List<DisplayInformation> mDisplayInformations;
 
+    /**
+     * 拡張機能のアイコン
+     */
     Drawable mIcon;
 
     final boolean mCentralServiceMode;
@@ -58,6 +61,11 @@ public class ExtensionClient extends CommandClient {
      * コネクションごとの一意に識別するID
      */
     final String mSessionId;
+
+    /**
+     * 拡張機能のSDKバージョン
+     */
+    private String mSdkVersion = null;
 
     /**
      * サイコン情報を設定するためのコールバック
@@ -225,21 +233,19 @@ public class ExtensionClient extends CommandClient {
         }
     }
 
-    private String sdkVersion = null;
-
     /**
      * クライアントのSDKバージョンを取得する
      */
     public String getSdkVersion() {
-        if (sdkVersion == null) {
+        if (mSdkVersion == null) {
             try {
                 Payload payload = requestPostToServer(CentralDataCommand.CMD_getSDKVersion, null);
-                sdkVersion = Payload.deserializeStringOrNull(payload);
+                mSdkVersion = Payload.deserializeStringOrNull(payload);
             } catch (Exception e) {
             }
         }
 
-        return sdkVersion;
+        return mSdkVersion;
     }
 
     @Override

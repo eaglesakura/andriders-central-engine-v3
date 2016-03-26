@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ble.heartrate;
 
-import com.eaglesakura.andriders.AceJUnitTester;
+import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.ble.BleDevice;
 import com.eaglesakura.andriders.util.Clock;
 
@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * 心拍データ管理テスト
  */
-public class SensorHeartrateDataTest extends AceJUnitTester {
+public class SensorHeartrateDataTest extends AppUnitTestCase {
 
     @Test
     public void 心拍がタイムアウトすることを確認する() throws Exception {

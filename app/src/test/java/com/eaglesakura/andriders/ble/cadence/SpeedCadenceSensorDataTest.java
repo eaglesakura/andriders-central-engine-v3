@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ble.cadence;
 
-import com.eaglesakura.andriders.AceJUnitTester;
+import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.ble.BleDevice;
 import com.eaglesakura.andriders.util.Clock;
 
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class SpeedCadenceSensorDataTest extends AceJUnitTester {
+public class SpeedCadenceSensorDataTest extends AppUnitTestCase {
 
     @Test
     public void _16bit加算値が正常に差分取得できることを確認する() throws Exception {

@@ -9,14 +9,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class ExampleUnitTest extends AceJUnitTester {
+public class AppBuildConfigTest extends AppUnitTestCase {
     @Test
-    public void helloContextTest() throws Exception {
-        LogUtil.log("Hello JUnit Test!!");
-
-        assertNotNull(mContext);
-        assertNotNull(mContext instanceof AceApplication);
-        assertNotNull(mContext.getString(R.string.Common_File_Load));
+    public void 正しいClassがロードできている() throws Exception {
+        assertNotNull(getContext());
+        assertNotNull(getContext() instanceof AceApplication);
+        assertNotNull(getContext().getString(R.string.Common_File_Load));
         assertTrue(BuildConfig.DEBUG == BuildConfig.APPLICATION_ID.endsWith(".debug"));
     }
 

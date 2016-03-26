@@ -25,6 +25,12 @@ dependencies {
         compile project(':eglibrary:android-framework')
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
+
+        /**
+         * UnitTest
+         */
+        androidTestCompile project(":eglibrary:android-devicetest-support")
+        testCompile project(":eglibrary:android-unittest-support")
     } else {
         compile 'com.eaglesakura:simple-logger:+'
         compile 'com.eaglesakura:simple-utils:+'
@@ -47,9 +53,14 @@ dependencies {
         /**
          * Injection / State
          */
-        compile "com.jakewharton:butterknife:+"
         compile 'frankiesardo:icepick:+'
         provided 'frankiesardo:icepick-processor:+'
+
+        /**
+         * UnitTest
+         */
+        androidTestCompile 'com.eaglesakura:android-devicetest-support:1.+'
+        testCompile 'com.eaglesakura:android-unittest-support:1.+'
     }
 
 
@@ -81,12 +92,6 @@ dependencies {
 
     // Remote Debug
     debugCompile 'com.deploygate:sdk:3.1'
-
-    /**
-     * Unit Testing
-     */
-    testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.0"
 }
 
 android {
