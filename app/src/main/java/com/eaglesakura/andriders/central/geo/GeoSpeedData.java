@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.central.geo;
 
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.geo.GeoUtil;
@@ -105,7 +106,7 @@ public class GeoSpeedData extends BaseCalculator {
             // 差分を足し込む
             mSpeedKmh = GEO_SPEED_KM_H;
         }
-        LogUtil.log("diff move(%f km = %f m) time(%f sec) speed(%f km/h)",
+        AppLog.gps("diff move(%f km = %f m) time(%f sec) speed(%f km/h)",
                 diffKiloMeter,
                 diffKiloMeter * 1000,
                 Timer.msToSec(timestamp - mUpdatedTime),

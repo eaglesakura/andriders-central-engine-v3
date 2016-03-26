@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.central.geo;
 
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.andriders.serialize.RawLocation;
@@ -133,7 +134,7 @@ public class LocationData extends BaseCalculator {
     public boolean setLocation(double lat, double lng, double alt, double accuracyMeter) {
         if (!isReliance(accuracyMeter)) {
             // 信頼出来ないデータなのでdropする
-            LogUtil.log("Drop GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, alt, accuracyMeter);
+            AppLog.gps("Drop GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, alt, accuracyMeter);
             return false;
         }
         mAltitudeData.setLocation(lat, lng, alt);
@@ -143,7 +144,7 @@ public class LocationData extends BaseCalculator {
         mAccuracy = accuracyMeter;
         mUpdatedTime = now();
 
-        LogUtil.log("GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, getAltitudeMeter(), accuracyMeter);
+        AppLog.gps("GPS lat(%f) lng(%f), alt(%f) acc(%f)", lat, lng, getAltitudeMeter(), accuracyMeter);
         return true;
     }
 

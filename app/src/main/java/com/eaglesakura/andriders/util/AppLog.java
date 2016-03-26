@@ -21,6 +21,14 @@ public class AppLog {
         }
     }
 
+    public static void gps(String fmt, Object... args) {
+        Log.d("GPS", wrap(fmt, args));
+    }
+
+    public static void speed(String fmt, Object... args) {
+        Log.d("Speed", wrap(fmt, args));
+    }
+
     public static void broadcast(String fmt, Object... args) {
         Log.d("Broadcast", wrap(fmt, args));
     }

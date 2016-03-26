@@ -1,6 +1,9 @@
 package com.eaglesakura.andriders.basicui;
 
+import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.basicui.display.HeartrateDisplayUpdater;
 import com.eaglesakura.andriders.central.SensorDataReceiver;
+import com.eaglesakura.andriders.display.ZoneColor;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionCategory;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
@@ -10,6 +13,8 @@ import com.eaglesakura.andriders.extension.display.BasicValue;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawSensorData;
+import com.eaglesakura.android.margarine.BindString;
+import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.util.LogUtil;
@@ -50,6 +55,9 @@ public class BasicExtensionService extends Service implements IExtensionService 
 
     HandlerLoopController mDisplayCommitLoop;
 
+    @BindStringArray(R.array.Display_Heartrate_ZoneName)
+    String[] mHeartrateZoneNames;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -81,21 +89,16 @@ public class BasicExtensionService extends Service implements IExtensionService 
     @Override
     public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
         List<DisplayInformation> result = new ArrayList<>();
-        {
-            DisplayInformation info = new DisplayInformation(this, DISPLAY_ID_HEARTRATE);
-            info.setTitle("心拍");
-
-            result.add(info);
-        }
+        result.add(HeartrateDisplayUpdater.newInformation(this));
         {
             DisplayInformation info = new DisplayInformation(this, DISPLAY_ID_CURRENT_SPEED);
-            info.setTitle("速度");
+            info.setTitle(getString(R.string.Display_Common_Speed));
 
             result.add(info);
         }
         {
             DisplayInformation info = new DisplayInformation(this, DISPLAY_ID_CURRENT_CADENCE);
-            info.setTitle("ケイデンス");
+            info.setTitle(getString(R.string.Display_Common_Cadence));
 
             result.add(info);
         }
@@ -117,20 +120,8 @@ public class BasicExtensionService extends Service implements IExtensionService 
             return;
         }
 
-        session.getCentralDataReceiver().addHandler(new SensorDataReceiver.HeartrateHandler() {
-            @Override
-            public void onReceived(@NonNull RawCentralData master, @NonNull RawSensorData.RawHeartrate sensor) {
-                DisplayData data = new DisplayData(getApplicationContext(), DISPLAY_ID_HEARTRATE);
-                BasicValue value = new BasicValue();
-                value.setTitle("心拍");
-                value.setValue(String.valueOf(sensor.bpm));
-//                value.setBarColorARGB(Math.random() > 0.5 ? Color.RED : Color.TRANSPARENT);
-//                value.setZoneText("Zone" + (System.currentTimeMillis() % 10));
-                data.setValue(value);
-
-                session.getDisplayExtension().setValue(data);
-            }
-        });
+        ZoneColor zoneColor = new ZoneColor(this);
+        new HeartrateDisplayUpdater(session, zoneColor).bind();
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override

@@ -34,6 +34,18 @@
 
     <!-- ディスプレイ情報 -->
     <string name="Display.Common.NoData">N/A</string>
+    <string name="Display.Common.Heartrate">心拍</string>
+    <string name="Display.Common.Cadence">ケイデンス</string>
+    <string name="Display.Common.Speed">速度</string>
+    <string name="Display.Heartrate.Reconnect">再接続...</string>
+    <string-array name="Display_Heartrate_ZoneName">
+        <item>安静</item>
+        <item>軽度</item>
+        <item>燃焼</item>
+        <item>有酸素</item>
+        <item>無酸素</item>
+        <item>危険域</item>
+    </string-array>
 
     <!-- フィットネス -->
     <string name="Setting.Fitness.Weight.SyncCompleted">体重データを同期しました</string>
