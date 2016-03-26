@@ -33,7 +33,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        LogUtil.log("onBind(%s)", toString());
+        LogUtil.log("onBind(%s) : %s", intent.getAction(), toString());
         ExtensionSession session = ExtensionSession.onBind(this, intent);
         if (session == null) {
             return null;
@@ -43,7 +43,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
 
     @Override
     public boolean onUnbind(Intent intent) {
-        LogUtil.log("onUnbind(%s)", toString());
+        LogUtil.log("onUnbind(%s) : %s", intent.getAction(), toString());
         ExtensionSession.onUnbind(this, intent);
         return super.onUnbind(intent);
     }

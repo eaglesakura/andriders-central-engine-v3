@@ -226,6 +226,7 @@ public class CentralContext implements Disposable {
     public void dispose() {
         // TODO セッション終了タスクを発行する
         newTask(SubscribeTarget.GlobalPipeline, task -> {
+            mExtensionClientManager.disconnect();
             return this;
         })
                 .observeOn(ObserveTarget.FireAndForget) // コールバックは常に行われる
