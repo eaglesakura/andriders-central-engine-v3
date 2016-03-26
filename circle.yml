@@ -21,10 +21,10 @@ dependencies:
     - "/home/ubuntu/android-sdk"
     - "/home/ubuntu/build-cache"
   override:
+    - ./script/developer-install-private.sh
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk-install-circle.sh)"
     - ./script/circleci-invalidate-cache.sh
     - ./gradlew dependencies
-    - ./script/developer-install-private.sh
 test:
   override:
       - ./script/circleci-build-testing.sh
