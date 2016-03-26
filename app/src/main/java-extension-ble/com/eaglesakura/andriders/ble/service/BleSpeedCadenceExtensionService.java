@@ -11,10 +11,10 @@ import com.eaglesakura.andriders.extension.IExtensionService;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
 
-import android.app.Service;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.IBinder;
@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-public class BleSpeedCadenceExtensionService extends Service implements IExtensionService {
+public class BleSpeedCadenceExtensionService extends BaseService implements IExtensionService {
 
 
     SpeedCadenceGattReceiver mReceiver;
@@ -69,7 +69,7 @@ public class BleSpeedCadenceExtensionService extends Service implements IExtensi
         if (StringUtil.isEmpty(address)) {
             return;
         }
-        mReceiver = new SpeedCadenceGattReceiver(this, mClock);
+        mReceiver = new SpeedCadenceGattReceiver(this, getSubscriptionController(), mClock);
         mReceiver.setTargetFitnessDeviceAddress(address);
         mReceiver.setSpeedCadenceListener(new BleCadenceSpeedSensor.BleSpeedCadenceListener() {
             @Override

@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,6 +147,7 @@ public class BasicExtensionService extends Service implements IExtensionService 
 
     }
 
+    @UiThread
     void postDisplayData(ExtensionSession session) {
         postDummyHeartrate(session);
     }

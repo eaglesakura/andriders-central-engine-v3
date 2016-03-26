@@ -4,8 +4,9 @@ import com.eaglesakura.andriders.ble.hw.BleDevice;
 import com.eaglesakura.andriders.ble.hw.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.ble.hw.base.BaseBleGattReceiver;
 import com.eaglesakura.andriders.ble.hw.cadence.BleCadenceSpeedSensor.BleSpeedCadenceListener;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
+import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -18,8 +19,8 @@ public class SpeedCadenceGattReceiver extends BaseBleGattReceiver {
 
     final Clock mClock;
 
-    public SpeedCadenceGattReceiver(Context context, Clock clock) {
-        super(context, FitnessDeviceType.SPEED_CADENCE_SENSOR);
+    public SpeedCadenceGattReceiver(Context context, SubscriptionController subscriptionController, Clock clock) {
+        super(context, subscriptionController, FitnessDeviceType.SPEED_CADENCE_SENSOR);
         mClock = clock;
     }
 
@@ -29,7 +30,7 @@ public class SpeedCadenceGattReceiver extends BaseBleGattReceiver {
 
     @Override
     protected BleDevice newBleDevice(BluetoothDevice device) {
-        BleCadenceSpeedSensor sensor = new BleCadenceSpeedSensor(context, device, mClock);
+        BleCadenceSpeedSensor sensor = new BleCadenceSpeedSensor(mContext, device, mClock);
 
         sensor.registerCadenceListener(mSpeedCadenceListener);
         // デバイスの接続・切断に対して反応する

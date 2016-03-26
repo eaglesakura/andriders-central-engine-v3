@@ -1,11 +1,11 @@
 package com.eaglesakura.andriders.service.central;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
+import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.display.data.DataDisplayManager;
+import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
 import com.eaglesakura.andriders.extension.ExtensionClient;
 import com.eaglesakura.andriders.extension.ExtensionClientManager;
-import com.eaglesakura.andriders.computer.notification.NotificationManager;
-import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.andriders.display.DataDisplayManager;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.LifecycleState;
 import com.eaglesakura.android.rx.ObserveTarget;
@@ -19,6 +19,7 @@ import com.eaglesakura.util.LogUtil;
 
 import android.app.Service;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import rx.subjects.BehaviorSubject;
 
@@ -32,11 +33,13 @@ public class CentralContext implements Disposable {
      */
     private final Settings mSettings = Settings.getInstance();
 
+    @NonNull
     private final Service mContext;
 
     /**
      * システム時計
      */
+    @NonNull
     private final Clock mClock;
 
     /**
@@ -52,22 +55,26 @@ public class CentralContext implements Disposable {
     /**
      * サイコンデータ本体
      */
-    private CentralDataManager mCycleComputerData;
+    @NonNull
+    private final CentralDataManager mCycleComputerData;
 
     /**
      * サイコン表示内容管理
      */
-    private DataDisplayManager mDisplayManager;
+    @NonNull
+    private final DataDisplayManager mDisplayManager;
 
     /**
      * 通知内容管理
      */
-    private NotificationManager mNotificationManager;
+    @NonNull
+    private final NotificationDisplayManager mNotificationManager;
 
     /**
      * 拡張機能管理
      */
-    private ExtensionClientManager mExtensionClientManager;
+    @NonNull
+    private final ExtensionClientManager mExtensionClientManager;
 
     /**
      * 初期化が完了していればtrue
@@ -92,9 +99,9 @@ public class CentralContext implements Disposable {
         mContext = context;
         mClock = updateClock;
 
-        mCycleComputerData = new CentralDataManager(context, mClock.now());
+        mCycleComputerData = new CentralDataManager(context, mClock);
         mDisplayManager = new DataDisplayManager(mContext, mClock);
-        mNotificationManager = new NotificationManager(mContext, mSubscriptionController);
+        mNotificationManager = new NotificationDisplayManager(mContext, mClock);
 
         mExtensionClientManager = new ExtensionClientManager(mContext);
     }
@@ -110,7 +117,7 @@ public class CentralContext implements Disposable {
         return mDisplayManager;
     }
 
-    public NotificationManager getNotificationManager() {
+    public NotificationDisplayManager getNotificationManager() {
         return mNotificationManager;
     }
 

@@ -2,10 +2,10 @@ package com.eaglesakura.andriders.service.central.display;
 
 import com.eaglesakura.andriders.extension.ExtensionClient;
 import com.eaglesakura.andriders.extension.ExtensionClientManager;
-import com.eaglesakura.andriders.display.DataDisplayManager;
-import com.eaglesakura.andriders.display.DataLayoutManager;
-import com.eaglesakura.andriders.display.DataViewBinder;
-import com.eaglesakura.andriders.display.LayoutSlot;
+import com.eaglesakura.andriders.display.data.DataDisplayManager;
+import com.eaglesakura.andriders.display.data.DataLayoutManager;
+import com.eaglesakura.andriders.display.data.DataViewBinder;
+import com.eaglesakura.andriders.display.data.LayoutSlot;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.util.Clock;

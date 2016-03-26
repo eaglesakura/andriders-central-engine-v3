@@ -14,8 +14,11 @@ import com.eaglesakura.andriders.internal.protocol.RawSessionData;
 import com.eaglesakura.andriders.internal.protocol.RawSpecs;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 /**
  * サイコンが持つべき情報を統括する
@@ -24,8 +27,9 @@ import android.content.Context;
  */
 public class CentralDataManager {
     /**
-     * app context
+     * app mContext
      */
+    @NonNull
     private final Context mContext;
 
     /**
@@ -33,6 +37,7 @@ public class CentralDataManager {
      * <p>
      * 心拍から計算される
      */
+    @NonNull
     final FitnessData mFitnessData;
 
     /**
@@ -41,6 +46,7 @@ public class CentralDataManager {
      * S&Cセンサーが有効であればセンサーを、無効であれば位置情報をソースにして速度を取得する。
      * 位置情報が無効である場合は速度0となる。
      */
+    @NonNull
     final SpeedData mSpeedData;
 
     /**
@@ -48,6 +54,7 @@ public class CentralDataManager {
      * <p>
      * S&Cセンサーの取得時に更新される
      */
+    @NonNull
     final SensorSpeedData mSensorSpeedData;
 
     /**
@@ -55,6 +62,7 @@ public class CentralDataManager {
      * <p>
      * S&Cセンサーの取得時に更新される
      */
+    @NonNull
     final CadenceData mCadenceData;
 
     /**
@@ -62,28 +70,39 @@ public class CentralDataManager {
      * <p>
      * 現在速度と時間経過から自動的に計算される
      */
+    @NonNull
     final DistanceData mDistanceData;
 
     /**
      * 位置情報管理
      */
+    @NonNull
     final LocationData mLocationData;
 
     /**
      * セッション情報管理
      */
+    @NonNull
     final SessionData mSessionData;
 
     /**
      * 時刻設定
      */
+    @NonNull
     private final Clock mClock;
+
+    /**
+     * タイマー
+     */
+    @NonNull
+    private final ClockTimer mClockTimer;
 
     /**
      * sync管理
      * <p>
      * データは別なパイプラインから呼び出されるため、ロックを行ってデータがコンフリクトしないようにする。
      */
+    @NonNull
     private final Object lock = new Object();
 
     /**
@@ -96,14 +115,13 @@ public class CentralDataManager {
     /**
      * サイコンデータを生成する
      *
-     * 内部時計は定期更新でupdateされるため、リアルタイムクロックとは独立している。
-     *
-     * @param sessionStartTime 現在時刻
+     * @param clock 同期用時計
      */
-    public CentralDataManager(Context context, long sessionStartTime) {
+    public CentralDataManager(Context context, Clock clock) {
         mContext = context.getApplicationContext();
-        mClock = new Clock(sessionStartTime);
-        mSessionData = new SessionData(mClock, sessionStartTime);
+        mClock = clock;
+        mClockTimer = new ClockTimer(clock);
+        mSessionData = new SessionData(mClock, mClock.now());
         mFitnessData = new FitnessData(mClock);
         mSensorSpeedData = new SensorSpeedData(mClock);
         mCadenceData = new CadenceData(mClock);
@@ -202,15 +220,15 @@ public class CentralDataManager {
     /**
      * 時間を更新する
      */
-    public void onUpdateTime(long diffTimeMs) {
+    public void onUpdate() {
+        long diffTimeMs = mClockTimer.end();
+        mClockTimer.start();
+
         if (diffTimeMs <= 0) {
-            throw new IllegalArgumentException();
+            throw new IllegalStateException(StringUtil.format("Diff %d ms", diffTimeMs));
         }
 
         synchronized (lock) {
-            // 時計を進める
-            mClock.offset(diffTimeMs);
-
             // 消費カロリーを更新する
             mFitnessData.onUpdateTime(diffTimeMs);
 

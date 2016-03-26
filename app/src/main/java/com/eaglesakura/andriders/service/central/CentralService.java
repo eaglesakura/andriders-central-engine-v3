@@ -1,11 +1,10 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.andriders.service.central.display.DisplayRenderer;
 import com.eaglesakura.andriders.service.central.notification.NotificationRenderer;
 import com.eaglesakura.andriders.service.central.status.CentralUiManager;
-import com.eaglesakura.android.rx.SubscriptionController;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
@@ -45,8 +44,6 @@ public class CentralService extends AppBaseService {
      * ループ管理
      */
     HandlerLoopController mLoopController;
-
-    SubscriptionController mSubscriptionController = new SubscriptionController();
 
     @Nullable
     @Override

@@ -1,7 +1,7 @@
-package com.eaglesakura.andriders.display;
+package com.eaglesakura.andriders.display.data;
 
-import com.eaglesakura.andriders.extension.ExtensionClient;
 import com.eaglesakura.andriders.extension.DisplayInformation;
+import com.eaglesakura.andriders.extension.ExtensionClient;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.util.AndroidThreadUtil;
@@ -18,6 +18,8 @@ import java.util.Map;
 
 /**
  * サイコンのディスプレイ管理を行う
+ *
+ * MEMO: Clockの時刻は外部要因によって進める必要があり、内部では操作を行わない。
  */
 public class DataDisplayManager {
 

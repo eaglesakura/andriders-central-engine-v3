@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.computer.notification;
+package com.eaglesakura.andriders.display.notification;
 
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.notification.NotificationLength;

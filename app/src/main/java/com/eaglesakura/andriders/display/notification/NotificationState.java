@@ -1,9 +1,13 @@
-package com.eaglesakura.andriders.computer.notification;
+package com.eaglesakura.andriders.display.notification;
 
+import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.framework.context.Resources;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.math.Vector2;
 import com.eaglesakura.util.MathUtil;
+
+import android.support.annotation.NonNull;
 
 /**
  * 通知のレンダリングステート
@@ -14,59 +18,55 @@ public class NotificationState {
      */
     final float INOUT_TIME_SEC = 0.5f;
 
-    /**
-     * 通知終了時刻
-     */
-    long showEndTime;
-
-    final long showStartTime = System.currentTimeMillis();
+    @NonNull
+    final ClockTimer mClockTimer;
 
     /**
      * 表示しているカード番号
      */
-    int cardNumber = 0;
+    int mCardNumber = 0;
 
     /**
      * 表示カード
      */
-    NotificationCard card;
+    NotificationCard mCard;
 
 
     /**
      * 開始レベル
      */
-    float insertWeight = 0;
+    float mInsertWeight = 0;
 
     /**
      * 現在の描画位置
      */
-    Vector2 cardPosition = new Vector2();
+    Vector2 mCardPosition = new Vector2();
 
-    public NotificationState(NotificationCard card, int cardNumber) {
-        this.card = card;
-        this.showEndTime = System.currentTimeMillis() + card.getShowTimeMs();
-        this.cardNumber = cardNumber;
+    public NotificationState(NotificationCard card, int cardNumber, Clock clock) {
+        mCard = card;
+        mClockTimer = new ClockTimer(clock);
+        mCardNumber = cardNumber;
 
         // カード用画像を構築する
         card.buildCardImage();
 
         // 現在のカード位置を初期化する
-        cardPosition.set(getTargetPositionX(), getTargetPositionY());
+        mCardPosition.set(getTargetPositionX(), getTargetPositionY());
     }
 
     /**
      * 現在表示すべきY位置を取得する
      */
     float getTargetPositionY() {
-        final int CARD_HEIGHT = card.getCardImage().getHeight();
-        return (float) CARD_HEIGHT * (cardNumber + NotificationCard.NOTIFICATION_TOPMARGIN_NUM);
+        final int CARD_HEIGHT = mCard.getCardImage().getHeight();
+        return (float) CARD_HEIGHT * (mCardNumber + NotificationCard.NOTIFICATION_TOPMARGIN_NUM);
     }
 
     /**
      * Y方向の移動速度を取得する
      */
     float getMoveSpeedY(double deltaTimeSec) {
-        final double CARD_HEIGHT = card.getCardImage().getHeight();
+        final double CARD_HEIGHT = mCard.getCardImage().getHeight();
         return (float) (CARD_HEIGHT * deltaTimeSec / INOUT_TIME_SEC);
     }
 
@@ -74,39 +74,39 @@ public class NotificationState {
      * 現在表示すべきX位置を取得する
      */
     float getTargetPositionX() {
-        final int CARD_WIDTH = card.getCardImage().getWidth();
-        return (float) Resources.displaySize()[0] - (float) CARD_WIDTH * insertWeight;
+        final int CARD_WIDTH = mCard.getCardImage().getWidth();
+        return (float) Resources.displaySize()[0] - (float) CARD_WIDTH * mInsertWeight;
     }
 
     public void setCardNumber(int cardNumber) {
-        this.cardNumber = cardNumber;
+        this.mCardNumber = cardNumber;
     }
 
     public int getCardNumber() {
-        return cardNumber;
+        return mCardNumber;
     }
 
     /**
      * レンダリングしている時間を取得する
      */
     public long getShowTime() {
-        return System.currentTimeMillis() - showStartTime;
+        return mClockTimer.end();
     }
 
     /**
      * 表示が終了していたらtrue
      */
     public boolean isShowFinished() {
-        return System.currentTimeMillis() > showEndTime && insertWeight <= 0;
+        return (getShowTime() > mCard.getShowTimeMs()) && mInsertWeight <= 0;
     }
 
     /**
      * 用済みになったら解放を行う
      */
     public void dispose() {
-        if (card != null) {
-            card.dispose();
-            card = null;
+        if (mCard != null) {
+            mCard.dispose();
+            mCard = null;
         }
     }
 
@@ -119,21 +119,21 @@ public class NotificationState {
         // inとoutは1000msで行う
         if (getShowTime() < (INOUT_TIME_SEC * 1000)) {
             // カードの出現
-            insertWeight = (float) getShowTime() / (INOUT_TIME_SEC * 1000);
-        } else if (getShowTime() > card.getShowTimeMs()) {
+            mInsertWeight = (float) getShowTime() / (INOUT_TIME_SEC * 1000);
+        } else if (getShowTime() > mCard.getShowTimeMs()) {
             // カードの表示時間を超えている
-            float overTime = getShowTime() - card.getShowTimeMs();
+            float overTime = getShowTime() - mCard.getShowTimeMs();
 
             // カードを引っ込める
-            insertWeight = 1.0f - (overTime / (INOUT_TIME_SEC * 1000));
+            mInsertWeight = 1.0f - (overTime / (INOUT_TIME_SEC * 1000));
         } else {
-            insertWeight = 1.0f;
+            mInsertWeight = 1.0f;
         }
 
         // カードを移動する
         {
-            cardPosition.x = getTargetPositionX();
-            cardPosition.y = MathUtil.targetMove(cardPosition.y, getMoveSpeedY(deltaTimeSec), getTargetPositionY());
+            mCardPosition.x = getTargetPositionX();
+            mCardPosition.y = MathUtil.targetMove(mCardPosition.y, getMoveSpeedY(deltaTimeSec), getTargetPositionY());
         }
 
     }
@@ -144,6 +144,6 @@ public class NotificationState {
     public void rendering(Graphics graphics) {
         // 所定位置にレンダリングする
         graphics.setColorARGB(0xFFFFFFFF);
-        graphics.drawBitmap(card.getCardImage(), (int) cardPosition.x, (int) cardPosition.y);
+        graphics.drawBitmap(mCard.getCardImage(), (int) mCardPosition.x, (int) mCardPosition.y);
     }
 }

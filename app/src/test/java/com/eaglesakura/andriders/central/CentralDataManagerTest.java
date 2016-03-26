@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.internal.protocol.RawCentralData;
 import com.eaglesakura.andriders.internal.protocol.RawSensorData;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.MathUtil;
@@ -66,7 +67,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     @Test
     public void セッション開始時刻が正確であることを確認する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CentralDataManager data = new CentralDataManager(getContext(), START_TIME);
+        Clock clock = new Clock(START_TIME);
+        CentralDataManager data = new CentralDataManager(getContext(), clock);
 
         assertNotNull(data.getSessionId());
         assertNotEquals(data.getSessionId(), "");
@@ -75,7 +77,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         // 時間を分割して1分経過させる
         for (int i = 0; i < 60; ++i) {
-            data.onUpdateTime(1000);
+            clock.offset(1000);
+            data.onUpdate();
         }
         assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60); // データも1分経過している
     }
@@ -183,7 +186,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     @Test
     public void ケイデンスセンサーによる速度を測定する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CentralDataManager data = new CentralDataManager(getContext(), START_TIME);
+        Clock clock = new Clock(START_TIME);
+        CentralDataManager data = new CentralDataManager(getContext(), clock);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -193,10 +197,12 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         int crankRevolution = 0;
         {
             while (current < 1.0) {
+                clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
                 assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
-                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                data.onUpdate();
                 current += OFFSET_TIME_HOUR;
 
 
@@ -229,7 +235,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     @Test
     public void ケイデンス停止で速度が得られている場合はアクティブとして扱わない() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CentralDataManager data = new CentralDataManager(getContext(), START_TIME);
+        Clock clock = new Clock(START_TIME);
+        CentralDataManager data = new CentralDataManager(getContext(), clock);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -239,12 +246,13 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         int crankRevolution = 0;
         {
             while (current < 1.0) {
+                clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
                 final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
 
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
                 assertEquals(data.setSpeedAndCadence(0, 0, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
-                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                data.onUpdate();
                 current += OFFSET_TIME_HOUR;
 
                 assertObject(data, data.getLatestCentralData());
@@ -279,7 +287,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     @Test
     public void GPS座標移動から距離と速度を測定する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CentralDataManager data = new CentralDataManager(getContext(), START_TIME);
+        Clock clock = new Clock(START_TIME);
+        CentralDataManager data = new CentralDataManager(getContext(), clock);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -287,6 +296,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         LogUtil.setOutput(false);
         {
             while (current < 1.0) {
+                clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+
                 double lat = MathUtil.blendValue(SAMPLE_START_LATITUDE, SAMPLE_END_LATITUDE, 1.0 - current);
                 double lng = MathUtil.blendValue(SAMPLE_START_LONGITUDE, SAMPLE_END_LONGITUDE, 1.0 - current);
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
@@ -294,7 +305,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
 
                 assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
-                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                data.onUpdate();
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
@@ -341,9 +352,9 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
     @Test
     public void GPS座標とケイデンスセンサーが与えられた場合ケイデンスが優先される() throws Exception {
-
         final long START_TIME = System.currentTimeMillis();
-        CentralDataManager data = new CentralDataManager(getContext(), START_TIME);
+        Clock clock = new Clock(START_TIME);
+        CentralDataManager data = new CentralDataManager(getContext(), clock);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -353,6 +364,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         LogUtil.setOutput(false);
         {
             while (current < 1.0) {
+                clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+
                 double lat = MathUtil.blendValue(SAMPLE_START_LATITUDE, SAMPLE_END_LATITUDE, 1.0 - current);
                 double lng = MathUtil.blendValue(SAMPLE_START_LONGITUDE, SAMPLE_END_LONGITUDE, 1.0 - current);
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
@@ -361,7 +374,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 final float gear = 2.05f; // 19T-39T
                 assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
                 assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
-                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                data.onUpdate();
                 assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
@@ -401,9 +414,9 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
     @Test
     public void ケイデンスセンサーの値がタイムアウトしたら自動的にGPS速度に切り替わる() throws Exception {
-
         final long START_TIME = System.currentTimeMillis();
-        CentralDataManager data = new CentralDataManager(getContext(), START_TIME);
+        Clock clock = new Clock(START_TIME);
+        CentralDataManager data = new CentralDataManager(getContext(), clock);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
@@ -412,6 +425,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         LogUtil.setOutput(false);
         {
             while (current < 1.0) {
+                clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+
                 double lat = MathUtil.blendValue(SAMPLE_START_LATITUDE, SAMPLE_END_LATITUDE, 1.0 - current);
                 double lng = MathUtil.blendValue(SAMPLE_START_LONGITUDE, SAMPLE_END_LONGITUDE, 1.0 - current);
                 double alt = MathUtil.blendValue(SAMPLE_START_ALTITUDE, SAMPLE_END_ALTITUDE, 1.0 - current);
@@ -424,7 +439,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                     assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
                 }
                 assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
-                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                data.onUpdate();
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
 
@@ -466,16 +481,19 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     @Test
     public void 一時間の消費カロリーを計算する() throws Exception {
         final long START_TIME = System.currentTimeMillis();
-        CentralDataManager data = new CentralDataManager(getContext(), START_TIME);
+        Clock clock = new Clock(START_TIME);
+        CentralDataManager data = new CentralDataManager(getContext(), clock);
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
         LogUtil.setOutput(false);
         {
             while (current < 1.0) {
+                clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+
                 // 心拍140前後をキープさせる
                 data.setHeartrate((int) (130.0 + 10.0 * Math.random()));
-                data.onUpdateTime((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
+                data.onUpdate();
                 current += OFFSET_TIME_HOUR;
 
                 assertObject(data, data.getLatestCentralData());

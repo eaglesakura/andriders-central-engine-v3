@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.service.central.notification;
 
-import com.eaglesakura.andriders.computer.notification.NotificationManager;
+import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
 import com.eaglesakura.android.graphics.Graphics;
 
 import android.content.Context;
@@ -12,7 +12,7 @@ import android.view.View;
  * 通知の描画を行うView
  */
 public class NotificationView extends View {
-    NotificationManager mNotificationManager;
+    NotificationDisplayManager mNotificationManager;
 
     public NotificationView(Context context) {
         super(context);
@@ -26,7 +26,7 @@ public class NotificationView extends View {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setNotificationManager(NotificationManager notificationManager) {
+    public void setNotificationManager(NotificationDisplayManager notificationManager) {
         mNotificationManager = notificationManager;
     }
 

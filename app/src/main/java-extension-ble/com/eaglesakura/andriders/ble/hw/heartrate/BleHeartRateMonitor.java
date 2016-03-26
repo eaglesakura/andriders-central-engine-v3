@@ -1,16 +1,18 @@
 package com.eaglesakura.andriders.ble.hw.heartrate;
 
 import com.eaglesakura.andriders.ble.hw.BleDevice;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,11 +38,13 @@ public class BleHeartRateMonitor extends BleDevice {
     /**
      * 心拍リスナ
      */
+    @NonNull
     private final Set<BleHeartrateListener> mListeners = new HashSet<>();
 
     /**
      * 心拍データ
      */
+    @NonNull
     private final HeartrateSensorData mHeartrateData;
 
     /**
@@ -48,9 +52,13 @@ public class BleHeartRateMonitor extends BleDevice {
      */
     private BluetoothGatt mHeartrateGatt;
 
-    public BleHeartRateMonitor(Context context, BluetoothDevice device, Clock clock) {
+    @NonNull
+    private final SubscriptionController mSubscriptionController;
+
+    public BleHeartRateMonitor(Context context, SubscriptionController subscriptionController, BluetoothDevice device, Clock clock) {
         super(context, device);
         mHeartrateData = new HeartrateSensorData(clock);
+        mSubscriptionController = subscriptionController;
     }
 
     private final BluetoothGattCallback gattCallback = new BleDevice.BaseBluetoothGattCallback() {
@@ -62,21 +70,15 @@ public class BleHeartRateMonitor extends BleDevice {
                 if (notificationEnable(BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT)) {
                     mHeartrateGatt = gatt;
                     AppLog.ble("enable cadence notification");
-                    UIHandler.postUI(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (BleHeartrateListener listener : mListeners) {
-                                listener.onDeviceSupportedHeartrate(BleHeartRateMonitor.this, mDevice);
-                            }
+                    mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                        for (BleHeartrateListener listener : mListeners) {
+                            listener.onDeviceSupportedHeartrate(BleHeartRateMonitor.this, mDevice);
                         }
                     });
                 } else {
-                    UIHandler.postUI(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (BleHeartrateListener listener : mListeners) {
-                                listener.onDeviceNotSupportedHeartrate(BleHeartRateMonitor.this, mDevice);
-                            }
+                    mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                        for (BleHeartrateListener listener : mListeners) {
+                            listener.onDeviceNotSupportedHeartrate(BleHeartRateMonitor.this, mDevice);
                         }
                     });
                 }
@@ -91,10 +93,10 @@ public class BleHeartRateMonitor extends BleDevice {
                 int format;
                 if ((flag & 0x1) == 0x01) {
                     format = BluetoothGattCharacteristic.FORMAT_UINT16;
-//                    log("heart rate format UINT16");
+//                    AppLog.bleData("heart rate format UINT16");
                 } else {
                     format = BluetoothGattCharacteristic.FORMAT_UINT8;
-//                    log("heart rate format UINT8");
+//                    AppLog.bleData("heart rate format UINT8");
                 }
 
                 final int heartrate = characteristic.getIntValue(format, 1);

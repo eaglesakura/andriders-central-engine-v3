@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.display;
+package com.eaglesakura.andriders.display.data;
 
 import com.eaglesakura.andriders.dao.display.DbDisplayLayout;
 import com.eaglesakura.andriders.dao.display.DbDisplayTarget;

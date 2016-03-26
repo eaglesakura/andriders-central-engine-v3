@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.extension;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.andriders.display.DataDisplayManager;
+import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.internal.CentralDataCommand;
 import com.eaglesakura.andriders.extension.internal.DisplayCommand;

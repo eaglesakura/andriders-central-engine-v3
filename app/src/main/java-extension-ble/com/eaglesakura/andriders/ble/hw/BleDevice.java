@@ -65,7 +65,7 @@ public abstract class BleDevice {
      */
     public void connect() {
         synchronized (lock) {
-            gattConnected = false;
+            mGattConnected = false;
             mBleGatt = mDevice.connectGatt(mContext, false, getCallback());
 
             AppLog.ble("connect completed(%s)", getClass().getSimpleName());
@@ -77,7 +77,7 @@ public abstract class BleDevice {
      */
     public void disconnect() {
         synchronized (lock) {
-            gattConnected = false;
+            mGattConnected = false;
             if (mBleGatt != null) {
                 mBleGatt.disconnect();
                 mBleGatt.close();
@@ -121,10 +121,10 @@ public abstract class BleDevice {
         }
     }
 
-    private boolean gattConnected = false;
+    private boolean mGattConnected = false;
 
     public boolean isGattConnected() {
-        return gattConnected;
+        return mGattConnected;
     }
 
     protected abstract class BaseBluetoothGattCallback extends BluetoothGattCallback {
@@ -138,7 +138,7 @@ public abstract class BleDevice {
             // Serviceを検出する
             gatt.discoverServices();
 
-            gattConnected = true;
+            mGattConnected = true;
         }
 
         @Override

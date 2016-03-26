@@ -1,10 +1,11 @@
-package com.eaglesakura.andriders.computer.notification;
+package com.eaglesakura.andriders.display.notification;
 
-import com.eaglesakura.andriders.computer.CycleComputerManager;
+import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.graphics.Graphics;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,38 +13,48 @@ import java.util.List;
 
 /**
  * 通知を管理する
+ *
+ * MEMO: Clockは外部要因によって更新される
  */
-public class NotificationManager extends CycleComputerManager {
+public class NotificationDisplayManager {
 
     /**
      * 通知対象のステート一覧
      */
-    List<NotificationState> mNotificationStates = new ArrayList<>();
+    final List<NotificationState> mNotificationStates = new ArrayList<>();
 
     /**
      * 保留されている通知
      */
-    List<NotificationCard> mPendingNotifications = new ArrayList<>();
+    final List<NotificationCard> mPendingNotifications = new ArrayList<>();
 
-    public NotificationManager(Context context, SubscriptionController subscriptionController) {
-        super(context, subscriptionController);
-    }
+    @NonNull
+    final Clock mClock;
 
-    @Override
-    public void updateInPipeline(double deltaTimeSec) {
-        updateNotifications(deltaTimeSec);
+    @NonNull
+    final ClockTimer mClockTimer;
+
+    @NonNull
+    final Context mContext;
+
+    public NotificationDisplayManager(@NonNull Context context, @NonNull Clock clock) {
+        mClock = clock;
+        mContext = context.getApplicationContext();
+        mClockTimer = new ClockTimer(clock);
     }
 
     /**
-     * 通知一覧を更新する
+     * 更新を行う
+     *
+     * 時間経過はコンストラクタで渡されたClockによって管理される。
      */
-    private void updateNotifications(double deltaTimeSec) {
+    public void onUpdate() {
         synchronized (mNotificationStates) {
             Iterator<NotificationState> iterator = mNotificationStates.iterator();
             int cardNumber = 0;
             while (iterator.hasNext()) {
                 NotificationState state = iterator.next();
-                state.update(deltaTimeSec);
+                state.update(mClockTimer.endSec());
 
                 if (state.isShowFinished()) {
                     // 表示が終了したら削除する

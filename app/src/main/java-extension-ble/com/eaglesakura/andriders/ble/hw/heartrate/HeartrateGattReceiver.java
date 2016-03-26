@@ -4,9 +4,10 @@ import com.eaglesakura.andriders.ble.hw.BleDevice;
 import com.eaglesakura.andriders.ble.hw.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.ble.hw.base.BaseBleGattReceiver;
 import com.eaglesakura.andriders.ble.hw.heartrate.BleHeartRateMonitor.BleHeartrateListener;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -23,8 +24,8 @@ public class HeartrateGattReceiver extends BaseBleGattReceiver {
      */
     private final Clock mClock;
 
-    public HeartrateGattReceiver(Context context, Clock clock) {
-        super(context, FitnessDeviceType.HEARTRATE_MONITOR);
+    public HeartrateGattReceiver(Context context, SubscriptionController subscriptionController, Clock clock) {
+        super(context, subscriptionController, FitnessDeviceType.HEARTRATE_MONITOR);
         this.mClock = clock;
     }
 
@@ -34,17 +35,17 @@ public class HeartrateGattReceiver extends BaseBleGattReceiver {
 
     @Override
     protected BleDevice newBleDevice(BluetoothDevice device) {
-        BleHeartRateMonitor sensor = new BleHeartRateMonitor(context, device, mClock);
+        BleHeartRateMonitor sensor = new BleHeartRateMonitor(mContext, mSubscriptionController, device, mClock);
         sensor.registerHeartrateListener(mHeartrateListener);
         sensor.registerDeviceListener(new BleDeviceListener() {
             @Override
             public void onDeviceConnected(BleDevice self, BluetoothDevice device) {
-                LogUtil.log("Ble onDeviceConnected :: %s", self.getDevice().toString());
+                AppLog.ble("onDeviceConnected :: %s", self.getDevice().toString());
             }
 
             @Override
             public void onDeviceDisconnected(BleDevice self) {
-                LogUtil.log("Ble onDeviceDisconnected :: %s", self.getDevice().toString());
+                AppLog.ble("onDeviceDisconnected :: %s", self.getDevice().toString());
             }
         });
         return sensor;
