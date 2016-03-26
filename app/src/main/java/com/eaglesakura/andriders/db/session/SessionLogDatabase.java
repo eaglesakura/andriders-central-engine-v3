@@ -89,7 +89,6 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         runInTx(() -> {
             session.insertOrReplace(currentSession);
             for (DbSessionPoint pt : points) {
-                pt.setSessionId(currentSession.getSessionId());
                 session.insert(pt);
             }
             return this;

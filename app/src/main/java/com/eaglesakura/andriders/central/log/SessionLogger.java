@@ -91,7 +91,6 @@ public class SessionLogger {
         if (!mPointTimer.overTimeMs(POINT_COMMIT_INTERVAL_MS)) {
             DbSessionPoint pt = new DbSessionPoint();
             pt.setDate(new Date(latest.centralStatus.date));
-            pt.setSessionId(mSessionId);
             pt.setCentral(AceUtils.publicFieldSerialize(latest));
             mPoints.add(pt);
 

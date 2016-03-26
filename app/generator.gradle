@@ -152,8 +152,7 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
      * セッションとは、ACEs起動〜ACEs終了までの間である。
      */
     def DbSessionPoint = sessionSchema.addEntity("DbSessionPoint");
-    DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey(); // 打刻時間は常にUniqueになるはずである
-    DbSessionPoint.addStringProperty("sessionId").notNull().index();    // 関連付けるセッション情報
+    DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey(); // 打刻時間は常にUniqueになるはず
     DbSessionPoint.addByteArrayProperty("central").notNull();   // Centralの生バッファ
 }
 
