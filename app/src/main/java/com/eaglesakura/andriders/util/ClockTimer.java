@@ -26,6 +26,15 @@ public class ClockTimer {
         mStartTime = mEndTime = mClock.now();
     }
 
+    /**
+     * 一定ミリ秒以上経過していたらtrue
+     *
+     * @param timeMs チェックする時間
+     */
+    public boolean overTimeMs(long timeMs) {
+        return end() >= timeMs;
+    }
+
     public long end() {
         mEndTime = mClock.now();
         return (mEndTime - mStartTime);

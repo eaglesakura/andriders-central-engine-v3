@@ -14,6 +14,7 @@ machine:
     version: oraclejdk8
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
+    BUILD_CACHEDIR: /home/ubuntu/build-cache
     GRADLE_OPTS: -Xmx4G -Dorg.gradle.daemon=true
     JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx4096m -XX:MaxPermSize=2048m
 dependencies:

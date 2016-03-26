@@ -21,6 +21,10 @@ public class AppLog {
         }
     }
 
+    public static void broadcast(String fmt, Object... args) {
+        Log.d("Broadcast", wrap(fmt, args));
+    }
+
     /**
      * BLEログ出力
      */
