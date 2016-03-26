@@ -48,7 +48,6 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
         return super.onUnbind(intent);
     }
 
-
     @Override
     public ExtensionInformation getExtensionInformation(ExtensionSession session) {
         ExtensionInformation info = new ExtensionInformation(this, "ble_sc");

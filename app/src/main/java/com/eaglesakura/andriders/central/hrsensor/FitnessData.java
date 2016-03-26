@@ -2,9 +2,9 @@ package com.eaglesakura.andriders.central.hrsensor;
 
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
-import com.eaglesakura.andriders.internal.protocol.RawSensorData;
-import com.eaglesakura.andriders.internal.protocol.RawSessionData;
-import com.eaglesakura.andriders.internal.protocol.RawSpecs;
+import com.eaglesakura.andriders.serialize.RawSensorData;
+import com.eaglesakura.andriders.serialize.RawSessionData;
+import com.eaglesakura.andriders.serialize.RawSpecs;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.util.Timer;
 

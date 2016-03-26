@@ -32,6 +32,9 @@
     <string name="Setting.Roadbike.MaxWheelLength">最大ホイール周長は%d mmです。</string>
     <string name="Setting.Roadbike.WheelOuterLength">タイヤ外周サイズ</string>
 
+    <!-- ディスプレイ情報 -->
+    <string name="Display.Common.NoData">N/A</string>
+
     <!-- フィットネス -->
     <string name="Setting.Fitness.Weight.SyncCompleted">体重データを同期しました</string>
     <string name="Setting.Fitness.Weight.SyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>

@@ -2,8 +2,8 @@ package com.eaglesakura.andriders.central.geo;
 
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
-import com.eaglesakura.andriders.internal.protocol.RawLocation;
-import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.serialize.RawLocation;
+import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.util.LogUtil;
 

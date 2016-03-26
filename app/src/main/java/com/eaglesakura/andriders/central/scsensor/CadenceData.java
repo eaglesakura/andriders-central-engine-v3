@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.central.scsensor;
 
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
-import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 

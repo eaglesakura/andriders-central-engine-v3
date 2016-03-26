@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.basicui;
 
+import com.eaglesakura.andriders.central.SensorDataReceiver;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionCategory;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
@@ -7,6 +8,8 @@ import com.eaglesakura.andriders.extension.ExtensionSession;
 import com.eaglesakura.andriders.extension.IExtensionService;
 import com.eaglesakura.andriders.extension.display.BasicValue;
 import com.eaglesakura.andriders.extension.display.DisplayData;
+import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.util.LogUtil;
@@ -15,6 +18,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
@@ -112,6 +116,21 @@ public class BasicExtensionService extends Service implements IExtensionService 
         if (mDisplayCommitLoop != null) {
             return;
         }
+
+        session.getCentralDataReceiver().addHandler(new SensorDataReceiver.HeartrateHandler() {
+            @Override
+            public void onReceived(@NonNull RawCentralData master, @NonNull RawSensorData.RawHeartrate sensor) {
+                DisplayData data = new DisplayData(getApplicationContext(), DISPLAY_ID_HEARTRATE);
+                BasicValue value = new BasicValue();
+                value.setTitle("心拍");
+                value.setValue(String.valueOf(sensor.bpm));
+//                value.setBarColorARGB(Math.random() > 0.5 ? Color.RED : Color.TRANSPARENT);
+//                value.setZoneText("Zone" + (System.currentTimeMillis() % 10));
+                data.setValue(value);
+
+                session.getDisplayExtension().setValue(data);
+            }
+        });
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override

@@ -2,7 +2,7 @@ package com.eaglesakura.andriders;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
+import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.util.SerializeUtil;
 

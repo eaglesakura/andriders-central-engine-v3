@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.central;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.andriders.central.geo.GeoSpeedData;
 import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
-import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.Clock;
 

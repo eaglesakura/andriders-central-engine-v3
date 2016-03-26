@@ -7,7 +7,7 @@ import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.internal.CentralDataCommand;
 import com.eaglesakura.andriders.extension.internal.DisplayCommand;
 import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
-import com.eaglesakura.andriders.internal.protocol.ExtensionProtocol;
+import com.eaglesakura.andriders.serialize.ExtensionProtocol;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.service.central.CentralService;

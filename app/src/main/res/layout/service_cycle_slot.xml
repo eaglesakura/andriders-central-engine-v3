@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:singleLine="true"
-                android:text="@string/AceUI.Information.NotConnected"/>
+                android:text="@string/Display.Common.NoData"/>
     </FrameLayout>
 
     <!-- 標準UI -->
@@ -37,7 +37,7 @@
                 android:layout_gravity="center"
                 android:paddingBottom="@dimen/CycleComputer.Card.InnerPadding"
                 android:singleLine="true"
-                android:text="@string/AceUI.Information.NotConnected"/>
+                android:text="@string/Display.Common.NoData"/>
 
         <TextView
                 android:id="@+id/Service.Central.Display.Basic.Title"
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|bottom"
                 android:layout_marginBottom="@dimen/CycleComputer.Margin.Normal"
-                android:text="@string/AceUI.Information.NotConnected"/>
+                android:text="@string/Display.Common.NoData"/>
 
         <LinearLayout
                 android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
                     android:id="@+id/Service.Central.Display.Basic.ZoneColor.Left"
                     android:layout_width="@dimen/CycleComputer.Zonebar.Width"
                     android:layout_height="match_parent"
-                    android:background="@color/AceUI.Zonebar.None"/>
+                    android:background="@android:color/transparent"/>
 
             <TextView
                     android:id="@+id/Service.Central.Display.Basic.ZoneTitle.Left"
@@ -84,7 +84,7 @@
                     android:id="@+id/Service.Central.Display.Basic.ZoneColor.Right"
                     android:layout_width="@dimen/CycleComputer.Zonebar.Width"
                     android:layout_height="match_parent"
-                    android:background="@color/AceUI.Zonebar.None"/>
+                    android:background="@android:color/transparent"/>
 
         </LinearLayout>
     </FrameLayout>
