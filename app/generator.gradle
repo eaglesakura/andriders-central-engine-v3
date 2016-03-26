@@ -86,54 +86,6 @@ task generateProps(type: com.eaglesakura.gradle.task.AndroidPropsGenTask) {
 }
 
 /**
- * ロードバイク設定用プロファイルを出力する
- */
-task generateUserProfileDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
-    classPackageBase = "com.eaglesakura.andriders.dao"
-
-    def profileSchema = newSchema(0x01, "profile");
-
-    /**
-     * 切り替え可能なプロファイル情報
-     */
-    def DbUserProfile = profileSchema.addEntity("DbUserProfile");
-
-    DbUserProfile.addStringProperty("uniqueId").notNull().unique().index().primaryKey();
-    DbUserProfile.addDateProperty("createdDate").notNull(); // 作成日時
-    DbUserProfile.addDateProperty("modifiedDate").notNull();    // 更新日時
-    DbUserProfile.addStringProperty("name").notNull();
-    DbUserProfile.addStringProperty("description").notNull();
-
-    // ロードバイク本体設定
-    DbUserProfile.addStringProperty("roadbikeName").notNull(); // ロードバイク名
-    DbUserProfile.addIntProperty("wheelOuterLength").notNull(); // 使用しているホイールの外周サイズ
-    DbUserProfile.addIntProperty("frameMaterial").notNull();  // フレームの材質 （チタン、カーボン、アルミ、クロモリ、その他）
-    DbUserProfile.addIntProperty("roadbikeWeight");  // ロードバイクの重量（未設定あり）
-    DbUserProfile.addByteArrayProperty("gearSetting");  // ギア比の設定（未設定あり）
-
-    // スピードゾーン
-    DbUserProfile.addIntProperty("speedZoneCruise").notNull();  // これよりも早いと巡航域
-    DbUserProfile.addIntProperty("speedZoneSprint").notNull();  // これよりも早いとスプリント領域
-
-    // 個人設定
-    DbUserProfile.addIntProperty("cadenceZoneIdeal").notNull(); // これよりも速いと理想ケイデンス
-    DbUserProfile.addIntProperty("cadenceZoneHigh").notNull(); // これよりも速いと高ケイデンス
-
-    // 周辺機器
-    // スピードセンサー設定と切替
-    DbUserProfile.addBooleanProperty("gpsSpeedSensorEnable").notNull();
-    DbUserProfile.addBooleanProperty("gpsDistanceSensorEnable").notNull();
-    DbUserProfile.addBooleanProperty("bleSpeedSensorEnable").notNull();
-    // BLE HRモニター
-    DbUserProfile.addBooleanProperty("bleHeartrateMonitorEnable").notNull();
-    // BLE ケイデンスセンサー
-    DbUserProfile.addBooleanProperty("bleCadenceSensorEnable").notNull();
-    // リモートセントラル
-    DbUserProfile.addBooleanProperty("btRemoteCentralEnable").notNull();
-}
-
-/**
  * サイクルコンピューター設定用プロファイルを出力する
  */
 task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
@@ -164,76 +116,33 @@ task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     DbDisplayLayout.addStringProperty("valueId").notNull();   // 設定される値の識別
 }
 
-/**
- * 各種設定用DAOを出力
- */
-task generateSettingsDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
-    classPackageBase = "com.eaglesakura.andriders.dao"
-
-    def sessionSchema = newSchema(0x01, "settings");
-    def DbZoneSettings = sessionSchema.addEntity("DbZoneSettings");
-
-    DbZoneSettings.addStringProperty("appExtraKey").notNull().unique().primaryKey(); // 識別ID
-    DbZoneSettings.addStringProperty("name").notNull();   // 設定名
-
-    // 速度域
-    DbZoneSettings.addDoubleProperty("speedCruise").notNull();   // 巡航
-    DbZoneSettings.addDoubleProperty("speedSprint").notNull();   // スプリント
-}
-
 task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
-    /**
-     * グループと日毎ログで共通に使用するプロパティを与える
-     */
-    def addLogProperty = {
-        // 時間関連
-        it.addDateProperty("startTime").notNull();  // その日最初のセッション開始時刻
-        it.addDateProperty("endTime").notNull();  // その日最後のセッション終了時刻
-        it.addLongProperty("activeTimeMs").notNull().index(); // セッションがアクティブ（走行）中だった時間
-
-        // 最高記録
-        it.addDoubleProperty("maxSpeedKmh").notNull().index(); // 最高速
-        it.addIntProperty("maxCadence").notNull();   // この日の最高ケイデンス
-        it.addIntProperty("maxHeartrate").notNull();   // この日の最高心拍
-
-        // 延べ記録
-        it.addDoubleProperty("sumDistanceKm").notNull().index();   // 移動距離合計（キロ単位）
-
-        // 延べ消費Calorie
-        it.addDoubleProperty("calories").notNull();
-        // 延べエクササイズ
-        it.addDoubleProperty("exercise").notNull();
-
-        // 獲得標高
-        it.addDoubleProperty("sumAltitude").notNull();
-        // 検索性を必要としない拡張データ
-        it.addByteArrayProperty("extraPayload").notNull();
-    }
-
     def sessionSchema = newSchema(1, "session");
-
-    /**
-     * 日毎のログ
-     */
-    def DbCycleDateLog = sessionSchema.addEntity("DbCycleDateLog");
-    // yyyyMMddをキーとして保存する
-    DbCycleDateLog.addStringProperty("uniqueId").notNull().index().primaryKey();
-    DbCycleDateLog.addIntProperty("sessionCount").notNull();    // 記録されているセッションの個数
-    addLogProperty(DbCycleDateLog);
 
     /**
      * セッションごとの情報を設定する
      */
     def DbSessionLog = sessionSchema.addEntity("DbSessionLog");
     DbSessionLog.addStringProperty("sessionId").notNull().unique().primaryKey(); // 打刻時間
-    DbSessionLog.addStringProperty("profileId").notNull(); // 走行時に使用したプロファイル
-    // Google Fitにアップロード済みであればtrue
-    DbSessionLog.addBooleanProperty("googleFitUploaded").notNull();
-    addLogProperty(DbSessionLog);   // 共通プロパティを追加
+    DbSessionLog.addDateProperty("startTime").notNull();  // その日最初のセッション開始時刻
+    DbSessionLog.addDateProperty("endTime").notNull();  // その日最後のセッション終了時刻
+    DbSessionLog.addLongProperty("activeTimeMs").notNull().index(); // セッションがアクティブ（走行）中だった時間
+    // 最高記録
+    DbSessionLog.addDoubleProperty("maxSpeedKmh").notNull().index(); // 最高速
+    DbSessionLog.addIntProperty("maxCadence").notNull();   // 最高ケイデンス
+    DbSessionLog.addIntProperty("maxHeartrate").notNull();   // 最高心拍
+    DbSessionLog.addDoubleProperty("sumAltitude").notNull();
+
+    // 延べ記録
+    DbSessionLog.addDoubleProperty("sumDistanceKm").notNull().index();   // 移動距離合計（キロ単位）
+
+    // 延べ消費Calorie
+    DbSessionLog.addDoubleProperty("calories").notNull();
+    // 延べエクササイズ
+    DbSessionLog.addDoubleProperty("exercise").notNull();
 
     /**
      * セッショングループは日単位で設定する。
@@ -243,10 +152,9 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
      * セッションとは、ACEs起動〜ACEs終了までの間である。
      */
     def DbSessionPoint = sessionSchema.addEntity("DbSessionPoint");
-    // unique idはSystem.currentTimeで確定する
-    DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey(); //
+    DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey(); // 打刻時間は常にUniqueになるはずである
     DbSessionPoint.addStringProperty("sessionId").notNull().index();    // 関連付けるセッション情報
-    DbSessionPoint.addByteArrayProperty("raw").notNull();   // payloadの生情報
+    DbSessionPoint.addByteArrayProperty("central").notNull();   // Centralの生バッファ
 }
 
 /**

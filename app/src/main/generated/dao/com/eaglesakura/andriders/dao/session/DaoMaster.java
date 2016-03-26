@@ -8,7 +8,6 @@ import android.util.Log;
 import de.greenrobot.dao.AbstractDaoMaster;
 import de.greenrobot.dao.identityscope.IdentityScopeType;
 
-import com.eaglesakura.andriders.dao.session.DbCycleDateLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionPointDao;
 
@@ -21,14 +20,12 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(SQLiteDatabase db, boolean ifNotExists) {
-        DbCycleDateLogDao.createTable(db, ifNotExists);
         DbSessionLogDao.createTable(db, ifNotExists);
         DbSessionPointDao.createTable(db, ifNotExists);
     }
     
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(SQLiteDatabase db, boolean ifExists) {
-        DbCycleDateLogDao.dropTable(db, ifExists);
         DbSessionLogDao.dropTable(db, ifExists);
         DbSessionPointDao.dropTable(db, ifExists);
     }
@@ -62,7 +59,6 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(SQLiteDatabase db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(DbCycleDateLogDao.class);
         registerDaoClass(DbSessionLogDao.class);
         registerDaoClass(DbSessionPointDao.class);
     }

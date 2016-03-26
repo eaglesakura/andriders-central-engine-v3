@@ -24,19 +24,16 @@ public class DbSessionLogDao extends AbstractDao<DbSessionLog, String> {
     */
     public static class Properties {
         public final static Property SessionId = new Property(0, String.class, "sessionId", true, "SESSION_ID");
-        public final static Property ProfileId = new Property(1, String.class, "profileId", false, "PROFILE_ID");
-        public final static Property GoogleFitUploaded = new Property(2, boolean.class, "googleFitUploaded", false, "GOOGLE_FIT_UPLOADED");
-        public final static Property StartTime = new Property(3, java.util.Date.class, "startTime", false, "START_TIME");
-        public final static Property EndTime = new Property(4, java.util.Date.class, "endTime", false, "END_TIME");
-        public final static Property ActiveTimeMs = new Property(5, long.class, "activeTimeMs", false, "ACTIVE_TIME_MS");
-        public final static Property MaxSpeedKmh = new Property(6, double.class, "maxSpeedKmh", false, "MAX_SPEED_KMH");
-        public final static Property MaxCadence = new Property(7, int.class, "maxCadence", false, "MAX_CADENCE");
-        public final static Property MaxHeartrate = new Property(8, int.class, "maxHeartrate", false, "MAX_HEARTRATE");
-        public final static Property SumDistanceKm = new Property(9, double.class, "sumDistanceKm", false, "SUM_DISTANCE_KM");
-        public final static Property Calories = new Property(10, double.class, "calories", false, "CALORIES");
-        public final static Property Exercise = new Property(11, double.class, "exercise", false, "EXERCISE");
-        public final static Property SumAltitude = new Property(12, double.class, "sumAltitude", false, "SUM_ALTITUDE");
-        public final static Property ExtraPayload = new Property(13, byte[].class, "extraPayload", false, "EXTRA_PAYLOAD");
+        public final static Property StartTime = new Property(1, java.util.Date.class, "startTime", false, "START_TIME");
+        public final static Property EndTime = new Property(2, java.util.Date.class, "endTime", false, "END_TIME");
+        public final static Property ActiveTimeMs = new Property(3, long.class, "activeTimeMs", false, "ACTIVE_TIME_MS");
+        public final static Property MaxSpeedKmh = new Property(4, double.class, "maxSpeedKmh", false, "MAX_SPEED_KMH");
+        public final static Property MaxCadence = new Property(5, int.class, "maxCadence", false, "MAX_CADENCE");
+        public final static Property MaxHeartrate = new Property(6, int.class, "maxHeartrate", false, "MAX_HEARTRATE");
+        public final static Property SumAltitude = new Property(7, double.class, "sumAltitude", false, "SUM_ALTITUDE");
+        public final static Property SumDistanceKm = new Property(8, double.class, "sumDistanceKm", false, "SUM_DISTANCE_KM");
+        public final static Property Calories = new Property(9, double.class, "calories", false, "CALORIES");
+        public final static Property Exercise = new Property(10, double.class, "exercise", false, "EXERCISE");
     };
 
 
@@ -53,19 +50,16 @@ public class DbSessionLogDao extends AbstractDao<DbSessionLog, String> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "'DB_SESSION_LOG' (" + //
                 "'SESSION_ID' TEXT PRIMARY KEY NOT NULL UNIQUE ," + // 0: sessionId
-                "'PROFILE_ID' TEXT NOT NULL ," + // 1: profileId
-                "'GOOGLE_FIT_UPLOADED' INTEGER NOT NULL ," + // 2: googleFitUploaded
-                "'START_TIME' INTEGER NOT NULL ," + // 3: startTime
-                "'END_TIME' INTEGER NOT NULL ," + // 4: endTime
-                "'ACTIVE_TIME_MS' INTEGER NOT NULL ," + // 5: activeTimeMs
-                "'MAX_SPEED_KMH' REAL NOT NULL ," + // 6: maxSpeedKmh
-                "'MAX_CADENCE' INTEGER NOT NULL ," + // 7: maxCadence
-                "'MAX_HEARTRATE' INTEGER NOT NULL ," + // 8: maxHeartrate
-                "'SUM_DISTANCE_KM' REAL NOT NULL ," + // 9: sumDistanceKm
-                "'CALORIES' REAL NOT NULL ," + // 10: calories
-                "'EXERCISE' REAL NOT NULL ," + // 11: exercise
-                "'SUM_ALTITUDE' REAL NOT NULL ," + // 12: sumAltitude
-                "'EXTRA_PAYLOAD' BLOB NOT NULL );"); // 13: extraPayload
+                "'START_TIME' INTEGER NOT NULL ," + // 1: startTime
+                "'END_TIME' INTEGER NOT NULL ," + // 2: endTime
+                "'ACTIVE_TIME_MS' INTEGER NOT NULL ," + // 3: activeTimeMs
+                "'MAX_SPEED_KMH' REAL NOT NULL ," + // 4: maxSpeedKmh
+                "'MAX_CADENCE' INTEGER NOT NULL ," + // 5: maxCadence
+                "'MAX_HEARTRATE' INTEGER NOT NULL ," + // 6: maxHeartrate
+                "'SUM_ALTITUDE' REAL NOT NULL ," + // 7: sumAltitude
+                "'SUM_DISTANCE_KM' REAL NOT NULL ," + // 8: sumDistanceKm
+                "'CALORIES' REAL NOT NULL ," + // 9: calories
+                "'EXERCISE' REAL NOT NULL );"); // 10: exercise
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_LOG_ACTIVE_TIME_MS ON DB_SESSION_LOG" +
                 " (ACTIVE_TIME_MS);");
@@ -86,19 +80,16 @@ public class DbSessionLogDao extends AbstractDao<DbSessionLog, String> {
     protected void bindValues(SQLiteStatement stmt, DbSessionLog entity) {
         stmt.clearBindings();
         stmt.bindString(1, entity.getSessionId());
-        stmt.bindString(2, entity.getProfileId());
-        stmt.bindLong(3, entity.getGoogleFitUploaded() ? 1l: 0l);
-        stmt.bindLong(4, entity.getStartTime().getTime());
-        stmt.bindLong(5, entity.getEndTime().getTime());
-        stmt.bindLong(6, entity.getActiveTimeMs());
-        stmt.bindDouble(7, entity.getMaxSpeedKmh());
-        stmt.bindLong(8, entity.getMaxCadence());
-        stmt.bindLong(9, entity.getMaxHeartrate());
-        stmt.bindDouble(10, entity.getSumDistanceKm());
-        stmt.bindDouble(11, entity.getCalories());
-        stmt.bindDouble(12, entity.getExercise());
-        stmt.bindDouble(13, entity.getSumAltitude());
-        stmt.bindBlob(14, entity.getExtraPayload());
+        stmt.bindLong(2, entity.getStartTime().getTime());
+        stmt.bindLong(3, entity.getEndTime().getTime());
+        stmt.bindLong(4, entity.getActiveTimeMs());
+        stmt.bindDouble(5, entity.getMaxSpeedKmh());
+        stmt.bindLong(6, entity.getMaxCadence());
+        stmt.bindLong(7, entity.getMaxHeartrate());
+        stmt.bindDouble(8, entity.getSumAltitude());
+        stmt.bindDouble(9, entity.getSumDistanceKm());
+        stmt.bindDouble(10, entity.getCalories());
+        stmt.bindDouble(11, entity.getExercise());
     }
 
     /** @inheritdoc */
@@ -112,19 +103,16 @@ public class DbSessionLogDao extends AbstractDao<DbSessionLog, String> {
     public DbSessionLog readEntity(Cursor cursor, int offset) {
         DbSessionLog entity = new DbSessionLog( //
             cursor.getString(offset + 0), // sessionId
-            cursor.getString(offset + 1), // profileId
-            cursor.getShort(offset + 2) != 0, // googleFitUploaded
-            new java.util.Date(cursor.getLong(offset + 3)), // startTime
-            new java.util.Date(cursor.getLong(offset + 4)), // endTime
-            cursor.getLong(offset + 5), // activeTimeMs
-            cursor.getDouble(offset + 6), // maxSpeedKmh
-            cursor.getInt(offset + 7), // maxCadence
-            cursor.getInt(offset + 8), // maxHeartrate
-            cursor.getDouble(offset + 9), // sumDistanceKm
-            cursor.getDouble(offset + 10), // calories
-            cursor.getDouble(offset + 11), // exercise
-            cursor.getDouble(offset + 12), // sumAltitude
-            cursor.getBlob(offset + 13) // extraPayload
+            new java.util.Date(cursor.getLong(offset + 1)), // startTime
+            new java.util.Date(cursor.getLong(offset + 2)), // endTime
+            cursor.getLong(offset + 3), // activeTimeMs
+            cursor.getDouble(offset + 4), // maxSpeedKmh
+            cursor.getInt(offset + 5), // maxCadence
+            cursor.getInt(offset + 6), // maxHeartrate
+            cursor.getDouble(offset + 7), // sumAltitude
+            cursor.getDouble(offset + 8), // sumDistanceKm
+            cursor.getDouble(offset + 9), // calories
+            cursor.getDouble(offset + 10) // exercise
         );
         return entity;
     }
@@ -133,19 +121,16 @@ public class DbSessionLogDao extends AbstractDao<DbSessionLog, String> {
     @Override
     public void readEntity(Cursor cursor, DbSessionLog entity, int offset) {
         entity.setSessionId(cursor.getString(offset + 0));
-        entity.setProfileId(cursor.getString(offset + 1));
-        entity.setGoogleFitUploaded(cursor.getShort(offset + 2) != 0);
-        entity.setStartTime(new java.util.Date(cursor.getLong(offset + 3)));
-        entity.setEndTime(new java.util.Date(cursor.getLong(offset + 4)));
-        entity.setActiveTimeMs(cursor.getLong(offset + 5));
-        entity.setMaxSpeedKmh(cursor.getDouble(offset + 6));
-        entity.setMaxCadence(cursor.getInt(offset + 7));
-        entity.setMaxHeartrate(cursor.getInt(offset + 8));
-        entity.setSumDistanceKm(cursor.getDouble(offset + 9));
-        entity.setCalories(cursor.getDouble(offset + 10));
-        entity.setExercise(cursor.getDouble(offset + 11));
-        entity.setSumAltitude(cursor.getDouble(offset + 12));
-        entity.setExtraPayload(cursor.getBlob(offset + 13));
+        entity.setStartTime(new java.util.Date(cursor.getLong(offset + 1)));
+        entity.setEndTime(new java.util.Date(cursor.getLong(offset + 2)));
+        entity.setActiveTimeMs(cursor.getLong(offset + 3));
+        entity.setMaxSpeedKmh(cursor.getDouble(offset + 4));
+        entity.setMaxCadence(cursor.getInt(offset + 5));
+        entity.setMaxHeartrate(cursor.getInt(offset + 6));
+        entity.setSumAltitude(cursor.getDouble(offset + 7));
+        entity.setSumDistanceKm(cursor.getDouble(offset + 8));
+        entity.setCalories(cursor.getDouble(offset + 9));
+        entity.setExercise(cursor.getDouble(offset + 10));
      }
     
     /** @inheritdoc */

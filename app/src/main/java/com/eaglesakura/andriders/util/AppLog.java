@@ -21,6 +21,10 @@ public class AppLog {
         }
     }
 
+    public static void db(String fmt, Object... args) {
+        Log.d("Db", wrap(fmt, args));
+    }
+
     public static void gps(String fmt, Object... args) {
         Log.d("GPS", wrap(fmt, args));
     }
@@ -50,6 +54,6 @@ public class AppLog {
      * データ流量が多いので、基本的に切っておく
      */
     public static void bleData(String fmt, Object... args) {
-        Log.d("BLE/DATA", wrap(fmt, args));
+//        Log.d("BLE/DATA", wrap(fmt, args));
     }
 }

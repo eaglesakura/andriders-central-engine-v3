@@ -72,4 +72,12 @@ public class AceUtils {
             throw new IllegalStateException(e);
         }
     }
+
+    public static byte[] publicFieldSerialize(Object obj) {
+        try {
+            return SerializeUtil.serializePublicFieldObject(obj, true);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

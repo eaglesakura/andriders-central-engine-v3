@@ -25,7 +25,7 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
     public static class Properties {
         public final static Property Date = new Property(0, java.util.Date.class, "date", true, "DATE");
         public final static Property SessionId = new Property(1, String.class, "sessionId", false, "SESSION_ID");
-        public final static Property Raw = new Property(2, byte[].class, "raw", false, "RAW");
+        public final static Property Central = new Property(2, byte[].class, "central", false, "CENTRAL");
     };
 
 
@@ -43,7 +43,7 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
         db.execSQL("CREATE TABLE " + constraint + "'DB_SESSION_POINT' (" + //
                 "'DATE' INTEGER PRIMARY KEY NOT NULL UNIQUE ," + // 0: date
                 "'SESSION_ID' TEXT NOT NULL ," + // 1: sessionId
-                "'RAW' BLOB NOT NULL );"); // 2: raw
+                "'CENTRAL' BLOB NOT NULL );"); // 2: central
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_SESSION_ID ON DB_SESSION_POINT" +
                 " (SESSION_ID);");
@@ -61,7 +61,7 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
         stmt.clearBindings();
         stmt.bindLong(1, entity.getDate().getTime());
         stmt.bindString(2, entity.getSessionId());
-        stmt.bindBlob(3, entity.getRaw());
+        stmt.bindBlob(3, entity.getCentral());
     }
 
     /** @inheritdoc */
@@ -76,7 +76,7 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
         DbSessionPoint entity = new DbSessionPoint( //
             new java.util.Date(cursor.getLong(offset + 0)), // date
             cursor.getString(offset + 1), // sessionId
-            cursor.getBlob(offset + 2) // raw
+            cursor.getBlob(offset + 2) // central
         );
         return entity;
     }
@@ -86,7 +86,7 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
     public void readEntity(Cursor cursor, DbSessionPoint entity, int offset) {
         entity.setDate(new java.util.Date(cursor.getLong(offset + 0)));
         entity.setSessionId(cursor.getString(offset + 1));
-        entity.setRaw(cursor.getBlob(offset + 2));
+        entity.setCentral(cursor.getBlob(offset + 2));
      }
     
     /** @inheritdoc */

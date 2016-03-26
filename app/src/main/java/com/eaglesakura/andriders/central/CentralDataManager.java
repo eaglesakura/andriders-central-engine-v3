@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.central.geo.GeoSpeedData;
 import com.eaglesakura.andriders.central.geo.LocationData;
 import com.eaglesakura.andriders.central.hrsensor.FitnessData;
+import com.eaglesakura.andriders.central.log.SessionLogger;
 import com.eaglesakura.andriders.central.scsensor.CadenceData;
 import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.session.SessionData;
@@ -15,10 +16,13 @@ import com.eaglesakura.andriders.serialize.RawSpecs;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.android.device.external.StorageInfo;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+
+import java.io.File;
 
 /**
  * サイコンが持つべき情報を統括する
@@ -85,6 +89,9 @@ public class CentralDataManager {
     @NonNull
     final SessionData mSessionData;
 
+    @NonNull
+    final SessionLogger mSessionLogger;
+
     /**
      * 時刻設定
      */
@@ -131,6 +138,12 @@ public class CentralDataManager {
 
         mLocationData = new LocationData(mClock, geoSpeedData);
         mSpeedData = new SpeedData(mClock, geoSpeedData, mSensorSpeedData);
+
+        // ログコントローラ
+        {
+            File external = StorageInfo.getExternalStorageRoot(context);
+            mSessionLogger = new SessionLogger(context, mSessionData.getSessionId(), new File(external, "db/session.db"), clock);
+        }
     }
 
     /**
@@ -241,6 +254,9 @@ public class CentralDataManager {
                 mSessionData.addActiveDistanceKm(moveDistanceKm);
             }
 
+            // 毎フレーム更新をかける
+            mSessionLogger.onUpdate(mLatestCentralData);
+
             // セントラル情報を生成する
             mLatestCentralData = newCentralData();
         }
@@ -268,6 +284,7 @@ public class CentralDataManager {
         dst.sessionId = mSessionData.getSessionId();
         dst.startTime = mSessionData.getStartDate();
         dst.durationTimeMs = (int) (now() - dst.startTime);
+        dst.sumAltitudeMeter = (float) mLocationData.getSumAltitude();
 
         dst.fitness = new RawSessionData.RawFitnessStatus();
         mFitnessData.getFitness(dst.fitness);
@@ -310,11 +327,11 @@ public class CentralDataManager {
     }
 
     /**
-     * ログを強制的に書き出す
+     * 必要なデータをデータベースへ書き出す
      * <p>
      * TODO 実装する
      */
-    public void commitLog() {
-
+    public void commit() {
+        mSessionLogger.commit();
     }
 }
