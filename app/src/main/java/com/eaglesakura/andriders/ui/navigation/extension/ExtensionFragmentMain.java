@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.ui.navigation.extension;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
+import com.eaglesakura.andriders.extension.ExtensionClientManager;
 import com.eaglesakura.andriders.extension.ExtensionCategory;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.profile.GadgetSettingFragment;

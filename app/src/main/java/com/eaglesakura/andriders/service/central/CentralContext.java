@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.service.central;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
+import com.eaglesakura.andriders.extension.ExtensionClient;
+import com.eaglesakura.andriders.extension.ExtensionClientManager;
 import com.eaglesakura.andriders.computer.notification.NotificationManager;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.display.DataDisplayManager;

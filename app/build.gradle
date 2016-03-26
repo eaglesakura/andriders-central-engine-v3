@@ -121,6 +121,7 @@ android {
         main {
             java.srcDirs = [
                     'src/main/java',
+                    'src/main/java-extension-basicui', 'src/main/java-extension-ble', 'src/main/java-extension-location',
                     'src/main/generated/dao', 'src/main/generated/props',
             ]
             res.srcDirs = [

@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.display;
 
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
+import com.eaglesakura.andriders.extension.ExtensionClient;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.util.Clock;

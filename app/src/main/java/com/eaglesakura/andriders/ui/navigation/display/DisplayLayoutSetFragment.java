@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
+import com.eaglesakura.andriders.extension.ExtensionClient;
+import com.eaglesakura.andriders.extension.ExtensionClientManager;
 import com.eaglesakura.andriders.display.DataLayoutManager;
 import com.eaglesakura.andriders.display.LayoutSlot;
 import com.eaglesakura.andriders.extension.DisplayInformation;
