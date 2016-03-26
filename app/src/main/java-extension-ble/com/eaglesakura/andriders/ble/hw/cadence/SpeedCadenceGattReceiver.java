@@ -30,7 +30,7 @@ public class SpeedCadenceGattReceiver extends BaseBleGattReceiver {
 
     @Override
     protected BleDevice newBleDevice(BluetoothDevice device) {
-        BleCadenceSpeedSensor sensor = new BleCadenceSpeedSensor(mContext, device, mClock);
+        BleCadenceSpeedSensor sensor = new BleCadenceSpeedSensor(mContext, mSubscriptionController, device, mClock);
 
         sensor.registerCadenceListener(mSpeedCadenceListener);
         // デバイスの接続・切断に対して反応する
