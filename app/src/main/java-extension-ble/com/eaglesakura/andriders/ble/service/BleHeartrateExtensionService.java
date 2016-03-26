@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ble.service;
 
-import com.eaglesakura.andriders.ble.hw.heartrate.BleHeartRateMonitor;
+import com.eaglesakura.andriders.ble.hw.heartrate._BleHeartrateMonitor;
 import com.eaglesakura.andriders.ble.hw.heartrate.HeartrateGattReceiver;
 import com.eaglesakura.andriders.ble.hw.heartrate.HeartrateSensorData;
 import com.eaglesakura.andriders.extension.DisplayInformation;
@@ -72,17 +72,17 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
 
         receiver = new HeartrateGattReceiver(this, getSubscriptionController(), mClock);
         receiver.setTargetFitnessDeviceAddress(address);
-        receiver.setHeartrateListener(new BleHeartRateMonitor.BleHeartrateListener() {
+        receiver.setHeartrateListener(new _BleHeartrateMonitor.BleHeartrateListener() {
             @Override
-            public void onDeviceNotSupportedHeartrate(BleHeartRateMonitor sensor, BluetoothDevice device) {
+            public void onDeviceNotSupportedHeartrate(_BleHeartrateMonitor sensor, BluetoothDevice device) {
             }
 
             @Override
-            public void onDeviceSupportedHeartrate(BleHeartRateMonitor sensor, BluetoothDevice device) {
+            public void onDeviceSupportedHeartrate(_BleHeartrateMonitor sensor, BluetoothDevice device) {
             }
 
             @Override
-            public void onHeartrateUpdated(BleHeartRateMonitor sensor, HeartrateSensorData heartrate) {
+            public void onHeartrateUpdated(_BleHeartrateMonitor sensor, HeartrateSensorData heartrate) {
                 centralDataExtension.setHeartrate(heartrate.getBpm());
             }
         });
