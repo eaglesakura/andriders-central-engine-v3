@@ -25,7 +25,7 @@ public class SpeedDisplayUpdater extends DisplayUpdater {
     @NonNull
     private final ZoneColor mZoneColor;
 
-    @BindStringArray(R.array.Display_Cadence_ZoneName)
+    @BindStringArray(R.array.Display_Speed_ZoneName)
     @NonNull
     String[] mZoneTitles;
 

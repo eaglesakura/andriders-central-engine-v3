@@ -78,7 +78,10 @@ public class CadenceData extends BaseCalculator {
     public CadenceZone getZone() {
         float rpm = getCadenceRpm();
         UserProfiles userProfiles = getSettings().getUserProfiles();
-        if (rpm < userProfiles.getCadenceZoneIdeal()) {
+        if (rpm < 5) {
+            // 停止域
+            return CadenceZone.Stop;
+        } else if (rpm < userProfiles.getCadenceZoneIdeal()) {
             // 遅い
             return CadenceZone.Slow;
         } else if (rpm < userProfiles.getCadenceZoneHigh()) {
