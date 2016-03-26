@@ -29,6 +29,10 @@ public class AppLog {
         Log.d("Speed", wrap(fmt, args));
     }
 
+    public static void cadence(String fmt, Object... args) {
+        Log.d("Cadence", wrap(fmt, args));
+    }
+
     public static void broadcast(String fmt, Object... args) {
         Log.d("Broadcast", wrap(fmt, args));
     }
@@ -46,6 +50,6 @@ public class AppLog {
      * データ流量が多いので、基本的に切っておく
      */
     public static void bleData(String fmt, Object... args) {
-//        Log.d("BLE/DATA", wrap(fmt, args));
+        Log.d("BLE/DATA", wrap(fmt, args));
     }
 }

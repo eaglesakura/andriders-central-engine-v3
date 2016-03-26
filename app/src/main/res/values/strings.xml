@@ -36,8 +36,10 @@
     <string name="Display.Common.NoData">N/A</string>
     <string name="Display.Common.Heartrate">心拍</string>
     <string name="Display.Common.Cadence">ケイデンス</string>
-    <string name="Display.Common.Speed">速度</string>
-    <string name="Display.Heartrate.Reconnect">再接続...</string>
+    <string name="Display.Common.Speed">速度(km/h)</string>
+    <string name="Display.Common.Reconnect">再接続...</string>
+
+    <!-- 心拍 -->
     <string-array name="Display_Heartrate_ZoneName">
         <item>安静</item>
         <item>軽度</item>
@@ -45,6 +47,21 @@
         <item>有酸素</item>
         <item>無酸素</item>
         <item>危険域</item>
+    </string-array>
+
+    <!-- ケイデンス -->
+    <string-array name="Display_Cadence_ZoneName">
+        <item>停止</item>
+        <item>低回転</item>
+        <item>標準</item>
+        <item>高回転</item>
+    </string-array>
+    <!-- 速度 -->
+    <string-array name="Display_Speed_ZoneName">
+        <item>停止</item>
+        <item>低速</item>
+        <item>低速</item>
+        <item>高速</item>
     </string-array>
 
     <!-- フィットネス -->

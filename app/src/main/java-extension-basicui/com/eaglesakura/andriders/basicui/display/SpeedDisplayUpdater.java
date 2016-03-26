@@ -11,24 +11,25 @@ import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.MargarineKnife;
+import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
- * 心拍更新を行う
+ * ケイデンス更新を行う
  */
-public class HeartrateDisplayUpdater extends DisplayUpdater {
-    public static final String DISPLAY_ID = "DISPLAY_ID_HEARTRATE";
+public class SpeedDisplayUpdater extends DisplayUpdater {
+    public static final String DISPLAY_ID = "DISPLAY_ID_SPEED";
 
     @NonNull
     private final ZoneColor mZoneColor;
 
-    @BindStringArray(R.array.Display_Heartrate_ZoneName)
+    @BindStringArray(R.array.Display_Cadence_ZoneName)
     @NonNull
     String[] mZoneTitles;
 
-    public HeartrateDisplayUpdater(@NonNull ExtensionSession session, @NonNull ZoneColor zoneColor) {
+    public SpeedDisplayUpdater(@NonNull ExtensionSession session, @NonNull ZoneColor zoneColor) {
         super(session);
         mZoneColor = zoneColor;
 
@@ -37,22 +38,20 @@ public class HeartrateDisplayUpdater extends DisplayUpdater {
 
     public void bind() {
         if (mDataReceiver != null) {
-            mDataReceiver.addHandler(mHeartrateHandler);
+            mDataReceiver.addHandler(mSpeedHandler);
         }
     }
 
-
-    private SensorDataReceiver.HeartrateHandler mHeartrateHandler = new SensorDataReceiver.HeartrateHandler() {
+    private SensorDataReceiver.SpeedHandler mSpeedHandler = new SensorDataReceiver.SpeedHandler() {
         @Override
-        public void onReceived(@NonNull RawCentralData master, @NonNull RawSensorData.RawHeartrate sensor) {
+        public void onReceived(@NonNull RawCentralData master, @NonNull RawSensorData.RawSpeed sensor) {
             Context context = getContext();
 
             DisplayData data = new DisplayData(context, DISPLAY_ID);
-            data.setTimeoutMs(1000 * 5);   // 5秒心拍がなければ切断されている
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Display_Common_Heartrate));
-            value.setValue(String.valueOf(sensor.bpm));
+            value.setTitle(context.getString(R.string.Display_Common_Speed));
+            value.setValue(StringUtil.format("%.01f", sensor.speedKmPerHour));
             value.setBarColorARGB(mZoneColor.getColor(sensor.zone));
             value.setZoneText(mZoneTitles[sensor.zone.ordinal()]);
 
@@ -65,10 +64,10 @@ public class HeartrateDisplayUpdater extends DisplayUpdater {
             Context context = getContext();
 
             DisplayData data = new DisplayData(context, DISPLAY_ID);
-            data.setTimeoutMs(1000 * 60);   // 5秒心拍がなければ切断されている
+            data.setTimeoutMs(1000 * 60);
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Display_Common_Heartrate));
+            value.setTitle(context.getString(R.string.Display_Common_Speed));
             value.setValue(context.getString(R.string.Display_Common_Reconnect));
             value.setBarColorARGB(0x00);
 
@@ -79,7 +78,7 @@ public class HeartrateDisplayUpdater extends DisplayUpdater {
 
     public static DisplayInformation newInformation(Context context) {
         DisplayInformation result = new DisplayInformation(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Display_Common_Heartrate));
+        result.setTitle(context.getString(R.string.Display_Common_Speed));
         return result;
     }
 }

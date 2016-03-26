@@ -63,8 +63,8 @@ public class BleCadenceSpeedSensor extends BleDevice {
         super(context, device);
 
         // スピードセンサーはタイヤの回転数的に頻繁な更新で問題ない
-        mCadence = new SpeedCadenceSensorData(clock, 1000 * 2, BleDevice.SENSOR_TIMEOUT_MS);
-        mSpeed = new SpeedCadenceSensorData(clock, (int) (1.5 * 1000), 1000 * 3);
+        mCadence = new SpeedCadenceSensorData(clock, (int) (1000.0 * 3.0), (int) (1000.0 * 2));
+        mSpeed = new SpeedCadenceSensorData(clock, (int) (1000.0 * 3.0), (int) (1000.0 * 2));
         mSubscriptionController = subscriptionController;
     }
 

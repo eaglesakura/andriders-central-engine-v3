@@ -113,7 +113,7 @@ public class SpeedCadenceSensorData {
 
         // 指定秒経過していなかったら時間単位の精度が低いため何もしない
         if (offsetTimeMs < mStatusCheckIntervalMs) {
-            AppLog.bleData("abort interval (%d ms < %d ms)", offsetTimeMs, mStatusCheckIntervalMs);
+            AppLog.cadence("abort interval (%d ms < %d ms)", offsetTimeMs, mStatusCheckIntervalMs);
             return false;
         }
         AppLog.bleData(String.format("Revolve(+%d) Time(+%d ms) ", offsetRevolve, offsetTimeMs));

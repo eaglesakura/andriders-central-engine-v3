@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.basicui;
 
-import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.basicui.display.CadenceDisplayUpdater;
 import com.eaglesakura.andriders.basicui.display.HeartrateDisplayUpdater;
-import com.eaglesakura.andriders.central.SensorDataReceiver;
+import com.eaglesakura.andriders.basicui.display.SpeedDisplayUpdater;
 import com.eaglesakura.andriders.display.ZoneColor;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionCategory;
@@ -11,10 +11,6 @@ import com.eaglesakura.andriders.extension.ExtensionSession;
 import com.eaglesakura.andriders.extension.IExtensionService;
 import com.eaglesakura.andriders.extension.display.BasicValue;
 import com.eaglesakura.andriders.extension.display.DisplayData;
-import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.andriders.serialize.RawSensorData;
-import com.eaglesakura.android.margarine.BindString;
-import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.util.LogUtil;
@@ -23,7 +19,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
@@ -31,32 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BasicExtensionService extends Service implements IExtensionService {
-
-    /**
-     * 心拍
-     */
-    static final String DISPLAY_ID_HEARTRATE = "DISPLAY_ID_HEARTRATE";
-
-    /**
-     * 現在速度
-     */
-    static final String DISPLAY_ID_CURRENT_SPEED = "DISPLAY_ID_CURRENT_SPEED";
-
-    /**
-     * 現在ケイデンス
-     */
-    static final String DISPLAY_ID_CURRENT_CADENCE = "DISPLAY_ID_CURRENT_CADENCE";
-
-
     /**
      * 現在ケイデンス
      */
     static final String DEBUG_RANDOM_HEARTRATE = "debug.DEBUG_RANDOM_HEARTRATE";
 
     HandlerLoopController mDisplayCommitLoop;
-
-    @BindStringArray(R.array.Display_Heartrate_ZoneName)
-    String[] mHeartrateZoneNames;
 
     @Nullable
     @Override
@@ -89,19 +64,11 @@ public class BasicExtensionService extends Service implements IExtensionService 
     @Override
     public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
         List<DisplayInformation> result = new ArrayList<>();
+
         result.add(HeartrateDisplayUpdater.newInformation(this));
-        {
-            DisplayInformation info = new DisplayInformation(this, DISPLAY_ID_CURRENT_SPEED);
-            info.setTitle(getString(R.string.Display_Common_Speed));
+        result.add(CadenceDisplayUpdater.newInformation(this));
+        result.add(SpeedDisplayUpdater.newInformation(this));
 
-            result.add(info);
-        }
-        {
-            DisplayInformation info = new DisplayInformation(this, DISPLAY_ID_CURRENT_CADENCE);
-            info.setTitle(getString(R.string.Display_Common_Cadence));
-
-            result.add(info);
-        }
         if (session.isDebugable()) {
             {
                 DisplayInformation info = new DisplayInformation(this, DEBUG_RANDOM_HEARTRATE);
@@ -122,6 +89,8 @@ public class BasicExtensionService extends Service implements IExtensionService 
 
         ZoneColor zoneColor = new ZoneColor(this);
         new HeartrateDisplayUpdater(session, zoneColor).bind();
+        new CadenceDisplayUpdater(session, zoneColor).bind();
+        new SpeedDisplayUpdater(session, zoneColor).bind();
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override
