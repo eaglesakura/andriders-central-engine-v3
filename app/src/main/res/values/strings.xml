@@ -36,7 +36,9 @@
     <string name="Display.Common.NoData">N/A</string>
     <string name="Display.Common.Heartrate">心拍</string>
     <string name="Display.Common.Cadence">ケイデンス</string>
-    <string name="Display.Common.Speed">速度(km/h)</string>
+    <string name="Display.Common.Speed">速度</string>
+    <string name="Display.Common.Speed.GPS">GPS速度(km/h)</string>
+    <string name="Display.Common.Speed.Sensor">速度(km/h)</string>
     <string name="Display.Common.Reconnect">再接続...</string>
 
     <!-- 心拍 -->

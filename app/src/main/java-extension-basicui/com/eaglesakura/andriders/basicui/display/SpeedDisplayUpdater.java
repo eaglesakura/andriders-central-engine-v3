@@ -50,7 +50,11 @@ public class SpeedDisplayUpdater extends DisplayUpdater {
             DisplayData data = new DisplayData(context, DISPLAY_ID);
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Display_Common_Speed));
+            if ((sensor.flags & RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS) != 0) {
+                value.setTitle(context.getString(R.string.Display_Common_Speed_GPS));
+            } else {
+                value.setTitle(context.getString(R.string.Display_Common_Speed_Sensor));
+            }
             value.setValue(StringUtil.format("%.01f", sensor.speedKmPerHour));
             value.setBarColorARGB(mZoneColor.getColor(sensor.zone));
             value.setZoneText(mZoneTitles[sensor.zone.ordinal()]);

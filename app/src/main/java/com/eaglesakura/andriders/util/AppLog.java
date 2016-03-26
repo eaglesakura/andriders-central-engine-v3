@@ -14,7 +14,7 @@ public class AppLog {
     private static String wrap(String fmt, Object... args) {
         if (stackInfo) {
             StackTraceElement[] trace = new Exception().getStackTrace();
-            StackTraceElement elem = trace[Math.min(trace.length - 1, 4)];
+            StackTraceElement elem = trace[Math.min(trace.length - 1, 2)];
             return String.format("%s[%d] : %s", elem.getFileName(), elem.getLineNumber(), String.format(fmt, args));
         } else {
             return String.format(fmt, args);
