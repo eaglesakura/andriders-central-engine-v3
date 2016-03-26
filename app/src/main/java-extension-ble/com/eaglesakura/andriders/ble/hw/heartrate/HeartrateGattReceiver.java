@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.ble.hw.heartrate;
 import com.eaglesakura.andriders.ble.hw.BleDevice;
 import com.eaglesakura.andriders.ble.hw.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.ble.hw.base.BaseBleGattReceiver;
-import com.eaglesakura.andriders.ble.hw.heartrate._BleHeartrateMonitor.BleHeartrateListener;
+import com.eaglesakura.andriders.ble.hw.heartrate.BleHeartrateMonitor.BleHeartrateListener;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
@@ -35,7 +35,7 @@ public class HeartrateGattReceiver extends BaseBleGattReceiver {
 
     @Override
     protected BleDevice newBleDevice(BluetoothDevice device) {
-        _BleHeartrateMonitor sensor = new _BleHeartrateMonitor(mContext, mSubscriptionController, device, mClock);
+        BleHeartrateMonitor sensor = new BleHeartrateMonitor(mContext, mSubscriptionController, device, mClock);
         sensor.registerHeartrateListener(mHeartrateListener);
         sensor.registerDeviceListener(new BleDeviceListener() {
             @Override

@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class _BleHeartrateMonitor extends BleDevice {
+public class BleHeartrateMonitor extends BleDevice {
 
     /**
      * ハートレートモニターのBLEサービスを示すUUID
@@ -55,7 +55,7 @@ public class _BleHeartrateMonitor extends BleDevice {
     @NonNull
     private final SubscriptionController mSubscriptionController;
 
-    public _BleHeartrateMonitor(Context context, SubscriptionController subscriptionController, BluetoothDevice device, Clock clock) {
+    public BleHeartrateMonitor(Context context, SubscriptionController subscriptionController, BluetoothDevice device, Clock clock) {
         super(context, device);
         mHeartrateData = new HeartrateSensorData(clock);
         mSubscriptionController = subscriptionController;
@@ -72,13 +72,13 @@ public class _BleHeartrateMonitor extends BleDevice {
                     AppLog.ble("enable cadence notification");
                     mSubscriptionController.run(ObserveTarget.Alive, () -> {
                         for (BleHeartrateListener listener : mListeners) {
-                            listener.onDeviceSupportedHeartrate(_BleHeartrateMonitor.this, mDevice);
+                            listener.onDeviceSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
                         }
                     });
                 } else {
                     mSubscriptionController.run(ObserveTarget.Alive, () -> {
                         for (BleHeartrateListener listener : mListeners) {
-                            listener.onDeviceNotSupportedHeartrate(_BleHeartrateMonitor.this, mDevice);
+                            listener.onDeviceNotSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
                         }
                     });
                 }
@@ -105,7 +105,7 @@ public class _BleHeartrateMonitor extends BleDevice {
                 mHeartrateData.setHeartrate(heartrate);
                 // 心拍更新
                 for (BleHeartrateListener listener : mListeners) {
-                    listener.onHeartrateUpdated(_BleHeartrateMonitor.this, mHeartrateData);
+                    listener.onHeartrateUpdated(BleHeartrateMonitor.this, mHeartrateData);
                 }
             }
         }
@@ -144,16 +144,16 @@ public class _BleHeartrateMonitor extends BleDevice {
         /**
          * ハートレートモニターに対応していないデバイスの場合
          */
-        void onDeviceNotSupportedHeartrate(_BleHeartrateMonitor sensor, BluetoothDevice device);
+        void onDeviceNotSupportedHeartrate(BleHeartrateMonitor sensor, BluetoothDevice device);
 
         /**
          * ハートレートモニターに対応しているデバイスの場合
          */
-        void onDeviceSupportedHeartrate(_BleHeartrateMonitor sensor, BluetoothDevice device);
+        void onDeviceSupportedHeartrate(BleHeartrateMonitor sensor, BluetoothDevice device);
 
         /**
          * ハートレートモニターの値が更新された
          */
-        void onHeartrateUpdated(_BleHeartrateMonitor sensor, HeartrateSensorData heartrate);
+        void onHeartrateUpdated(BleHeartrateMonitor sensor, HeartrateSensorData heartrate);
     }
 }
