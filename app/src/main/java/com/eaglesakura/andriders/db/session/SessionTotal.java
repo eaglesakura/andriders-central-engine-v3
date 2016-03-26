@@ -16,14 +16,18 @@ public class SessionTotal {
 
     public SessionTotal(@NonNull Iterator<DbSessionLog> sessions) {
 
-        long startTime = System.currentTimeMillis();
+        long startTime = 0;
         long endTime = 0;
 
         while (sessions.hasNext()) {
             DbSessionLog next = sessions.next();
 
 
-            startTime = Math.min(startTime, next.getStartTime().getTime());
+            if (startTime == 0) {
+                startTime = next.getStartTime().getTime();
+            } else {
+                startTime = Math.min(startTime, next.getStartTime().getTime());
+            }
             endTime = Math.max(endTime, next.getEndTime().getTime());
 
             mLog.setMaxCadence(Math.max(mLog.getMaxCadence(), next.getMaxCadence()));
@@ -49,6 +53,10 @@ public class SessionTotal {
 
     public long getActiveTimeMs() {
         return mLog.getActiveTimeMs();
+    }
+
+    public double getActiveDistanceKm() {
+        return mLog.getActiveDistanceKm();
     }
 
     public double getMaxSpeedKmh() {

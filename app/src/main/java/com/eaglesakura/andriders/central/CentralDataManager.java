@@ -254,11 +254,12 @@ public class CentralDataManager {
                 mSessionData.addActiveDistanceKm(moveDistanceKm);
             }
 
-            // 毎フレーム更新をかける
-            mSessionLogger.onUpdate(mLatestCentralData);
-
             // セントラル情報を生成する
             mLatestCentralData = newCentralData();
+
+            // 毎フレーム更新をかける。結果としてデータが書き換わるので、Latestを更新する
+            mSessionLogger.onUpdate(mLatestCentralData);
+            mSessionLogger.getTodayTotal(mLatestCentralData.today);
         }
     }
 
@@ -301,29 +302,32 @@ public class CentralDataManager {
      * 現在の状態からセントラルを生成する
      */
     public RawCentralData newCentralData() {
-        RawCentralData result = new RawCentralData();
+        synchronized (lock) {
+            RawCentralData result = new RawCentralData();
 
-        result.specs = new RawSpecs();
-        result.specs.application = new RawSpecs.RawAppSpec();
-        result.specs.fitness = new RawSpecs.RawFitnessSpec();
-        result.centralStatus = new RawCentralData.RawCentralStatus();
-        result.sensor = new RawSensorData();
-        result.session = new RawSessionData();
-        result.today = new RawSessionData();
+            result.specs = new RawSpecs();
+            result.specs.application = new RawSpecs.RawAppSpec();
+            result.specs.fitness = new RawSpecs.RawFitnessSpec();
+            result.centralStatus = new RawCentralData.RawCentralStatus();
+            result.sensor = new RawSensorData();
+            result.session = new RawSessionData();
+            result.today = new RawSessionData();
 
-        getSpecs(result.specs.application);
-        getStatus(result.centralStatus);
-        getSession(result.session);
+            getSpecs(result.specs.application);
+            getStatus(result.centralStatus);
+            getSession(result.session);
+            mSessionLogger.getTodayTotal(result.today);
 
-        mFitnessData.getSpec(result.specs.fitness);
+            mFitnessData.getSpec(result.specs.fitness);
 
-        // 各種センサーデータを取得する
-        mFitnessData.getSensor(result.sensor);
-        mCadenceData.getSensor(result.sensor);
-        mSpeedData.getSensor(result.sensor);
-        mLocationData.getSensor(result.sensor);
+            // 各種センサーデータを取得する
+            mFitnessData.getSensor(result.sensor);
+            mCadenceData.getSensor(result.sensor);
+            mSpeedData.getSensor(result.sensor);
+            mLocationData.getSensor(result.sensor);
 
-        return result;
+            return result;
+        }
     }
 
     /**

@@ -13,6 +13,7 @@ public class DbSessionLog {
     /** Not-null value. */
     private java.util.Date endTime;
     private long activeTimeMs;
+    private double activeDistanceKm;
     private double maxSpeedKmh;
     private int maxCadence;
     private int maxHeartrate;
@@ -28,11 +29,12 @@ public class DbSessionLog {
         this.sessionId = sessionId;
     }
 
-    public DbSessionLog(String sessionId, java.util.Date startTime, java.util.Date endTime, long activeTimeMs, double maxSpeedKmh, int maxCadence, int maxHeartrate, double sumAltitude, double sumDistanceKm, double calories, double exercise) {
+    public DbSessionLog(String sessionId, java.util.Date startTime, java.util.Date endTime, long activeTimeMs, double activeDistanceKm, double maxSpeedKmh, int maxCadence, int maxHeartrate, double sumAltitude, double sumDistanceKm, double calories, double exercise) {
         this.sessionId = sessionId;
         this.startTime = startTime;
         this.endTime = endTime;
         this.activeTimeMs = activeTimeMs;
+        this.activeDistanceKm = activeDistanceKm;
         this.maxSpeedKmh = maxSpeedKmh;
         this.maxCadence = maxCadence;
         this.maxHeartrate = maxHeartrate;
@@ -78,6 +80,14 @@ public class DbSessionLog {
 
     public void setActiveTimeMs(long activeTimeMs) {
         this.activeTimeMs = activeTimeMs;
+    }
+
+    public double getActiveDistanceKm() {
+        return activeDistanceKm;
+    }
+
+    public void setActiveDistanceKm(double activeDistanceKm) {
+        this.activeDistanceKm = activeDistanceKm;
     }
 
     public double getMaxSpeedKmh() {

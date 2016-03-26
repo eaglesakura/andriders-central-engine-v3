@@ -91,10 +91,26 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         assertNotNull(centralData);
         assertNotNull(centralData.session);
+        assertNotNull(centralData.session.fitness);
+        assertNotNull(centralData.today);
+        assertNotNull(centralData.today.fitness);
         assertNotNull(centralData.centralStatus);
         assertNotNull(centralData.specs);
 
-        assertNotNull(centralData.session.fitness);
+        // ログチェックを行う
+        {
+            assertNotNull(centralData.session.sessionId);
+            assertNull(centralData.today.sessionId);
+            assertTrue(centralData.session.startTime >= centralData.today.startTime);
+            assertTrue(centralData.session.durationTimeMs <= centralData.today.durationTimeMs);
+
+            assertTrue(centralData.session.activeDistanceKm <= centralData.today.activeDistanceKm);
+            assertTrue(centralData.session.distanceKm <= centralData.today.distanceKm);
+            assertTrue(centralData.session.sumAltitudeMeter <= centralData.today.sumAltitudeMeter);
+            assertTrue(centralData.session.fitness.calorie <= centralData.today.fitness.calorie);
+            assertTrue(centralData.session.fitness.exercise <= centralData.today.fitness.exercise);
+        }
+
         assertEquals(data.isActiveMoving(), centralData.session.isActiveMoving());
         assertEquals(centralData.centralStatus.date, data.now());
 

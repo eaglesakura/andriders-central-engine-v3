@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotal;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.util.AndroidThreadUtil;
@@ -80,6 +81,36 @@ public class SessionLogger {
     }
 
     /**
+     * 今日のログを取得する
+     */
+    public void getTodayTotal(RawSessionData dst) {
+        dst.flags = 0x00;
+        dst.activeTimeMs = (int) mSessionLog.getActiveTimeMs();
+        dst.activeDistanceKm = (float) mSessionLog.getActiveDistanceKm();
+        dst.distanceKm = (float) mSessionLog.getSumDistanceKm();
+        dst.sessionId = null;
+        dst.startTime = mSessionLog.getStartTime().getTime();
+        dst.sumAltitudeMeter = (float) mSessionLog.getSumAltitude();
+
+        dst.fitness = new RawSessionData.RawFitnessStatus();
+        dst.fitness.calorie = (float) mSessionLog.getCalories();
+        dst.fitness.exercise = (float) mSessionLog.getExercise();
+        dst.fitness.mets = 0;
+
+        if (mTodayTotal != null) {
+            dst.activeTimeMs += mTodayTotal.getActiveTimeMs();
+            dst.activeDistanceKm += (float) mTodayTotal.getActiveDistanceKm();
+            dst.distanceKm += (float) mTodayTotal.getSumDistanceKm();
+            dst.startTime = mTodayTotal.getStartTime().getTime();
+            dst.sumAltitudeMeter += (float) mTodayTotal.getSumAltitude();
+
+            dst.fitness.calorie += (float) mTodayTotal.getCalories();
+            dst.fitness.exercise += (float) mTodayTotal.getExercise();
+        }
+        dst.durationTimeMs = (int) (mPointTimer.getClock().now() - dst.startTime);
+    }
+
+    /**
      * 毎時更新を行う
      */
     public void onUpdate(RawCentralData latest) {
@@ -100,7 +131,9 @@ public class SessionLogger {
         // セッション情報を更新する
         mSessionLog.setEndTime(new Date(mPointTimer.getClock().now()));
         mSessionLog.setActiveTimeMs(latest.session.activeTimeMs);
+        mSessionLog.setActiveDistanceKm(latest.session.activeDistanceKm);
         mSessionLog.setSumAltitude(latest.session.sumAltitudeMeter);
+        mSessionLog.setSumDistanceKm(latest.session.distanceKm);
         mSessionLog.setCalories(latest.session.fitness.calorie);
         mSessionLog.setExercise(latest.session.fitness.exercise);
         if (latest.sensor.cadence != null) {

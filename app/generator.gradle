@@ -129,7 +129,9 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     DbSessionLog.addStringProperty("sessionId").notNull().unique().primaryKey(); // 打刻時間
     DbSessionLog.addDateProperty("startTime").notNull();  // その日最初のセッション開始時刻
     DbSessionLog.addDateProperty("endTime").notNull();  // その日最後のセッション終了時刻
-    DbSessionLog.addLongProperty("activeTimeMs").notNull().index(); // セッションがアクティブ（走行）中だった時間
+    DbSessionLog.addLongProperty("activeTimeMs").notNull(); // セッションがアクティブ（走行）中だった時間
+    DbSessionLog.addDoubleProperty("activeDistanceKm").notNull(); // アクティブ走行した距離
+
     // 最高記録
     DbSessionLog.addDoubleProperty("maxSpeedKmh").notNull().index(); // 最高速
     DbSessionLog.addIntProperty("maxCadence").notNull();   // 最高ケイデンス

@@ -9,7 +9,6 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.IOUtil;
-import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,8 +18,8 @@ import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import de.greenrobot.dao.query.CloseableListIterator;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -85,7 +84,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      * @param currentSession 外部で更新済みのセッション情報
      * @param points         打刻地点一覧
      */
-    public void update(DbSessionLog currentSession, List<DbSessionPoint> points) {
+    public void update(DbSessionLog currentSession, Collection<DbSessionPoint> points) {
         runInTx(() -> {
             session.insertOrReplace(currentSession);
             for (DbSessionPoint pt : points) {
