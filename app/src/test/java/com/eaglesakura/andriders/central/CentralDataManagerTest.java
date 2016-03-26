@@ -1,19 +1,33 @@
 package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
+import com.eaglesakura.andriders.data.gpx.Gpx;
+import com.eaglesakura.andriders.data.gpx.GpxParser;
+import com.eaglesakura.andriders.data.gpx.GpxPointElement;
+import com.eaglesakura.andriders.data.gpx.GpxSegment;
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.session.SessionLogDatabase;
+import com.eaglesakura.andriders.db.session.SessionTotal;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.util.CollectionUtil;
+import com.eaglesakura.util.IOUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.SerializeUtil;
 import com.eaglesakura.util.Timer;
 
 import org.junit.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -532,5 +546,104 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         assertTrue(data.mFitnessData.getSumCalories() < 400);
         assertTrue(data.mFitnessData.getSumExercise() > 3.0);
         assertTrue(data.mFitnessData.getSumExercise() < 5.0);
+    }
+
+    @Test
+    public void AACR2015のデータを挿入する() throws Exception {
+        InputStream is = new FileInputStream(new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile());
+        Gpx gpx;
+        try {
+            GpxParser parser = new GpxParser();
+            parser.setDateOption(GpxParser.DateOption.AddTimeZone);
+            gpx = parser.parse(is);
+
+        } finally {
+            IOUtil.close(is);
+        }
+
+        assertNotNull(gpx);
+
+        // 古いDBを削除する
+        CentralDataManager.getLogDatabasePath(getContext()).delete();
+
+        // GPXからデータをエミュレートする
+        int segmentIndex = 0;
+        for (GpxSegment segment : gpx.getTrackSegments()) {
+            Clock clock = new Clock(segment.getFirstPoint().getTime().getTime());
+            ClockTimer clockTimer = new ClockTimer(clock);
+            CentralDataManager centralDataManager = new CentralDataManager(getContext(), clock);
+
+            if (segmentIndex > 0) {
+                assertEquals(centralDataManager.mSessionLogger.getTotalData().getSessionNum(), segmentIndex);
+            } else {
+                assertNull(centralDataManager.mSessionLogger.getTotalData());
+            }
+
+            for (GpxPointElement pt : segment.getPoints()) {
+                clock.set(pt.getTime().getTime());
+
+                RawGeoPoint location = pt.getLocation();
+                centralDataManager.setLocation(location.latitude, location.longitude, location.altitude, 10);
+
+                if (!centralDataManager.onUpdate()) {
+                    continue;
+                }
+
+                if (clockTimer.overTimeMs(1000 * 30)) {
+                    centralDataManager.commit();
+                    assertFalse(centralDataManager.mSessionLogger.hasPointCaches());
+                    clockTimer.start();
+                }
+
+                // データを検証する
+                assertObject(centralDataManager, centralDataManager.getLatestCentralData());
+            }
+
+            // 最後のデータを書き込む
+            centralDataManager.commit();
+            assertFalse(centralDataManager.mSessionLogger.hasPointCaches());
+
+            assertObject(centralDataManager, centralDataManager.getLatestCentralData());
+
+            // Totalをチェックする
+            {
+                Date startTime = gpx.getFirstSegment().getFirstPoint().getTime();
+                Date endTime = gpx.getLastSegment().getLastPoint().getTime();
+                SessionLogDatabase sessionDb = new SessionLogDatabase(getContext(), CentralDataManager.getLogDatabasePath(getContext()));
+                try {
+                    sessionDb.openReadOnly();
+                    SessionTotal total = sessionDb.loadTotal(startTime.getTime(), endTime.getTime());
+
+                    LogUtil.log("Distance %.1f km", total.getSumDistanceKm());
+                    LogUtil.log("MaxSpeed %.1f km/h", total.getMaxSpeedKmh());
+
+                    RawCentralData data = centralDataManager.getLatestCentralData();
+                    // ログを比較する
+                    assertEquals(data.today.distanceKm, total.getSumDistanceKm(), 0.1);
+                } finally {
+                    sessionDb.close();
+                }
+            }
+
+            ++segmentIndex;
+        }
+
+        // Totalをチェックする
+        {
+            Date startTime = gpx.getFirstSegment().getFirstPoint().getTime();
+            Date endTime = gpx.getLastSegment().getLastPoint().getTime();
+            SessionLogDatabase sessionDb = new SessionLogDatabase(getContext(), CentralDataManager.getLogDatabasePath(getContext()));
+            try {
+                sessionDb.openReadOnly();
+                SessionTotal total = sessionDb.loadTotal(startTime.getTime(), endTime.getTime());
+
+                LogUtil.log("Distance %.1f km", total.getSumDistanceKm());
+                LogUtil.log("MaxSpeed %.1f km/h", total.getMaxSpeedKmh());
+
+            } finally {
+                sessionDb.close();
+            }
+        }
+
     }
 }

@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.IOUtil;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.TimeZone;
 
 import de.greenrobot.dao.query.CloseableListIterator;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -49,9 +51,10 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     /**
      * 今日の合計値を読み込む
      */
-    public SessionTotal loadTodayTotal() {
-        int offset = DateUtil.getDateOffset();
-        return loadTotal(DateUtil.getTodayStart().getTime() + offset, DateUtil.getTodayEnd().getTime() + offset);
+    public SessionTotal loadTodayTotal(Clock clock) {
+        long start = DateUtil.getDateStart(new Date(clock.now()), TimeZone.getDefault()).getTime();
+        long end = start + (DateUtil.DAY_MILLI_SEC) - 1;
+        return loadTotal(start, end);
     }
 
     /**
@@ -65,7 +68,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     public SessionTotal loadTotal(long startTime, long endTime) {
         QueryBuilder<DbSessionLog> builder = session.getDbSessionLogDao().queryBuilder();
 
-        AppLog.db("loadTotal start(%s) end(%s)", new Date(startTime).toLocaleString(), new Date(endTime).toLocaleString());
+        AppLog.db("loadTotal start(%s) end(%s)", new Date(startTime).toString(), new Date(endTime).toString());
 
         CloseableListIterator<DbSessionLog> iterator = builder
                 .where(DbSessionLogDao.Properties.StartTime.ge(startTime), DbSessionLogDao.Properties.StartTime.le(endTime))
@@ -88,7 +91,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         runInTx(() -> {
             session.insertOrReplace(currentSession);
             for (DbSessionPoint pt : points) {
-                session.insert(pt);
+                session.insertOrReplace(pt);
             }
             return this;
         });

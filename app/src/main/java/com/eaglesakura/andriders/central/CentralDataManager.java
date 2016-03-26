@@ -17,7 +17,6 @@ import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.device.external.StorageInfo;
-import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -120,6 +119,14 @@ public class CentralDataManager {
     private RawCentralData mLatestCentralData;
 
     /**
+     * ログDBのパスを取得する
+     */
+    public static File getLogDatabasePath(Context context) {
+        File external = StorageInfo.getExternalStorageRoot(context);
+        return new File(external, "db/session.db");
+    }
+
+    /**
      * サイコンデータを生成する
      *
      * @param clock 同期用時計
@@ -140,10 +147,7 @@ public class CentralDataManager {
         mSpeedData = new SpeedData(mClock, geoSpeedData, mSensorSpeedData);
 
         // ログコントローラ
-        {
-            File external = StorageInfo.getExternalStorageRoot(context);
-            mSessionLogger = new SessionLogger(context, mSessionData.getSessionId(), new File(external, "db/session.db"), clock);
-        }
+        mSessionLogger = new SessionLogger(context, mSessionData.getSessionId(), getLogDatabasePath(context), clock);
     }
 
     /**
@@ -232,14 +236,15 @@ public class CentralDataManager {
 
     /**
      * 時間を更新する
+     *
+     * @return 更新されたらtrue
      */
-    public void onUpdate() {
+    public boolean onUpdate() {
         long diffTimeMs = mClockTimer.end();
-        mClockTimer.start();
-
         if (diffTimeMs <= 0) {
-            throw new IllegalStateException(StringUtil.format("Diff %d ms", diffTimeMs));
+            return false;
         }
+        mClockTimer.start();
 
         synchronized (lock) {
             // 消費カロリーを更新する
@@ -259,8 +264,9 @@ public class CentralDataManager {
 
             // 毎フレーム更新をかける。結果としてデータが書き換わるので、Latestを更新する
             mSessionLogger.onUpdate(mLatestCentralData);
-            mSessionLogger.getTodayTotal(mLatestCentralData.today);
+            mSessionLogger.getTotalData(mLatestCentralData.today);
         }
+        return true;
     }
 
     private void getSpecs(RawSpecs.RawAppSpec dst) {
@@ -316,7 +322,7 @@ public class CentralDataManager {
             getSpecs(result.specs.application);
             getStatus(result.centralStatus);
             getSession(result.session);
-            mSessionLogger.getTodayTotal(result.today);
+            mSessionLogger.getTotalData(result.today);
 
             mFitnessData.getSpec(result.specs.fitness);
 

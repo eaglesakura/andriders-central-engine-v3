@@ -74,16 +74,28 @@ public class SessionLogger {
         SessionLogDatabase db = new SessionLogDatabase(context, databasePath);
         try {
             db.openReadOnly();
-            mTodayTotal = db.loadTodayTotal();
+            mTodayTotal = db.loadTodayTotal(clock);
         } finally {
             db.close();
         }
     }
 
     /**
+     * 打刻情報のキャッシュを持っていればtrue
+     */
+    public boolean hasPointCaches() {
+        return !mPoints.isEmpty();
+    }
+
+    @NonNull
+    public SessionTotal getTotalData() {
+        return mTodayTotal;
+    }
+
+    /**
      * 今日のログを取得する
      */
-    public void getTodayTotal(RawSessionData dst) {
+    public void getTotalData(RawSessionData dst) {
         dst.flags = 0x00;
         dst.activeTimeMs = (int) mSessionLog.getActiveTimeMs();
         dst.activeDistanceKm = (float) mSessionLog.getActiveDistanceKm();
@@ -151,8 +163,6 @@ public class SessionLogger {
      * データをDBに書き込む
      */
     public void commit() {
-        AndroidThreadUtil.assertBackgroundThread();
-
         SessionLogDatabase db = new SessionLogDatabase(mContext, mDatabasePath);
         try {
             db.openWritable();

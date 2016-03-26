@@ -26,6 +26,20 @@ public class Clock {
     }
 
     /**
+     * 時刻を上書きする
+     *
+     * @param time 内部タイマーよりも未来の値
+     */
+    public void set(long time) {
+        if (time < now()) {
+            // 整合性を保ちやすくするため、過去には戻せない
+            throw new IllegalArgumentException();
+        }
+
+        mCurrentTime.set(time);
+    }
+
+    /**
      * 差分時間を求める。
      *
      * 絶対値であるため、必ず正の数が返却される。
