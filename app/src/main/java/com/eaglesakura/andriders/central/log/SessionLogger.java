@@ -133,7 +133,7 @@ public class SessionLogger {
     public void onUpdate(RawCentralData latest) {
         synchronized (lock) {
             // 規定時間を過ぎたので現時点を打刻する
-            if (!mPointTimer.overTimeMs(POINT_COMMIT_INTERVAL_MS)) {
+            if (mPointTimer.overTimeMs(POINT_COMMIT_INTERVAL_MS)) {
                 DbSessionPoint pt = new DbSessionPoint();
                 pt.setDate(new Date(latest.centralStatus.date));
                 pt.setCentral(AceUtils.publicFieldSerialize(latest));
@@ -190,7 +190,7 @@ public class SessionLogger {
         try {
             db.openWritable();
             db.update(mSessionLog, points);
-            AppLog.db("Session Log Commit :: pt[%d]", points.size());
+            AppLog.db("Session Log Commit :: time[%s] pt[%d]", mSessionLog.getEndTime(), points.size());
         } catch (Exception e) {
             e.printStackTrace();
             AppLog.db("SessionLog write failed. rollback");

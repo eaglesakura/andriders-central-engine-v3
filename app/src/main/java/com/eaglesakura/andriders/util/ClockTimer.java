@@ -32,7 +32,8 @@ public class ClockTimer {
      * @param timeMs チェックする時間
      */
     public boolean overTimeMs(long timeMs) {
-        return end() >= timeMs;
+        long diff = end();
+        return diff >= timeMs;
     }
 
     public long end() {

@@ -63,6 +63,57 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     }
 
     /**
+     * 全記録の中から最高速度を取得する
+     *
+     * @return 最高速度[km/h]
+     */
+    public double loadMaxSpeedKmh() {
+        Timer timer = new Timer();
+        try {
+            QueryBuilder<DbSessionLog> builder = session.getDbSessionLogDao().queryBuilder();
+            CloseableListIterator<DbSessionLog> iterator = builder
+                    .orderDesc(DbSessionLogDao.Properties.MaxSpeedKmh)
+                    .limit(1)
+                    .listIterator();
+
+            if (iterator.hasNext()) {
+                return iterator.next().getMaxSpeedKmh();
+            } else {
+                return 0;
+            }
+        } finally {
+            AppLog.db("loadMaxSpeedKmh readTime[%d ms]", timer.end());
+        }
+    }
+
+    /**
+     * 指定範囲内から最高速度を取得する
+     *
+     * @param startTime 開始時刻
+     * @param endTime   終了時刻
+     * @return 最高速度[km/h]
+     */
+    public double loadMaxSpeedKmh(long startTime, long endTime) {
+        Timer timer = new Timer();
+        try {
+            QueryBuilder<DbSessionLog> builder = session.getDbSessionLogDao().queryBuilder();
+            CloseableListIterator<DbSessionLog> iterator = builder
+                    .orderDesc(DbSessionLogDao.Properties.MaxSpeedKmh)
+                    .where(DbSessionLogDao.Properties.StartTime.ge(startTime), DbSessionLogDao.Properties.EndTime.le(endTime))
+                    .limit(1)
+                    .listIterator();
+
+            if (iterator.hasNext()) {
+                return iterator.next().getMaxSpeedKmh();
+            } else {
+                return 0;
+            }
+        } finally {
+            AppLog.db("loadMaxSpeedKmh:range readTime[%d ms]", timer.end());
+        }
+    }
+
+    /**
      * startTime～endTimeまでに開始されたセッションの統計情報を返却する
      *
      * @param startTime 開始時刻

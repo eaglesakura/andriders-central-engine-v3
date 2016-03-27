@@ -16,6 +16,7 @@ import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.util.CollectionUtil;
+import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.IOUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.MathUtil;
@@ -28,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -581,11 +583,16 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
             for (GpxPoint pt : segment.getPoints()) {
                 clock.set(pt.getTime().getTime());
+//                LogUtil.log("insert :: " + pt.getTime().toString());
+//                if (DateUtil.getHour(new Date(clock.now()), TimeZone.getDefault()) > 6) {
+//                    LogUtil.log("break");
+//                }
 
                 RawGeoPoint location = pt.getLocation();
                 centralDataManager.setLocation(location.latitude, location.longitude, location.altitude, 10);
 
                 if (!centralDataManager.onUpdate()) {
+                    LogUtil.log("update abort.");
                     continue;
                 }
 
