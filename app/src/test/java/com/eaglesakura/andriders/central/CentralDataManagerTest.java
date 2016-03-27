@@ -637,6 +637,15 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
                 // データを検証する
                 assertObject(centralDataManager, centralDataManager.getLatestCentralData());
+
+                // GPS走行をしていることを確認
+                if (pointIndex > 10 && centralDataManager.getLatestCentralData().sensor.speed != null) {
+                    assertNotEquals(
+                            centralDataManager.getLatestCentralData().sensor.speed.flags & RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS,
+                            0x00
+                    );
+                }
+
                 ++pointIndex;
             }
 
