@@ -102,6 +102,11 @@ public class CentralContext implements Disposable {
      */
     static final int CENTRAL_UPDATE_INTERVAL_MS = 1000;
 
+    /**
+     * セントラルデータをDBに書き出すインターバル（秒）
+     */
+    static final int CENTRAL_COMMIT_INTERVAL_MS = 1000 * 30;
+
     private BehaviorSubject<LifecycleState> mSubject = BehaviorSubject.create(LifecycleState.NewObject);
 
     private SubscriptionController mSubscriptionController = new SubscriptionController().bind(mSubject);
@@ -196,6 +201,7 @@ public class CentralContext implements Disposable {
     enum TimerType {
         CentralUpdate,
         CentralBroadcast,
+        CentralDbCommit,
     }
 
     /**
@@ -216,24 +222,34 @@ public class CentralContext implements Disposable {
             mCentralData.onUpdate();
         }
 
+        // データのブロードキャストを行う
         if (mTimers.endIfOverTime(TimerType.CentralBroadcast, DATA_BROADCAST_INTERVAL_MS)) {
             requestBroadcastBasicDatas();
+        }
+
+        // データのコミットを行う
+        if (mTimers.endIfOverTime(TimerType.CentralDbCommit, CENTRAL_COMMIT_INTERVAL_MS)) {
+            requestCommitDatabase();
         }
     }
 
     @Override
     public void dispose() {
-        // TODO セッション終了タスクを発行する
-        newTask(SubscribeTarget.GlobalPipeline, task -> {
-            mExtensionClientManager.disconnect();
-            return this;
-        })
-                .observeOn(ObserveTarget.FireAndForget) // コールバックは常に行われる
+        requestCommitDatabase();    // セントラルにコミットをかける
+
+        // その他の終了タスクを投げる
+        new RxTaskBuilder<>(mSubscriptionController)
+                .observeOn(ObserveTarget.FireAndForget)
+                .subscribeOn(SubscribeTarget.GlobalPipeline)
+                .async(task -> {
+                    mExtensionClientManager.disconnect();
+                    return this;
+                })
                 .finalized(task -> {
                     LogUtil.log("Finished session");
-                })
-                .start();
+                }).start();
 
+        // タスクをシャットダウンする
         mSubject.onNext(LifecycleState.OnPaused);
         mSubject.onNext(LifecycleState.OnStopped);
         mSubject.onNext(LifecycleState.OnDestroyed);
@@ -250,8 +266,26 @@ public class CentralContext implements Disposable {
     }
 
     /**
-     * TODO: データを定期送信する
-     * TODO: 拡張Serviceにデータを送信する
+     * DBの内容を書き出す
+     */
+    void requestCommitDatabase() {
+        new RxTaskBuilder<>(mSubscriptionController)
+                .observeOn(ObserveTarget.FireAndForget)
+                .subscribeOn(SubscribeTarget.GlobalPipeline)
+                .async(task -> {
+                    AppLog.db("CentralCommit Start");
+                    mCentralData.commit();
+                    return this;
+                })
+                .completed((result, task) -> {
+                    AppLog.db("CentralCommit Completed");
+                })
+                .start();
+    }
+
+
+    /**
+     * データを各アプリへ送信する
      */
     void requestBroadcastBasicDatas() {
         RawCentralData data = mCentralData.getLatestCentralData();

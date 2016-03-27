@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.IOUtil;
+import com.eaglesakura.util.Timer;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -36,15 +37,19 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     final File mDatabasePath;
 
     /**
-     * @param databasePath 保存するDBファイル名
+     * @param databasePath 保存するDBファイル名 / nullの場合はOnMemoryとして生成される
      * @throws IOException パスが生成できなかった場合に投げられる
      */
-    public SessionLogDatabase(@NonNull Context context, @NonNull File databasePath) {
+    public SessionLogDatabase(@NonNull Context context, @Nullable File databasePath) {
         super(context, DaoMaster.class);
         mDatabasePath = databasePath;
 
-        if (!IOUtil.mkdirs(mDatabasePath.getParentFile()).isDirectory()) {
+        if (mDatabasePath != null && !IOUtil.mkdirs(mDatabasePath.getParentFile()).isDirectory()) {
             throw new IllegalStateException("Path Error :: " + mDatabasePath.getAbsolutePath());
+        }
+
+        if (mDatabasePath != null) {
+            AppLog.db("SessionLogDatabase path[%s]", databasePath.getAbsolutePath());
         }
     }
 
@@ -66,18 +71,23 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      */
     @Nullable
     public SessionTotal loadTotal(long startTime, long endTime) {
-        QueryBuilder<DbSessionLog> builder = session.getDbSessionLogDao().queryBuilder();
+        Timer timer = new Timer();
+        try {
+            QueryBuilder<DbSessionLog> builder = session.getDbSessionLogDao().queryBuilder();
 
-        AppLog.db("loadTotal start(%s) end(%s)", new Date(startTime).toString(), new Date(endTime).toString());
+            AppLog.db("loadTotal start(%s) end(%s)", new Date(startTime).toString(), new Date(endTime).toString());
 
-        CloseableListIterator<DbSessionLog> iterator = builder
-                .where(DbSessionLogDao.Properties.StartTime.ge(startTime), DbSessionLogDao.Properties.StartTime.le(endTime))
-                .orderAsc(DbSessionLogDao.Properties.StartTime)
-                .listIterator();
-        if (iterator.hasNext()) {
-            return new SessionTotal(iterator);
-        } else {
-            return null;
+            CloseableListIterator<DbSessionLog> iterator = builder
+                    .where(DbSessionLogDao.Properties.StartTime.ge(startTime), DbSessionLogDao.Properties.StartTime.le(endTime))
+                    .orderAsc(DbSessionLogDao.Properties.StartTime)
+                    .listIterator();
+            if (iterator.hasNext()) {
+                return new SessionTotal(iterator);
+            } else {
+                return null;
+            }
+        } finally {
+            AppLog.db("loadTotal readTime[%d ms]", timer.end());
         }
     }
 
@@ -88,15 +98,19 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      * @param points         打刻地点一覧
      */
     public void update(DbSessionLog currentSession, Collection<DbSessionPoint> points) {
-        runInTx(() -> {
-            session.insertOrReplace(currentSession);
-            for (DbSessionPoint pt : points) {
-                session.insertOrReplace(pt);
-            }
-            return this;
-        });
+        Timer timer = new Timer();
+        try {
+            runInTx(() -> {
+                session.insertOrReplace(currentSession);
+                for (DbSessionPoint pt : points) {
+                    session.insertOrReplace(pt);
+                }
+                return this;
+            });
+        } finally {
+            AppLog.db("update writeTime[%d ms]", timer.end());
+        }
     }
-
 
     @Override
     protected SQLiteOpenHelper createHelper() {

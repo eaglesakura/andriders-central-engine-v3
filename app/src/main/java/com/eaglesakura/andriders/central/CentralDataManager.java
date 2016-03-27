@@ -8,8 +8,10 @@ import com.eaglesakura.andriders.central.log.SessionLogger;
 import com.eaglesakura.andriders.central.scsensor.CadenceData;
 import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.session.SessionData;
+import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.serialize.RawSpecs;
@@ -231,6 +233,16 @@ public class CentralDataManager {
             }
 
             return result;
+        }
+    }
+
+    /**
+     * GPXの地点情報から設定する
+     */
+    public void setGpxPoint(GpxPoint point) {
+        RawGeoPoint location = point.getLocation();
+        if (location != null) {
+            setLocation(location.latitude, location.longitude, location.altitude, 10.0);
         }
     }
 

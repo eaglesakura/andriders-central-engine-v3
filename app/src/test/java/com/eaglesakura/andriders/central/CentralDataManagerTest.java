@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.central;
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.data.gpx.Gpx;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
-import com.eaglesakura.andriders.data.gpx.GpxPointElement;
+import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.data.gpx.GpxSegment;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
@@ -579,7 +579,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 assertNull(centralDataManager.mSessionLogger.getTotalData());
             }
 
-            for (GpxPointElement pt : segment.getPoints()) {
+            for (GpxPoint pt : segment.getPoints()) {
                 clock.set(pt.getTime().getTime());
 
                 RawGeoPoint location = pt.getLocation();
