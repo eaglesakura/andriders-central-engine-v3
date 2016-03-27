@@ -138,4 +138,5 @@
     <string name="Main.Menu.Extensions">サイコン機能詳細</string>
     <string name="Main.Menu.Activity">走行ログ</string>
     <string name="Main.Menu.Information">アプリについて</string>
+    <string name="UserLog.Import.GPX">GPX形式で読込</string>
 </resources>

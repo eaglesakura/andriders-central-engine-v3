@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.ui.base;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.RequestCodes;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.ui.auth.AcesAuthActivity;
 import com.eaglesakura.android.framework.FrameworkCentral;
@@ -24,7 +25,7 @@ public abstract class AppBaseFragment extends BaseFragment {
     /**
      * Googleの認証を行う
      */
-    protected static final int REQUEST_GOOGLE_AUTH = 0x2400;
+    protected static final int REQUEST_GOOGLE_AUTH = RequestCodes.GOOGLE_AUTH;
 
 
     public GoogleApiClientToken getGoogleApiClientToken() {

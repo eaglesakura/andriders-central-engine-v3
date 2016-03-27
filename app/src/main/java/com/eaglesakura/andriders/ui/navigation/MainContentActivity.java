@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.ui.navigation;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseActivity;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
+import com.eaglesakura.andriders.ui.navigation.log.UserLogMain;
 import com.eaglesakura.andriders.ui.navigation.menu.GoogleLoginCtrlFragment;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.android.framework.ui.BaseFragment;
@@ -83,8 +84,8 @@ public class MainContentActivity extends AppBaseActivity {
 
     @Override
     protected BaseFragment newDefaultContentFragment() {
-
-        return DisplaySettingFragmentMain.createInstance(this);
+        return UserLogMain.createInstance(this);
+//        return DisplaySettingFragmentMain.createInstance(this);
     }
 
     /**

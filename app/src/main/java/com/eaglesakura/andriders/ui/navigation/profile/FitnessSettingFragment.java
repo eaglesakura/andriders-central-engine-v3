@@ -4,6 +4,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.RequestCodes;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.google.GoogleApiUtil;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
@@ -31,7 +32,7 @@ import icepick.State;
 public class FitnessSettingFragment extends AppBaseFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     final UserProfiles personalDataSettings = Settings.getInstance().getUserProfiles();
 
-    static final int REQUEST_GOOGLEFIT_SETTING = 0x1200;
+    static final int REQUEST_GOOGLEFIT_SETTING = RequestCodes.GOOGLEFIT_SETTING;
 
     public FitnessSettingFragment() {
         requestInjection(R.layout.fragment_setting_fitness);
