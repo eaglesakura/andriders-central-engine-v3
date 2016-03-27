@@ -18,7 +18,7 @@
             android:title="@string/Main.Menu.CycleComputer"/>
 
     <item
-            android:id="@+id/Main.Menu.Activity"
+            android:id="@+id/Main.Menu.UserLog"
             android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/Main.Menu.Activity"/>
     <item

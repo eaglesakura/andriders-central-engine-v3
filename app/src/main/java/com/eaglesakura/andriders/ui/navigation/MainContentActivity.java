@@ -83,8 +83,7 @@ public class MainContentActivity extends AppBaseActivity {
 
     @Override
     protected BaseFragment newDefaultContentFragment() {
-//        return SupportAnnotationUtil.newFragment(ProfileFragmentMain.class);
-//        return new ExtensionFragmentMain();
+
         return DisplaySettingFragmentMain.createInstance(this);
     }
 
