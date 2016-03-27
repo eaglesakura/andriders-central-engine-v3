@@ -21,6 +21,7 @@ import com.eaglesakura.util.IOUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.SerializeUtil;
+import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Timer;
 
 import org.junit.Test;
@@ -112,6 +113,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         assertNotNull(centralData.today.fitness);
         assertNotNull(centralData.centralStatus);
         assertNotNull(centralData.specs);
+        assertNotNull(centralData.record);
 
         // ログチェックを行う
         {
@@ -126,6 +128,15 @@ public class CentralDataManagerTest extends AppUnitTestCase {
             assertTrue(centralData.session.fitness.calorie <= centralData.today.fitness.calorie);
             assertTrue(centralData.session.fitness.exercise <= centralData.today.fitness.exercise);
         }
+        // 記録チェックを行う
+        {
+            // 速度は [全体] >= [今日] >= [セッション]である
+            assertTrue(centralData.record.maxSpeedKmh >= centralData.record.maxSpeedKmhToday);
+            assertTrue(centralData.record.maxSpeedKmhToday >= centralData.record.maxSpeedKmhSession);
+
+            // 心拍も同じくチェックする
+            assertTrue(centralData.record.maxHeartrateToday >= centralData.record.maxHeartrateSession);
+        }
 
         assertEquals(data.isActiveMoving(), centralData.session.isActiveMoving());
         assertEquals(centralData.centralStatus.date, data.now());
@@ -139,6 +150,10 @@ public class CentralDataManagerTest extends AppUnitTestCase {
             assertEquals((short) data.mFitnessData.getHeartrate(), centralData.sensor.heartrate.bpm);
             assertEquals(data.mFitnessData.getHeartrateDataTime(), centralData.sensor.heartrate.date);
             assertEquals(data.mFitnessData.getZone(), centralData.sensor.heartrate.zone);
+
+            // フィットネスチェック
+            assertTrue(centralData.record.maxHeartrateToday >= centralData.sensor.heartrate.bpm);
+            assertTrue(centralData.record.maxHeartrateSession >= centralData.sensor.heartrate.bpm);
         } else {
             assertNull(centralData.sensor.heartrate);
         }
@@ -196,6 +211,23 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
             assertEquals(data.mSpeedData.getSpeedZone(), centralData.sensor.speed.zone);
             assertEquals(data.mSpeedData.getSpeedKmh(), centralData.sensor.speed.speedKmPerHour, 0.1);
+
+            // 速度チェック
+            assertThat(
+                    StringUtil.format("%.2f >= %.2f", centralData.record.maxSpeedKmh, centralData.sensor.speed.speedKmPerHour),
+                    centralData.record.maxSpeedKmh >= centralData.sensor.speed.speedKmPerHour,
+                    isTrue()
+            );
+            assertThat(
+                    StringUtil.format("%.2f >= %.2f", centralData.record.maxSpeedKmhToday, centralData.sensor.speed.speedKmPerHour),
+                    centralData.record.maxSpeedKmhToday >= centralData.sensor.speed.speedKmPerHour,
+                    isTrue()
+            );
+            assertThat(
+                    StringUtil.format("%.2f >= %.2f", centralData.record.maxSpeedKmhSession, centralData.sensor.speed.speedKmPerHour),
+                    centralData.record.maxSpeedKmhSession >= centralData.sensor.speed.speedKmPerHour,
+                    isTrue()
+            );
         } else {
             assertNull(centralData.sensor.speed);
         }
@@ -581,6 +613,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 assertNull(centralDataManager.mSessionLogger.getTotalData());
             }
 
+            int pointIndex = 0;
             for (GpxPoint pt : segment.getPoints()) {
                 clock.set(pt.getTime().getTime());
 //                LogUtil.log("insert :: " + pt.getTime().toString());
@@ -604,6 +637,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
                 // データを検証する
                 assertObject(centralDataManager, centralDataManager.getLatestCentralData());
+                ++pointIndex;
             }
 
             // 最後のデータを書き込む

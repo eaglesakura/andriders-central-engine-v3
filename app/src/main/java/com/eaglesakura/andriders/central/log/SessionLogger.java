@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotal;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
@@ -37,6 +38,11 @@ public class SessionLogger {
      */
     @NonNull
     final DbSessionLog mSessionLog = new DbSessionLog();
+
+    /**
+     * 全体の最速記録
+     */
+    final double mTotalFastestSpeedKmh;
 
     /**
      * インメモリキャッシュされたポイント情報
@@ -76,6 +82,7 @@ public class SessionLogger {
         try {
             db.openReadOnly();
             mTodayTotal = db.loadTodayTotal(clock);
+            mTotalFastestSpeedKmh = db.loadMaxSpeedKmh();
         } finally {
             db.close();
         }
@@ -98,32 +105,52 @@ public class SessionLogger {
     /**
      * 今日のログを取得する
      */
-    public void getTotalData(RawSessionData dst) {
+    public void getTotalData(RawSessionData dstTodayLog, RawRecord dstRecord) {
         synchronized (lock) {
-            dst.flags = 0x00;
-            dst.activeTimeMs = (int) mSessionLog.getActiveTimeMs();
-            dst.activeDistanceKm = (float) mSessionLog.getActiveDistanceKm();
-            dst.distanceKm = (float) mSessionLog.getSumDistanceKm();
-            dst.sessionId = null;
-            dst.startTime = mSessionLog.getStartTime().getTime();
-            dst.sumAltitudeMeter = (float) mSessionLog.getSumAltitude();
+            {
+                dstTodayLog.flags = 0x00;
+                dstTodayLog.activeTimeMs = (int) mSessionLog.getActiveTimeMs();
+                dstTodayLog.activeDistanceKm = (float) mSessionLog.getActiveDistanceKm();
+                dstTodayLog.distanceKm = (float) mSessionLog.getSumDistanceKm();
+                dstTodayLog.sessionId = null;
+                dstTodayLog.startTime = mSessionLog.getStartTime().getTime();
+                dstTodayLog.sumAltitudeMeter = (float) mSessionLog.getSumAltitude();
 
-            dst.fitness = new RawSessionData.RawFitnessStatus();
-            dst.fitness.calorie = (float) mSessionLog.getCalories();
-            dst.fitness.exercise = (float) mSessionLog.getExercise();
-            dst.fitness.mets = 0;
+                dstTodayLog.fitness = new RawSessionData.RawFitnessStatus();
+                dstTodayLog.fitness.calorie = (float) mSessionLog.getCalories();
+                dstTodayLog.fitness.exercise = (float) mSessionLog.getExercise();
+                dstTodayLog.fitness.mets = 0;
 
-            if (mTodayTotal != null) {
-                dst.activeTimeMs += mTodayTotal.getActiveTimeMs();
-                dst.activeDistanceKm += (float) mTodayTotal.getActiveDistanceKm();
-                dst.distanceKm += (float) mTodayTotal.getSumDistanceKm();
-                dst.startTime = mTodayTotal.getStartTime().getTime();
-                dst.sumAltitudeMeter += (float) mTodayTotal.getSumAltitude();
+                if (mTodayTotal != null) {
+                    dstTodayLog.activeTimeMs += mTodayTotal.getActiveTimeMs();
+                    dstTodayLog.activeDistanceKm += (float) mTodayTotal.getActiveDistanceKm();
+                    dstTodayLog.distanceKm += (float) mTodayTotal.getSumDistanceKm();
+                    dstTodayLog.startTime = mTodayTotal.getStartTime().getTime();
+                    dstTodayLog.sumAltitudeMeter += (float) mTodayTotal.getSumAltitude();
 
-                dst.fitness.calorie += (float) mTodayTotal.getCalories();
-                dst.fitness.exercise += (float) mTodayTotal.getExercise();
+                    dstTodayLog.fitness.calorie += (float) mTodayTotal.getCalories();
+                    dstTodayLog.fitness.exercise += (float) mTodayTotal.getExercise();
+                }
+                dstTodayLog.durationTimeMs = (int) (mPointTimer.getClock().now() - dstTodayLog.startTime);
             }
-            dst.durationTimeMs = (int) (mPointTimer.getClock().now() - dst.startTime);
+            {
+                // セッション情報チェック
+                dstRecord.maxHeartrateSession = (short) mSessionLog.getMaxHeartrate();
+                dstRecord.maxSpeedKmhSession = (float) mSessionLog.getMaxSpeedKmh();
+
+                // 今日の記録を必要に応じて上書きチェックする
+                if (mTodayTotal != null) {
+                    dstRecord.maxSpeedKmhToday = Math.max(dstRecord.maxSpeedKmhSession, (float) mTodayTotal.getMaxSpeedKmh());
+                    dstRecord.maxHeartrateToday = (short) Math.max(dstRecord.maxHeartrateSession, mTodayTotal.getMaxHeartrate());
+                } else {
+                    // 今日初セッションはセッション情報と同義になる
+                    dstRecord.maxHeartrateToday = dstRecord.maxHeartrateSession;
+                    dstRecord.maxSpeedKmhToday = dstRecord.maxSpeedKmhSession;
+                }
+
+                // 全体最速を求める
+                dstRecord.maxSpeedKmh = (float) Math.max(dstRecord.maxSpeedKmhToday, mTotalFastestSpeedKmh);
+            }
         }
     }
 
@@ -151,13 +178,13 @@ public class SessionLogger {
             mSessionLog.setCalories(latest.session.fitness.calorie);
             mSessionLog.setExercise(latest.session.fitness.exercise);
             if (latest.sensor.cadence != null) {
-                mSessionLog.setMaxCadence(Math.max(mSessionLog.getMaxCadence(), (int) latest.sensor.cadence.rpm));
+                mSessionLog.setMaxCadence(Math.max(mSessionLog.getMaxCadence(), latest.sensor.cadence.rpm));
             }
             if (latest.sensor.heartrate != null) {
-                mSessionLog.setMaxHeartrate(Math.max(mSessionLog.getMaxHeartrate(), (int) latest.sensor.heartrate.bpm));
+                mSessionLog.setMaxHeartrate(Math.max(mSessionLog.getMaxHeartrate(), latest.sensor.heartrate.bpm));
             }
             if (latest.sensor.speed != null) {
-                mSessionLog.setMaxSpeedKmh(Math.max(mSessionLog.getMaxSpeedKmh(), (int) latest.sensor.speed.speedKmPerHour));
+                mSessionLog.setMaxSpeedKmh(Math.max(mSessionLog.getMaxSpeedKmh(), latest.sensor.speed.speedKmPerHour));
             }
         }
     }

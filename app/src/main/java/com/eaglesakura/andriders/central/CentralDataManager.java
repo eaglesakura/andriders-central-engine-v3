@@ -12,6 +12,7 @@ import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawGeoPoint;
+import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.serialize.RawSpecs;
@@ -276,7 +277,7 @@ public class CentralDataManager {
 
             // 毎フレーム更新をかける。結果としてデータが書き換わるので、Latestを更新する
             mSessionLogger.onUpdate(mLatestCentralData);
-            mSessionLogger.getTotalData(mLatestCentralData.today);
+            mSessionLogger.getTotalData(mLatestCentralData.today, mLatestCentralData.record);
         }
         return true;
     }
@@ -330,11 +331,12 @@ public class CentralDataManager {
             result.sensor = new RawSensorData();
             result.session = new RawSessionData();
             result.today = new RawSessionData();
+            result.record = new RawRecord();
 
             getSpecs(result.specs.application);
             getStatus(result.centralStatus);
             getSession(result.session);
-            mSessionLogger.getTotalData(result.today);
+            mSessionLogger.getTotalData(result.today, result.record);
 
             mFitnessData.getSpec(result.specs.fitness);
 
