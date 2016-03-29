@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMai
 import com.eaglesakura.andriders.ui.navigation.log.UserLogMain;
 import com.eaglesakura.andriders.ui.navigation.menu.GoogleLoginCtrlFragment;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.ui.BaseFragment;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.thread.ui.UIHandler;
@@ -109,7 +110,7 @@ public class MainContentActivity extends AppBaseActivity {
         FragmentManager manager = getSupportFragmentManager();
         Fragment oldFragment = manager.findFragmentByTag(MAIN_CTRL_TAG);
         if (oldFragment != null && oldFragment.getClass().equals(newFragment.getClass())) {
-            LogUtil.log("Fragment not changed(%s)", newFragment.getClass());
+            AppLog.system("Fragment not changed(%s)", newFragment.getClass());
             return;
         }
 

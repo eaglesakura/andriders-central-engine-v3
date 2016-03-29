@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.ui.base;
 
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.util.LogUtil;
 
 import android.app.Dialog;
@@ -22,13 +23,13 @@ public abstract class AppDialogFragment extends AppBaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LogUtil.log("show dialog");
+        AppLog.widget("show dialog");
         mDialog = onCreateDialog(savedInstanceState);
         mDialog.setOnDismissListener(it -> {
             if (mDialog == null) {
                 return;
             }
-            LogUtil.log("Detach DialogFragment");
+            AppLog.widget("Detach DialogFragment");
             detatchSelf(false);
         });
         mDialog.show();
@@ -37,14 +38,14 @@ public abstract class AppDialogFragment extends AppBaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LogUtil.log("suspend dialog");
+        AppLog.widget("suspend dialog");
         if (mDialog != null && mDialog.isShowing()) {
             Dialog dialog = mDialog;
             mDialog = null;
             dialog.dismiss();
         }
         super.onStop();
-        LogUtil.log("remove dialog");
+        AppLog.widget("remove dialog");
     }
 
     /**

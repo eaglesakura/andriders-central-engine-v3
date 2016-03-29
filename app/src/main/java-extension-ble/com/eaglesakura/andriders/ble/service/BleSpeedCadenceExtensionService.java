@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.extension.ExtensionSession;
 import com.eaglesakura.andriders.extension.IExtensionService;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.sensor.SensorType;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.util.LogUtil;
@@ -32,7 +33,7 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        LogUtil.log("onBind(%s)", toString());
+        AppLog.system("onBind(%s)", toString());
         ExtensionSession session = ExtensionSession.onBind(this, intent);
         if (session == null) {
             return null;
@@ -43,7 +44,7 @@ public class BleSpeedCadenceExtensionService extends BaseService implements IExt
 
     @Override
     public boolean onUnbind(Intent intent) {
-        LogUtil.log("onUnbind(%s)", toString());
+        AppLog.system("onUnbind(%s)", toString());
         ExtensionSession.onUnbind(this, intent);
         return super.onUnbind(intent);
     }

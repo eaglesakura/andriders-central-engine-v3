@@ -8,6 +8,7 @@ import com.google.android.gms.fitness.data.BleDevice;
 import com.google.android.gms.fitness.request.BleScanCallback;
 import com.google.android.gms.fitness.request.StartBleScanRequest;
 
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
 
@@ -134,7 +135,7 @@ public class FitnessDeviceController {
             return;
         }
 
-        LogUtil.log("claim address(%s)", address);
+        AppLog.ble("claim address(%s)", address);
         Fitness.BleApi.claimBleDevice(bleClient, address);
     }
 
@@ -142,12 +143,9 @@ public class FitnessDeviceController {
      * 接続を行う
      */
     public void claim(BleDevice device) {
-        LogUtil.log("claim name(%s) address(%s)", device.getName(), device.getAddress());
-        Fitness.BleApi.claimBleDevice(bleClient, device).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(Status status) {
-                LogUtil.log("claim :: " + (status.isSuccess() ? "success" : "failed"));
-            }
+        AppLog.ble("claim name(%s) address(%s)", device.getName(), device.getAddress());
+        Fitness.BleApi.claimBleDevice(bleClient, device).setResultCallback((status) -> {
+            AppLog.ble("claim :: " + (status.isSuccess() ? "success" : "failed"));
         });
     }
 
@@ -158,7 +156,7 @@ public class FitnessDeviceController {
         if (StringUtil.isEmpty(address)) {
             return;
         }
-        LogUtil.log("unclaim address(%s)", address);
+        AppLog.ble("unclaim address(%s)", address);
         Fitness.BleApi.unclaimBleDevice(bleClient, address);
     }
 
@@ -166,7 +164,7 @@ public class FitnessDeviceController {
      * 切断を行う
      */
     public void unclaim(BleDevice device) {
-        LogUtil.log("unclaim name(%s) address(%s)", device.getName(), device.getAddress());
+        AppLog.ble("unclaim name(%s) address(%s)", device.getName(), device.getAddress());
         Fitness.BleApi.unclaimBleDevice(bleClient, device);
     }
 
@@ -183,7 +181,7 @@ public class FitnessDeviceController {
             if (oldDeviceNum == newDeviceNum) {
                 return;
             }
-            LogUtil.log("onDeviceFound name(%s)", bleDevice.getName());
+            AppLog.ble("onDeviceFound name(%s)", bleDevice.getName());
 
             // 接続対象が限定されている場合
             if (!StringUtil.isEmpty(targetFitnessDeviceAddress)) {
@@ -203,7 +201,7 @@ public class FitnessDeviceController {
 
         @Override
         public void onScanStopped() {
-            LogUtil.log("restart connect(%s)", type.getFitnessDataType().getName());
+            AppLog.ble("restart connect(%s)", type.getFitnessDataType().getName());
             if (connecting && autoRescan) {
                 startScan();
             } else {

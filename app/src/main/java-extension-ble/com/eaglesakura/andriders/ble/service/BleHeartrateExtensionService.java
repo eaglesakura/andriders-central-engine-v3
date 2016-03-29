@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.extension.ExtensionSession;
 import com.eaglesakura.andriders.extension.IExtensionService;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.sensor.SensorType;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.util.LogUtil;
@@ -33,7 +34,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        LogUtil.log("onBind(%s) : %s", intent.getAction(), toString());
+        AppLog.system("onBind(%s) : %s", intent.getAction(), toString());
         ExtensionSession session = ExtensionSession.onBind(this, intent);
         if (session == null) {
             return null;
@@ -43,7 +44,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
 
     @Override
     public boolean onUnbind(Intent intent) {
-        LogUtil.log("onUnbind(%s) : %s", intent.getAction(), toString());
+        AppLog.system("onUnbind(%s) : %s", intent.getAction(), toString());
         ExtensionSession.onUnbind(this, intent);
         return super.onUnbind(intent);
     }

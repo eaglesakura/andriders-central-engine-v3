@@ -191,10 +191,10 @@ public class CentralContext implements Disposable {
             initExtensions();
             return this;
         }).completed((result, task) -> {
-            LogUtil.log("Completed Initialize");
+            AppLog.system("Completed Initialize");
             mInitialized = true;
         }).failed((error, task) -> {
-            LogUtil.log("Failed Initialize :: " + error.getMessage());
+            AppLog.system("Failed Initialize :: " + error.getMessage());
         }).start();
     }
 
@@ -246,7 +246,7 @@ public class CentralContext implements Disposable {
                     return this;
                 })
                 .finalized(task -> {
-                    LogUtil.log("Finished session");
+                    AppLog.system("Finished session");
                 }).start();
 
         // タスクをシャットダウンする

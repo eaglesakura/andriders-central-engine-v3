@@ -16,6 +16,7 @@ import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.display.DisplayExtension;
 import com.eaglesakura.andriders.extension.display.LineValue;
 import com.eaglesakura.andriders.ui.auth.PermissionRequestActivity;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.util.CollectionUtil;
@@ -53,7 +54,7 @@ public class LocationExtensionService extends Service implements IExtensionServi
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        LogUtil.log("onBind(%s)", toString());
+        AppLog.system("onBind(%s)", toString());
         ExtensionSession session = ExtensionSession.onBind(this, intent);
         if (session == null) {
             return null;
@@ -64,7 +65,7 @@ public class LocationExtensionService extends Service implements IExtensionServi
 
     @Override
     public boolean onUnbind(Intent intent) {
-        LogUtil.log("onUnbind(%s)", toString());
+        AppLog.system("onUnbind(%s)", toString());
         ExtensionSession.onUnbind(this, intent);
         return super.onUnbind(intent);
     }
@@ -135,7 +136,7 @@ public class LocationExtensionService extends Service implements IExtensionServi
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
-                        LogUtil.log("location client :: connected");
+                        AppLog.gps("location client :: connected");
                         try {
                             LocationServices.FusedLocationApi.requestLocationUpdates(
                                     mLocationApiClient,

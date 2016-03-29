@@ -1,12 +1,13 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.extension.ExtensionClient;
-import com.eaglesakura.andriders.extension.ExtensionClientManager;
 import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.display.data.LayoutSlot;
 import com.eaglesakura.andriders.extension.DisplayInformation;
+import com.eaglesakura.andriders.extension.ExtensionClient;
+import com.eaglesakura.andriders.extension.ExtensionClientManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
@@ -112,7 +113,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             slotManager.load(DataLayoutManager.Mode.Edit, newPackageName);
             return slotManager;
         }).completed((slotManager, task) -> {
-            LogUtil.log("display load completed :: %s", newPackageName);
+            AppLog.system("display load completed :: %s", newPackageName);
             mDisplaySlotManager = slotManager;
             for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
                 updateSlotPreview(mDisplaySlotManager, slot);
@@ -171,7 +172,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         }
 
         for (final ExtensionClient client : displayClients) {
-            LogUtil.log("Display Extension name(%s)", client.getName());
+            AppLog.system("Display Extension name(%s)", client.getName());
 
             View extensionView = inflater.inflate(R.layout.card_displayinfo_root, null);
 

@@ -5,6 +5,7 @@ import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.location.LocationServices;
 
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.util.LogUtil;
 
@@ -38,7 +39,7 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
 
     @Override
     public void onApplicationUpdated(int oldVersionCode, int newVersionCode, String oldVersionName, String newVersionName) {
-        LogUtil.log("App Updated old(%d:%s) new(%d:%s)", oldVersionCode, oldVersionName, newVersionCode, newVersionName);
+        AppLog.system("App Updated old(%d:%s) new(%d:%s)", oldVersionCode, oldVersionName, newVersionCode, newVersionName);
     }
 
     public static GoogleApiClient.Builder newFullPermissionClientBuilder() {
@@ -50,7 +51,7 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
                 .addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
                 .addScope(Fitness.SCOPE_BODY_READ_WRITE)
                 .addScope(Fitness.SCOPE_LOCATION_READ_WRITE)
-                        // GPS
+                // GPS
                 .addApi(LocationServices.API)
                 ;
     }

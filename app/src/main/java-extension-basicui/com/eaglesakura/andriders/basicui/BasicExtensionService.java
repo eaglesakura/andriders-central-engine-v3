@@ -11,6 +11,7 @@ import com.eaglesakura.andriders.extension.ExtensionSession;
 import com.eaglesakura.andriders.extension.IExtensionService;
 import com.eaglesakura.andriders.extension.display.BasicValue;
 import com.eaglesakura.andriders.extension.display.DisplayData;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.util.LogUtil;
@@ -36,7 +37,7 @@ public class BasicExtensionService extends Service implements IExtensionService 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        LogUtil.log("onBind(%s)", toString());
+        AppLog.system("onBind(%s)", toString());
         ExtensionSession session = ExtensionSession.onBind(this, intent);
         if (session == null) {
             return null;
@@ -47,7 +48,7 @@ public class BasicExtensionService extends Service implements IExtensionService 
 
     @Override
     public boolean onUnbind(Intent intent) {
-        LogUtil.log("onUnbind(%s)", toString());
+        AppLog.system("onUnbind(%s)", toString());
         ExtensionSession.onUnbind(this, intent);
         return super.onUnbind(intent);
     }

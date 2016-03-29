@@ -13,6 +13,7 @@ import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.util.CollectionUtil;
@@ -256,8 +257,6 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
         double maxSpeed = 0.0;
-        LogUtil.setOutput(false);
-
         int crankRevolution = 0;
         {
             while (current < 1.0) {
@@ -285,10 +284,9 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
             }
         }
-        LogUtil.setOutput(true);
 
         // 結果だけを出力
-        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
+        AppLog.test("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
 
         // 最高速度が一致する
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
@@ -305,8 +303,6 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
         double maxSpeed = 0.0;
-        LogUtil.setOutput(false);
-
         int crankRevolution = 0;
         {
             while (current < 1.0) {
@@ -331,10 +327,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
             }
         }
-        LogUtil.setOutput(true);
-
         // 結果だけを出力
-        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
+        AppLog.test("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
 
         // 最高速度が一致する
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
@@ -357,7 +351,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
         double maxSpeed = 0.0;
-        LogUtil.setOutput(false);
+
         {
             while (current < 1.0) {
                 clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
@@ -391,10 +385,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
             }
         }
-        LogUtil.setOutput(true);
-
         // 結果だけを出力
-        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
+        AppLog.test("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
 
         // 約1時間経過していることを確認する
         assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60 * 60);
@@ -425,7 +417,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         double maxSpeed = 0.0;
 
         int crankRevolution = 0;
-        LogUtil.setOutput(false);
+
         {
             while (current < 1.0) {
                 clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
@@ -463,10 +455,9 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 maxSpeed = Math.max(data.mSpeedData.getSpeedKmh(), maxSpeed);
             }
         }
-        LogUtil.setOutput(true);
 
         // 結果だけを出力
-        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
+        AppLog.test("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
 
         // 最高速度はケイデンスの値である必要がある
         assertTrue(data.mSpeedData.getMaxSpeedKmh() > 20.0);
@@ -486,7 +477,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         double current = 0.0;
 
         int crankRevolution = 0;
-        LogUtil.setOutput(false);
+
         {
             while (current < 1.0) {
                 clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
@@ -530,10 +521,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 }
             }
         }
-        LogUtil.setOutput(true);
-
         // 結果だけを出力
-        LogUtil.log("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
+        AppLog.test("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
 
         // 最高速度はGPS由来である必要がある
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
@@ -550,7 +539,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         final double OFFSET_TIME_HOUR = (1.0 / 60.0 / 60.0); // 適当な間隔でGPSが到達したと仮定する
         double current = 0.0;
-        LogUtil.setOutput(false);
+
         {
             while (current < 1.0) {
                 clock.offset((long) (OFFSET_TIME_HOUR * Timer.toMilliSec(0, 1, 0, 0, 0)));
@@ -567,7 +556,6 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 assertNotEquals(data.mFitnessData.getZone(), HeartrateZone.Repose);
             }
         }
-        LogUtil.setOutput(true);
 
         // 約1時間経過していることを確認する
         assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60 * 60);
@@ -575,7 +563,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         // 消費カロリー的には、300～400の間が妥当である
         // 獲得エクササイズは3.5～4.5程度が妥当な値となる
-        LogUtil.log("Fitness %.1f kcal / %.1f Ex", data.mFitnessData.getSumCalories(), data.mFitnessData.getSumExercise());
+        AppLog.test("Fitness %.1f kcal / %.1f Ex", data.mFitnessData.getSumCalories(), data.mFitnessData.getSumExercise());
         assertTrue(data.mFitnessData.getSumCalories() > 280);
         assertTrue(data.mFitnessData.getSumCalories() < 400);
         assertTrue(data.mFitnessData.getSumExercise() > 3.0);
@@ -625,7 +613,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 centralDataManager.setLocation(location.latitude, location.longitude, location.altitude, 10);
 
                 if (!centralDataManager.onUpdate()) {
-                    LogUtil.log("update abort.");
+                    AppLog.test("update abort.");
                     continue;
                 }
 
@@ -664,8 +652,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                     sessionDb.openReadOnly();
                     SessionTotal total = sessionDb.loadTotal(startTime.getTime(), endTime.getTime());
 
-                    LogUtil.log("Distance %.1f km", total.getSumDistanceKm());
-                    LogUtil.log("MaxSpeed %.1f km/h", total.getMaxSpeedKmh());
+                    AppLog.test("Distance %.1f km", total.getSumDistanceKm());
+                    AppLog.test("MaxSpeed %.1f km/h", total.getMaxSpeedKmh());
 
                     RawCentralData data = centralDataManager.getLatestCentralData();
                     // ログを比較する
@@ -687,8 +675,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 sessionDb.openReadOnly();
                 SessionTotal total = sessionDb.loadTotal(startTime.getTime(), endTime.getTime());
 
-                LogUtil.log("Distance %.1f km", total.getSumDistanceKm());
-                LogUtil.log("MaxSpeed %.1f km/h", total.getMaxSpeedKmh());
+                AppLog.test("Distance %.1f km", total.getSumDistanceKm());
+                AppLog.test("MaxSpeed %.1f km/h", total.getMaxSpeedKmh());
 
             } finally {
                 sessionDb.close();
