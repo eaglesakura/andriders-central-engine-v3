@@ -41,7 +41,7 @@ public class DisplaySettingFragmentMain extends BaseNavigationFragment implement
         AndroidThreadUtil.assertUIThread();
     }
 
-    public static DisplaySettingFragmentMain createInstance(Context context) {
+    public static DisplaySettingFragmentMain newInstance(Context context) {
         return new DisplaySettingFragmentMain();
     }
 }

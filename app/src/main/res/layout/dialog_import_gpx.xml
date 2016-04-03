@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:orientation="horizontal"
+                  android:layout_height="wrap_content">
+
+        <EditText
+                style="@style/EsMaterial.Theme.Widget"
+                android:layout_weight="1"
+                android:id="@+id/UserLog.Import.GPX.Path"
+                android:minHeight="@dimen/EsMaterial.Button.MinHeight"
+                android:hint="GPXファイルパス"
+                android:layout_width="0dp" android:layout_height="wrap_content"/>
+        <com.eaglesakura.material.widget.MaterialButton
+                style="@style/EsMaterial.Theme.Button"
+                android:id="@+id/UserLog.Import.GPX.Pick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="選択"
+                android:layout_gravity="right|center_vertical"/>
+    </LinearLayout>
+    <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/UserLog.Import.GPX.TimeZone"
+            style="@style/EsMaterial.Theme.Button"
+            android:layout_width="match_parent"
+            android:minHeight="@dimen/EsMaterial.Button.MinHeight"
+            android:layout_height="wrap_content"/>
+</LinearLayout>

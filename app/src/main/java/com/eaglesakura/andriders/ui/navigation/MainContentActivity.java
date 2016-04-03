@@ -2,16 +2,15 @@ package com.eaglesakura.andriders.ui.navigation;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseActivity;
-import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.log.UserLogMain;
 import com.eaglesakura.andriders.ui.navigation.menu.GoogleLoginCtrlFragment;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.BuildConfig;
 import com.eaglesakura.android.framework.ui.BaseFragment;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
-import com.eaglesakura.util.LogUtil;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -50,7 +49,7 @@ public class MainContentActivity extends AppBaseActivity {
                 findViewById(NavigationView.class, R.id.Content_Navigation_Root),
                 drawerLayout
         );
-        menuController.setCallback(menuCallback);
+        menuController.setCallback(mMenuCallback);
         menuController.initialize();
 
         progress = findViewById(R.id.Main_Progress);
@@ -72,9 +71,11 @@ public class MainContentActivity extends AppBaseActivity {
 //            }
 //        };
 
-        UIHandler.postDelayedUI(() -> {
-            drawerLayout.openDrawer(Gravity.START);
-        }, 500);
+        if (!BuildConfig.DEBUG) {
+            UIHandler.postDelayedUI(() -> {
+                drawerLayout.openDrawer(Gravity.START);
+            }, 500);
+        }
     }
 
     @Override
@@ -85,8 +86,8 @@ public class MainContentActivity extends AppBaseActivity {
 
     @Override
     protected BaseFragment newDefaultContentFragment() {
-        return UserLogMain.createInstance(this);
-//        return DisplaySettingFragmentMain.createInstance(this);
+        return UserLogMain.newInstance(this);
+//        return DisplaySettingFragmentMain.newInstance(this);
     }
 
     /**
@@ -145,10 +146,7 @@ public class MainContentActivity extends AppBaseActivity {
         return super.dispatchKeyEvent(event);
     }
 
-    final MenuController.MenuCallback menuCallback = new MenuController.MenuCallback() {
-        @Override
-        public void requestChangeContent(BaseNavigationFragment fragment) {
-            changeFragment(fragment);
-        }
+    final MenuController.MenuCallback mMenuCallback = (fragment) -> {
+        changeFragment(fragment);
     };
 }

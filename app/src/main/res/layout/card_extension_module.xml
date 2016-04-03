@@ -11,7 +11,7 @@
             android:padding="@dimen/EsMaterial.Button.Margin"
             android:src="@drawable/ic_launcher"/>
 
-    <com.eaglesakura.material.widget.MaterialSwitch
+    <android.support.v7.widget.SwitchCompat
             android:id="@+id/Extension.Module.Switch"
             style="@style/EsMaterial.Font.Title.Card"
             android:layout_width="match_parent"
