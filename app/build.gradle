@@ -7,11 +7,19 @@ def ACES_APP_VERSION = "3.0"
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.eaglesakura.ci-support'
+apply plugin: 'com.eaglesakura.android-mipmap'
 apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
     all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
+}
+
+mipmap {
+    sources = file("images/");
+    output = file("src/main/generated/images");
+    toolsPath.identify = new File("C:\\dev-home\\tools\\imagemagick\\identify.exe");
+    toolsPath.convert = new File("C:\\dev-home\\tools\\imagemagick\\convert.exe");
 }
 
 dependencies {
@@ -125,7 +133,7 @@ android {
                     'src/main/generated/dao', 'src/main/generated/props',
             ]
             res.srcDirs = [
-                    "src/main/res", "private/main/res"
+                    "src/main/res", "src/main/generated/images", "private/main/res"
             ];
         }
     }

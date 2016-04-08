@@ -5,11 +5,11 @@ import com.eaglesakura.andriders.dao.session.DaoSession;
 import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
+import com.eaglesakura.andriders.db.storage.AppStorageManager;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.DateUtil;
-import com.eaglesakura.util.IOUtil;
 import com.eaglesakura.util.Timer;
 
 import android.content.Context;
@@ -18,8 +18,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
@@ -33,24 +31,12 @@ import de.greenrobot.dao.query.QueryBuilder;
 public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     private static final int SUPPORTED_DATABASE_VERSION = 1;
 
-    @NonNull
-    final File mDatabasePath;
+    @Nullable
+    String mDbPath;
 
-    /**
-     * @param databasePath 保存するDBファイル名 / nullの場合はOnMemoryとして生成される
-     * @throws IOException パスが生成できなかった場合に投げられる
-     */
-    public SessionLogDatabase(@NonNull Context context, @Nullable File databasePath) {
+    public SessionLogDatabase(@NonNull Context context, @NonNull String dbPath) {
         super(context, DaoMaster.class);
-        mDatabasePath = databasePath;
-
-        if (mDatabasePath != null && !IOUtil.mkdirs(mDatabasePath.getParentFile()).isDirectory()) {
-            throw new IllegalStateException("Path Error :: " + mDatabasePath.getAbsolutePath());
-        }
-
-        if (mDatabasePath != null) {
-            AppLog.db("SessionLogDatabase path[%s]", databasePath.getAbsolutePath());
-        }
+        mDbPath = dbPath;
     }
 
     /**
@@ -165,8 +151,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        String path = mDatabasePath != null ? mDatabasePath.getAbsolutePath() : null;
-        return new SQLiteOpenHelper(context, path, null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, mDbPath, null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

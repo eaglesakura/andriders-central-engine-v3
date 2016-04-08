@@ -7,10 +7,13 @@ import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
 import com.eaglesakura.andriders.extension.ExtensionClient;
 import com.eaglesakura.andriders.extension.ExtensionClientManager;
+import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.MultiTimer;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.LifecycleState;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
@@ -23,6 +26,7 @@ import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.SerializeUtil;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
@@ -32,11 +36,6 @@ import rx.subjects.BehaviorSubject;
  * ACEの表示状態
  */
 public class CentralContext implements Disposable {
-
-    /**
-     * 設定
-     */
-    private final Settings mSettings = Settings.getInstance();
 
     @NonNull
     private final Service mContext;
@@ -64,28 +63,35 @@ public class CentralContext implements Disposable {
     private boolean mNotificationEnable = true;
 
     /**
+     * 設定
+     */
+    @Inject(StorageProvider.class)
+    @NonNull
+    Settings mSettings;
+
+    /**
      * サイコンデータ本体
      */
     @NonNull
-    private final CentralDataManager mCentralData;
+    CentralDataManager mCentralData;
 
     /**
      * サイコン表示内容管理
      */
     @NonNull
-    private final DataDisplayManager mDisplayManager;
+    DataDisplayManager mDisplayManager;
 
     /**
      * 通知内容管理
      */
     @NonNull
-    private final NotificationDisplayManager mNotificationManager;
+    NotificationDisplayManager mNotificationManager;
 
     /**
      * 拡張機能管理
      */
     @NonNull
-    private final ExtensionClientManager mExtensionClientManager;
+    ExtensionClientManager mExtensionClientManager;
 
     /**
      * 初期化が完了していればtrue
@@ -115,6 +121,10 @@ public class CentralContext implements Disposable {
         mContext = context;
         mClock = updateClock;
         mTimers = new MultiTimer(mClock);
+
+        Garnet.create(this)
+                .depend(Context.class, context.getApplication())
+                .inject();
 
         mCentralData = new CentralDataManager(context, mClock);
         mDisplayManager = new DataDisplayManager(mContext, mClock);

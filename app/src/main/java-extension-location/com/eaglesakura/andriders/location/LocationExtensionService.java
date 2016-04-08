@@ -15,8 +15,10 @@ import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.display.DisplayExtension;
 import com.eaglesakura.andriders.extension.display.LineValue;
+import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.andriders.ui.auth.PermissionRequestActivity;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.util.CollectionUtil;
@@ -39,7 +41,7 @@ import java.util.List;
 /**
  * 現在位置を配信するExtension
  */
-public class LocationExtensionService extends Service implements IExtensionService {
+public class LocationExtensionService extends AppBaseService implements IExtensionService {
     GoogleApiClient mLocationApiClient;
 
     CentralDataExtension mCentralDataManager;
@@ -213,7 +215,7 @@ public class LocationExtensionService extends Service implements IExtensionServi
             mCentralDataManager.setLocation(newLocation);
 
             // デバッグ情報を与える
-            if (Settings.isDebugable()) {
+            if (mSettings.isDebugable()) {
                 String time = StringUtil.toString(new Date());
                 {
                     int index = 0;

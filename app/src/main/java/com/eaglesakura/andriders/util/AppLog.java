@@ -39,7 +39,7 @@ public class AppLog {
             sAppLogger = new LogUtil.AndroidLogger(Log.class) {
                 @Override
                 protected int getStackDepth() {
-                    return 4;
+                    return super.getStackDepth() + 1;
                 }
             }.setStackInfo(BuildConfig.DEBUG);
         }

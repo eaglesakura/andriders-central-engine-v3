@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotal;
+import com.eaglesakura.andriders.db.storage.AppStorageManager;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSessionData;
@@ -25,6 +26,9 @@ import java.util.List;
  * 1セッションのログを管理する
  */
 public class SessionLogger {
+
+    public static final String DATABASE_NAME = "session_log.db";
+
     /**
      * このセッションを除いた今日の統計情報
      *
@@ -58,8 +62,8 @@ public class SessionLogger {
     @NonNull
     final Context mContext;
 
-    @Nullable
-    final File mDatabasePath;
+    @NonNull
+    final AppStorageManager mStorageManager;
 
     final Object lock = new Object();
 
@@ -68,17 +72,17 @@ public class SessionLogger {
      */
     static final int POINT_COMMIT_INTERVAL_MS = 1000 * 5;
 
-    public SessionLogger(@NonNull Context context, @NonNull String sessionId, @Nullable File databasePath, @NonNull Clock clock) {
+    public SessionLogger(@NonNull Context context, @NonNull String sessionId, @NonNull AppStorageManager storageManager, @NonNull Clock clock) {
         mContext = context.getApplicationContext();
         mPointTimer = new ClockTimer(clock);
-        mDatabasePath = databasePath;
         mSessionId = sessionId;
+        mStorageManager = storageManager;
 
         mSessionLog.setSessionId(sessionId);
         mSessionLog.setStartTime(new Date(clock.now()));
         mSessionLog.setEndTime(mSessionLog.getStartTime());
 
-        SessionLogDatabase db = new SessionLogDatabase(context, databasePath);
+        SessionLogDatabase db = new SessionLogDatabase(context, storageManager.getDatabasePath(DATABASE_NAME));
         try {
             db.openReadOnly();
             mTodayTotal = db.loadTodayTotal(clock);
@@ -213,7 +217,7 @@ public class SessionLogger {
 
 
         // DBを書き込む
-        SessionLogDatabase db = new SessionLogDatabase(mContext, mDatabasePath);
+        SessionLogDatabase db = new SessionLogDatabase(mContext, mStorageManager.getDatabasePath(DATABASE_NAME));
         try {
             db.openWritable();
             db.update(mSessionLog, points);

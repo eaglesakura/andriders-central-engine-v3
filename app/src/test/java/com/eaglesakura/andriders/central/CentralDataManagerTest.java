@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
+import com.eaglesakura.andriders.central.log.SessionLogger;
 import com.eaglesakura.andriders.data.gpx.Gpx;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
@@ -16,6 +17,7 @@ import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.android.margarine.MargarineKnife;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.IOUtil;
@@ -60,24 +62,6 @@ public class CentralDataManagerTest extends AppUnitTestCase {
      * http://keisan.casio.jp/exec/system/1257670779
      */
     final double SAMPLE_DISTANCE_KM = 53.9622;
-
-    /**
-     * ユーザー体重
-     */
-    final double USER_WEIGHT = 65;
-
-    @Override
-    public void onSetup() {
-        super.onSetup();
-
-        // 計算を確定させるため、フィットネスデータを構築する
-        // 計算しやすくするため、データはキリの良い数にしておく
-        Settings settings = Settings.getInstance();
-        settings.getUserProfiles().setUserWeight(USER_WEIGHT);
-        settings.getUserProfiles().setNormalHeartrate(90);
-        settings.getUserProfiles().setMaxHeartrate(190);
-        settings.getUserProfiles().setWheelOuterLength(2096); // 700 x 23c
-    }
 
     /**
      * セッション開始時刻が正常であることを検証する
@@ -585,9 +569,6 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         assertNotNull(gpx);
 
-        // 古いDBを削除する
-        CentralDataManager.getLogDatabasePath(getContext()).delete();
-
         // GPXからデータをエミュレートする
         int segmentIndex = 0;
         for (GpxSegment segment : gpx.getTrackSegments()) {
@@ -647,7 +628,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
             {
                 Date startTime = gpx.getFirstSegment().getFirstPoint().getTime();
                 Date endTime = gpx.getLastSegment().getLastPoint().getTime();
-                SessionLogDatabase sessionDb = new SessionLogDatabase(getContext(), CentralDataManager.getLogDatabasePath(getContext()));
+                SessionLogDatabase sessionDb = new SessionLogDatabase(getContext(), mStorageManager.getDatabasePath(SessionLogger.DATABASE_NAME));
                 try {
                     sessionDb.openReadOnly();
                     SessionTotal total = sessionDb.loadTotal(startTime.getTime(), endTime.getTime());
@@ -670,7 +651,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         {
             Date startTime = gpx.getFirstSegment().getFirstPoint().getTime();
             Date endTime = gpx.getLastSegment().getLastPoint().getTime();
-            SessionLogDatabase sessionDb = new SessionLogDatabase(getContext(), CentralDataManager.getLogDatabasePath(getContext()));
+            SessionLogDatabase sessionDb = new SessionLogDatabase(getContext(), mStorageManager.getDatabasePath(SessionLogger.DATABASE_NAME));
             try {
                 sessionDb.openReadOnly();
                 SessionTotal total = sessionDb.loadTotal(startTime.getTime(), endTime.getTime());
@@ -682,6 +663,5 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 sessionDb.close();
             }
         }
-
     }
 }

@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.display.notification;
 
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
-import com.eaglesakura.android.framework.context.Resources;
+import com.eaglesakura.android.device.display.DisplayInfo;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.math.Vector2;
 import com.eaglesakura.util.MathUtil;
@@ -42,13 +42,16 @@ public class NotificationState {
      */
     Vector2 mCardPosition = new Vector2();
 
-    public NotificationState(NotificationCard card, int cardNumber, Clock clock) {
+    @NonNull
+    DisplayInfo mDisplayInfo;
+
+    public NotificationState(DisplayInfo displayInfo, @NonNull NotificationCard card, int cardNumber, @NonNull Clock clock) {
         mCard = card;
         mClockTimer = new ClockTimer(clock);
         mCardNumber = cardNumber;
 
         // カード用画像を構築する
-        card.buildCardImage();
+        card.buildCardImage(displayInfo);
 
         // 現在のカード位置を初期化する
         mCardPosition.set(getTargetPositionX(), getTargetPositionY());
@@ -75,7 +78,7 @@ public class NotificationState {
      */
     float getTargetPositionX() {
         final int CARD_WIDTH = mCard.getCardImage().getWidth();
-        return (float) Resources.displaySize()[0] - (float) CARD_WIDTH * mInsertWeight;
+        return (float) mDisplayInfo.getWidthPixel() - (float) CARD_WIDTH * mInsertWeight;
     }
 
     public void setCardNumber(int cardNumber) {

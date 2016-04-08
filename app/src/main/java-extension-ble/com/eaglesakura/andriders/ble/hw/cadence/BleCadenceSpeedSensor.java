@@ -2,10 +2,13 @@ package com.eaglesakura.andriders.ble.hw.cadence;
 
 import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.ble.hw.BleDevice;
+import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.thread.HandlerThreadExecuter;
@@ -59,6 +62,9 @@ public class BleCadenceSpeedSensor extends BleDevice {
     @NonNull
     final SubscriptionController mSubscriptionController;
 
+    @Inject(StorageProvider.class)
+    Settings mSettings;
+
     public BleCadenceSpeedSensor(Context context, SubscriptionController subscriptionController, BluetoothDevice device, Clock clock) {
         super(context, device);
 
@@ -66,13 +72,15 @@ public class BleCadenceSpeedSensor extends BleDevice {
         mCadence = new SpeedCadenceSensorData(clock, (int) (1000.0 * 3.0), (int) (1000.0 * 2));
         mSpeed = new SpeedCadenceSensorData(clock, (int) (1000.0 * 3.0), (int) (1000.0 * 2));
         mSubscriptionController = subscriptionController;
+
+        Garnet.create(this).depend(Context.class, context).inject();
     }
 
     /**
      * ホイールの外周を取得する
      */
     double getWheelOuterLength() {
-        return Settings.getInstance().getUserProfiles().getWheelOuterLength();
+        return mSettings.getUserProfiles().getWheelOuterLength();
     }
 
     private final BluetoothGattCallback gattCallback = new BleDevice.BaseBluetoothGattCallback() {

@@ -3,11 +3,12 @@ package com.eaglesakura.andriders.ui.base;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.RequestCodes;
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.auth.AcesAuthActivity;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.framework.context.Resources;
 import com.eaglesakura.android.framework.ui.BaseFragment;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.rx.RxTask;
@@ -27,6 +28,9 @@ public abstract class AppBaseFragment extends BaseFragment {
      */
     protected static final int REQUEST_GOOGLE_AUTH = RequestCodes.GOOGLE_AUTH;
 
+    @Inject(StorageProvider.class)
+    protected Settings mSettings;
+
 
     public GoogleApiClientToken getGoogleApiClientToken() {
         Activity activity = getActivity();
@@ -42,7 +46,7 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     public Settings getSettings() {
-        return Settings.getInstance();
+        return mSettings;
     }
 
     /**
@@ -129,20 +133,14 @@ public abstract class AppBaseFragment extends BaseFragment {
     }
 
     public void toast(@StringRes final int resId) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(FrameworkCentral.getApplication(), Resources.string(resId), Toast.LENGTH_SHORT).show();
-            }
+        runOnUiThread(() -> {
+            Toast.makeText(FrameworkCentral.getApplication(), getString(resId), Toast.LENGTH_SHORT).show();
         });
     }
 
     public void toast(@StringRes final String msg) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(FrameworkCentral.getApplication(), msg, Toast.LENGTH_SHORT).show();
-            }
+        runOnUiThread(() -> {
+            Toast.makeText(FrameworkCentral.getApplication(), msg, Toast.LENGTH_SHORT).show();
         });
     }
 }

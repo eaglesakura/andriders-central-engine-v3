@@ -17,6 +17,8 @@ import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.util.LogUtil;
 
+import android.os.Bundle;
+import android.support.annotation.UiThread;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -27,26 +29,32 @@ import icepick.State;
 
 public class GadgetSettingFragment extends AppBaseFragment {
 
-    List<DbBleFitnessDevice> heartrateDevices = new ArrayList<>();
+    final List<DbBleFitnessDevice> mHeartrateDevices = new ArrayList<>();
 
-    FitnessDeviceController heartrateController;
+    FitnessDeviceController mHeartrateController;
 
-    BasicSpinnerAdapter heartrateAdapter;
+    BasicSpinnerAdapter mHeartrateAdapter;
 
-    List<DbBleFitnessDevice> cadenceDevices = new ArrayList<>();
+    final List<DbBleFitnessDevice> mCadenceDevices = new ArrayList<>();
 
-    FitnessDeviceController cadenceSpeedController;
+    FitnessDeviceController mCadenceSpeedController;
 
-    BasicSpinnerAdapter cadenceAdapter;
+    BasicSpinnerAdapter mCadenceAdapter;
 
-    UserProfiles personalDataSettings = Settings.getInstance().getUserProfiles();
+    UserProfiles mPersonalDataSettings;
 
     public GadgetSettingFragment() {
         requestInjection(R.layout.fragment_setting_gadgets);
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPersonalDataSettings = getSettings().getUserProfiles();
+    }
+
     @State
-    boolean scanBleDevice = false;
+    boolean mScanBleDevice = false;
 
     @Override
     protected void onAfterViews() {
@@ -57,25 +65,25 @@ public class GadgetSettingFragment extends AppBaseFragment {
 
         // ハートレートモニター設定
         {
-            FitnessDeviceCallbackImpl callback = new FitnessDeviceCallbackImpl(FitnessDeviceType.HEARTRATE_MONITOR, heartrateDevices);
+            FitnessDeviceCallbackImpl callback = new FitnessDeviceCallbackImpl(FitnessDeviceType.HEARTRATE_MONITOR, mHeartrateDevices);
 
-            heartrateController = FitnessDeviceType.HEARTRATE_MONITOR.createController(getActivity());
-            heartrateController.setBleScanCallback(callback);
-            heartrateAdapter = new BasicSpinnerAdapter(getActivity());
+            mHeartrateController = FitnessDeviceType.HEARTRATE_MONITOR.createController(getActivity());
+            mHeartrateController.setBleScanCallback(callback);
+            mHeartrateAdapter = new BasicSpinnerAdapter(getActivity());
             q.id(R.id.Setting_RoadBikeProfile_HeartrateMonitor_Selector)
-                    .adapter(heartrateAdapter)
+                    .adapter(mHeartrateAdapter)
                     .itemSelected(callback);
         }
 
         // ケイデンスセンサー設定
         {
-            FitnessDeviceCallbackImpl callback = new FitnessDeviceCallbackImpl(FitnessDeviceType.SPEED_CADENCE_SENSOR, cadenceDevices);
+            FitnessDeviceCallbackImpl callback = new FitnessDeviceCallbackImpl(FitnessDeviceType.SPEED_CADENCE_SENSOR, mCadenceDevices);
 
-            cadenceSpeedController = FitnessDeviceType.SPEED_CADENCE_SENSOR.createController(getActivity());
-            cadenceSpeedController.setBleScanCallback(callback);
-            cadenceAdapter = new BasicSpinnerAdapter(getActivity());
+            mCadenceSpeedController = FitnessDeviceType.SPEED_CADENCE_SENSOR.createController(getActivity());
+            mCadenceSpeedController.setBleScanCallback(callback);
+            mCadenceAdapter = new BasicSpinnerAdapter(getActivity());
             q.id(R.id.Setting_RoadBikeProfile_SpeedAndCadence_Selector)
-                    .adapter(cadenceAdapter)
+                    .adapter(mCadenceAdapter)
                     .itemSelected(callback);
         }
     }
@@ -86,9 +94,9 @@ public class GadgetSettingFragment extends AppBaseFragment {
             return;
         }
 
-        scanBleDevice = true;
-        heartrateController.connect();
-        cadenceSpeedController.connect();
+        mScanBleDevice = true;
+        mHeartrateController.connect();
+        mCadenceSpeedController.connect();
 
         AQuery q = new AQuery(getView());
         q.id(R.id.Setting_RoadBikeProfile_BleDevice_ScanRequest).gone();
@@ -105,9 +113,9 @@ public class GadgetSettingFragment extends AppBaseFragment {
         super.onResume();
 
         // 必要であればスキャンを復旧させる
-        if (scanBleDevice) {
-            heartrateController.connect();
-            cadenceSpeedController.connect();
+        if (mScanBleDevice) {
+            mHeartrateController.connect();
+            mCadenceSpeedController.connect();
         }
 
         // デバイスを読み込む
@@ -120,13 +128,14 @@ public class GadgetSettingFragment extends AppBaseFragment {
         super.onPause();
 
         // スキャンを終了させる
-        heartrateController.disconnect();
-        cadenceSpeedController.disconnect();
+        mHeartrateController.disconnect();
+        mCadenceSpeedController.disconnect();
     }
 
     /**
      * デバイス情報を読み込む
      */
+    @UiThread
     void loadDeviceCache(final FitnessDeviceType type) {
         asyncUI(it -> {
             FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(getActivity());
@@ -138,9 +147,9 @@ public class GadgetSettingFragment extends AppBaseFragment {
 
                 String address;
                 if (type == FitnessDeviceType.HEARTRATE_MONITOR) {
-                    address = personalDataSettings.getBleHeartrateMonitorAddress();
+                    address = mPersonalDataSettings.getBleHeartrateMonitorAddress();
                 } else if (type == FitnessDeviceType.SPEED_CADENCE_SENSOR) {
-                    address = personalDataSettings.getBleSpeedCadenceSensorAddress();
+                    address = mPersonalDataSettings.getBleSpeedCadenceSensorAddress();
                 } else {
                     throw new IllegalStateException();
                 }
@@ -163,13 +172,13 @@ public class GadgetSettingFragment extends AppBaseFragment {
             int selectorLayoutId;
             List<DbBleFitnessDevice> devicesList;
             if (fitnessDevice == FitnessDeviceType.HEARTRATE_MONITOR) {
-                adapter = heartrateAdapter;
+                adapter = mHeartrateAdapter;
                 selectorLayoutId = R.id.Setting_RoadBikeProfile_HeartrateMonitor_Selector;
-                devicesList = heartrateDevices;
+                devicesList = mHeartrateDevices;
             } else if (fitnessDevice == FitnessDeviceType.SPEED_CADENCE_SENSOR) {
-                adapter = cadenceAdapter;
+                adapter = mCadenceAdapter;
                 selectorLayoutId = R.id.Setting_RoadBikeProfile_SpeedAndCadence_Selector;
-                devicesList = cadenceDevices;
+                devicesList = mCadenceDevices;
             } else {
                 throw new IllegalArgumentException();
             }
@@ -232,9 +241,9 @@ public class GadgetSettingFragment extends AppBaseFragment {
             DbBleFitnessDevice device = devices.get(position);
             String address = (device == null ? "" : device.getAddress());
             if (type == FitnessDeviceType.HEARTRATE_MONITOR) {
-                personalDataSettings.setBleHeartrateMonitorAddress(address);
+                mPersonalDataSettings.setBleHeartrateMonitorAddress(address);
             } else if (type == FitnessDeviceType.SPEED_CADENCE_SENSOR) {
-                personalDataSettings.setBleSpeedCadenceSensorAddress(address);
+                mPersonalDataSettings.setBleSpeedCadenceSensorAddress(address);
             } else {
                 throw new IllegalStateException();
             }

@@ -15,6 +15,8 @@ import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 import com.eaglesakura.util.StringUtil;
 
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -23,12 +25,22 @@ import java.util.Date;
 
 public class BuildInformationFragment extends AppBaseFragment {
 
-    DebugSettings debugSettings = Settings.getInstance().getDebugSettings();
+    @NonNull
+    DebugSettings mDebugSettings;
 
-    CentralServiceSettings serviceSettings = Settings.getInstance().getCentralSettings();
+    @NonNull
+    CentralServiceSettings mServiceSettings;
 
     public BuildInformationFragment() {
         requestInjection(R.layout.fragment_information_build);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mDebugSettings = getSettings().getDebugSettings();
+        mServiceSettings = getSettings().getCentralSettings();
     }
 
     @Override
@@ -39,9 +51,9 @@ public class BuildInformationFragment extends AppBaseFragment {
         q.id(R.id.Information_App_Version).text(BuildConfig.VERSION_NAME);
         q.id(R.id.Information_App_BuildDate).text(BuildConfig.BUILD_DATE);
         q.id(R.id.Information_App_SDKVersion).text(com.eaglesakura.andriders.sdk.BuildConfig.ACE_SDK_VERSION);
-        q.id(R.id.Information_App_Debug).checked(debugSettings.getDebugEnable());
+        q.id(R.id.Information_App_Debug).checked(mDebugSettings.getDebugEnable());
 
-        if (debugSettings.getDebugEnable()) {
+        if (mDebugSettings.getDebugEnable()) {
             q.id(R.id.Information_DebugSettings).visible();
         }
     }
@@ -56,11 +68,11 @@ public class BuildInformationFragment extends AppBaseFragment {
         (new AQuery(getView()))
                 .id(R.id.Information_DebugSettings).visibility(enabled ? View.VISIBLE : View.GONE);
 
-        if (enabled == debugSettings.getDebugEnable()) {
+        if (enabled == mDebugSettings.getDebugEnable()) {
             return;
         }
 
-        debugSettings.setDebugEnable(enabled);
+        mDebugSettings.setDebugEnable(enabled);
         asyncCommitSettings();
 
         if (enabled) {
@@ -78,7 +90,7 @@ public class BuildInformationFragment extends AppBaseFragment {
      */
     @OnCheckedChanged(R.id.Debug_ACEs_DebugRendering)
     void debugCheckAcesDebugRendering(CompoundButton button, boolean checked) {
-        debugSettings.setAcesRenderDebugInfo(checked);
+        mDebugSettings.setAcesRenderDebugInfo(checked);
         asyncCommitSettings();
     }
 
@@ -87,7 +99,7 @@ public class BuildInformationFragment extends AppBaseFragment {
      */
     @OnCheckedChanged(R.id.Debug_Location_Rendering)
     void debugCheckLocationRendering(CompoundButton button, boolean checked) {
-        debugSettings.setRenderLocation(checked);
+        mDebugSettings.setRenderLocation(checked);
         asyncCommitSettings();
     }
 

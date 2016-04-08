@@ -7,11 +7,14 @@ import com.eaglesakura.andriders.extension.display.DisplayData;
 import com.eaglesakura.andriders.extension.internal.CentralDataCommand;
 import com.eaglesakura.andriders.extension.internal.DisplayCommand;
 import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
+import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.serialize.ExtensionProtocol;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.service.central.CentralService;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.service.CommandClient;
 import com.eaglesakura.android.service.CommandMap;
 import com.eaglesakura.android.service.data.Payload;
@@ -80,6 +83,9 @@ public class ExtensionClient extends CommandClient {
     private Worker<DataDisplayManager> mDataDisplayManagerWorker = it -> {
     };
 
+    @Inject(StorageProvider.class)
+    Settings mSettings;
+
     ExtensionClient(Context context, ExtensionClientManager parent, String sessionId) {
         super(context, String.format("%s", UUID.randomUUID().toString()));
         mCentralServiceMode = (context instanceof CentralService);
@@ -87,6 +93,8 @@ public class ExtensionClient extends CommandClient {
         mParent = parent;
         buildCentralCommands();
         buildDisplayCommands();
+
+        Garnet.create(this).depend(Context.class, context).inject();
     }
 
     public void setCentralWorker(Worker<CentralDataManager> cycleComputerDataWorker) {
@@ -108,7 +116,7 @@ public class ExtensionClient extends CommandClient {
         intent.setComponent(name);
         intent.putExtra(ExtensionServerImpl.EXTRA_SESSION_ID, mSessionId);
         intent.putExtra(ExtensionServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
-        intent.putExtra(ExtensionServerImpl.EXTRA_DEBUGABLE, Settings.isDebugable());
+        intent.putExtra(ExtensionServerImpl.EXTRA_DEBUGABLE, mSettings.isDebugable());
 
         if (mCentralServiceMode) {
             intent.putExtra(ExtensionServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
@@ -272,7 +280,7 @@ public class ExtensionClient extends CommandClient {
         cmdMap.addAction(CentralDataCommand.CMD_setBleGadgetAddress, (sender, cmd, payload) -> {
             SensorType sensorType = SensorType.valueOf(Payload.deserializeStringOrNull(payload));
 
-            UserProfiles userProfiles = Settings.getInstance().getUserProfiles();
+            UserProfiles userProfiles = mSettings.getUserProfiles();
             String sensorAddress;
             if (sensorType == SensorType.HeartrateMonitor) {
                 sensorAddress = userProfiles.getBleHeartrateMonitorAddress();

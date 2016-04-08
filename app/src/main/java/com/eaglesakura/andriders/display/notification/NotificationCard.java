@@ -2,13 +2,14 @@ package com.eaglesakura.andriders.display.notification;
 
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.notification.NotificationLength;
-import com.eaglesakura.android.framework.context.Resources;
+import com.eaglesakura.android.device.display.DisplayInfo;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.android.util.ImageUtil;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,8 +37,9 @@ public class NotificationCard {
     /**
      * カード用画像を構築する
      */
-    public void buildCardImage() {
-        int[] displaySize = Resources.displaySize();
+    public void buildCardImage(@NonNull DisplayInfo displayInfo) {
+
+        int[] displaySize = {displayInfo.getWidthPixel(), displayInfo.getHeightPixel()};
 
         // 1カードの幅と高さ
         // 比率は必ず16:9になるようにする

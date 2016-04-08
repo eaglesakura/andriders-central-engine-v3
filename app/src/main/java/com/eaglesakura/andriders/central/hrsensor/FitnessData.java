@@ -1,12 +1,15 @@
 package com.eaglesakura.andriders.central.hrsensor;
 
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
+import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.serialize.RawSpecs;
-import com.eaglesakura.andriders.sensor.HeartrateZone;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.util.Timer;
+
+import android.support.annotation.NonNull;
 
 /**
  * 運動データの計算を行う
@@ -37,8 +40,12 @@ public class FitnessData extends BaseCalculator {
      */
     private long mHeartrateDataTime;
 
-    public FitnessData(Clock clock) {
+    @NonNull
+    private Settings mSettings;
+
+    public FitnessData(@NonNull Clock clock, @NonNull Settings settings) {
         super(clock);
+        mSettings = settings;
     }
 
     /**
@@ -50,6 +57,11 @@ public class FitnessData extends BaseCalculator {
 
     public float getCurrentMets() {
         return mCurrentMets;
+    }
+
+    @NonNull
+    public Settings getSettings() {
+        return mSettings;
     }
 
     public float getUserWeight() {

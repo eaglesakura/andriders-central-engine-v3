@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.db.importer;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.central.CentralDataManager;
+import com.eaglesakura.andriders.central.log.SessionLogger;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.util.DateUtil;
@@ -17,13 +17,9 @@ public class GpxImporterTest extends AppUnitTestCase {
 
     @Test
     public void AACR2015のテストデータをインストールする() throws Exception {
-        // 古いDBを削除する
-        CentralDataManager.getLogDatabasePath(getContext()).delete();
-
         GpxImporter importer = new GpxImporter(getContext(), new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile());
         importer.getParser().setDateOption(GpxParser.DateOption.AddTimeZone);
         importer.install(null);
-
 
         assertEquals(DateUtil.getYear(importer.getImportStartDate(), TimeZone.getDefault()), 2015);
         assertEquals(DateUtil.getMonth(importer.getImportStartDate(), TimeZone.getDefault()), 5);
@@ -35,7 +31,7 @@ public class GpxImporterTest extends AppUnitTestCase {
         assertEquals(DateUtil.getDay(importer.getImportEndDate(), TimeZone.getDefault()), 24);
         assertEquals(DateUtil.getHour(importer.getImportEndDate(), TimeZone.getDefault()), 16);
 
-        SessionLogDatabase db = new SessionLogDatabase(getContext(), CentralDataManager.getLogDatabasePath(getContext()));
+        SessionLogDatabase db = new SessionLogDatabase(getContext(), mStorageManager.getDatabasePath(SessionLogger.DATABASE_NAME));
         try {
             assertEquals(db.loadMaxSpeedKmh(), 61.0, 1.0);  // AACR最高速度
             assertEquals(

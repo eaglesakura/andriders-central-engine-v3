@@ -11,9 +11,12 @@ import com.eaglesakura.util.LogUtil;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 public class AceApplication extends Application implements FrameworkCentral.FrameworkApplication {
+    Object mCentral;
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -32,14 +35,16 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
         // Central & DeploygateRemote
         FrameworkCentral.onApplicationCreate(this);
         FrameworkCentral.requestDeploygateInstall();
-
-        // 設定をロードする
-        Settings.getInstance();
     }
 
     @Override
     public void onApplicationUpdated(int oldVersionCode, int newVersionCode, String oldVersionName, String newVersionName) {
         AppLog.system("App Updated old(%d:%s) new(%d:%s)", oldVersionCode, oldVersionName, newVersionCode, newVersionName);
+    }
+
+    @Override
+    public void onRequestSaveCentral(@NonNull Object central) {
+        mCentral = central;
     }
 
     public static GoogleApiClient.Builder newFullPermissionClientBuilder() {

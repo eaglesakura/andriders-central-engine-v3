@@ -10,21 +10,22 @@ import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.session.SessionData;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.serialize.RawSpecs;
-import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
-import com.eaglesakura.android.device.external.StorageInfo;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Inject;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-
-import java.io.File;
 
 /**
  * サイコンが持つべき情報を統括する
@@ -37,62 +38,6 @@ public class CentralDataManager {
      */
     @NonNull
     private final Context mContext;
-
-    /**
-     * カロリー等のフィットネス情報管理
-     * <p>
-     * 心拍から計算される
-     */
-    @NonNull
-    final FitnessData mFitnessData;
-
-    /**
-     * 速度情報管理
-     * <p>
-     * S&Cセンサーが有効であればセンサーを、無効であれば位置情報をソースにして速度を取得する。
-     * 位置情報が無効である場合は速度0となる。
-     */
-    @NonNull
-    final SpeedData mSpeedData;
-
-    /**
-     * センサー由来の速度情報
-     * <p>
-     * S&Cセンサーの取得時に更新される
-     */
-    @NonNull
-    final SensorSpeedData mSensorSpeedData;
-
-    /**
-     * ケイデンス情報
-     * <p>
-     * S&Cセンサーの取得時に更新される
-     */
-    @NonNull
-    final CadenceData mCadenceData;
-
-    /**
-     * 移動距離管理
-     * <p>
-     * 現在速度と時間経過から自動的に計算される
-     */
-    @NonNull
-    final DistanceData mDistanceData;
-
-    /**
-     * 位置情報管理
-     */
-    @NonNull
-    final LocationData mLocationData;
-
-    /**
-     * セッション情報管理
-     */
-    @NonNull
-    final SessionData mSessionData;
-
-    @NonNull
-    final SessionLogger mSessionLogger;
 
     /**
      * 時刻設定
@@ -115,6 +60,72 @@ public class CentralDataManager {
     private final Object lock = new Object();
 
     /**
+     * カロリー等のフィットネス情報管理
+     * <p>
+     * 心拍から計算される
+     */
+    @NonNull
+    FitnessData mFitnessData;
+
+    /**
+     * 速度情報管理
+     * <p>
+     * S&Cセンサーが有効であればセンサーを、無効であれば位置情報をソースにして速度を取得する。
+     * 位置情報が無効である場合は速度0となる。
+     */
+    @NonNull
+    SpeedData mSpeedData;
+
+    /**
+     * センサー由来の速度情報
+     * <p>
+     * S&Cセンサーの取得時に更新される
+     */
+    @NonNull
+    SensorSpeedData mSensorSpeedData;
+
+    /**
+     * ケイデンス情報
+     * <p>
+     * S&Cセンサーの取得時に更新される
+     */
+    @NonNull
+    CadenceData mCadenceData;
+
+    /**
+     * 移動距離管理
+     * <p>
+     * 現在速度と時間経過から自動的に計算される
+     */
+    @NonNull
+    DistanceData mDistanceData;
+
+    /**
+     * 位置情報管理
+     */
+    @NonNull
+    LocationData mLocationData;
+
+    /**
+     * セッション情報管理
+     */
+    @NonNull
+    SessionData mSessionData;
+
+
+    @Inject(StorageProvider.class)
+    AppStorageManager mStorageManager;
+
+    @Inject(StorageProvider.class)
+    Settings mSettings;
+
+    /**
+     * ログコントローラはUnitTestでのモジュール切替に対応しておく
+     */
+    @NonNull
+    SessionLogger mSessionLogger;
+
+    /**
      * 最後に生成されたセントラル情報
      * <p>
      * onUpdateの更新時に生成される
@@ -122,35 +133,42 @@ public class CentralDataManager {
     private RawCentralData mLatestCentralData;
 
     /**
-     * ログDBのパスを取得する
-     */
-    public static File getLogDatabasePath(Context context) {
-        File external = StorageInfo.getExternalStorageRoot(context);
-        return new File(external, "db/session.db");
-    }
-
-    /**
      * サイコンデータを生成する
      *
      * @param clock 同期用時計
      */
-    public CentralDataManager(Context context, Clock clock) {
+    public CentralDataManager(@NonNull Context context, @NonNull Clock clock) {
         mContext = context.getApplicationContext();
         mClock = clock;
         mClockTimer = new ClockTimer(clock);
+
+        // 依存性解決
+        Garnet.create(this)
+                .depend(Context.class, context)
+                .inject();
+
         mSessionData = new SessionData(mClock, mClock.now());
-        mFitnessData = new FitnessData(mClock);
-        mSensorSpeedData = new SensorSpeedData(mClock);
-        mCadenceData = new CadenceData(mClock);
+        mFitnessData = new FitnessData(mClock, mSettings);
+        mSensorSpeedData = new SensorSpeedData(mClock, mSettings);
+        mCadenceData = new CadenceData(mClock, mSettings);
         mDistanceData = new DistanceData(mClock);
 
         GeoSpeedData geoSpeedData = new GeoSpeedData(mClock); // 位置センサー由来の速度計
 
         mLocationData = new LocationData(mClock, geoSpeedData);
-        mSpeedData = new SpeedData(mClock, geoSpeedData, mSensorSpeedData);
+        mSpeedData = new SpeedData(mClock, mSettings, geoSpeedData, mSensorSpeedData);
 
-        // ログコントローラ
-        mSessionLogger = new SessionLogger(context, mSessionData.getSessionId(), getLogDatabasePath(context), clock);
+        mSessionLogger = new SessionLogger(mContext, mSessionData.getSessionId(), mStorageManager, mClock);
+    }
+
+    @NonNull
+    public Context getContext() {
+        return mContext;
+    }
+
+    @NonNull
+    public Clock getClock() {
+        return mClock;
     }
 
     /**
@@ -289,7 +307,7 @@ public class CentralDataManager {
     }
 
     private void getStatus(RawCentralData.RawCentralStatus dst) {
-        dst.debug = Settings.isDebugable();
+        dst.debug = mSettings.isDebugable();
         dst.date = now();
     }
 
