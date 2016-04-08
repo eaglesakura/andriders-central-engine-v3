@@ -29,7 +29,7 @@ public class UserLogMain extends BaseNavigationFragment {
         }
     }
 
-    public static UserLogMain createInstance(Context context) {
+    public static UserLogMain newInstance(Context context) {
         return new UserLogMain();
     }
 }

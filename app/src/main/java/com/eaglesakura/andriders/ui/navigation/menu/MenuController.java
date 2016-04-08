@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.widget.CompoundButton;
 
 /**
@@ -79,13 +78,13 @@ public class MenuController {
                 mCallback.requestChangeContent(ProfileFragmentMain.createInstance(mContext));
                 break;
             case R.id.Main_Menu_CycleComputer:
-                mCallback.requestChangeContent(DisplaySettingFragmentMain.createInstance(mContext));
+                mCallback.requestChangeContent(DisplaySettingFragmentMain.newInstance(mContext));
                 break;
             case R.id.Main_Menu_UserLog:
-                mCallback.requestChangeContent(UserLogMain.createInstance(mContext));
+                mCallback.requestChangeContent(UserLogMain.newInstance(mContext));
                 break;
             case R.id.Main_Menu_Extensions:
-                mCallback.requestChangeContent(ExtensionFragmentMain.createInstance(mContext));
+                mCallback.requestChangeContent(ExtensionFragmentMain.newInstance(mContext));
                 break;
             case R.id.Main_Menu_Information:
                 mCallback.requestChangeContent(InformationFragmentMain.createInstance(mContext));

@@ -111,7 +111,7 @@ public class ExtensionFragmentMain extends BaseNavigationFragment {
         return mClientManager;
     }
 
-    public static ExtensionFragmentMain createInstance(Context context) {
+    public static ExtensionFragmentMain newInstance(Context context) {
         return new ExtensionFragmentMain();
     }
 }

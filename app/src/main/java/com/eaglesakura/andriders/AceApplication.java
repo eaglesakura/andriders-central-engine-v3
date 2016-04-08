@@ -18,12 +18,6 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
     Object mCentral;
 
     @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-//        MultiDex.install(this);
-    }
-
-    @Override
     public void onCreate() {
         super.onCreate();
 
