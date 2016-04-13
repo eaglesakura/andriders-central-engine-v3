@@ -140,7 +140,7 @@ android {
 
     dexOptions {
         // memo: http://developer.covelline.com/2015/06/circle-ci/
-        javaMaxHeapSize "3g"
+        javaMaxHeapSize "2g"
         preDexLibraries !(System.getenv()["CIRCLECI"] as boolean)
     }
 
