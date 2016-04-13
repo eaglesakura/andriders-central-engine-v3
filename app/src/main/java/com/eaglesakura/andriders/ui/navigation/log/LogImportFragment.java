@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.ui.navigation.log;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.ui.navigation.log.dialog.GpxImportDialogFragment;
+import com.eaglesakura.android.margarine.OnMenuClick;
 
 import android.support.annotation.UiThread;
 import android.view.Menu;
@@ -13,7 +14,7 @@ import android.view.MenuInflater;
  */
 public class LogImportFragment extends AppBaseFragment {
     public LogImportFragment() {
-        setHasOptionsMenu(true);
+        requestOptionMenu(R.menu.fragment_userlog_import);
     }
 
     /**
@@ -25,12 +26,11 @@ public class LogImportFragment extends AppBaseFragment {
         dialog.show(getChildFragmentManager());
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_userlog_import, menu);
-        menu.findItem(R.id.UserLog_Import_GPX).setOnMenuItemClickListener(item -> {
-            startImportGpx();
-            return true;
-        });
+    /**
+     * "GPXインポート"が選択された
+     */
+    @OnMenuClick(R.id.UserLog_Import_GPX)
+    void clickMenuImportGpx() {
+        startImportGpx();
     }
 }

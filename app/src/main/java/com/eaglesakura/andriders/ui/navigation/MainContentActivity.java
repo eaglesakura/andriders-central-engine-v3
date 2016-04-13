@@ -17,6 +17,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -73,7 +74,7 @@ public class MainContentActivity extends AppBaseActivity {
 
         if (!BuildConfig.DEBUG) {
             UIHandler.postDelayedUI(() -> {
-                drawerLayout.openDrawer(Gravity.START);
+                drawerLayout.openDrawer(GravityCompat.START);
             }, 500);
         }
     }
@@ -91,25 +92,12 @@ public class MainContentActivity extends AppBaseActivity {
     }
 
     /**
-     * メイン制御用TAG
-     */
-    private static final String MAIN_CTRL_TAG = "MAIN_CTRL_TAG";
-
-    @Override
-    protected String createTag(BaseFragment fragment) {
-        if (fragment instanceof BaseNavigationFragment) {
-            return MAIN_CTRL_TAG;
-        }
-        return super.createTag(fragment);
-    }
-
-    /**
      * 制御Fragmentを交換する。
      * 既にその画面が開かれている場合、何もしない。
      */
     void changeFragment(BaseNavigationFragment newFragment) {
         FragmentManager manager = getSupportFragmentManager();
-        Fragment oldFragment = manager.findFragmentByTag(MAIN_CTRL_TAG);
+        Fragment oldFragment = getContentFragment();
         if (oldFragment != null && oldFragment.getClass().equals(newFragment.getClass())) {
             AppLog.system("Fragment not changed(%s)", newFragment.getClass());
             return;
@@ -117,7 +105,7 @@ public class MainContentActivity extends AppBaseActivity {
 
         FragmentTransaction transaction = manager.beginTransaction();
         {
-            transaction.replace(R.id.Content_Holder_Root, newFragment, createTag(newFragment));
+            transaction.replace(R.id.Content_Holder_Root, newFragment, TAG_CONTENT_FRAGMENT_MAIN);
         }
         transaction.commit();
     }
