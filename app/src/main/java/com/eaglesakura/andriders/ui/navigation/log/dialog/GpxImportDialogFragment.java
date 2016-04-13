@@ -57,7 +57,12 @@ public class GpxImportDialogFragment extends AppDialogFragment {
         return dialog;
     }
 
-    @OnClick
+    /**
+     * GPXファイルが選択された
+     *
+     * TODO: Doc Pick Dialogを開く
+     */
+    @OnClick(R.id.UserLog_Import_GPX_Pick)
     void clickPickGpxFile() {
 
     }
