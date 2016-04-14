@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.log.dialog;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppDialogFragment;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.MargarineKnife;
 import com.eaglesakura.android.margarine.OnClick;
@@ -53,7 +54,7 @@ public class GpxImportDialogFragment extends AppDialogFragment {
             button.dismiss();
         });
 
-        MargarineKnife.bind(dialog);
+        MargarineKnife.from(dialog).to(this).bind();
         return dialog;
     }
 
@@ -64,6 +65,6 @@ public class GpxImportDialogFragment extends AppDialogFragment {
      */
     @OnClick(R.id.UserLog_Import_GPX_Pick)
     void clickPickGpxFile() {
-
+        AppLog.widget("Pick GPX File");
     }
 }

@@ -6,8 +6,6 @@ import com.eaglesakura.andriders.ui.navigation.log.dialog.GpxImportDialogFragmen
 import com.eaglesakura.android.margarine.OnMenuClick;
 
 import android.support.annotation.UiThread;
-import android.view.Menu;
-import android.view.MenuInflater;
 
 /**
  * その他のファイルからログを読み込むためのFragment
@@ -23,7 +21,7 @@ public class LogImportFragment extends AppBaseFragment {
     @UiThread
     void startImportGpx() {
         GpxImportDialogFragment dialog = new GpxImportDialogFragment();
-        dialog.show(getChildFragmentManager());
+        dialog.show(this);
     }
 
     /**
