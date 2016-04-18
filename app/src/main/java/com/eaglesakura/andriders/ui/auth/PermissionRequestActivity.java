@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ui.auth;
 
-import com.eaglesakura.android.framework.ui.SupportActivity;
+import com.eaglesakura.android.framework.ui.support.SupportActivity;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.util.CollectionUtil;
 

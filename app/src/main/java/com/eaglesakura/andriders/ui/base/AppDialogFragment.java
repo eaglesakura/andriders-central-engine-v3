@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ui.base;
 
-import com.eaglesakura.android.framework.ui.dialog.DialogFragmentDelegate;
+import com.eaglesakura.android.framework.ui.delegate.DialogFragmentDelegate;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -12,36 +12,7 @@ import android.support.v4.app.Fragment;
  * アプリ内でのダイアログ管理を行う
  */
 public abstract class AppDialogFragment extends AppBaseFragment {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mDelegate.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mDelegate.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mDelegate.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mDelegate.onDestroy();
-    }
-
-    @Nullable
-    public Dialog getDialog() {
-        return mDelegate.getDialog();
-    }
-
-    private DialogFragmentDelegate mDelegate = new DialogFragmentDelegate(this, new DialogFragmentDelegate.InternalCallback() {
+    private DialogFragmentDelegate mDelegate = new DialogFragmentDelegate(new DialogFragmentDelegate.SupportDialogFragmentCompat() {
         @NonNull
         @Override
         public Dialog onCreateDialog(DialogFragmentDelegate self, Bundle savedInstanceState) {
@@ -52,7 +23,24 @@ public abstract class AppDialogFragment extends AppBaseFragment {
         public void onDismiss(DialogFragmentDelegate self) {
 
         }
+
+        @Override
+        public Fragment getFragment(DialogFragmentDelegate self) {
+            return AppDialogFragment.this;
+        }
     });
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mDelegate.onCreate(savedInstanceState);
+    }
+
+    @Nullable
+    public Dialog getDialog() {
+        return mDelegate.getDialog();
+    }
 
     /**
      * ダイアログの生成を行わせる

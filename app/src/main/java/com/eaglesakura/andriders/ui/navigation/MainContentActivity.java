@@ -7,12 +7,14 @@ import com.eaglesakura.andriders.ui.navigation.menu.GoogleLoginCtrlFragment;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.BuildConfig;
-import com.eaglesakura.android.framework.ui.SupportFragment;
+import com.eaglesakura.android.framework.ui.delegate.ContentHolderActivityDelegate;
+import com.eaglesakura.android.framework.ui.support.SupportFragment;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -79,13 +81,13 @@ public class MainContentActivity extends AppBaseActivity {
     }
 
     @Override
-    protected int getDefaultLayoutId() {
+    public int getDefaultLayoutId(@NonNull ContentHolderActivityDelegate self) {
         return R.layout.activity_maincontent;
     }
 
-
+    @NonNull
     @Override
-    protected SupportFragment newDefaultContentFragment() {
+    public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
 //        return UserLogMain.newInstance(this);
         return DisplaySettingFragmentMain.newInstance(this);
 //        return GpxImportTourFragmentMain.newInstance(this);
@@ -105,7 +107,7 @@ public class MainContentActivity extends AppBaseActivity {
 
         FragmentTransaction transaction = manager.beginTransaction();
         {
-            transaction.replace(R.id.Content_Holder_Root, newFragment, TAG_CONTENT_FRAGMENT_MAIN);
+            transaction.replace(R.id.Content_Holder_Root, newFragment, ContentHolderActivityDelegate.TAG_CONTENT_FRAGMENT_MAIN);
         }
         transaction.commit();
     }

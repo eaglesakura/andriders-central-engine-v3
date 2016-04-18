@@ -6,7 +6,7 @@ import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.auth.AcesAuthActivity;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.framework.ui.SupportFragment;
+import com.eaglesakura.android.framework.ui.support.SupportFragment;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
 import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
 import com.eaglesakura.android.garnet.Inject;

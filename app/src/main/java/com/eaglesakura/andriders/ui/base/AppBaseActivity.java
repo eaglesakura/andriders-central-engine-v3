@@ -5,7 +5,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.eaglesakura.andriders.AceApplication;
 import com.eaglesakura.andriders.ui.navigation.notification.NotificationFragment;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
-import com.eaglesakura.android.framework.ui.content.ContentHolderActivity;
+import com.eaglesakura.android.framework.ui.support.ContentHolderActivity;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.playservice.GoogleApiFragment;
 
