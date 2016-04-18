@@ -31,7 +31,7 @@ public abstract class AppBaseActivity extends ContentHolderActivity implements G
             }
             {
                 NotificationFragment fragment = new NotificationFragment();
-                transaction.add(fragment, fragment.createSimpleTag());
+                transaction.add(fragment, fragment.getClass().getName());
             }
             transaction.commit();
         }

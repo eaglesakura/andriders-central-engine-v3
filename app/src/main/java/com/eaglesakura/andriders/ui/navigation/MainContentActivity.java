@@ -2,12 +2,12 @@ package com.eaglesakura.andriders.ui.navigation;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseActivity;
-import com.eaglesakura.andriders.ui.navigation.log.UserLogMain;
+import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.menu.GoogleLoginCtrlFragment;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.BuildConfig;
-import com.eaglesakura.android.framework.ui.BaseFragment;
+import com.eaglesakura.android.framework.ui.SupportFragment;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
@@ -19,18 +19,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 
 public class MainContentActivity extends AppBaseActivity {
 
-    View progress;
+    View mProgress;
 
     @Bind(R.id.Content_Drawer)
-    DrawerLayout drawerLayout;
+    DrawerLayout mDrawerLayout;
 
-    MenuController menuController;
+    MenuController mMenuController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,19 +40,19 @@ public class MainContentActivity extends AppBaseActivity {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             {
                 GoogleLoginCtrlFragment fragment = new GoogleLoginCtrlFragment();
-                transaction.add(fragment, fragment.createSimpleTag());
+                transaction.add(fragment, fragment.getClass().getName());
             }
             transaction.commit();
         }
 
-        menuController = new MenuController(this,
+        mMenuController = new MenuController(this,
                 findViewById(NavigationView.class, R.id.Content_Navigation_Root),
-                drawerLayout
+                mDrawerLayout
         );
-        menuController.setCallback(mMenuCallback);
-        menuController.initialize();
+        mMenuController.setCallback(mMenuCallback);
+        mMenuController.initialize();
 
-        progress = findViewById(R.id.Main_Progress);
+        mProgress = findViewById(R.id.Main_Progress);
 //        userNotificationController = new UserNotificationController(this) {
 //            @Override
 //            protected void showProgressInterface(Object sender, String message) {
@@ -74,7 +73,7 @@ public class MainContentActivity extends AppBaseActivity {
 
         if (!BuildConfig.DEBUG) {
             UIHandler.postDelayedUI(() -> {
-                drawerLayout.openDrawer(GravityCompat.START);
+                mDrawerLayout.openDrawer(GravityCompat.START);
             }, 500);
         }
     }
@@ -86,9 +85,10 @@ public class MainContentActivity extends AppBaseActivity {
 
 
     @Override
-    protected BaseFragment newDefaultContentFragment() {
-        return UserLogMain.newInstance(this);
-//        return DisplaySettingFragmentMain.newInstance(this);
+    protected SupportFragment newDefaultContentFragment() {
+//        return UserLogMain.newInstance(this);
+        return DisplaySettingFragmentMain.newInstance(this);
+//        return GpxImportTourFragmentMain.newInstance(this);
     }
 
     /**
@@ -113,20 +113,20 @@ public class MainContentActivity extends AppBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        menuController.onResume();
+        mMenuController.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        menuController.onPause();
+        mMenuController.onPause();
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (ContextUtil.isBackKeyEvent(event)) {
             // progress中ならば作業を中断してはいけない
-            if (progress.getVisibility() == View.VISIBLE) {
+            if (mProgress.getVisibility() == View.VISIBLE) {
                 return true;
             }
         }

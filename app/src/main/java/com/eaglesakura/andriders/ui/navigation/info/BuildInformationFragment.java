@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.v2.db.CentralServiceSettings;
 import com.eaglesakura.andriders.v2.db.DebugSettings;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.device.external.StorageInfo;
+import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.license.LicenseViewActivity;
 import com.eaglesakura.android.margarine.OnCheckedChanged;
 import com.eaglesakura.android.margarine.OnClick;
@@ -32,7 +33,7 @@ public class BuildInformationFragment extends AppBaseFragment {
     CentralServiceSettings mServiceSettings;
 
     public BuildInformationFragment() {
-        requestInjection(R.layout.fragment_information_build);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_information_build);
     }
 
     @Override
@@ -44,8 +45,8 @@ public class BuildInformationFragment extends AppBaseFragment {
     }
 
     @Override
-    protected void onAfterViews() {
-        super.onAfterViews();
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
 
         AQuery q = new AQuery(getView());
         q.id(R.id.Information_App_Version).text(BuildConfig.VERSION_NAME);

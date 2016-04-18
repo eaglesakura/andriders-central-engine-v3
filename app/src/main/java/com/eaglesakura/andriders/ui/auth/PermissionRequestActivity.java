@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ui.auth;
 
-import com.eaglesakura.android.framework.ui.BaseActivity;
+import com.eaglesakura.android.framework.ui.SupportActivity;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.util.CollectionUtil;
 
@@ -10,7 +10,7 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 
-public class PermissionRequestActivity extends BaseActivity {
+public class PermissionRequestActivity extends SupportActivity {
 
     static final String EXTRA_REQUEST_PERMISSIONS = "EXTRA_REQUEST_PERMISSIONS";
 

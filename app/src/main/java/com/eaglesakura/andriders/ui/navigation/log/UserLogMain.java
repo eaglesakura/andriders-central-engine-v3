@@ -12,7 +12,7 @@ import android.support.v4.app.FragmentTransaction;
  */
 public class UserLogMain extends BaseNavigationFragment {
     public UserLogMain() {
-        requestInjection(R.layout.fragment_userlog_main);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_userlog_main);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class UserLogMain extends BaseNavigationFragment {
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             {
                 LogImportFragment fragment = new LogImportFragment();
-                transaction.add(fragment, fragment.createSimpleTag());
+                transaction.add(fragment, fragment.getClass().getName());
             }
             transaction.commit();
         }

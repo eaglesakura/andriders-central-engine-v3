@@ -21,7 +21,7 @@ public class AppTargetSelectFragment extends AppBaseFragment {
     Callback mCallback;
 
     public AppTargetSelectFragment() {
-        requestInjection(R.layout.fragment_setting_display_appselect);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_display_appselect);
     }
 
     @Override

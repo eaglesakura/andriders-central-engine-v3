@@ -1,16 +1,20 @@
 package com.eaglesakura.andriders.ui.navigation.log.dialog;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.RequestCodes;
 import com.eaglesakura.andriders.ui.base.AppDialogFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.MargarineKnife;
 import com.eaglesakura.android.margarine.OnClick;
+import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 import com.eaglesakura.material.widget.MaterialDialogBase;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +33,7 @@ public class GpxImportDialogFragment extends AppDialogFragment {
 
     @Bind(R.id.UserLog_Import_GPX_TimeZone)
     Spinner mTimeZoneSetting;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,5 +71,24 @@ public class GpxImportDialogFragment extends AppDialogFragment {
     @OnClick(R.id.UserLog_Import_GPX_Pick)
     void clickPickGpxFile() {
         AppLog.widget("Pick GPX File");
+        try {
+
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/*");
+
+            startActivityForResult(intent, RequestCodes.PICK_GPXFILE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @OnActivityResult(RequestCodes.PICK_GPXFILE)
+    void resultGpxFile(int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        AppLog.widget("GPX :: %s", data.getData().toString());
     }
 }

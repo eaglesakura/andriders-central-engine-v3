@@ -12,7 +12,9 @@ import com.eaglesakura.andriders.google.FitnessDeviceType;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.OnClick;
+import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.util.LogUtil;
@@ -29,6 +31,9 @@ import icepick.State;
 
 public class GadgetSettingFragment extends AppBaseFragment {
 
+    @State
+    boolean mScanBleDevice = false;
+
     final List<DbBleFitnessDevice> mHeartrateDevices = new ArrayList<>();
 
     FitnessDeviceController mHeartrateController;
@@ -44,7 +49,7 @@ public class GadgetSettingFragment extends AppBaseFragment {
     UserProfiles mPersonalDataSettings;
 
     public GadgetSettingFragment() {
-        requestInjection(R.layout.fragment_setting_gadgets);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_gadgets);
     }
 
     @Override
@@ -53,15 +58,10 @@ public class GadgetSettingFragment extends AppBaseFragment {
         mPersonalDataSettings = getSettings().getUserProfiles();
     }
 
-    @State
-    boolean mScanBleDevice = false;
-
     @Override
-    protected void onAfterViews() {
-        super.onAfterViews();
-
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
         AQuery q = new AQuery(getView());
-
 
         // ハートレートモニター設定
         {
@@ -166,6 +166,7 @@ public class GadgetSettingFragment extends AppBaseFragment {
     /**
      * UIを更新する
      */
+    @UiThread
     void updateBleSelectorUI(final FitnessDeviceType fitnessDevice, final List<DbBleFitnessDevice> devices, final String selectedDeviceAddress) {
         runOnUiThread(() -> {
             BasicSpinnerAdapter adapter;

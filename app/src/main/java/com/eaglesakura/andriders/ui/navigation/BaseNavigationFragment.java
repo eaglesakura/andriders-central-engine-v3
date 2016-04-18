@@ -2,14 +2,16 @@ package com.eaglesakura.andriders.ui.navigation;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
-import com.eaglesakura.android.framework.ui.BaseActivity;
+import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,39 +24,35 @@ public class BaseNavigationFragment extends AppBaseFragment {
      * Toolbarが存在するなら取得する
      */
     @Bind(R.id.EsMaterial_Toolbar)
-    protected Toolbar toolbar;
+    protected Toolbar mToolbar;
 
-    private ActionBarDrawerToggle drawerToggle;
+    @Nullable
+    private ActionBarDrawerToggle mDrawerToggle;
 
-    private DrawerLayout drawerLayout;
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    @Nullable
+    DrawerLayout mDrawerLayout;
 
     @Override
-    protected void onAfterViews() {
-        super.onAfterViews();
-        ((BaseActivity) getActivity()).setSupportActionBar(toolbar);
-        drawerLayout = findViewByIdFromActivity(DrawerLayout.class, R.id.Content_Drawer);
-        initializeDrawerToggle();
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
+
+        mDrawerLayout = findViewByIdFromActivity(DrawerLayout.class, R.id.Content_Drawer);
+        if (mToolbar != null) {
+            // ActionBarと関連付ける
+            getActivity(AppCompatActivity.class).setSupportActionBar(mToolbar);
+            ActionBar actionBar = getActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+
+            if (mDrawerLayout != null) {
+                initializeDrawerToggle();
+            }
+        }
     }
 
     private void initializeDrawerToggle() {
-        if (toolbar == null || drawerToggle != null) {
-            return;
-        }
-
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
-
-        toolbar = findViewByIdFromActivity(Toolbar.class, R.id.EsMaterial_Toolbar);
-
-        drawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, toolbar, 0, 0) {
+        mDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, mToolbar, 0, 0) {
             @Override
             public void onDrawerClosed(View drawerView) {
             }
@@ -63,13 +61,13 @@ public class BaseNavigationFragment extends AppBaseFragment {
             public void onDrawerOpened(View drawerView) {
             }
         };
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
+        if (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -78,10 +76,14 @@ public class BaseNavigationFragment extends AppBaseFragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
+        if (mDrawerToggle != null) {
+            mDrawerToggle.onConfigurationChanged(newConfig);
+        }
     }
 
     public void closeNavigationDrawer() {
-        drawerLayout.closeDrawers();
+        if (mDrawerToggle != null) {
+            mDrawerLayout.closeDrawers();
+        }
     }
 }

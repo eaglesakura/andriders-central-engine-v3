@@ -12,7 +12,7 @@ import android.support.annotation.UiThread;
  */
 public class LogImportFragment extends AppBaseFragment {
     public LogImportFragment() {
-        requestOptionMenu(R.menu.fragment_userlog_import);
+        mFragmentDelegate.setOptionMenuId(R.menu.fragment_userlog_import);
     }
 
     /**

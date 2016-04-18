@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.util.ResourceUtil;
 import com.edmodo.rangebar.RangeBar;
@@ -23,12 +24,12 @@ public class UserZoneSettingFragment extends AppBaseFragment {
     RangeBar cruiseZoneBar;
 
     public UserZoneSettingFragment() {
-        requestInjection(R.layout.fragment_setting_userzone);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_userzone);
     }
 
     @Override
-    protected void onAfterViews() {
-        super.onAfterViews();
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
 
         // 巡航速度設定
         {
@@ -76,20 +77,18 @@ public class UserZoneSettingFragment extends AppBaseFragment {
         updateUI();
     };
 
-    final RangeBar.OnRangeBarChangeListener cadenceZoneListener = new RangeBar.OnRangeBarChangeListener() {
-        @Override
-        public void onIndexChangeListener(RangeBar rangeBar, int minValue, int maxValue) {
-//            log("cadenceZone updated(%d -> %d)", minValue, maxValue);
-            minValue = Math.max(minValue, 1);
-            maxValue = Math.max(maxValue, minValue + 1);
+    final RangeBar.OnRangeBarChangeListener cadenceZoneListener = (rangeBar, minValue, maxValue) -> {
+        AppLog.widget("cadenceZone updated(%d -> %d)", minValue, maxValue);
+        minValue = Math.max(minValue, 1);
+        maxValue = Math.max(maxValue, minValue + 1);
 
-            UserProfiles profile = getSettings().getUserProfiles();
+        UserProfiles profile = getSettings().getUserProfiles();
 
-            profile.setCadenceZoneIdeal(MIN_CADENCE + minValue);
-            profile.setCadenceZoneHigh(MIN_CADENCE + maxValue);
+        profile.setCadenceZoneIdeal(MIN_CADENCE + minValue);
+        profile.setCadenceZoneHigh(MIN_CADENCE + maxValue);
 
-            updateUI();
-        }
+        updateUI();
+
     };
 
     /**

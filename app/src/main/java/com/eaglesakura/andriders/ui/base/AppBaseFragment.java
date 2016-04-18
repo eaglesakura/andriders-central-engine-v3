@@ -6,8 +6,9 @@ import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.auth.AcesAuthActivity;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.framework.ui.BaseFragment;
+import com.eaglesakura.android.framework.ui.SupportFragment;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
+import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
@@ -18,10 +19,11 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.StringRes;
+import android.view.Menu;
 import android.widget.Toast;
 
 
-public abstract class AppBaseFragment extends BaseFragment {
+public abstract class AppBaseFragment extends SupportFragment {
 
     /**
      * Googleの認証を行う
@@ -31,6 +33,20 @@ public abstract class AppBaseFragment extends BaseFragment {
     @Inject(StorageProvider.class)
     protected Settings mSettings;
 
+    @Override
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+
+    }
+
+    @Override
+    public void onAfterBindMenu(SupportFragmentDelegate self, Menu menu) {
+
+    }
+
+    @Override
+    public void onAfterInjection(SupportFragmentDelegate self) {
+
+    }
 
     public GoogleApiClientToken getGoogleApiClientToken() {
         Activity activity = getActivity();
@@ -39,10 +55,6 @@ public abstract class AppBaseFragment extends BaseFragment {
         } else {
             return null;
         }
-    }
-
-    public AppBaseActivity getBaseActivity() {
-        return (AppBaseActivity) getActivity();
     }
 
     public Settings getSettings() {

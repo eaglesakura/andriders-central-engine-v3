@@ -13,7 +13,7 @@ import android.support.v4.app.FragmentTransaction;
  */
 public class DisplaySettingFragmentMain extends BaseNavigationFragment implements AppTargetSelectFragment.Callback {
     public DisplaySettingFragmentMain() {
-        requestInjection(R.layout.fragment_setting_display_main);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_display_main);
     }
 
     @Override
@@ -23,11 +23,11 @@ public class DisplaySettingFragmentMain extends BaseNavigationFragment implement
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             {
                 AppTargetSelectFragment fragment = new AppTargetSelectFragment();
-                transaction.replace(R.id.Setting_Display_AppSelector_Root, fragment, fragment.createSimpleTag());
+                transaction.replace(R.id.Setting_Display_AppSelector_Root, fragment, fragment.getClass().getName());
             }
             {
                 DisplayLayoutSetFragment fragment = new DisplayLayoutSetFragment();
-                transaction.replace(R.id.Setting_Display_LayoutSet_Root, fragment, fragment.createSimpleTag());
+                transaction.replace(R.id.Setting_Display_LayoutSet_Root, fragment, fragment.getClass().getName());
             }
             transaction.commit();
         }

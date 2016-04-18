@@ -33,6 +33,7 @@ dependencies {
         compile project(':eglibrary:android-framework')
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
+        compile project(':eglibrary:android-apptour')
 
         /**
          * UnitTest
@@ -104,7 +105,7 @@ dependencies {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

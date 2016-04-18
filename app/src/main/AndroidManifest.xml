@@ -17,11 +17,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
     <!-- System Layer -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <!-- Android 5.x ForegroundApp -->
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
 
     <application
             android:name="com.eaglesakura.andriders.AceApplication"
@@ -36,6 +36,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- GPX Import -->
+        <activity
+                android:name="com.eaglesakura.andriders.ui.gpx.GpxImportTourActivity"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
 

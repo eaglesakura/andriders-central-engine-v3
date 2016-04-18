@@ -21,7 +21,7 @@ import android.support.v4.app.FragmentManager;
 public class ProfileFragmentMain extends BaseNavigationFragment {
 
     public ProfileFragmentMain() {
-        requestInjection(R.layout.fragment_simiple_main);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_simiple_main);
     }
 
     @Override
@@ -32,19 +32,19 @@ public class ProfileFragmentMain extends BaseNavigationFragment {
             {
                 RoadbikeSettingFragment fragment = new RoadbikeSettingFragment();
                 fragmentManager.beginTransaction()
-                        .add(R.id.Content_List_Root, fragment, fragment.createSimpleTag())
+                        .add(R.id.Content_List_Root, fragment, fragment.getClass().getName())
                         .commit();
             }
             {
                 UserZoneSettingFragment fragment = new UserZoneSettingFragment();
                 fragmentManager.beginTransaction()
-                        .add(R.id.Content_List_Root, fragment, fragment.createSimpleTag())
+                        .add(R.id.Content_List_Root, fragment, fragment.getClass().getName())
                         .commit();
             }
             {
                 FitnessSettingFragment fragment = new FitnessSettingFragment();
                 fragmentManager.beginTransaction()
-                        .add(R.id.Content_List_Root, fragment, fragment.createSimpleTag())
+                        .add(R.id.Content_List_Root, fragment, fragment.getClass().getName())
                         .commit();
             }
         }

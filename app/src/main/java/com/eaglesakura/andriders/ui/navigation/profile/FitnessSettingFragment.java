@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.google.GoogleApiUtil;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
@@ -35,7 +36,7 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     static final int REQUEST_GOOGLEFIT_SETTING = RequestCodes.GOOGLEFIT_SETTING;
 
     public FitnessSettingFragment() {
-        requestInjection(R.layout.fragment_setting_fitness);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_fitness);
     }
 
     @Override
@@ -45,11 +46,10 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     }
 
     @Override
-    protected void onAfterViews() {
-        super.onAfterViews();
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
         updatePersonalUI();
     }
-
 
     @Override
     public void onResume() {
