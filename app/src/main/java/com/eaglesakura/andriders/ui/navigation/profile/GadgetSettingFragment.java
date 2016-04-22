@@ -5,14 +5,13 @@ import com.google.android.gms.fitness.request.BleScanCallback;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.dao.bledevice.DbBleFitnessDevice;
-import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.db.fit.FitnessDeviceCacheDatabase;
 import com.eaglesakura.andriders.google.FitnessDeviceController;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
@@ -168,7 +167,7 @@ public class GadgetSettingFragment extends AppBaseFragment {
      */
     @UiThread
     void updateBleSelectorUI(final FitnessDeviceType fitnessDevice, final List<DbBleFitnessDevice> devices, final String selectedDeviceAddress) {
-        runOnUiThread(() -> {
+        getSubscription().run(ObserveTarget.Foreground, () -> {
             BasicSpinnerAdapter adapter;
             int selectorLayoutId;
             List<DbBleFitnessDevice> devicesList;

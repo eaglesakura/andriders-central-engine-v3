@@ -6,7 +6,7 @@ import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.util.ResourceUtil;
 import com.edmodo.rangebar.RangeBar;

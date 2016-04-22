@@ -10,10 +10,9 @@ import com.eaglesakura.andriders.extension.ExtensionSession;
 import com.eaglesakura.andriders.extension.IExtensionService;
 import com.eaglesakura.andriders.extension.data.CentralDataExtension;
 import com.eaglesakura.andriders.sensor.SensorType;
+import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.android.framework.service.BaseService;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.bluetooth.BluetoothDevice;
@@ -23,7 +22,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-public class BleHeartrateExtensionService extends BaseService implements IExtensionService {
+public class BleHeartrateExtensionService extends AppBaseService implements IExtensionService {
     HeartrateGattReceiver receiver;
 
     /**
@@ -71,7 +70,7 @@ public class BleHeartrateExtensionService extends BaseService implements IExtens
             return;
         }
 
-        receiver = new HeartrateGattReceiver(this, getSubscriptionController(), mClock);
+        receiver = new HeartrateGattReceiver(this, getSubscription(), mClock);
         receiver.setTargetFitnessDeviceAddress(address);
         receiver.setHeartrateListener(new BleHeartrateMonitor.BleHeartrateListener() {
             @Override

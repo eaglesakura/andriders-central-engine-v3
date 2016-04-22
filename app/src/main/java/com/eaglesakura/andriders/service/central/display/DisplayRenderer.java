@@ -1,21 +1,21 @@
 package com.eaglesakura.andriders.service.central.display;
 
-import com.eaglesakura.andriders.extension.ExtensionClient;
-import com.eaglesakura.andriders.extension.ExtensionClientManager;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.display.data.DataViewBinder;
 import com.eaglesakura.andriders.display.data.LayoutSlot;
 import com.eaglesakura.andriders.extension.DisplayInformation;
+import com.eaglesakura.andriders.extension.ExtensionClient;
+import com.eaglesakura.andriders.extension.ExtensionClientManager;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.Util;
 
+import android.app.Service;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,7 +23,7 @@ import android.view.ViewGroup;
  * Serviceで表示するサイコン情報を管理するマネージャ
  */
 public class DisplayRenderer {
-    final BaseService mService;
+    final Service mService;
 
     /**
      * ディスプレイの表示更新間隔
@@ -51,7 +51,7 @@ public class DisplayRenderer {
 
     DataViewBinder mDataViewBinder;
 
-    public DisplayRenderer(BaseService service, CentralContext centralContext) {
+    public DisplayRenderer(Service service, CentralContext centralContext) {
         mService = service;
         mDataViewBinder = new DataViewBinder(service, Clock.getRealtimeClock());
         mCentralContext = centralContext;

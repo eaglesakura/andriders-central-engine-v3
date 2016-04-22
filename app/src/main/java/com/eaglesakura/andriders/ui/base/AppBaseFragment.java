@@ -6,13 +6,14 @@ import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.auth.AcesAuthActivity;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.framework.ui.support.SupportFragment;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
-import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.support.SupportFragment;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 
 import android.app.Activity;
@@ -145,13 +146,13 @@ public abstract class AppBaseFragment extends SupportFragment {
     }
 
     public void toast(@StringRes final int resId) {
-        runOnUiThread(() -> {
+        UIHandler.postUI(() -> {
             Toast.makeText(FrameworkCentral.getApplication(), getString(resId), Toast.LENGTH_SHORT).show();
         });
     }
 
     public void toast(@StringRes final String msg) {
-        runOnUiThread(() -> {
+        UIHandler.postUI(() -> {
             Toast.makeText(FrameworkCentral.getApplication(), msg, Toast.LENGTH_SHORT).show();
         });
     }

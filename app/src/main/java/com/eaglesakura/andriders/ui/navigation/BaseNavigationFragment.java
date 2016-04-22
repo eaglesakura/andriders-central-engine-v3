@@ -2,11 +2,10 @@ package com.eaglesakura.andriders.ui.navigation;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
-import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
 
 import android.content.res.Configuration;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;

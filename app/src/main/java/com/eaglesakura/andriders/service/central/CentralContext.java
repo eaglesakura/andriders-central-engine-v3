@@ -12,6 +12,8 @@ import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.MultiTimer;
+import com.eaglesakura.android.framework.delegate.lifecycle.LifecycleDelegate;
+import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.LifecycleState;
@@ -22,15 +24,12 @@ import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.io.Disposable;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.SerializeUtil;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-
-import rx.subjects.BehaviorSubject;
 
 /**
  * ACEの表示状態
@@ -113,9 +112,7 @@ public class CentralContext implements Disposable {
      */
     static final int CENTRAL_COMMIT_INTERVAL_MS = 1000 * 30;
 
-    private BehaviorSubject<LifecycleState> mSubject = BehaviorSubject.create(LifecycleState.NewObject);
-
-    private SubscriptionController mSubscriptionController = new SubscriptionController().bind(mSubject);
+    private ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
     public CentralContext(Service context, Clock updateClock) {
         mContext = context;
@@ -158,14 +155,14 @@ public class CentralContext implements Disposable {
      * タスクはUIスレッドで実行される。
      */
     public void post(Runnable task) {
-        mSubscriptionController.run(ObserveTarget.Alive, task);
+        getSubscription().run(ObserveTarget.Alive, task);
     }
 
     /**
      * コールバック管理を取得する
      */
-    public SubscriptionController getSubscriptionController() {
-        return mSubscriptionController;
+    public SubscriptionController getSubscription() {
+        return mLifecycleDelegate.getSubscription();
     }
 
     /**
@@ -194,9 +191,7 @@ public class CentralContext implements Disposable {
      * データ接続を開始する
      */
     public void onServiceInitializeCompleted() {
-        mSubject.onNext(LifecycleState.OnCreated);
-        mSubject.onNext(LifecycleState.OnStarted);
-        mSubject.onNext(LifecycleState.OnResumed);
+        mLifecycleDelegate.onCreate();
         newTask(SubscribeTarget.GlobalPipeline, task -> {
             initExtensions();
             return this;
@@ -248,7 +243,7 @@ public class CentralContext implements Disposable {
         requestCommitDatabase();    // セントラルにコミットをかける
 
         // その他の終了タスクを投げる
-        new RxTaskBuilder<>(mSubscriptionController)
+        new RxTaskBuilder<>(getSubscription())
                 .observeOn(ObserveTarget.FireAndForget)
                 .subscribeOn(SubscribeTarget.GlobalPipeline)
                 .async(task -> {
@@ -260,16 +255,14 @@ public class CentralContext implements Disposable {
                 }).start();
 
         // タスクをシャットダウンする
-        mSubject.onNext(LifecycleState.OnPaused);
-        mSubject.onNext(LifecycleState.OnStopped);
-        mSubject.onNext(LifecycleState.OnDestroyed);
+        mLifecycleDelegate.onDestroy();
     }
 
     /**
      * 非同期タスクを生成する
      */
     public <T> RxTaskBuilder<T> newTask(SubscribeTarget subscribeTarget, RxTask.Async<T> task) {
-        return new RxTaskBuilder<T>(getSubscriptionController())
+        return new RxTaskBuilder<T>(getSubscription())
                 .async(task)
                 .observeOn(ObserveTarget.Alive)
                 .subscribeOn(subscribeTarget);
@@ -279,7 +272,7 @@ public class CentralContext implements Disposable {
      * DBの内容を書き出す
      */
     void requestCommitDatabase() {
-        new RxTaskBuilder<>(mSubscriptionController)
+        new RxTaskBuilder<>(getSubscription())
                 .observeOn(ObserveTarget.FireAndForget)
                 .subscribeOn(SubscribeTarget.GlobalPipeline)
                 .async(task -> {

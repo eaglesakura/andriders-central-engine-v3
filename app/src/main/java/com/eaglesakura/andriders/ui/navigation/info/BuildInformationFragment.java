@@ -2,13 +2,12 @@ package com.eaglesakura.andriders.ui.navigation.info;
 
 import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.CentralServiceSettings;
 import com.eaglesakura.andriders.v2.db.DebugSettings;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.device.external.StorageInfo;
-import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.license.LicenseViewActivity;
 import com.eaglesakura.android.margarine.OnCheckedChanged;
 import com.eaglesakura.android.margarine.OnClick;

@@ -5,7 +5,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.extension.DisplayInformation;
 import com.eaglesakura.andriders.extension.ExtensionCategory;
 import com.eaglesakura.andriders.extension.ExtensionInformation;
@@ -18,14 +17,12 @@ import com.eaglesakura.andriders.extension.display.LineValue;
 import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.andriders.ui.auth.PermissionRequestActivity;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
 
-import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;

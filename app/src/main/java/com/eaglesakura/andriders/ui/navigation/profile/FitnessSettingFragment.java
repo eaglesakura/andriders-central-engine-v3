@@ -5,16 +5,16 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.RequestCodes;
-import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.google.GoogleApiUtil;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.ui.delegate.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.playservice.GoogleApiTask;
+import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialInputDialog;
@@ -58,15 +58,13 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
         // client add
         getGoogleApiClientToken().registerConnectionCallbacks(this);
         getGoogleApiClientToken().registerConnectionFailedListener(this);
-
-        syncFitnessData();
     }
 
     /**
      * 個人設定を更新する
      */
     void updatePersonalUI() {
-        runOnUiThread(() -> {
+        getSubscription().run(ObserveTarget.Foreground, () -> {
             AQuery q = new AQuery(getView());
 
             // 体重設定

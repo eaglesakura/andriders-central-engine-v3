@@ -4,21 +4,20 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.RequestCodes;
 import com.eaglesakura.andriders.ui.base.AppDialogFragment;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.delegate.fragment.DialogFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.MargarineKnife;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
-import com.eaglesakura.material.widget.MaterialDialogBase;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatSpinner;
+import android.support.v4.app.Fragment;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -51,7 +50,7 @@ public class GpxImportDialogFragment extends AppDialogFragment {
 
     @NonNull
     @Override
-    protected Dialog onCreateDialog(Bundle state) {
+    public Dialog onCreateDialog(DialogFragmentDelegate self, Bundle savedInstanceState) {
         MaterialAlertDialog dialog = new MaterialAlertDialog(getContext());
         dialog.setDialogContent(R.layout.dialog_import_gpx);
         dialog.setTitle("GPX読込");
@@ -90,5 +89,11 @@ public class GpxImportDialogFragment extends AppDialogFragment {
         }
 
         AppLog.widget("GPX :: %s", data.getData().toString());
+    }
+
+
+    @Override
+    public void onDismiss(DialogFragmentDelegate self) {
+
     }
 }
