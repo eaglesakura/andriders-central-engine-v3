@@ -40,13 +40,13 @@
         </activity>
 
         <!-- GPX Import -->
-        <activity
-                android:name="com.eaglesakura.andriders.ui.gpx.GpxImportTourActivity"
-                android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
+        <!--<activity-->
+                <!--android:name="com.eaglesakura.andriders.ui.gpx.GpxImportTourActivity"-->
+                <!--android:screenOrientation="portrait">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
 
         <activity
                 android:name="com.eaglesakura.andriders.ui.auth.AcesAuthActivity"

@@ -80,6 +80,13 @@ public class BaseNavigationFragment extends AppBaseFragment {
         }
     }
 
+    /**
+     * 次の画面遷移を行う
+     */
+    public void nextNavigation(BaseNavigationFragment fragment, int flags) {
+        getActivity(MainContentActivity.class).nextNavigation(fragment, flags);
+    }
+
     public void closeNavigationDrawer() {
         if (mDrawerToggle != null) {
             mDrawerLayout.closeDrawers();

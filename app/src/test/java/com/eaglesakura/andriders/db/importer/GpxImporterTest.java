@@ -19,7 +19,7 @@ public class GpxImporterTest extends AppUnitTestCase {
     public void AACR2015のテストデータをインストールする() throws Exception {
         GpxImporter importer = new GpxImporter(getContext(), new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile());
         importer.getParser().setDateOption(GpxParser.DateOption.AddTimeZone);
-        importer.install(null);
+        importer.install(() -> false);
 
         assertEquals(DateUtil.getYear(importer.getImportStartDate(), TimeZone.getDefault()), 2015);
         assertEquals(DateUtil.getMonth(importer.getImportStartDate(), TimeZone.getDefault()), 5);

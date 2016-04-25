@@ -8,6 +8,9 @@ import com.eaglesakura.andriders.data.gpx.GpxSegment;
 import com.eaglesakura.andriders.util.CancelSignal;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.io.CancelableInputStream;
+import com.eaglesakura.lambda.CallbackUtils;
+import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.IOUtil;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -21,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.util.Date;
 
 /**
@@ -73,7 +77,12 @@ public class GpxImporter {
         return mImportEndDate;
     }
 
-    public int install(CancelSignal cancelSignal) throws XmlPullParserException, IOException {
+    /**
+     * インストールを行う
+     *
+     * @return 読み込んだセグメント数
+     */
+    public int install(CancelCallback cancelCallback) throws XmlPullParserException, IOException {
         Gpx gpx;
         InputStream is;
         if (mGpxUri != null) {
@@ -83,6 +92,9 @@ public class GpxImporter {
         } else {
             throw new IllegalStateException();
         }
+
+        // キャンセルコールバックでラップする
+        is = new CancelableInputStream(is, cancelCallback);
 
         try {
             gpx = mParser.parse(is);
@@ -120,8 +132,8 @@ public class GpxImporter {
             centralDataManager.commit();
             ++segmentIndex;
 
-            if (cancelSignal != null && cancelSignal.isCanceled()) {
-                return -1;
+            if (CallbackUtils.isCanceled(cancelCallback)) {
+                throw new InterruptedIOException("Import Canceled");
             }
         }
 

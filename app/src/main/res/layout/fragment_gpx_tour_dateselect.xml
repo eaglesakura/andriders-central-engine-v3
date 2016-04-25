@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
+                 android:layout_weight="1"
+                 style="@style/EsMaterial.Theme.Widget">
+
+        <TextView
+                style="@style/EsMaterial.Font.Normal"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:text="時差調整方法を選択してください。"/>
+    </FrameLayout>
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
+                 android:layout_weight="1">
+        <RadioGroup
+                style="@style/EsMaterial.Theme.Widget"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <android.support.v7.widget.AppCompatRadioButton android:layout_width="match_parent"
+                                                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                                                            android:text="時差調整しない"
+                                                            android:layout_height="wrap_content"/>
+            <android.support.v7.widget.AppCompatRadioButton android:layout_width="match_parent"
+                                                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                                                            android:text="時差を加算する"
+                                                            android:layout_height="wrap_content"/>
+            <android.support.v7.widget.AppCompatRadioButton android:layout_width="match_parent"
+                                                            android:text="時差を減算する"
+                                                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                                                            android:layout_height="wrap_content"/>
+
+        </RadioGroup>
+    </FrameLayout>
+</LinearLayout>

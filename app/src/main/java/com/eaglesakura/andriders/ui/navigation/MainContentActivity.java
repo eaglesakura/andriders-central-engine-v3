@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.BuildConfig;
 import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
+import com.eaglesakura.android.framework.ui.FragmentTransactionBuilder;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
@@ -93,10 +94,15 @@ public class MainContentActivity extends AppBaseActivity {
     }
 
     /**
+     * BackStackに追加する
+     */
+    public static final int NAVIGATION_FLAG_BACKSTACK = 0x1 << 0;
+
+    /**
      * 制御Fragmentを交換する。
      * 既にその画面が開かれている場合、何もしない。
      */
-    void changeFragment(BaseNavigationFragment newFragment) {
+    public void nextNavigation(Fragment newFragment, int flags) {
         FragmentManager manager = getSupportFragmentManager();
         Fragment oldFragment = getContentFragment();
         if (oldFragment != null && oldFragment.getClass().equals(newFragment.getClass())) {
@@ -104,11 +110,13 @@ public class MainContentActivity extends AppBaseActivity {
             return;
         }
 
-        FragmentTransaction transaction = manager.beginTransaction();
-        {
-            transaction.replace(R.id.Content_Holder_Root, newFragment, ContentHolderActivityDelegate.TAG_CONTENT_FRAGMENT_MAIN);
+        FragmentTransactionBuilder builder = new FragmentTransactionBuilder(this, manager);
+        builder.animation(FragmentTransactionBuilder.AnimationType.Fade)
+                .replace(R.id.Content_Holder_Root, newFragment, ContentHolderActivityDelegate.TAG_CONTENT_FRAGMENT_MAIN);
+        if ((flags & NAVIGATION_FLAG_BACKSTACK) != 0) {
+            builder.addToBackStack();
         }
-        transaction.commit();
+        builder.commit();
     }
 
     @Override
@@ -136,6 +144,6 @@ public class MainContentActivity extends AppBaseActivity {
     }
 
     final MenuController.MenuCallback mMenuCallback = (fragment) -> {
-        changeFragment(fragment);
+        nextNavigation(fragment, 0x00);
     };
 }
