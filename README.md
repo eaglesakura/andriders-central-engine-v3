@@ -65,7 +65,7 @@ chmod 755 ./gradlew
 ./script/developer-install-private.sh
 
 # ビルドを行う
-./gradlew assembleDebug
+./gradlew --refresh-dependencies assembleDebug
 </pre>
 
 ## ライセンス
