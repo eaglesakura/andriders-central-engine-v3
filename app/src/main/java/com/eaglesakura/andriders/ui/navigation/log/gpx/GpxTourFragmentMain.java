@@ -52,7 +52,7 @@ public class GpxTourFragmentMain extends BaseNavigationFragment implements AppTo
     public void onDestroy() {
         super.onDestroy();
         mAppTourDelegate.rollbackThemeColor();
-        getActivity(AppBaseActivity.class).getBackStackManager().pop();
+        getActivity(AppBaseActivity.class).getBackStackManager().pop(this);
     }
 
     @Override
@@ -64,23 +64,20 @@ public class GpxTourFragmentMain extends BaseNavigationFragment implements AppTo
         self.setDoneButtonTextColor(Color.WHITE);
         self.setNextButtonColorToWhite();
 
+        self.setSlideChangeListener((it, index, nextFragment) -> {
+            if (nextFragment instanceof GpxTourImportProgressFragment) {
+                ((GpxTourImportProgressFragment) nextFragment).startImport();
+            }
+        });
+
+        self.setOnDoneClickListener((it) -> {
+            mFragmentDelegate.detatchSelf(true);
+        });
+
         self.hideSkip();
         self.hideDone();
         self.hideNext();
         self.setSwipeLock(true);
-    }
-
-    @Override
-    public void onClickTourNext(@NonNull AppTourDelegate self, int tourIndex) {
-        Fragment nextFragment = self.getSlide(tourIndex + 1);
-        if (nextFragment instanceof GpxTourImportProgressFragment) {
-            ((GpxTourImportProgressFragment) nextFragment).startImport();
-        }
-    }
-
-    @Override
-    public void onClickTourDone(@NonNull AppTourDelegate self) {
-        mFragmentDelegate.detatchSelf(true);
     }
 
     @Override
@@ -130,11 +127,6 @@ public class GpxTourFragmentMain extends BaseNavigationFragment implements AppTo
     @Override
     public LayoutInflater getLayoutInflater(@NonNull AppTourDelegate self) {
         return getActivity().getLayoutInflater();
-    }
-
-    @Override
-    public void onClickTourSkip(@NonNull AppTourDelegate self, int tourIndex) {
-        // not impl
     }
 
     @Override
