@@ -129,6 +129,14 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     }
 
     /**
+     * 全てのログトータルを取得する
+     */
+    @Nullable
+    public SessionTotal loadTotal() {
+        return loadTotal(0, System.currentTimeMillis() + Timer.toMilliSec(365, 0, 0, 0, 0));
+    }
+
+    /**
      * セッション情報を更新する
      *
      * @param currentSession 外部で更新済みのセッション情報

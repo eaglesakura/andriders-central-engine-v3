@@ -6,7 +6,7 @@ import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.extension.ExtensionFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.info.InformationFragmentMain;
-import com.eaglesakura.andriders.ui.navigation.log.UserLogMain;
+import com.eaglesakura.andriders.ui.navigation.log.UserLogFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.profile.ProfileFragmentMain;
 
 import android.content.Context;
@@ -81,7 +81,7 @@ public class MenuController {
                 mCallback.requestChangeContent(DisplaySettingFragmentMain.newInstance(mContext));
                 break;
             case R.id.Main_Menu_UserLog:
-                mCallback.requestChangeContent(UserLogMain.newInstance(mContext));
+                mCallback.requestChangeContent(UserLogFragmentMain.newInstance(mContext));
                 break;
             case R.id.Main_Menu_Extensions:
                 mCallback.requestChangeContent(ExtensionFragmentMain.newInstance(mContext));
