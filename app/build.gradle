@@ -58,6 +58,7 @@ dependencies {
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
         compile 'com.eaglesakura:margarineknife:1.+'
+        compile 'com.eaglesakura:android-apptour:+'
 
         /**
          * Injection / State
