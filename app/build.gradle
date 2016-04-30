@@ -112,6 +112,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
         minSdkVersion 21

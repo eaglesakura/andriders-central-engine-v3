@@ -5,7 +5,7 @@
              android:background="@drawable/esm_button_transparent_fill"
              android:layout_height="@dimen/EsMaterial.Button.MinHeight">
 
-    <com.eaglesakura.material.widget.MaterialTextView android:layout_width="match_parent"
+    <TextView android:layout_width="match_parent"
               style="@style/EsMaterial.Font.Normal"
               android:id="@+id/Extension.ItemSelector.Name"
               android:layout_margin="@dimen/EsMaterial.Button.Margin"

@@ -13,7 +13,6 @@ import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.material.widget.MaterialButton;
-import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -34,11 +33,11 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
     DataLayoutManager mDisplaySlotManager;
 
-    String appPackageName;
+    String mAppPackageName;
 
     ExtensionClientManager mExtensionClientManager;
 
-    List<DisplayInformation> displayValues = new ArrayList<>();
+    List<DisplayInformation> mDisplayValues = new ArrayList<>();
 
     public DisplayLayoutSetFragment() {
     }
@@ -64,7 +63,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        displayValues.clear();
+        mDisplayValues.clear();
         async(SubscribeTarget.Pipeline, ObserveTarget.FireAndForget, it -> {
             if (mExtensionClientManager != null) {
                 mExtensionClientManager.disconnect();
@@ -77,7 +76,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * 拡張機能を読み込む
      */
     private void loadExtensionClients() {
-        displayValues.clear();
+        mDisplayValues.clear();
         async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<ExtensionClientManager> it) -> {
             ExtensionClientManager clientManager = new ExtensionClientManager(getContext());
             try {
@@ -89,7 +88,9 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             return clientManager;
         }).completed((manager, task) -> {
             mExtensionClientManager = manager;
-            loadDisplayDatas(appPackageName);
+            loadDisplayDatas(mAppPackageName);
+        }).failed((error, task) -> {
+            error.printStackTrace();
         }).start();
     }
 
@@ -101,11 +102,11 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             DataLayoutManager slotManager = null;
             pushProgress(R.string.Common_File_Load);
             // 拡張機能のアイコンを読み込む
-            displayValues.clear();
+            mDisplayValues.clear();
             for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
                 client.loadIcon();
                 for (DisplayInformation info : client.getDisplayInformations()) {
-                    displayValues.add(info);
+                    mDisplayValues.add(info);
                 }
             }
 
