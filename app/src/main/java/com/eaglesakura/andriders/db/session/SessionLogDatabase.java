@@ -6,9 +6,12 @@ import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.db.DaoDatabase;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.Timer;
 
@@ -31,12 +34,15 @@ import de.greenrobot.dao.query.QueryBuilder;
 public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     private static final int SUPPORTED_DATABASE_VERSION = 1;
 
-    @Nullable
-    String mDbPath;
+    @Inject(StorageProvider.class)
+    AppStorageManager mStorageManager;
 
-    public SessionLogDatabase(@NonNull Context context, @NonNull String dbPath) {
+    public SessionLogDatabase(@NonNull Context context) {
         super(context, DaoMaster.class);
-        mDbPath = dbPath;
+
+        Garnet.create(this)
+                .depend(Context.class, context)
+                .inject();
     }
 
     /**
@@ -159,7 +165,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, mDbPath, null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, mStorageManager.getDatabasePath("session_log.db"), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

@@ -3,7 +3,6 @@ package com.eaglesakura.andriders.ui.navigation.log;
 import com.eaglesakura.andriders.databinding.FragmentUserLogSynthesisBinding;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotal;
-import com.eaglesakura.andriders.db.storage.AppStorageManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.ui.binding.UserLogSynthesis;
 import com.eaglesakura.android.rx.ObserveTarget;
@@ -43,7 +42,7 @@ public class UserLogSynthesisFragment extends AppBaseFragment {
     @UiThread
     void loadSynthesisLog() {
         async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<SessionTotal> task) -> {
-            SessionLogDatabase db = new SessionLogDatabase(getContext(), new AppStorageManager(getContext()).getDatabasePath("session_log.db"));
+            SessionLogDatabase db = new SessionLogDatabase(getContext());
             try {
                 db.openReadOnly();
                 SessionTotal result = db.loadTotal();

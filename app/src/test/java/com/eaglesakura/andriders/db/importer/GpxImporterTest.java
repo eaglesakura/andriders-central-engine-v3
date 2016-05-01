@@ -31,7 +31,7 @@ public class GpxImporterTest extends AppUnitTestCase {
         assertEquals(DateUtil.getDay(importer.getImportEndDate(), TimeZone.getDefault()), 24);
         assertEquals(DateUtil.getHour(importer.getImportEndDate(), TimeZone.getDefault()), 16);
 
-        SessionLogDatabase db = new SessionLogDatabase(getContext(), mStorageManager.getDatabasePath(SessionLogger.DATABASE_NAME));
+        SessionLogDatabase db = new SessionLogDatabase(getContext());
         try {
             assertEquals(db.loadMaxSpeedKmh(), 61.0, 1.0);  // AACR最高速度
             assertEquals(

@@ -628,7 +628,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
             {
                 Date startTime = gpx.getFirstSegment().getFirstPoint().getTime();
                 Date endTime = gpx.getLastSegment().getLastPoint().getTime();
-                SessionLogDatabase sessionDb = new SessionLogDatabase(getContext(), mStorageManager.getDatabasePath(SessionLogger.DATABASE_NAME));
+                SessionLogDatabase sessionDb = new SessionLogDatabase(getContext());
                 try {
                     sessionDb.openReadOnly();
                     SessionTotal total = sessionDb.loadTotal(startTime.getTime(), endTime.getTime());
@@ -651,7 +651,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         {
             Date startTime = gpx.getFirstSegment().getFirstPoint().getTime();
             Date endTime = gpx.getLastSegment().getLastPoint().getTime();
-            SessionLogDatabase sessionDb = new SessionLogDatabase(getContext(), mStorageManager.getDatabasePath(SessionLogger.DATABASE_NAME));
+            SessionLogDatabase sessionDb = new SessionLogDatabase(getContext());
             try {
                 sessionDb.openReadOnly();
                 SessionTotal total = sessionDb.loadTotal(startTime.getTime(), endTime.getTime());
