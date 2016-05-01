@@ -3,12 +3,17 @@ package com.eaglesakura.andriders.ui.navigation.log;
 import com.eaglesakura.andriders.databinding.FragmentUserLogSynthesisBinding;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotal;
+import com.eaglesakura.andriders.db.session.SessionTotalCollection;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.ui.binding.UserLogSynthesis;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
+import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.StringUtil;
+import com.eaglesakura.util.Timer;
+
+import org.stringtemplate.v4.misc.STCompiletimeMessage;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class UserLogSynthesisFragment extends AppBaseFragment {
     FragmentUserLogSynthesisBinding mBinding;
@@ -41,11 +48,11 @@ public class UserLogSynthesisFragment extends AppBaseFragment {
      */
     @UiThread
     void loadSynthesisLog() {
-        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<SessionTotal> task) -> {
+        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<SessionTotalCollection> task) -> {
             SessionLogDatabase db = new SessionLogDatabase(getContext());
             try {
                 db.openReadOnly();
-                SessionTotal result = db.loadTotal();
+                SessionTotalCollection result = db.loadTotal(SessionTotalCollection.Order.Asc);
                 if (result == null) {
                     throw new FileNotFoundException("Log Not Found");
                 }
@@ -63,7 +70,7 @@ public class UserLogSynthesisFragment extends AppBaseFragment {
     }
 
     @UiThread
-    void onLoadTotal(@NonNull SessionTotal total) {
+    void onLoadTotal(@NonNull SessionTotalCollection total) {
         mBinding.setValue(new UserLogSynthesis() {
             @NonNull
             @Override
@@ -80,7 +87,7 @@ public class UserLogSynthesisFragment extends AppBaseFragment {
             @NonNull
             @Override
             public String getLongestDateDistanceInfo() {
-                return StringUtil.format("No DATA");
+                return StringUtil.format("%.1f km", total.getLongestDateDistanceKm());
             }
 
             @NonNull
@@ -98,7 +105,10 @@ public class UserLogSynthesisFragment extends AppBaseFragment {
             @NonNull
             @Override
             public String getExerciseInfo() {
-                return StringUtil.format("No DATA");
+                Date todayStart = DateUtil.getDateStart(new Date(), TimeZone.getDefault());
+                long ONE_DAY = Timer.toMilliSec(1, 0, 0, 0, 0);
+                long TODAY_END = todayStart.getTime() + ONE_DAY;
+                return StringUtil.format("%.2f Ex", total.getRangeExercise(TODAY_END - (ONE_DAY * 7), TODAY_END));
             }
         });
     }

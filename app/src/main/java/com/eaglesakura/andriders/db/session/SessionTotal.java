@@ -1,13 +1,10 @@
 package com.eaglesakura.andriders.db.session;
 
 import com.eaglesakura.andriders.dao.session.DbSessionLog;
-import com.eaglesakura.android.db.GreenDaoUtil;
-import com.eaglesakura.util.DateUtil;
 
 import android.support.annotation.NonNull;
 
 import java.util.Date;
-import java.util.Iterator;
 
 import de.greenrobot.dao.query.CloseableListIterator;
 
@@ -22,8 +19,7 @@ public class SessionTotal {
      */
     private final int mSessionNum;
 
-    public SessionTotal(@NonNull CloseableListIterator<DbSessionLog> sessions) {
-
+    SessionTotal(@NonNull CloseableListIterator<DbSessionLog> sessions) {
         long startTime = 0;
         long endTime = 0;
         int sessionNum = 0;
@@ -49,8 +45,6 @@ public class SessionTotal {
 
             ++sessionNum;
         }
-        GreenDaoUtil.close(sessions);
-
         mLog.setStartTime(new Date(startTime));
         mLog.setEndTime(new Date(endTime));
         mSessionNum = sessionNum;

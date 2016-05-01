@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.db.DaoDatabase;
+import com.eaglesakura.android.db.GreenDaoUtil;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.util.DateUtil;
@@ -23,6 +24,8 @@ import android.support.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TimeZone;
 
 import de.greenrobot.dao.query.CloseableListIterator;
@@ -115,21 +118,24 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     @Nullable
     public SessionTotal loadTotal(long startTime, long endTime) {
         Timer timer = new Timer();
+        CloseableListIterator<DbSessionLog> iterator = null;
         try {
             QueryBuilder<DbSessionLog> builder = session.getDbSessionLogDao().queryBuilder();
 
             AppLog.db("loadTotal start(%s) end(%s)", new Date(startTime).toString(), new Date(endTime).toString());
 
-            CloseableListIterator<DbSessionLog> iterator = builder
+            iterator = builder
                     .where(DbSessionLogDao.Properties.StartTime.ge(startTime), DbSessionLogDao.Properties.StartTime.le(endTime))
                     .orderAsc(DbSessionLogDao.Properties.StartTime)
                     .listIterator();
+
             if (iterator.hasNext()) {
                 return new SessionTotal(iterator);
             } else {
                 return null;
             }
         } finally {
+            GreenDaoUtil.close(iterator);
             AppLog.db("loadTotal readTime[%d ms]", timer.end());
         }
     }
@@ -138,8 +144,35 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      * 全てのログトータルを取得する
      */
     @Nullable
-    public SessionTotal loadTotal() {
-        return loadTotal(0, System.currentTimeMillis() + Timer.toMilliSec(365, 0, 0, 0, 0));
+    public SessionTotalCollection loadTotal(SessionTotalCollection.Order order) {
+
+        // 全てのセッションを読みだしていく
+        Set<Long> mSessionDates = new HashSet<>();
+        {
+            TimeZone timeZone = TimeZone.getDefault();
+            QueryBuilder<DbSessionLog> builder = session.getDbSessionLogDao().queryBuilder().orderAsc(DbSessionLogDao.Properties.StartTime);
+            each(builder.listIterator(), (it, self) -> {
+                Date dayStart = DateUtil.getDateStart(it.getStartTime(), timeZone);
+                mSessionDates.add(dayStart.getTime());
+            }, this);
+        }
+        AppLog.db("Session Days :: " + mSessionDates.size());
+
+        // 全ての範囲を読みだす
+        SessionTotalCollection result = new SessionTotalCollection();
+        {
+            final long ONE_DAY_MS = Timer.toMilliSec(1, 0, 0, 0, 0);
+            for (long beginTime : mSessionDates) {
+                SessionTotal total = loadTotal(beginTime, beginTime + ONE_DAY_MS);
+                result.add(total);
+                AppLog.db("Total range[%s - %s]", total.getStartTime().toString(), total.getEndTime().toString());
+            }
+        }
+
+        // ソートする
+        result.sort(order);
+
+        return result;
     }
 
     /**
