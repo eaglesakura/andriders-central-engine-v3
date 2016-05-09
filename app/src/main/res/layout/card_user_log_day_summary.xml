@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable name="info" type="com.eaglesakura.andriders.ui.binding.UserLogDate"/>
+    </data>
+
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:orientation="vertical"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent">
+
+        <android.support.v7.widget.CardView
+                style="@style/EsMaterial.CardView.Light"
+                android:id="@+id/UserActivity.Date.Root"
+                android:clickable="true"
+
+                android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                android:layout_marginBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+
+                    <ImageView
+                            android:src="@drawable/ic_launcher"
+                            android:layout_marginLeft="@dimen/EsMaterial.Button.Margin"
+                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                            android:layout_width="@dimen/EsMaterial.Header.Icon.Size"
+                            android:layout_height="@dimen/EsMaterial.Header.Icon.Size"/>
+                </FrameLayout>
+
+                <LinearLayout
+                        android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                style="@style/EsMaterial.Font.Title.Card"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:text="走行日"/>
+
+                        <TextView
+                                style="@style/EsMaterial.Font.Title.Card"
+                                android:id="@+id/UserActivity.Date.Day"
+                                android:layout_weight="1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="right"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="セッション数"/>
+
+                        <TextView
+                                android:id="@+id/UserActivity.Date.Distance"
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:gravity="right"
+                                android:layout_weight="1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/Common.File.Load"/>
+                    </LinearLayout>
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="走行距離"/>
+
+                        <TextView
+                                android:id="@+id/UserActivity.Date.Distance"
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:gravity="right"
+                                android:layout_weight="1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/Common.File.Load"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="合計時間"/>
+
+                        <TextView
+                                android:id="@+id/UserActivity.Date.SessionTime"
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:gravity="right"
+                                android:layout_weight="1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/Common.File.Load"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:id="@+id/UserActivity.Date.SumAltitude.Root"
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="獲得標高"/>
+
+                        <TextView
+                                android:id="@+id/UserActivity.Date.SumAltitude"
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:gravity="right"
+                                android:layout_weight="1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/Common.File.Load"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="最高速度"/>
+
+                        <TextView
+                                android:id="@+id/UserActivity.Date.MaxSpeed"
+                                android:layout_gravity="center_vertical"
+                                style="@style/EsMaterial.Font.Normal"
+                                android:gravity="right"
+                                android:layout_weight="1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/Common.File.Load"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </FrameLayout>
+</layout>

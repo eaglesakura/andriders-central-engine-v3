@@ -1,6 +1,8 @@
 package com.eaglesakura.andriders.ui.navigation.log;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.db.session.SessionLogDatabase;
+import com.eaglesakura.andriders.db.session.SessionTotalCollection;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.MainContentActivity;
 import com.eaglesakura.andriders.ui.navigation.log.gpx.GpxTourFragmentMain;
@@ -8,12 +10,13 @@ import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelega
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentPager;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnMenuClick;
+import com.eaglesakura.android.rx.RxTask;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.annotation.UiThread;
 import android.support.v4.view.ViewPager;
 
 import icepick.State;
@@ -21,10 +24,12 @@ import icepick.State;
 /**
  * ログ表示画面のメインFragment
  */
-public class UserLogFragmentMain extends BaseNavigationFragment {
+public class UserLogFragmentMain extends BaseNavigationFragment implements UserLogFragmentParent {
 
     @NonNull
     final SupportFragmentPager mPager = new SupportFragmentPager(R.id.UserActivity_Main_Pager);
+
+    SessionTotalCollection mSessionTotalCollection;
 
     @Bind(R.id.UserActivity_Main_Pager)
     ViewPager mViewPager;
@@ -53,10 +58,31 @@ public class UserLogFragmentMain extends BaseNavigationFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-        }
+    public void onResume() {
+        super.onResume();
+        loadSessionTotal();
+    }
+
+    @UiThread
+    void loadSessionTotal() {
+        mSessionTotalCollection = null;
+        asyncUI((RxTask<SessionTotalCollection> task) -> {
+            SessionLogDatabase db = new SessionLogDatabase(getActivity());
+            try {
+                db.openReadOnly();
+                return db.loadTotal(SessionTotalCollection.Order.Desc);
+            } finally {
+                db.close();
+            }
+        }).completed((result, task) -> {
+            mSessionTotalCollection = result;
+        }).start();
+    }
+
+    @Nullable
+    @Override
+    public SessionTotalCollection getUserLogCollection() {
+        return mSessionTotalCollection;
     }
 
     @OnMenuClick(R.id.UserLog_Import_GPX)

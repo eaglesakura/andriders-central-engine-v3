@@ -1,20 +1,18 @@
 package com.eaglesakura.andriders.ui.navigation.log;
 
 import com.eaglesakura.andriders.databinding.FragmentUserLogSynthesisBinding;
-import com.eaglesakura.andriders.db.session.SessionLogDatabase;
-import com.eaglesakura.andriders.db.session.SessionTotal;
 import com.eaglesakura.andriders.db.session.SessionTotalCollection;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.ui.binding.UserLogSynthesis;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
+import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Timer;
 
-import org.stringtemplate.v4.misc.STCompiletimeMessage;
-
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,12 +21,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class UserLogSynthesisFragment extends AppBaseFragment {
     FragmentUserLogSynthesisBinding mBinding;
+
+    UserLogFragmentParent mParent;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mParent = getParentOrThrow(UserLogFragmentParent.class);
+    }
 
     @Nullable
     @Override
@@ -49,28 +54,23 @@ public class UserLogSynthesisFragment extends AppBaseFragment {
     @UiThread
     void loadSynthesisLog() {
         async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<SessionTotalCollection> task) -> {
-            SessionLogDatabase db = new SessionLogDatabase(getContext());
-            try {
-                db.openReadOnly();
-                SessionTotalCollection result = db.loadTotal(SessionTotalCollection.Order.Asc);
-                if (result == null) {
-                    throw new FileNotFoundException("Log Not Found");
+            while (!task.isCanceled()) {
+                SessionTotalCollection result = mParent.getUserLogCollection();
+                if (result != null) {
+                    return result;
                 }
-                return result;
-            } finally {
-                db.close();
             }
+            throw new TaskCanceledException();
         }).completed((result, task) -> {
-            onLoadTotal(result);
+            onLoadSessions(result);
         }).failed((error, task) -> {
             onLoadFailed(error);
         }).finalized(task -> {
-
         }).start();
     }
 
     @UiThread
-    void onLoadTotal(@NonNull SessionTotalCollection total) {
+    void onLoadSessions(@NonNull SessionTotalCollection total) {
         mBinding.setValue(new UserLogSynthesis() {
             @NonNull
             @Override
