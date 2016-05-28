@@ -307,7 +307,7 @@ public class CentralDataManager {
     }
 
     private void getStatus(RawCentralData.RawCentralStatus dst) {
-        dst.debug = mSettings.isDebugable();
+        dst.debug = mSettings.isDebuggable();
         dst.date = now();
     }
 

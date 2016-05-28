@@ -1,11 +1,11 @@
-package com.eaglesakura.andriders.extension;
+package com.eaglesakura.andriders.plugin;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
-import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
+import com.eaglesakura.andriders.plugin.internal.ExtensionServerImpl;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.CollectionUtil;
@@ -86,7 +86,7 @@ public class ExtensionClientManager {
         return null;
     }
 
-    public DisplayInformation findDisplayInformation(String extensionId, String displayId) {
+    public DisplayKey findDisplayInformation(String extensionId, String displayId) {
         ExtensionClient client = findClient(extensionId);
         if (client != null) {
             return client.findDisplayInformation(displayId);
@@ -98,15 +98,15 @@ public class ExtensionClientManager {
     /**
      * ディスプレイ表示内容から拡張機能を逆引きする
      */
-    public ExtensionClient findDisplayClient(DisplayInformation check) {
+    public ExtensionClient findDisplayClient(DisplayKey check) {
         synchronized (mExtensions) {
             for (ExtensionClient client : mExtensions) {
-                List<DisplayInformation> informations = client.getDisplayInformations();
+                List<DisplayKey> informations = client.getDisplayInformations();
                 if (CollectionUtil.isEmpty(informations)) {
                     continue;
                 }
 
-                for (DisplayInformation info : informations) {
+                for (DisplayKey info : informations) {
                     if (info == check) {
                         return client;
                     }
@@ -129,12 +129,12 @@ public class ExtensionClientManager {
     /**
      * 指定したカテゴリのクライアント一覧を返す
      */
-    public List<ExtensionClient> listClients(ExtensionCategory category) {
+    public List<ExtensionClient> listClients(Category category) {
         synchronized (mExtensions) {
             List<ExtensionClient> result = new ArrayList<>();
             for (ExtensionClient client : mExtensions) {
                 // 拡張機能を列挙する
-                ExtensionInformation information = client.getInformation();
+                PluginInformation information = client.getInformation();
                 if (category.equals(information.getCategory())) {
                     result.add(client);
                 }

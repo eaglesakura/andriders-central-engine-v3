@@ -67,7 +67,7 @@ public class FitnessDeviceController {
                 .build();
 
         Fitness.BleApi.startBleScan(bleClient, request);
-        LogUtil.log("start scan(%s)", type.dataType.getName());
+        AppLog.ble("start scan(%s)", type.dataType.getName());
     }
 
     public void setTargetFitnessDeviceAddress(String targetFitnessDeviceAddress) {
@@ -168,9 +168,9 @@ public class FitnessDeviceController {
         Fitness.BleApi.unclaimBleDevice(bleClient, device);
     }
 
-    BleScanCallback userScanCallback;
+    private BleScanCallback userScanCallback;
 
-    final BleScanCallback bleScanCallback = new BleScanCallback() {
+    private final BleScanCallback bleScanCallback = new BleScanCallback() {
         @Override
         public void onDeviceFound(BleDevice bleDevice) {
 

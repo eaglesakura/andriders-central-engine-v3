@@ -1,9 +1,9 @@
 package com.eaglesakura.andriders.display.data;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.extension.display.BasicValue;
-import com.eaglesakura.andriders.extension.display.DisplayData;
-import com.eaglesakura.andriders.extension.display.LineValue;
+import com.eaglesakura.andriders.plugin.display.BasicValue;
+import com.eaglesakura.andriders.plugin.display.DisplayData;
+import com.eaglesakura.andriders.plugin.display.LineValue;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.util.AndroidThreadUtil;

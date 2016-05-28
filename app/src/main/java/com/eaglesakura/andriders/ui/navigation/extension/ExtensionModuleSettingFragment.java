@@ -1,10 +1,10 @@
 package com.eaglesakura.andriders.ui.navigation.extension;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.extension.ExtensionCategory;
-import com.eaglesakura.andriders.extension.ExtensionClient;
-import com.eaglesakura.andriders.extension.ExtensionClientManager;
-import com.eaglesakura.andriders.extension.ExtensionInformation;
+import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.ExtensionClient;
+import com.eaglesakura.andriders.plugin.ExtensionClientManager;
+import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
@@ -102,7 +102,7 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
             // 取得成功したらViewに反映する
             modulesRoot.removeAllViews();
 
-            List<ExtensionClient> clients = manager.listClients(ExtensionCategory.fromName(categoryName));
+            List<ExtensionClient> clients = manager.listClients(Category.fromName(categoryName));
             for (ExtensionClient client : clients) {
                 // クライアント表示を追加する
                 addClientSetting(client);
@@ -124,7 +124,7 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
             }
         });
 
-        ExtensionInformation information = client.getInformation();
+        PluginInformation information = client.getInformation();
         if (information != null) {
             // TODO 説明テキスト設定
         }

@@ -3,8 +3,8 @@ package com.eaglesakura.andriders.display.data;
 import com.eaglesakura.andriders.dao.display.DbDisplayLayout;
 import com.eaglesakura.andriders.dao.display.DbDisplayTarget;
 import com.eaglesakura.andriders.db.display.DisplayLayoutDatabase;
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionInformation;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.PluginInformation;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -96,7 +96,7 @@ public class DataLayoutManager {
      * @param extension 拡張機能
      * @param display   拡張内容
      */
-    public void setLayout(LayoutSlot slot, ExtensionInformation extension, DisplayInformation display) {
+    public void setLayout(LayoutSlot slot, PluginInformation extension, DisplayKey display) {
         slot.setValueLink(displayTarget, extension, display);
     }
 

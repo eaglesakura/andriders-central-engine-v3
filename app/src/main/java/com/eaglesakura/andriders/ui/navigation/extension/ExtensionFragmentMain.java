@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.ui.navigation.extension;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.extension.ExtensionClientManager;
-import com.eaglesakura.andriders.extension.ExtensionCategory;
+import com.eaglesakura.andriders.plugin.ExtensionClientManager;
+import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.profile.GadgetSettingFragment;
 import com.eaglesakura.android.rx.ObserveTarget;
@@ -55,11 +55,11 @@ public class ExtensionFragmentMain extends BaseNavigationFragment {
                     R.string.Extension_Category_Other_Information,
             };
 
-            ExtensionCategory[] CATEGORY_TABLE = {
-                    ExtensionCategory.CATEGORY_LOCATION,
-                    ExtensionCategory.CATEGORY_HEARTRATEMONITOR,
-                    ExtensionCategory.CATEGORY_SPEED_AND_CADENCE,
-                    ExtensionCategory.CATEGORY_OTHERS,
+            Category[] CATEGORY_TABLE = {
+                    Category.CATEGORY_LOCATION,
+                    Category.CATEGORY_HEARTRATEMONITOR,
+                    Category.CATEGORY_SPEED_AND_CADENCE,
+                    Category.CATEGORY_OTHERS,
             };
 
             for (int i = 0; i < ICON_TABLE.length; ++i) {

@@ -2,8 +2,8 @@ package com.eaglesakura.andriders.display.data;
 
 import com.eaglesakura.andriders.dao.display.DbDisplayLayout;
 import com.eaglesakura.andriders.dao.display.DbDisplayTarget;
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionInformation;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.PluginInformation;
 
 /**
  * ディスプレイの表示位置
@@ -49,7 +49,7 @@ public class LayoutSlot {
      * @param extension 表示を行う拡張機能
      * @param display   表示内容
      */
-    void setValueLink(DbDisplayTarget target, ExtensionInformation extension, DisplayInformation display) {
+    void setValueLink(DbDisplayTarget target, PluginInformation extension, DisplayKey display) {
         DbDisplayLayout layout = new DbDisplayLayout(String.format("%s/%d", target.getUniqueId(), getId()));
         layout.setValueId(display.getId());
         layout.setExtensionId(extension.getId());

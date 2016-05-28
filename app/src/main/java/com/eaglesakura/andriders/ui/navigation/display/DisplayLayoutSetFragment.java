@@ -3,9 +3,9 @@ package com.eaglesakura.andriders.ui.navigation.display;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.display.data.LayoutSlot;
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionClient;
-import com.eaglesakura.andriders.extension.ExtensionClientManager;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.ExtensionClient;
+import com.eaglesakura.andriders.plugin.ExtensionClientManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
@@ -37,7 +37,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
     ExtensionClientManager mExtensionClientManager;
 
-    List<DisplayInformation> mDisplayValues = new ArrayList<>();
+    List<DisplayKey> mDisplayValues = new ArrayList<>();
 
     public DisplayLayoutSetFragment() {
     }
@@ -105,7 +105,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             mDisplayValues.clear();
             for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
                 client.loadIcon();
-                for (DisplayInformation info : client.getDisplayInformations()) {
+                for (DisplayKey info : client.getDisplayInformations()) {
                     mDisplayValues.add(info);
                 }
             }
@@ -137,7 +137,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         MaterialButton button = new MaterialButton(getContext());
         if (slot.hasLink()) {
             // TODO 値のタイトルを入れる
-            DisplayInformation information = mExtensionClientManager.findDisplayInformation(slot.getExtensionId(), slot.getDisplayValueId());
+            DisplayKey information = mExtensionClientManager.findDisplayInformation(slot.getExtensionId(), slot.getDisplayValueId());
             if (information == null) {
                 // 情報を見失った
                 button.setText("無効な表示内容");
@@ -184,7 +184,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             ViewGroup insertRoot = q.id(R.id.Extension_ItemSelector_Root).getView(ViewGroup.class);
 
             // Extensionごとの表示内容を並べる
-            for (final DisplayInformation info : client.getDisplayInformations()) {
+            for (final DisplayKey info : client.getDisplayInformations()) {
                 View item = inflater.inflate(R.layout.card_displayinfo_item, null);
                 ((TextView) item.findViewById(R.id.Extension_ItemSelector_Name)).setText(info.getTitle());
                 insertRoot.addView(item, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -207,7 +207,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * @param client      拡張機能
      * @param displayInfo 表示内容
      */
-    private void onSelectedDisplay(DataLayoutManager manager, LayoutSlot slot, ExtensionClient client, DisplayInformation displayInfo) {
+    private void onSelectedDisplay(DataLayoutManager manager, LayoutSlot slot, ExtensionClient client, DisplayKey displayInfo) {
 
         if (client == null || displayInfo == null) {
             // 非表示にする
@@ -228,7 +228,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     }
 
 
-    private String getUniqueId(ExtensionClient client, DisplayInformation display) {
+    private String getUniqueId(ExtensionClient client, DisplayKey display) {
         return String.format("%s|%s", client.getId(), display.getId());
     }
 }

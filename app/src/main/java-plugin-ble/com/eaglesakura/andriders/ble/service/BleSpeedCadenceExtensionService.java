@@ -3,12 +3,12 @@ package com.eaglesakura.andriders.ble.service;
 import com.eaglesakura.andriders.ble.hw.cadence.BleCadenceSpeedSensor;
 import com.eaglesakura.andriders.ble.hw.cadence.SpeedCadenceGattReceiver;
 import com.eaglesakura.andriders.ble.hw.cadence.SpeedCadenceSensorData;
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionCategory;
-import com.eaglesakura.andriders.extension.ExtensionInformation;
-import com.eaglesakura.andriders.extension.ExtensionSession;
-import com.eaglesakura.andriders.extension.IExtensionService;
-import com.eaglesakura.andriders.extension.data.CentralDataExtension;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.PluginInformation;
+import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.AcePluginService;
+import com.eaglesakura.andriders.plugin.data.CentralEngineData;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.andriders.util.AppLog;
@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-public class BleSpeedCadenceExtensionService extends AppBaseService implements IExtensionService {
+public class BleSpeedCadenceExtensionService extends AppBaseService implements AcePluginService {
 
 
     SpeedCadenceGattReceiver mReceiver;
@@ -33,7 +33,7 @@ public class BleSpeedCadenceExtensionService extends AppBaseService implements I
     @Override
     public IBinder onBind(Intent intent) {
         AppLog.system("onBind(%s)", toString());
-        ExtensionSession session = ExtensionSession.onBind(this, intent);
+        CentralEngineConnection session = CentralEngineConnection.onBind(this, intent);
         if (session == null) {
             return null;
         }
@@ -44,26 +44,26 @@ public class BleSpeedCadenceExtensionService extends AppBaseService implements I
     @Override
     public boolean onUnbind(Intent intent) {
         AppLog.system("onUnbind(%s)", toString());
-        ExtensionSession.onUnbind(this, intent);
+        CentralEngineConnection.onUnbind(this, intent);
         return super.onUnbind(intent);
     }
 
     @Override
-    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
-        ExtensionInformation info = new ExtensionInformation(this, "ble_sc");
+    public PluginInformation getExtensionInformation(CentralEngineConnection connection) {
+        PluginInformation info = new PluginInformation(this, "ble_sc");
         info.setSummary("Bluetooth LE対応センサーから速度とケイデンスを取得します");
-        info.setCategory(ExtensionCategory.CATEGORY_SPEED_AND_CADENCE);
+        info.setCategory(Category.CATEGORY_SPEED_AND_CADENCE);
         return info;
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
+    public List<DisplayKey> getDisplayInformation(CentralEngineConnection connection) {
         return null;
     }
 
     @Override
-    public void onAceServiceConnected(ExtensionSession session) {
-        final CentralDataExtension centralDataExtension = session.getCentralDataExtension();
+    public void onAceServiceConnected(CentralEngineConnection connection) {
+        final CentralEngineData centralDataExtension = connection.getCentralDataExtension();
         String address = centralDataExtension.getGadgetAddress(SensorType.CadenceSensor);
         if (StringUtil.isEmpty(address)) {
             return;
@@ -94,7 +94,7 @@ public class BleSpeedCadenceExtensionService extends AppBaseService implements I
     }
 
     @Override
-    public void onAceServiceDisconnected(ExtensionSession session) {
+    public void onAceServiceDisconnected(CentralEngineConnection connection) {
         if (mReceiver != null) {
             mReceiver.disconnect();
             mReceiver = null;
@@ -102,17 +102,17 @@ public class BleSpeedCadenceExtensionService extends AppBaseService implements I
     }
 
     @Override
-    public void onEnable(ExtensionSession session) {
+    public void onEnable(CentralEngineConnection connection) {
 
     }
 
     @Override
-    public void onDisable(ExtensionSession session) {
+    public void onDisable(CentralEngineConnection connection) {
 
     }
 
     @Override
-    public void startSetting(ExtensionSession session) {
+    public void startSetting(CentralEngineConnection connection) {
 
     }
 }

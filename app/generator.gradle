@@ -196,7 +196,7 @@ task generateCommandControllDao(type: com.eaglesakura.gradle.task.AndroidDaoGenT
     classPackageBase = "${android.defaultConfig.applicationId}.dao"
 
     def schema = newSchema(1, "plugin");
-    def DbEnabledPluginSetting = controllerSchema.addEntity("DbPluginSetting");
+    def DbPluginSetting = schema.addEntity("DbPluginSetting");
     // プラグイン構成を一意に識別するID(packageName + category + id)
     DbPluginSetting.addStringProperty("uniqueId").notNull().unique().primaryKey();
     DbPluginSetting.addStringProperty("packageName").notNull();
@@ -207,7 +207,7 @@ task generateCommandControllDao(type: com.eaglesakura.gradle.task.AndroidDaoGenT
 /**
  * 各種コマンド内容を保存するためのDAOを出力
  */
-task generateCommandControllDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
+task generatePluginDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "${android.defaultConfig.applicationId}.dao.command"
 

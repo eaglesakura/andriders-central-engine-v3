@@ -1,20 +1,19 @@
 package com.eaglesakura.andriders.basicui;
 
-import com.eaglesakura.andriders.basicui.display.CadenceDisplayUpdater;
-import com.eaglesakura.andriders.basicui.display.HeartrateDisplayUpdater;
-import com.eaglesakura.andriders.basicui.display.SpeedDisplayUpdater;
+import com.eaglesakura.andriders.basicui.display.CadenceDisplaySender;
+import com.eaglesakura.andriders.basicui.display.HeartrateDisplaySender;
+import com.eaglesakura.andriders.basicui.display.SpeedDisplaySender;
 import com.eaglesakura.andriders.display.ZoneColor;
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionCategory;
-import com.eaglesakura.andriders.extension.ExtensionInformation;
-import com.eaglesakura.andriders.extension.ExtensionSession;
-import com.eaglesakura.andriders.extension.IExtensionService;
-import com.eaglesakura.andriders.extension.display.BasicValue;
-import com.eaglesakura.andriders.extension.display.DisplayData;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.PluginInformation;
+import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.AcePluginService;
+import com.eaglesakura.andriders.plugin.display.BasicValue;
+import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
-import com.eaglesakura.util.LogUtil;
 
 import android.app.Service;
 import android.content.Intent;
@@ -26,7 +25,7 @@ import android.support.annotation.UiThread;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BasicExtensionService extends Service implements IExtensionService {
+public class BasicExtensionService extends Service implements AcePluginService {
     /**
      * 現在ケイデンス
      */
@@ -38,7 +37,7 @@ public class BasicExtensionService extends Service implements IExtensionService 
     @Override
     public IBinder onBind(Intent intent) {
         AppLog.system("onBind(%s)", toString());
-        ExtensionSession session = ExtensionSession.onBind(this, intent);
+        CentralEngineConnection session = CentralEngineConnection.onBind(this, intent);
         if (session == null) {
             return null;
         }
@@ -49,30 +48,30 @@ public class BasicExtensionService extends Service implements IExtensionService 
     @Override
     public boolean onUnbind(Intent intent) {
         AppLog.system("onUnbind(%s)", toString());
-        ExtensionSession.onUnbind(this, intent);
+        CentralEngineConnection.onUnbind(this, intent);
         return super.onUnbind(intent);
     }
 
 
     @Override
-    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
-        ExtensionInformation info = new ExtensionInformation(this, "basic_extension");
+    public PluginInformation getExtensionInformation(CentralEngineConnection connection) {
+        PluginInformation info = new PluginInformation(this, "basic_extension");
         info.setSummary("Andriders Central Engine 標準機能");
-        info.setCategory(ExtensionCategory.CATEGORY_OTHERS);
+        info.setCategory(Category.CATEGORY_OTHERS);
         return info;
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
-        List<DisplayInformation> result = new ArrayList<>();
+    public List<DisplayKey> getDisplayInformation(CentralEngineConnection connection) {
+        List<DisplayKey> result = new ArrayList<>();
 
-        result.add(HeartrateDisplayUpdater.newInformation(this));
-        result.add(CadenceDisplayUpdater.newInformation(this));
-        result.add(SpeedDisplayUpdater.newInformation(this));
+        result.add(HeartrateDisplaySender.newInformation(this));
+        result.add(CadenceDisplaySender.newInformation(this));
+        result.add(SpeedDisplaySender.newInformation(this));
 
-        if (session.isDebugable()) {
+        if (connection.isDebugable()) {
             {
-                DisplayInformation info = new DisplayInformation(this, DEBUG_RANDOM_HEARTRATE);
+                DisplayKey info = new DisplayKey(this, DEBUG_RANDOM_HEARTRATE);
                 info.setTitle("DBG:ダミー心拍");
 
                 result.add(info);
@@ -83,20 +82,20 @@ public class BasicExtensionService extends Service implements IExtensionService 
     }
 
     @Override
-    public void onAceServiceConnected(final ExtensionSession session) {
+    public void onAceServiceConnected(final CentralEngineConnection connection) {
         if (mDisplayCommitLoop != null) {
             return;
         }
 
         ZoneColor zoneColor = new ZoneColor(this);
-        new HeartrateDisplayUpdater(session, zoneColor).bind();
-        new CadenceDisplayUpdater(session, zoneColor).bind();
-        new SpeedDisplayUpdater(session, zoneColor).bind();
+        new HeartrateDisplaySender(connection, zoneColor).bind();
+        new CadenceDisplaySender(connection, zoneColor).bind();
+        new SpeedDisplaySender(connection, zoneColor).bind();
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override
             protected void onUpdate() {
-                postDisplayData(session);
+                postDisplayData(connection);
             }
         };
         mDisplayCommitLoop.setFrameRate(1);
@@ -104,7 +103,7 @@ public class BasicExtensionService extends Service implements IExtensionService 
     }
 
     @Override
-    public void onAceServiceDisconnected(ExtensionSession session) {
+    public void onAceServiceDisconnected(CentralEngineConnection connection) {
         if (mDisplayCommitLoop == null) {
             return;
         }
@@ -113,22 +112,22 @@ public class BasicExtensionService extends Service implements IExtensionService 
     }
 
     @Override
-    public void onEnable(ExtensionSession session) {
+    public void onEnable(CentralEngineConnection connection) {
 
     }
 
     @Override
-    public void onDisable(ExtensionSession session) {
+    public void onDisable(CentralEngineConnection connection) {
 
     }
 
     @Override
-    public void startSetting(ExtensionSession session) {
+    public void startSetting(CentralEngineConnection connection) {
 
     }
 
     @UiThread
-    void postDisplayData(ExtensionSession session) {
+    void postDisplayData(CentralEngineConnection session) {
         postDummyHeartrate(session);
     }
 
@@ -136,7 +135,7 @@ public class BasicExtensionService extends Service implements IExtensionService 
      * ダミーの心拍データを書き込む
      * FIXME 将来的に、DisplayDataではなく心拍そのものをダミー書き込みするようにする
      */
-    private void postDummyHeartrate(ExtensionSession session) {
+    private void postDummyHeartrate(CentralEngineConnection session) {
         DisplayData data = new DisplayData(this, DEBUG_RANDOM_HEARTRATE);
         BasicValue value = new BasicValue();
         value.setTitle("DBG: 心拍");

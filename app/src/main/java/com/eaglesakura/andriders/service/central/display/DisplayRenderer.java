@@ -4,9 +4,9 @@ import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.display.data.DataViewBinder;
 import com.eaglesakura.andriders.display.data.LayoutSlot;
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionClient;
-import com.eaglesakura.andriders.extension.ExtensionClientManager;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.ExtensionClient;
+import com.eaglesakura.andriders.plugin.ExtensionClientManager;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.SubscribeTarget;
@@ -106,7 +106,7 @@ public class DisplayRenderer {
 
         for (LayoutSlot slot : mDisplayLayoutManager.listSlots()) {
             ViewGroup viewSlot = (ViewGroup) mDisplayStub.findViewById(slot.getId());
-            DisplayInformation information = null;
+            DisplayKey information = null;
             if (slot.hasLink()) {
                 // 値にリンクされている場合、インフォメーションを取得する
                 information = extensionClientManager.findDisplayInformation(slot.getExtensionId(), slot.getDisplayValueId());

@@ -1,14 +1,14 @@
-package com.eaglesakura.andriders.extension;
+package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
-import com.eaglesakura.andriders.extension.display.DisplayData;
-import com.eaglesakura.andriders.extension.internal.CentralDataCommand;
-import com.eaglesakura.andriders.extension.internal.DisplayCommand;
-import com.eaglesakura.andriders.extension.internal.ExtensionServerImpl;
+import com.eaglesakura.andriders.plugin.display.DisplayData;
+import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
+import com.eaglesakura.andriders.plugin.internal.DisplayCommand;
+import com.eaglesakura.andriders.plugin.internal.ExtensionServerImpl;
 import com.eaglesakura.andriders.provider.StorageProvider;
-import com.eaglesakura.andriders.serialize.ExtensionProtocol;
+import com.eaglesakura.andriders.serialize.PluginProtocol;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.service.central.CentralService;
@@ -33,23 +33,23 @@ import java.util.List;
 import java.util.UUID;
 
 public class ExtensionClient extends CommandClient {
-    ComponentName name;
+    ComponentName mName;
 
-    ResolveInfo packageInfo;
+    ResolveInfo mPackageInfo;
 
-    final CommandMap cmdMap = new CommandMap();
+    final CommandMap mCmdMap = new CommandMap();
 
     ExtensionClientManager mParent;
 
     /**
      * 拡張内容キャッシュ
      */
-    List<ExtensionInformation> mInformations;
+    List<PluginInformation> mInformations;
 
     /**
      * ディスプレイキャッシュ
      */
-    List<DisplayInformation> mDisplayInformations;
+    List<DisplayKey> mDisplayInformations;
 
     /**
      * 拡張機能のアイコン
@@ -109,14 +109,14 @@ public class ExtensionClient extends CommandClient {
      * 拡張機能に接続する
      */
     public void connect(ResolveInfo info) {
-        this.packageInfo = info;
-        name = new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name);
+        this.mPackageInfo = info;
+        mName = new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name);
 
         final Intent intent = new Intent(ExtensionServerImpl.ACTION_ACE_EXTENSION_BIND + "@" + mSessionId);
-        intent.setComponent(name);
+        intent.setComponent(mName);
         intent.putExtra(ExtensionServerImpl.EXTRA_SESSION_ID, mSessionId);
         intent.putExtra(ExtensionServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
-        intent.putExtra(ExtensionServerImpl.EXTRA_DEBUGABLE, mSettings.isDebugable());
+        intent.putExtra(ExtensionServerImpl.EXTRA_DEBUGABLE, mSettings.isDebuggable());
 
         if (mCentralServiceMode) {
             intent.putExtra(ExtensionServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
@@ -130,13 +130,13 @@ public class ExtensionClient extends CommandClient {
      */
     public Drawable loadIcon() {
         if (mIcon == null) {
-            mIcon = packageInfo.loadIcon(mContext.getPackageManager());
+            mIcon = mPackageInfo.loadIcon(mContext.getPackageManager());
         }
         return mIcon;
     }
 
     public String getName() {
-        return packageInfo.loadLabel(mContext.getPackageManager()).toString();
+        return mPackageInfo.loadLabel(mContext.getPackageManager()).toString();
     }
 
     @Override
@@ -152,11 +152,11 @@ public class ExtensionClient extends CommandClient {
     /**
      * 拡張Serviceの情報を取得する
      */
-    public synchronized ExtensionInformation getInformation() {
+    public synchronized PluginInformation getInformation() {
         if (mInformations == null) {
             try {
                 Payload payload = requestPostToServer(CentralDataCommand.CMD_getInformations, null);
-                mInformations = ExtensionInformation.deserialize(payload.getBuffer());
+                mInformations = PluginInformation.deserialize(payload.getBuffer());
             } catch (Exception e) {
                 LogUtil.log(e);
                 return null;
@@ -173,8 +173,8 @@ public class ExtensionClient extends CommandClient {
     /**
      * 表示IDから情報を取得する
      */
-    public DisplayInformation findDisplayInformation(String id) {
-        for (DisplayInformation info : getDisplayInformations()) {
+    public DisplayKey findDisplayInformation(String id) {
+        for (DisplayKey info : getDisplayInformations()) {
             if (info.getId().equals(id)) {
                 return info;
             }
@@ -186,11 +186,11 @@ public class ExtensionClient extends CommandClient {
     /**
      * サイコン表示内容を取得する
      */
-    public synchronized List<DisplayInformation> getDisplayInformations() {
+    public synchronized List<DisplayKey> getDisplayInformations() {
         if (mDisplayInformations == null) {
             try {
                 Payload payload = requestPostToServer(CentralDataCommand.CMD_getDisplayInformations, null);
-                mDisplayInformations = DisplayInformation.deserialize(payload.getBuffer());
+                mDisplayInformations = DisplayKey.deserialize(payload.getBuffer());
             } catch (Exception e) {
                 LogUtil.log(e);
                 return null;
@@ -256,14 +256,14 @@ public class ExtensionClient extends CommandClient {
 
     @Override
     protected Payload onReceivedData(String cmd, Payload payload) throws RemoteException {
-        return cmdMap.execute(this, cmd, payload);
+        return mCmdMap.execute(this, cmd, payload);
     }
 
     private void buildDisplayCommands() {
         /**
          * ディスプレイ情報を更新する
          */
-        cmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
+        mCmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
             List<DisplayData> list = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
             // 表示内容を更新する
             mDataDisplayManagerWorker.request(it -> {
@@ -277,7 +277,7 @@ public class ExtensionClient extends CommandClient {
         /**
          * 接続先のBLEアドレスを問い合わせる
          */
-        cmdMap.addAction(CentralDataCommand.CMD_setBleGadgetAddress, (sender, cmd, payload) -> {
+        mCmdMap.addAction(CentralDataCommand.CMD_setBleGadgetAddress, (sender, cmd, payload) -> {
             SensorType sensorType = SensorType.valueOf(Payload.deserializeStringOrNull(payload));
 
             UserProfiles userProfiles = mSettings.getUserProfiles();
@@ -297,8 +297,8 @@ public class ExtensionClient extends CommandClient {
         /**
          * GPS座標を更新する
          */
-        cmdMap.addAction(CentralDataCommand.CMD_setLocation, (Object sender, String cmd, Payload payload) -> {
-            ExtensionProtocol.SrcLocation idl = payload.deserializePublicField(ExtensionProtocol.SrcLocation.class);
+        mCmdMap.addAction(CentralDataCommand.CMD_setLocation, (Object sender, String cmd, Payload payload) -> {
+            PluginProtocol.SrcLocation idl = payload.deserializePublicField(PluginProtocol.SrcLocation.class);
             mCycleComputerDataWorker.request(it -> it.setLocation(idl.latitude, idl.longitude, idl.altitude, idl.accuracyMeter));
             return null;
         });
@@ -306,8 +306,8 @@ public class ExtensionClient extends CommandClient {
         /**
          * 心拍を設定する
          */
-        cmdMap.addAction(CentralDataCommand.CMD_setHeartrate, (Object sender, String cmd, Payload payload) -> {
-            ExtensionProtocol.SrcHeartrate idl = payload.deserializePublicField(ExtensionProtocol.SrcHeartrate.class);
+        mCmdMap.addAction(CentralDataCommand.CMD_setHeartrate, (Object sender, String cmd, Payload payload) -> {
+            PluginProtocol.SrcHeartrate idl = payload.deserializePublicField(PluginProtocol.SrcHeartrate.class);
             mCycleComputerDataWorker.request(it -> it.setHeartrate(idl.bpm));
             return null;
         });
@@ -315,8 +315,8 @@ public class ExtensionClient extends CommandClient {
         /**
          * S&Cセンサーを設定する
          */
-        cmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, (Object sender, String cmd, Payload payload) -> {
-            ExtensionProtocol.SrcSpeedAndCadence idl = payload.deserializePublicField(ExtensionProtocol.SrcSpeedAndCadence.class);
+        mCmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, (Object sender, String cmd, Payload payload) -> {
+            PluginProtocol.SrcSpeedAndCadence idl = payload.deserializePublicField(PluginProtocol.SrcSpeedAndCadence.class);
             mCycleComputerDataWorker.request(it -> it.setSpeedAndCadence(idl.crankRpm, idl.crankRevolution, idl.wheelRpm, idl.wheelRevolution));
             return null;
         });

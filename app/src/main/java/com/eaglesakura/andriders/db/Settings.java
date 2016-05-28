@@ -78,7 +78,7 @@ public class Settings {
     /**
      * デバッグが有効化されていたらtrue
      */
-    public boolean isDebugable() {
+    public boolean isDebuggable() {
         return getDebugSettings().getDebugEnable();
     }
 

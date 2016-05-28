@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.display.data;
 
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionClient;
-import com.eaglesakura.andriders.extension.display.DisplayData;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.ExtensionClient;
+import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 
@@ -59,7 +59,7 @@ public class DataDisplayManager {
      * スロット表示内容を更新させる
      */
     @UiThread
-    public int bind(@NonNull ExtensionClient extension, @NonNull DisplayInformation info, @NonNull DataViewBinder binder, @NonNull ViewGroup slotRoot) {
+    public int bind(@NonNull ExtensionClient extension, @NonNull DisplayKey info, @NonNull DataViewBinder binder, @NonNull ViewGroup slotRoot) {
         AndroidThreadUtil.assertUIThread();
         synchronized (lock) {
             ValueHolder holder = mValues.get(createKey(extension, info));
@@ -79,7 +79,7 @@ public class DataDisplayManager {
      * @param info      表示データ名
      */
     @Nullable
-    public DisplayData getValue(ExtensionClient extension, DisplayInformation info) {
+    public DisplayData getValue(ExtensionClient extension, DisplayKey info) {
         synchronized (lock) {
             ValueHolder holder = mValues.get(createKey(extension, info));
             if (holder != null) {
@@ -116,7 +116,7 @@ public class DataDisplayManager {
     /**
      * 管理用のキーに変換する
      */
-    private String createKey(ExtensionClient extension, DisplayInformation info) {
+    private String createKey(ExtensionClient extension, DisplayKey info) {
         return String.format("%s@%s", extension.getInformation().getId(), info.getId());
     }
 }

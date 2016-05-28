@@ -3,10 +3,10 @@ package com.eaglesakura.andriders.basicui.display;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.SensorDataReceiver;
 import com.eaglesakura.andriders.display.ZoneColor;
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionSession;
-import com.eaglesakura.andriders.extension.display.BasicValue;
-import com.eaglesakura.andriders.extension.display.DisplayData;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.display.BasicValue;
+import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.android.margarine.BindStringArray;
@@ -19,7 +19,7 @@ import android.support.annotation.NonNull;
 /**
  * ケイデンス更新を行う
  */
-public class SpeedDisplayUpdater extends DisplayUpdater {
+public class SpeedDisplaySender extends DisplayDataSender {
     public static final String DISPLAY_ID = "DISPLAY_ID_SPEED";
 
     @NonNull
@@ -29,7 +29,7 @@ public class SpeedDisplayUpdater extends DisplayUpdater {
     @NonNull
     String[] mZoneTitles;
 
-    public SpeedDisplayUpdater(@NonNull ExtensionSession session, @NonNull ZoneColor zoneColor) {
+    public SpeedDisplaySender(@NonNull CentralEngineConnection session, @NonNull ZoneColor zoneColor) {
         super(session);
         mZoneColor = zoneColor;
 
@@ -80,8 +80,8 @@ public class SpeedDisplayUpdater extends DisplayUpdater {
         }
     };
 
-    public static DisplayInformation newInformation(Context context) {
-        DisplayInformation result = new DisplayInformation(context, DISPLAY_ID);
+    public static DisplayKey newInformation(Context context) {
+        DisplayKey result = new DisplayKey(context, DISPLAY_ID);
         result.setTitle(context.getString(R.string.Display_Common_Speed));
         return result;
     }

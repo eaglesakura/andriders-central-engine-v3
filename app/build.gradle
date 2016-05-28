@@ -137,9 +137,9 @@ android {
     sourceSets {
         main {
             java.srcDirs = [
-                    'src/main/java',
-                    'src/main/java-extension-basicui', 'src/main/java-extension-ble', 'src/main/java-extension-location',
-                    'src/main/generated/dao', 'src/main/generated/props',
+                    'src/main/java', 'src/main/generated/dao', 'src/main/generated/props',
+                    // 内蔵プラグイン
+                    'src/main/java-plugin-basicui', 'src/main/java-plugin-ble', 'src/main/java-plugin-location',
             ]
             res.srcDirs = [
                     "src/main/res", "src/main/generated/images", "private/main/res"
@@ -247,7 +247,3 @@ dexcount {
     orderByMethodCount = true
     verbose = false
 }
-
-//task dexReportDebug(type: com.eaglesakura.gradle.dex.DexReportTask) {
-//
-//}

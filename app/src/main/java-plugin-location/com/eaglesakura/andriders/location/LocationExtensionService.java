@@ -5,15 +5,15 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import com.eaglesakura.andriders.extension.DisplayInformation;
-import com.eaglesakura.andriders.extension.ExtensionCategory;
-import com.eaglesakura.andriders.extension.ExtensionInformation;
-import com.eaglesakura.andriders.extension.ExtensionSession;
-import com.eaglesakura.andriders.extension.IExtensionService;
-import com.eaglesakura.andriders.extension.data.CentralDataExtension;
-import com.eaglesakura.andriders.extension.display.DisplayData;
-import com.eaglesakura.andriders.extension.display.DisplayExtension;
-import com.eaglesakura.andriders.extension.display.LineValue;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.PluginInformation;
+import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.AcePluginService;
+import com.eaglesakura.andriders.plugin.data.CentralEngineData;
+import com.eaglesakura.andriders.plugin.display.DisplayData;
+import com.eaglesakura.andriders.plugin.display.DisplayDataSender;
+import com.eaglesakura.andriders.plugin.display.LineValue;
 import com.eaglesakura.andriders.service.base.AppBaseService;
 import com.eaglesakura.andriders.ui.auth.PermissionRequestActivity;
 import com.eaglesakura.andriders.util.AppLog;
@@ -38,12 +38,12 @@ import java.util.List;
 /**
  * 現在位置を配信するExtension
  */
-public class LocationExtensionService extends AppBaseService implements IExtensionService {
+public class LocationExtensionService extends AppBaseService implements AcePluginService {
     GoogleApiClient mLocationApiClient;
 
-    CentralDataExtension mCentralDataManager;
+    CentralEngineData mCentralDataManager;
 
-    DisplayExtension mDisplayExtension;
+    DisplayDataSender mDisplayExtension;
 
     DisplayData mDebugLocation;
 
@@ -54,7 +54,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     @Override
     public IBinder onBind(Intent intent) {
         AppLog.system("onBind(%s)", toString());
-        ExtensionSession session = ExtensionSession.onBind(this, intent);
+        CentralEngineConnection session = CentralEngineConnection.onBind(this, intent);
         if (session == null) {
             return null;
         }
@@ -65,7 +65,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     @Override
     public boolean onUnbind(Intent intent) {
         AppLog.system("onUnbind(%s)", toString());
-        ExtensionSession.onUnbind(this, intent);
+        CentralEngineConnection.onUnbind(this, intent);
         return super.onUnbind(intent);
     }
 
@@ -75,29 +75,29 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     }
 
     @Override
-    public ExtensionInformation getExtensionInformation(ExtensionSession session) {
-        ExtensionInformation info = new ExtensionInformation(this, "gps_loc");
+    public PluginInformation getExtensionInformation(CentralEngineConnection connection) {
+        PluginInformation info = new PluginInformation(this, "gps_loc");
         info.setSummary("現在位置をサイクルコンピュータに反映します。");
-        info.setCategory(ExtensionCategory.CATEGORY_LOCATION);
+        info.setCategory(Category.CATEGORY_LOCATION);
         info.setHasSetting(false);
         return info;
     }
 
     @Override
-    public List<DisplayInformation> getDisplayInformation(ExtensionSession session) {
+    public List<DisplayKey> getDisplayInformation(CentralEngineConnection connection) {
 
-        List<DisplayInformation> result = new ArrayList<>();
+        List<DisplayKey> result = new ArrayList<>();
 
-        if (session.isDebugable()) {
+        if (connection.isDebugable()) {
             // 位置情報をデバッグ表示
             {
-                DisplayInformation info = new DisplayInformation(this, "debug.loc");
+                DisplayKey info = new DisplayKey(this, "debug.loc");
                 info.setTitle("DBG:GPS座標");
                 result.add(info);
             }
             // 位置情報をデバッグ表示
             {
-                DisplayInformation info = new DisplayInformation(this, "debug.geohash");
+                DisplayKey info = new DisplayKey(this, "debug.geohash");
                 info.setTitle("DBG:ジオハッシュ");
                 result.add(info);
             }
@@ -115,7 +115,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     }
 
     @Override
-    public void onAceServiceConnected(ExtensionSession session) {
+    public void onAceServiceConnected(CentralEngineConnection connection) {
         if (!isRuntimePermissionGranted()) {
             // 許可されていないので、このServiceは何もしない
             return;
@@ -127,8 +127,8 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
         mDebugLocation = new DisplayData(this, "debug.geohash");
         mDebugLocation.setValue(new LineValue(3)); // lat, lng, time
 
-        mCentralDataManager = session.getCentralDataExtension();
-        mDisplayExtension = session.getDisplayExtension();
+        mCentralDataManager = connection.getCentralDataExtension();
+        mDisplayExtension = connection.getDisplayExtension();
 
         mLocationApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -157,7 +157,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     }
 
     @Override
-    public void onAceServiceDisconnected(ExtensionSession session) {
+    public void onAceServiceDisconnected(CentralEngineConnection connection) {
         if (mLocationApiClient == null) {
             return;
         }
@@ -167,7 +167,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     }
 
     @Override
-    public void onEnable(ExtensionSession session) {
+    public void onEnable(CentralEngineConnection connection) {
         if (!isRuntimePermissionGranted()) {
             Toast.makeText(this, "Request GPS Permission!!", Toast.LENGTH_SHORT).show();
             Intent intent = PermissionRequestActivity.createIntent(LocationExtensionService.this,
@@ -178,12 +178,12 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
     }
 
     @Override
-    public void onDisable(ExtensionSession session) {
+    public void onDisable(CentralEngineConnection connection) {
 
     }
 
     @Override
-    public void startSetting(ExtensionSession session) {
+    public void startSetting(CentralEngineConnection connection) {
 
     }
 
@@ -212,7 +212,7 @@ public class LocationExtensionService extends AppBaseService implements IExtensi
             mCentralDataManager.setLocation(newLocation);
 
             // デバッグ情報を与える
-            if (mSettings.isDebugable()) {
+            if (mSettings.isDebuggable()) {
                 String time = StringUtil.toString(new Date());
                 {
                     int index = 0;
