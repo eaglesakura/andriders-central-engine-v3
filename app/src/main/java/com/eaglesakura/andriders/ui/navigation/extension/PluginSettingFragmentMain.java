@@ -16,11 +16,11 @@ import android.support.v4.app.FragmentTransaction;
 /**
  * 拡張機能の設定を行う。
  */
-public class ExtensionFragmentMain extends BaseNavigationFragment {
+public class PluginSettingFragmentMain extends BaseNavigationFragment {
 
     ExtensionClientManager mClientManager;
 
-    public ExtensionFragmentMain() {
+    public PluginSettingFragmentMain() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_simiple_main);
     }
 
@@ -64,7 +64,7 @@ public class ExtensionFragmentMain extends BaseNavigationFragment {
 
             for (int i = 0; i < ICON_TABLE.length; ++i) {
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                ExtensionModuleSettingFragment fragment = new ExtensionModuleSettingFragment();
+                CategorySettingFragment fragment = new CategorySettingFragment();
                 fragment.setResourceId(ICON_TABLE[i], TITLE_TABLE[i], INFO_TABLE[i]);
                 fragment.setCategoryName(CATEGORY_TABLE[i].getName());
 
@@ -111,7 +111,7 @@ public class ExtensionFragmentMain extends BaseNavigationFragment {
         return mClientManager;
     }
 
-    public static ExtensionFragmentMain newInstance(Context context) {
-        return new ExtensionFragmentMain();
+    public static PluginSettingFragmentMain newInstance(Context context) {
+        return new PluginSettingFragmentMain();
     }
 }

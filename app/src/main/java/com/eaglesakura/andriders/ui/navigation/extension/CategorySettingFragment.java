@@ -16,33 +16,41 @@ import com.eaglesakura.util.Util;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.annotation.UiThread;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
 import java.util.List;
 
 import icepick.State;
 
-public class ExtensionModuleSettingFragment extends AppBaseFragment {
+/**
+ * カテゴリごとにプラグインを列挙するFragment
+ */
+public class CategorySettingFragment extends AppBaseFragment {
 
     @State
-    int titleResId;
+    int mTitleResId;
 
     @State
-    int infoResId;
+    int mInfoResId;
 
     @State
-    int iconResId;
+    int mIconResId;
 
     @State
-    String categoryName;
+    String mCategoryName;
 
     @Bind(R.id.Extension_List_Root)
     ViewGroup modulesRoot;
 
-    public ExtensionModuleSettingFragment() {
+    /**
+     * 親は確定している
+     */
+    PluginSettingFragmentMain mParent;
+
+    public CategorySettingFragment() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_extension_modules);
     }
 
@@ -50,23 +58,22 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
      * 各種リソースを指定する
      */
     public void setResourceId(@DrawableRes int icon, @StringRes int title, @StringRes int info) {
-        this.iconResId = icon;
-        this.titleResId = title;
-        this.infoResId = info;
+        this.mIconResId = icon;
+        this.mTitleResId = title;
+        this.mInfoResId = info;
     }
 
     public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+        this.mCategoryName = categoryName;
     }
 
-    ExtensionFragmentMain parent;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        parent = (ExtensionFragmentMain) getParentFragment();
-        if (parent == null) {
+        mParent = (PluginSettingFragmentMain) getParentFragment();
+        if (mParent == null) {
             throw new IllegalStateException();
         }
     }
@@ -76,9 +83,9 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
         super.onAfterViews(self, flags);
 
         SupportAQuery q = new SupportAQuery(this);
-        q.id(R.id.Extension_Category_Icon).image(iconResId);
-        q.id(R.id.Extension_Category_Name).text(titleResId);
-        q.id(R.id.Extension_Category_Info).text(infoResId);
+        q.id(R.id.Extension_Category_Icon).image(mIconResId);
+        q.id(R.id.Extension_Category_Name).text(mTitleResId);
+        q.id(R.id.Extension_Category_Info).text(mInfoResId);
     }
 
     @Override
@@ -87,10 +94,11 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
         updateExtensionViews();
     }
 
+    @UiThread
     void updateExtensionViews() {
         asyncUI((RxTask<ExtensionClientManager> it) -> {
             while (!it.isCanceled()) {
-                ExtensionClientManager manager = parent.getClientManager();
+                ExtensionClientManager manager = mParent.getClientManager();
                 if (manager != null) {
                     return manager;
                 }
@@ -102,7 +110,7 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
             // 取得成功したらViewに反映する
             modulesRoot.removeAllViews();
 
-            List<ExtensionClient> clients = manager.listClients(Category.fromName(categoryName));
+            List<ExtensionClient> clients = manager.listClients(Category.fromName(mCategoryName));
             for (ExtensionClient client : clients) {
                 // クライアント表示を追加する
                 addClientSetting(client);
@@ -113,15 +121,14 @@ public class ExtensionModuleSettingFragment extends AppBaseFragment {
     /**
      * TODO クライアントのViewを構築する
      */
-    void addClientSetting(final ExtensionClient client) {
+    @UiThread
+    private void addClientSetting(final ExtensionClient client) {
         View card = View.inflate(getActivity(), R.layout.card_extension_module, null);
         AQuery q = new AQuery(card);
         q.id(R.id.Extension_Module_Icon).image(client.loadIcon());
-        q.id(R.id.Extension_Module_Switch).text(client.getName()).checkedChange(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                client.setEnable(isChecked);
-            }
+        // TODO チェック有無判定
+        q.id(R.id.Extension_Module_Switch).text(client.getName()).checkedChange((button, isChecked) -> {
+            client.setEnable(isChecked);
         });
 
         PluginInformation information = client.getInformation();

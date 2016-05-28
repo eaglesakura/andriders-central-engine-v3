@@ -14,9 +14,9 @@ import icepick.State;
 public class AppTargetSelectFragment extends AppBaseFragment {
 
     @State
-    String appPackageName;
+    String mAppPackageName;
 
-    Bitmap icon;
+    Bitmap mIcon;
 
     Callback mCallback;
 
@@ -27,11 +27,7 @@ public class AppTargetSelectFragment extends AppBaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (!(getParentFragment() instanceof Callback)) {
-            throw new IllegalStateException();
-        } else {
-            mCallback = (Callback) getParentFragment();
-        }
+        mCallback = getParentOrThrow(Callback.class);
     }
 
     @Override

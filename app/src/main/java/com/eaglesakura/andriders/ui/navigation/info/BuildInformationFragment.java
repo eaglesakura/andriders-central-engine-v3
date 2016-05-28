@@ -23,6 +23,9 @@ import android.widget.CompoundButton;
 import java.io.File;
 import java.util.Date;
 
+/**
+ * アプリのビルド時情報の表示を行う
+ */
 public class BuildInformationFragment extends AppBaseFragment {
 
     @NonNull

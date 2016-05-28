@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.service.central.CentralService;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
-import com.eaglesakura.andriders.ui.navigation.extension.ExtensionFragmentMain;
+import com.eaglesakura.andriders.ui.navigation.extension.PluginSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.info.InformationFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.log.UserLogFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.profile.ProfileFragmentMain;
@@ -84,7 +84,7 @@ public class MenuController {
                 mCallback.requestChangeContent(UserLogFragmentMain.newInstance(mContext));
                 break;
             case R.id.Main_Menu_Extensions:
-                mCallback.requestChangeContent(ExtensionFragmentMain.newInstance(mContext));
+                mCallback.requestChangeContent(PluginSettingFragmentMain.newInstance(mContext));
                 break;
             case R.id.Main_Menu_Information:
                 mCallback.requestChangeContent(InformationFragmentMain.createInstance(mContext));
