@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.+'  // for AS 2.1 BETA
+        classpath 'com.android.tools.build:gradle:2.1.+'  // for AS 2.1.x
         classpath "com.eaglesakura:plugin-ci-support:1.0.47"
         classpath "com.eaglesakura:plugin-android-mipmap:1.0.5"
         classpath 'com.deploygate:gradle:0.6'
