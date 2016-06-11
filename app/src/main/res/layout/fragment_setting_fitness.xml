@@ -130,7 +130,7 @@
                         android:text=" bpm"/>
             </LinearLayout>
 
-            <com.eaglesakura.material.widget.MaterialButton
+            <android.support.v7.widget.AppCompatButton
                     android:id="@+id/Setting.Fitness.ConnectGoogleFit"
                     style="@style/App.Button.Normal"
                     android:layout_width="wrap_content"

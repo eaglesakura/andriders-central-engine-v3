@@ -12,12 +12,12 @@ import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.material.widget.MaterialButton;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,7 +134,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         stub.removeAllViews();
 
         // ボタンを生成する
-        MaterialButton button = new MaterialButton(getContext());
+        AppCompatButton button = new AppCompatButton(getContext());
         if (slot.hasLink()) {
             // TODO 値のタイトルを入れる
             DisplayKey information = mExtensionClientManager.findDisplayInformation(slot.getExtensionId(), slot.getDisplayValueId());

@@ -116,7 +116,7 @@
                 android:layout_gravity="right"
                 android:orientation="horizontal">
 
-            <com.eaglesakura.material.widget.MaterialButton
+            <android.support.v7.widget.AppCompatButton
                     android:id="@+id/Setting.RoadBikeProfile.BleDevice.ScanRequest"
                     style="@style/App.Button.Normal"
                     android:layout_width="wrap_content"
