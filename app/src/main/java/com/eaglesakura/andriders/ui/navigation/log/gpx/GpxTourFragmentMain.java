@@ -7,6 +7,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.apptour.AppTourDelegate;
 import com.eaglesakura.android.framework.ui.BackStackManager;
 import com.eaglesakura.android.util.ResourceUtil;
+import com.eaglesakura.freezer.BundleState;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -14,14 +15,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import icepick.State;
 
 public class GpxTourFragmentMain extends BaseNavigationFragment implements AppTourDelegate.AppTourCompat, BackStackManager.BackStackFragment,
         TourFileSelectFragment.Listener, GpxTourImportProgressFragment.Listener {
@@ -32,7 +30,7 @@ public class GpxTourFragmentMain extends BaseNavigationFragment implements AppTo
      */
     boolean mBackButtonLock = false;
 
-    @State
+    @BundleState
     Uri mSelectedFile;
 
     @Nullable

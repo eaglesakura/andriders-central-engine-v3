@@ -16,6 +16,7 @@ import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.PermissionUtil;
+import com.eaglesakura.freezer.BundleState;
 import com.eaglesakura.util.LogUtil;
 
 import android.os.Bundle;
@@ -26,11 +27,9 @@ import android.widget.AdapterView;
 import java.util.ArrayList;
 import java.util.List;
 
-import icepick.State;
-
 public class GadgetSettingFragment extends AppBaseFragment {
 
-    @State
+    @BundleState
     boolean mScanBleDevice = false;
 
     final List<DbBleFitnessDevice> mHeartrateDevices = new ArrayList<>();

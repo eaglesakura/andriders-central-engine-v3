@@ -11,6 +11,7 @@ import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelega
 import com.eaglesakura.android.framework.ui.support.SupportAQuery;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.freezer.BundleState;
 import com.eaglesakura.util.Util;
 
 import android.content.Context;
@@ -23,23 +24,21 @@ import android.widget.LinearLayout;
 
 import java.util.List;
 
-import icepick.State;
-
 /**
  * カテゴリごとにプラグインを列挙するFragment
  */
 public class CategorySettingFragment extends AppBaseFragment {
 
-    @State
+    @BundleState
     int mTitleResId;
 
-    @State
+    @BundleState
     int mInfoResId;
 
-    @State
+    @BundleState
     int mIconResId;
 
-    @State
+    @BundleState
     String mCategoryName;
 
     @Bind(R.id.Extension_List_Root)

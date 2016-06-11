@@ -17,6 +17,7 @@ import com.eaglesakura.android.playservice.GoogleApiTask;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.util.ViewUtil;
+import com.eaglesakura.freezer.BundleState;
 import com.eaglesakura.material.widget.MaterialInputDialog;
 import com.eaglesakura.util.LogUtil;
 
@@ -27,8 +28,6 @@ import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import icepick.State;
 
 public class FitnessSettingFragment extends AppBaseFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     UserProfiles mPersonalDataSettings;
@@ -155,7 +154,7 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     /**
      * 既にGoogle Fitのメッセージを表示していたらtrue
      */
-    @State
+    @BundleState
     boolean googleFitFailedMessageBooted = false;
 
     /**

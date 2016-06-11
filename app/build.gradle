@@ -61,12 +61,6 @@ dependencies {
         compile 'com.eaglesakura:android-apptour:+'
 
         /**
-         * Injection / State
-         */
-        compile 'frankiesardo:icepick:+'
-        provided 'frankiesardo:icepick-processor:+'
-
-        /**
          * UnitTest
          */
         androidTestCompile 'com.eaglesakura:android-devicetest-support:1.+'

@@ -2,18 +2,17 @@ package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.freezer.BundleState;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-
-import icepick.State;
 
 /**
  * 表示対象のアプリを選択するFragment
  */
 public class AppTargetSelectFragment extends AppBaseFragment {
 
-    @State
+    @BundleState
     String mAppPackageName;
 
     Bitmap mIcon;

@@ -10,14 +10,12 @@ import com.eaglesakura.android.framework.ui.support.ContentHolderActivity;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.playservice.GoogleApiFragment;
 import com.eaglesakura.android.util.ContextUtil;
+import com.eaglesakura.freezer.BundleState;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
-
-import icepick.State;
-
 
 public abstract class AppBaseActivity extends ContentHolderActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiFragment.Callback, NotificationFragment.Callback {
     static final String FRAGMENT_TAG_GOOGLE_API_FRAGMENT = "FRAGMENT_TAG_GOOGLE_API_FRAGMENT";
@@ -26,7 +24,7 @@ public abstract class AppBaseActivity extends ContentHolderActivity implements G
 
     UserNotificationController notificationController;
 
-    @State
+    @BundleState
     BackStackManager mBackStackManager;
 
     @Override

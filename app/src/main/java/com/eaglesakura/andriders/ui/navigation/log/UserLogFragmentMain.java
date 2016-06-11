@@ -11,6 +11,7 @@ import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentPager;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnMenuClick;
 import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.freezer.BundleState;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,8 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v4.view.ViewPager;
-
-import icepick.State;
 
 /**
  * ログ表示画面のメインFragment
@@ -34,7 +33,7 @@ public class UserLogFragmentMain extends BaseNavigationFragment implements UserL
     @Bind(R.id.UserActivity_Main_Pager)
     ViewPager mViewPager;
 
-    @State
+    @BundleState
     int mCurrentPage;
 
     public UserLogFragmentMain() {

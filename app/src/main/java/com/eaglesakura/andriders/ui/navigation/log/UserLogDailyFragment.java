@@ -1,8 +1,7 @@
 package com.eaglesakura.andriders.ui.navigation.log;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.databinding.FragmentUserLogSynthesisBinding;
-import com.eaglesakura.andriders.db.session.SessionLogDatabase;
+import com.eaglesakura.andriders.databinding.CardUserLogDaySummaryBinding;
 import com.eaglesakura.andriders.db.session.SessionTotal;
 import com.eaglesakura.andriders.db.session.SessionTotalCollection;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
@@ -11,6 +10,7 @@ import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.android.util.BindingUtil;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 
 import android.content.Context;
@@ -62,7 +62,7 @@ public class UserLogDailyFragment extends AppBaseFragment {
     CardAdapter<SessionTotal> mSessionCards = new CardAdapter<SessionTotal>() {
         @Override
         protected View onCreateCard(ViewGroup parent, int viewType) {
-            return Card;
+            return BindingUtil.bind(CardUserLogDaySummaryBinding.inflate(getActivity().getLayoutInflater(), parent, false)).getRootView();
         }
 
         @Override
