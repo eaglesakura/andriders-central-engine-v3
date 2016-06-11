@@ -14,10 +14,9 @@
 
         <!-- Toolbar -->
         <android.support.v7.widget.Toolbar
-                android:id="@+id/EsMaterial.Toolbar"
+                android:id="@+id/EsMaterial_Toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="@dimen/EsMaterial.Navigation.MinHeight"
                 android:visibility="visible"
                 app:popupTheme="@style/App.Theme.PopupOverlay"/>
 

@@ -6,8 +6,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.+'
-        classpath "com.eaglesakura:plugin-ci-support:1.0.14"
+        classpath 'com.android.tools.build:gradle:2.1.+'  // for AS 2.1.x
+        classpath "com.eaglesakura:plugin-ci-support:1.0.47"
+        classpath "com.eaglesakura:plugin-android-mipmap:1.0.5"
         classpath 'com.deploygate:gradle:0.6'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.4.1'
         classpath 'me.tatarka:gradle-retrolambda:3.2.5' // support Lambda
@@ -28,8 +29,8 @@ task clean(type: Delete) {
 
 // 各グローバル設定
 ext {
-    ANDROID_SUPPORT_LIB_VERSION = "23.2.+"
-    ANDROID_PLAYSERVICE_LIB_VERSION = "8.4.+"
+    ANDROID_SUPPORT_LIB_VERSION = "23.4.+"
+    ANDROID_PLAYSERVICE_LIB_VERSION = "9.0.2"
 }
 
 // APIキー等の隠蔽したいデータを配置

@@ -5,12 +5,9 @@ import com.eaglesakura.andriders.v2.db.DebugSettings;
 import com.eaglesakura.andriders.v2.db.DefaultCommandSettings;
 import com.eaglesakura.andriders.v2.db.UpdateCheckProps;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
+import com.eaglesakura.android.device.external.StorageInfo;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.android.rx.RxTaskBuilder;
-import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
+import com.eaglesakura.android.garnet.Singleton;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
@@ -22,6 +19,7 @@ import java.io.FileOutputStream;
 /**
  * 全設定を管理するためのクラス
  */
+@Singleton
 public class Settings {
 
     final DebugSettings debugSettings;
@@ -30,20 +28,19 @@ public class Settings {
 
     final UserProfiles userProfiles;
 
-    final Context appContext;
+    final Context mAppContext;
 
     final UpdateCheckProps updateCheckProps;
 
     final DefaultCommandSettings defaultCommandSettings;
 
-    private Settings() {
-        this.appContext = FrameworkCentral.getApplication();
-
-        debugSettings = new DebugSettings(appContext);
-        centralSettings = new CentralServiceSettings(appContext);
-        userProfiles = new UserProfiles(appContext);
-        updateCheckProps = new UpdateCheckProps(appContext);
-        defaultCommandSettings = new DefaultCommandSettings(appContext);
+    public Settings(Context context) {
+        mAppContext = context.getApplicationContext();
+        debugSettings = new DebugSettings(mAppContext);
+        centralSettings = new CentralServiceSettings(mAppContext);
+        userProfiles = new UserProfiles(mAppContext);
+        updateCheckProps = new UpdateCheckProps(mAppContext);
+        defaultCommandSettings = new DefaultCommandSettings(mAppContext);
     }
 
     public DefaultCommandSettings getDefaultCommandSettings() {
@@ -66,11 +63,23 @@ public class Settings {
         return debugSettings;
     }
 
+
+    /**
+     * 外部ストレージに保存するDBファイルパスを取得する
+     */
+    public File getExternalDatabasePath(String name) {
+        File external = StorageInfo.getExternalStorageRoot(mAppContext);
+        if (!name.endsWith(".db")) {
+            name += ".db";
+        }
+        return new File(external, "db/" + name);
+    }
+
     /**
      * デバッグが有効化されていたらtrue
      */
-    public static boolean isDebugable() {
-        return getInstance().getDebugSettings().getDebugEnable();
+    public boolean isDebuggable() {
+        return getDebugSettings().getDebugEnable();
     }
 
     /**
@@ -95,26 +104,11 @@ public class Settings {
         defaultCommandSettings.commitAndLoad();
     }
 
-//    /**
-//     * 非同期で最新版に更新する
-//     */
-//    public void commitAndLoadAsync(SubscriptionController subscriptionController, RxTask.Action1<Settings> completed) {
-//        new RxTaskBuilder<Settings>(subscriptionController)
-//                .async(it -> {
-//                    commitAndLoad();
-//                    return Settings.this;
-//                })
-//                .observeOn(ObserveTarget.FireAndForget)
-//                .subscribeOn(SubscribeTarget.GlobalPipeline)
-//                .completed(completed)
-//                .start();
-//    }
-
     /**
      * データインストール用のパスを取得する
      */
     public File getInstallDataPath() {
-        File path = new File(Environment.getExternalStorageDirectory(), "andriders/" + appContext.getPackageName());
+        File path = new File(Environment.getExternalStorageDirectory(), "andriders/" + mAppContext.getPackageName());
         if (!path.isDirectory()) {
             // ディレクトリが生成されていなかったら、nomediaも生成する
             path.mkdirs();
@@ -129,13 +123,4 @@ public class Settings {
         return path;
     }
 
-    private static Settings instance;
-
-    public synchronized static Settings getInstance() {
-        if (instance == null) {
-            instance = new Settings();
-        }
-
-        return instance;
-    }
 }

@@ -9,22 +9,18 @@ public class DbSessionLog {
     /** Not-null value. */
     private String sessionId;
     /** Not-null value. */
-    private String profileId;
-    private boolean googleFitUploaded;
-    /** Not-null value. */
     private java.util.Date startTime;
     /** Not-null value. */
     private java.util.Date endTime;
     private long activeTimeMs;
+    private double activeDistanceKm;
     private double maxSpeedKmh;
     private int maxCadence;
     private int maxHeartrate;
+    private double sumAltitude;
     private double sumDistanceKm;
     private double calories;
     private double exercise;
-    private double sumAltitude;
-    /** Not-null value. */
-    private byte[] extraPayload;
 
     public DbSessionLog() {
     }
@@ -33,21 +29,19 @@ public class DbSessionLog {
         this.sessionId = sessionId;
     }
 
-    public DbSessionLog(String sessionId, String profileId, boolean googleFitUploaded, java.util.Date startTime, java.util.Date endTime, long activeTimeMs, double maxSpeedKmh, int maxCadence, int maxHeartrate, double sumDistanceKm, double calories, double exercise, double sumAltitude, byte[] extraPayload) {
+    public DbSessionLog(String sessionId, java.util.Date startTime, java.util.Date endTime, long activeTimeMs, double activeDistanceKm, double maxSpeedKmh, int maxCadence, int maxHeartrate, double sumAltitude, double sumDistanceKm, double calories, double exercise) {
         this.sessionId = sessionId;
-        this.profileId = profileId;
-        this.googleFitUploaded = googleFitUploaded;
         this.startTime = startTime;
         this.endTime = endTime;
         this.activeTimeMs = activeTimeMs;
+        this.activeDistanceKm = activeDistanceKm;
         this.maxSpeedKmh = maxSpeedKmh;
         this.maxCadence = maxCadence;
         this.maxHeartrate = maxHeartrate;
+        this.sumAltitude = sumAltitude;
         this.sumDistanceKm = sumDistanceKm;
         this.calories = calories;
         this.exercise = exercise;
-        this.sumAltitude = sumAltitude;
-        this.extraPayload = extraPayload;
     }
 
     /** Not-null value. */
@@ -58,24 +52,6 @@ public class DbSessionLog {
     /** Not-null value; ensure this value is available before it is saved to the database. */
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
-    }
-
-    /** Not-null value. */
-    public String getProfileId() {
-        return profileId;
-    }
-
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
-
-    public boolean getGoogleFitUploaded() {
-        return googleFitUploaded;
-    }
-
-    public void setGoogleFitUploaded(boolean googleFitUploaded) {
-        this.googleFitUploaded = googleFitUploaded;
     }
 
     /** Not-null value. */
@@ -106,6 +82,14 @@ public class DbSessionLog {
         this.activeTimeMs = activeTimeMs;
     }
 
+    public double getActiveDistanceKm() {
+        return activeDistanceKm;
+    }
+
+    public void setActiveDistanceKm(double activeDistanceKm) {
+        this.activeDistanceKm = activeDistanceKm;
+    }
+
     public double getMaxSpeedKmh() {
         return maxSpeedKmh;
     }
@@ -130,6 +114,14 @@ public class DbSessionLog {
         this.maxHeartrate = maxHeartrate;
     }
 
+    public double getSumAltitude() {
+        return sumAltitude;
+    }
+
+    public void setSumAltitude(double sumAltitude) {
+        this.sumAltitude = sumAltitude;
+    }
+
     public double getSumDistanceKm() {
         return sumDistanceKm;
     }
@@ -152,24 +144,6 @@ public class DbSessionLog {
 
     public void setExercise(double exercise) {
         this.exercise = exercise;
-    }
-
-    public double getSumAltitude() {
-        return sumAltitude;
-    }
-
-    public void setSumAltitude(double sumAltitude) {
-        this.sumAltitude = sumAltitude;
-    }
-
-    /** Not-null value. */
-    public byte[] getExtraPayload() {
-        return extraPayload;
-    }
-
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setExtraPayload(byte[] extraPayload) {
-        this.extraPayload = extraPayload;
     }
 
 }

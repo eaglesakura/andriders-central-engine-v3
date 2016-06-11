@@ -5,30 +5,33 @@ import com.eaglesakura.andriders.ui.base.AppBaseActivity;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.menu.GoogleLoginCtrlFragment;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
-import com.eaglesakura.android.framework.ui.BaseFragment;
+import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.BuildConfig;
+import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
+import com.eaglesakura.android.framework.ui.FragmentTransactionBuilder;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
-import com.eaglesakura.util.LogUtil;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 
 public class MainContentActivity extends AppBaseActivity {
 
-    View progress;
+    View mProgress;
 
     @Bind(R.id.Content_Drawer)
-    DrawerLayout drawerLayout;
+    DrawerLayout mDrawerLayout;
 
-    MenuController menuController;
+    MenuController mMenuController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,19 +42,19 @@ public class MainContentActivity extends AppBaseActivity {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             {
                 GoogleLoginCtrlFragment fragment = new GoogleLoginCtrlFragment();
-                transaction.add(fragment, fragment.createSimpleTag());
+                transaction.add(fragment, fragment.getClass().getName());
             }
             transaction.commit();
         }
 
-        menuController = new MenuController(this,
+        mMenuController = new MenuController(this,
                 findViewById(NavigationView.class, R.id.Content_Navigation_Root),
-                drawerLayout
+                mDrawerLayout
         );
-        menuController.setCallback(menuCallback);
-        menuController.initialize();
+        mMenuController.setCallback(mMenuCallback);
+        mMenuController.initialize();
 
-        progress = findViewById(R.id.Main_Progress);
+        mProgress = findViewById(R.id.Main_Progress);
 //        userNotificationController = new UserNotificationController(this) {
 //            @Override
 //            protected void showProgressInterface(Object sender, String message) {
@@ -70,73 +73,69 @@ public class MainContentActivity extends AppBaseActivity {
 //            }
 //        };
 
-        UIHandler.postDelayedUI(() -> {
-            drawerLayout.openDrawer(Gravity.START);
-        }, 500);
+        if (!BuildConfig.DEBUG) {
+            UIHandler.postDelayedUI(() -> {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }, 500);
+        }
     }
 
     @Override
-    protected int getDefaultLayoutId() {
+    public int getDefaultLayoutId(@NonNull ContentHolderActivityDelegate self) {
         return R.layout.activity_maincontent;
     }
 
-
+    @NonNull
     @Override
-    protected BaseFragment newDefaultContentFragment() {
-//        return SupportAnnotationUtil.newFragment(ProfileFragmentMain.class);
-//        return new ExtensionFragmentMain();
-        return DisplaySettingFragmentMain.createInstance(this);
+    public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
+//        return UserLogMain.newInstance(this);
+        return DisplaySettingFragmentMain.newInstance(this);
+//        return GpxImportTourFragmentMain.newInstance(this);
     }
 
     /**
-     * メイン制御用TAG
+     * BackStackに追加する
      */
-    private static final String MAIN_CTRL_TAG = "MAIN_CTRL_TAG";
-
-    @Override
-    protected String createTag(BaseFragment fragment) {
-        if (fragment instanceof BaseNavigationFragment) {
-            return MAIN_CTRL_TAG;
-        }
-        return super.createTag(fragment);
-    }
+    public static final int NAVIGATION_FLAG_BACKSTACK = 0x1 << 0;
 
     /**
      * 制御Fragmentを交換する。
      * 既にその画面が開かれている場合、何もしない。
      */
-    void changeFragment(BaseNavigationFragment newFragment) {
+    public void nextNavigation(Fragment newFragment, int flags) {
         FragmentManager manager = getSupportFragmentManager();
-        Fragment oldFragment = manager.findFragmentByTag(MAIN_CTRL_TAG);
+        Fragment oldFragment = getContentFragment();
         if (oldFragment != null && oldFragment.getClass().equals(newFragment.getClass())) {
-            LogUtil.log("Fragment not changed(%s)", newFragment.getClass());
+            AppLog.system("Fragment not changed(%s)", newFragment.getClass());
             return;
         }
 
-        FragmentTransaction transaction = manager.beginTransaction();
-        {
-            transaction.replace(R.id.Content_Holder_Root, newFragment, createTag(newFragment));
+        FragmentTransactionBuilder builder = new FragmentTransactionBuilder(this, manager);
+        builder.animation(FragmentTransactionBuilder.AnimationType.Fade)
+                .replace(R.id.Content_Holder_Root, newFragment, ContentHolderActivityDelegate.TAG_CONTENT_FRAGMENT_MAIN);
+        if ((flags & NAVIGATION_FLAG_BACKSTACK) != 0) {
+            builder.addToBackStack();
         }
-        transaction.commit();
+        builder.commit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        menuController.onResume();
+        mMenuController.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        menuController.onPause();
+        mMenuController.onPause();
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (ContextUtil.isBackKeyEvent(event)) {
             // progress中ならば作業を中断してはいけない
-            if (progress.getVisibility() == View.VISIBLE) {
+            if (mProgress.getVisibility() == View.VISIBLE) {
                 return true;
             }
         }
@@ -144,10 +143,7 @@ public class MainContentActivity extends AppBaseActivity {
         return super.dispatchKeyEvent(event);
     }
 
-    final MenuController.MenuCallback menuCallback = new MenuController.MenuCallback() {
-        @Override
-        public void requestChangeContent(BaseNavigationFragment fragment) {
-            changeFragment(fragment);
-        }
+    final MenuController.MenuCallback mMenuCallback = (fragment) -> {
+        nextNavigation(fragment, 0x00);
     };
 }

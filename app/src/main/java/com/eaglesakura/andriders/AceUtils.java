@@ -2,7 +2,7 @@ package com.eaglesakura.andriders;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import com.eaglesakura.andriders.internal.protocol.RawGeoPoint;
+import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.util.SerializeUtil;
 
@@ -68,6 +68,14 @@ public class AceUtils {
     public static <T> T publicFieldClone(T origin) {
         try {
             return SerializeUtil.deserializePublicFieldObject((Class<T>) origin.getClass(), SerializeUtil.serializePublicFieldObject(origin, false));
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static byte[] publicFieldSerialize(Object obj) {
+        try {
+            return SerializeUtil.serializePublicFieldObject(obj, true);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

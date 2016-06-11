@@ -94,7 +94,7 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
             try {
                 pushProgress(R.string.Common_Update_Migration);
 
-                int initialVersion = Settings.getInstance().getUpdateCheckProps().getInitializeReleased();
+                int initialVersion = getSettings().getUpdateCheckProps().getInitializeReleased();
 
                 // 初回起動時に初期セットアップを行う
                 if (initialVersion < RELEASE_INITIALIZE_NUMBER_release1) {

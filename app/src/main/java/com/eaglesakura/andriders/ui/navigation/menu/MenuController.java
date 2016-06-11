@@ -4,15 +4,16 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.service.central.CentralService;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
-import com.eaglesakura.andriders.ui.navigation.extension.ExtensionFragmentMain;
+import com.eaglesakura.andriders.ui.navigation.extension.PluginSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.info.InformationFragmentMain;
+import com.eaglesakura.andriders.ui.navigation.log.UserLogFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.profile.ProfileFragmentMain;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.widget.CompoundButton;
 
 /**
@@ -22,14 +23,19 @@ import android.widget.CompoundButton;
  * そのため、menuリソースを使わず、プログラム側でコントロールを行う。
  */
 public class MenuController {
-    final Context mContext;
+    @NonNull
+    Context mContext;
 
-    final NavigationView mNavigationView;
+    @NonNull
+    NavigationView mNavigationView;
 
-    final DrawerLayout mDrawerLayout;
+    @NonNull
+    DrawerLayout mDrawerLayout;
 
+    @NonNull
     CompoundButton mBootSwitch;
 
+    @NonNull
     MenuCallback mCallback;
 
     public MenuController(final Context context, NavigationView view, DrawerLayout drawerLayout) {
@@ -37,14 +43,11 @@ public class MenuController {
         this.mNavigationView = view;
         this.mDrawerLayout = drawerLayout;
         this.mBootSwitch = (CompoundButton) mNavigationView.getHeaderView(0).findViewById(R.id.Main_Menu_BootService);
-        mBootSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    CentralService.start(context);
-                } else {
-                    CentralService.stop(context);
-                }
+        mBootSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            if (isChecked) {
+                CentralService.start(context);
+            } else {
+                CentralService.stop(context);
             }
         });
     }
@@ -69,29 +72,27 @@ public class MenuController {
         void requestChangeContent(BaseNavigationFragment fragment);
     }
 
-    private final NavigationView.OnNavigationItemSelectedListener naviItemSelectedImpl = new NavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.Main_Menu_Profile:
-                    mCallback.requestChangeContent(ProfileFragmentMain.createInstance(mContext));
-                    break;
-                case R.id.Main_Menu_CycleComputer:
-                    mCallback.requestChangeContent(DisplaySettingFragmentMain.createInstance(mContext));
-                    break;
-                case R.id.Main_Menu_Activity:
-                    break;
-                case R.id.Main_Menu_Extensions:
-                    mCallback.requestChangeContent(ExtensionFragmentMain.createInstance(mContext));
-                    break;
-                case R.id.Main_Menu_Information:
-                    mCallback.requestChangeContent(InformationFragmentMain.createInstance(mContext));
-                    break;
-                default:
-                    return false;
-            }
-            mDrawerLayout.closeDrawer(Gravity.START);
-            return true;
+    private final NavigationView.OnNavigationItemSelectedListener naviItemSelectedImpl = (menuItem) -> {
+        switch (menuItem.getItemId()) {
+            case R.id.Main_Menu_Profile:
+                mCallback.requestChangeContent(ProfileFragmentMain.createInstance(mContext));
+                break;
+            case R.id.Main_Menu_CycleComputer:
+                mCallback.requestChangeContent(DisplaySettingFragmentMain.newInstance(mContext));
+                break;
+            case R.id.Main_Menu_UserLog:
+                mCallback.requestChangeContent(UserLogFragmentMain.newInstance(mContext));
+                break;
+            case R.id.Main_Menu_Extensions:
+                mCallback.requestChangeContent(PluginSettingFragmentMain.newInstance(mContext));
+                break;
+            case R.id.Main_Menu_Information:
+                mCallback.requestChangeContent(InformationFragmentMain.createInstance(mContext));
+                break;
+            default:
+                return false;
         }
+        mDrawerLayout.closeDrawer(Gravity.START);
+        return true;
     };
 }

@@ -21,8 +21,4 @@ public abstract class BaseCalculator {
     protected long now() {
         return mClock.now();
     }
-
-    protected Settings getSettings() {
-        return Settings.getInstance();
-    }
 }

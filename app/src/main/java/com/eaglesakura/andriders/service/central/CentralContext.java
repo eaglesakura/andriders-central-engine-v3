@@ -1,13 +1,20 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.andriders.central.CycleComputerData;
-import com.eaglesakura.andriders.computer.display.DisplayManager;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
-import com.eaglesakura.andriders.computer.notification.NotificationManager;
+import com.eaglesakura.andriders.central.CentralDataManager;
+import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.android.rx.LifecycleState;
+import com.eaglesakura.andriders.display.data.DataDisplayManager;
+import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
+import com.eaglesakura.andriders.plugin.ExtensionClient;
+import com.eaglesakura.andriders.plugin.ExtensionClientManager;
+import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.andriders.util.MultiTimer;
+import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.RxTaskBuilder;
@@ -15,29 +22,32 @@ import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.io.Disposable;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.util.SerializeUtil;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-
-import rx.subjects.BehaviorSubject;
+import android.support.annotation.NonNull;
 
 /**
  * ACEの表示状態
  */
 public class CentralContext implements Disposable {
 
-    /**
-     * 設定
-     */
-    private final Settings mSettings = Settings.getInstance();
-
+    @NonNull
     private final Service mContext;
 
     /**
      * システム時計
      */
+    @NonNull
     private final Clock mClock;
+
+    /**
+     * 更新用のタイマーリスト
+     */
+    @NonNull
+    private final MultiTimer mTimers;
 
     /**
      * サイコン情報を表示する場合はtrue
@@ -50,24 +60,35 @@ public class CentralContext implements Disposable {
     private boolean mNotificationEnable = true;
 
     /**
+     * 設定
+     */
+    @Inject(StorageProvider.class)
+    @NonNull
+    Settings mSettings;
+
+    /**
      * サイコンデータ本体
      */
-    private CycleComputerData mCycleComputerData;
+    @NonNull
+    CentralDataManager mCentralData;
 
     /**
      * サイコン表示内容管理
      */
-    private DisplayManager mDisplayManager;
+    @NonNull
+    DataDisplayManager mDisplayManager;
 
     /**
      * 通知内容管理
      */
-    private NotificationManager mNotificationManager;
+    @NonNull
+    NotificationDisplayManager mNotificationManager;
 
     /**
      * 拡張機能管理
      */
-    private ExtensionClientManager mExtensionClientManager;
+    @NonNull
+    ExtensionClientManager mExtensionClientManager;
 
     /**
      * 初期化が完了していればtrue
@@ -80,21 +101,29 @@ public class CentralContext implements Disposable {
     static final int DATA_BROADCAST_INTERVAL_MS = 1000;
 
     /**
-     * 最終ブロードキャスト時刻
+     * セントラルを更新するインターバル（ミリ秒）
      */
-    private long mLastBroadcastTime;
+    static final int CENTRAL_UPDATE_INTERVAL_MS = 1000;
 
-    private BehaviorSubject<LifecycleState> mSubject = BehaviorSubject.create(LifecycleState.NewObject);
+    /**
+     * セントラルデータをDBに書き出すインターバル（秒）
+     */
+    static final int CENTRAL_COMMIT_INTERVAL_MS = 1000 * 30;
 
-    private SubscriptionController mSubscriptionController = new SubscriptionController().bind(mSubject);
+    private ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
     public CentralContext(Service context, Clock updateClock) {
         mContext = context;
         mClock = updateClock;
+        mTimers = new MultiTimer(mClock);
 
-        mCycleComputerData = new CycleComputerData(context, mClock.now());
-        mDisplayManager = new DisplayManager(mContext, mSubscriptionController);
-        mNotificationManager = new NotificationManager(mContext, mSubscriptionController);
+        Garnet.create(this)
+                .depend(Context.class, context.getApplication())
+                .inject();
+
+        mCentralData = new CentralDataManager(context, mClock);
+        mDisplayManager = new DataDisplayManager(mContext, mClock);
+        mNotificationManager = new NotificationDisplayManager(mContext, mClock);
 
         mExtensionClientManager = new ExtensionClientManager(mContext);
     }
@@ -106,11 +135,11 @@ public class CentralContext implements Disposable {
         return mClock.now();
     }
 
-    public DisplayManager getDisplayManager() {
+    public DataDisplayManager getDisplayManager() {
         return mDisplayManager;
     }
 
-    public NotificationManager getNotificationManager() {
+    public NotificationDisplayManager getNotificationManager() {
         return mNotificationManager;
     }
 
@@ -124,14 +153,14 @@ public class CentralContext implements Disposable {
      * タスクはUIスレッドで実行される。
      */
     public void post(Runnable task) {
-        mSubscriptionController.run(ObserveTarget.Alive, task);
+        getSubscription().run(ObserveTarget.Alive, task);
     }
 
     /**
      * コールバック管理を取得する
      */
-    public SubscriptionController getSubscriptionController() {
-        return mSubscriptionController;
+    public SubscriptionController getSubscription() {
+        return mLifecycleDelegate.getSubscription();
     }
 
     /**
@@ -141,13 +170,18 @@ public class CentralContext implements Disposable {
         mExtensionClientManager.connect(ExtensionClientManager.ConnectMode.Enabled);
         for (ExtensionClient client : mExtensionClientManager.listClients()) {
             // サイコンデータ用コールバックを指定する
-            client.setWorker((ExtensionClient.Action<CycleComputerData> action) -> {
+            client.setCentralWorker((ExtensionClient.Action<CentralDataManager> action) -> {
                 post(() -> {
-                    action.callback(mCycleComputerData);
+                    action.callback(mCentralData);
                 });
             });
 
             // TODO ディスプレイ設定用コールバックを指定する
+            client.setDisplayWorker((ExtensionClient.Action<DataDisplayManager> action) -> {
+                post(() -> {
+                    action.callback(mDisplayManager);
+                });
+            });
         }
     }
 
@@ -155,19 +189,22 @@ public class CentralContext implements Disposable {
      * データ接続を開始する
      */
     public void onServiceInitializeCompleted() {
-        mSubject.onNext(LifecycleState.OnCreated);
-        mSubject.onNext(LifecycleState.OnStarted);
-        mSubject.onNext(LifecycleState.OnResumed);
+        mLifecycleDelegate.onCreate();
         newTask(SubscribeTarget.GlobalPipeline, task -> {
             initExtensions();
             return this;
         }).completed((result, task) -> {
-            LogUtil.log("Completed Initialize");
+            AppLog.system("Completed Initialize");
             mInitialized = true;
-            mLastBroadcastTime = now();
         }).failed((error, task) -> {
-            LogUtil.log("Failed Initialize :: " + error.getMessage());
+            AppLog.system("Failed Initialize :: " + error.getMessage());
         }).start();
+    }
+
+    enum TimerType {
+        CentralUpdate,
+        CentralBroadcast,
+        CentralDbCommit,
     }
 
     /**
@@ -182,48 +219,89 @@ public class CentralContext implements Disposable {
 
         final long DIFF_TIME_MS = (long) (deltaSec * 1000.0);
         mClock.offset(DIFF_TIME_MS);
-        // TODO Centralの時間を進める
-        // TODO 通知の更新を行う
 
-        if ((now() - mLastBroadcastTime) > DATA_BROADCAST_INTERVAL_MS) {
-            // インターバルを超えたので、データのブロードキャストを行う
-            mLastBroadcastTime = System.currentTimeMillis();
+        // セントラルの更新を行う
+        if (mTimers.endIfOverTime(TimerType.CentralUpdate, CENTRAL_UPDATE_INTERVAL_MS)) {
+            mCentralData.onUpdate();
+        }
+
+        // データのブロードキャストを行う
+        if (mTimers.endIfOverTime(TimerType.CentralBroadcast, DATA_BROADCAST_INTERVAL_MS)) {
             requestBroadcastBasicDatas();
+        }
+
+        // データのコミットを行う
+        if (mTimers.endIfOverTime(TimerType.CentralDbCommit, CENTRAL_COMMIT_INTERVAL_MS)) {
+            requestCommitDatabase();
         }
     }
 
     @Override
     public void dispose() {
-        // TODO セッション終了タスクを発行する
-        newTask(SubscribeTarget.GlobalPipeline, task -> {
-            return this;
-        })
-                .observeOn(ObserveTarget.FireAndForget) // コールバックは常に行われる
-                .finalized(task -> {
-                    LogUtil.log("Finished session");
-                })
-                .start();
+        requestCommitDatabase();    // セントラルにコミットをかける
 
-        mSubject.onNext(LifecycleState.OnPaused);
-        mSubject.onNext(LifecycleState.OnStopped);
-        mSubject.onNext(LifecycleState.OnDestroyed);
+        // その他の終了タスクを投げる
+        new RxTaskBuilder<>(getSubscription())
+                .observeOn(ObserveTarget.FireAndForget)
+                .subscribeOn(SubscribeTarget.GlobalPipeline)
+                .async(task -> {
+                    mExtensionClientManager.disconnect();
+                    return this;
+                })
+                .finalized(task -> {
+                    AppLog.system("Finished session");
+                }).start();
+
+        // タスクをシャットダウンする
+        mLifecycleDelegate.onDestroy();
     }
 
     /**
      * 非同期タスクを生成する
      */
     public <T> RxTaskBuilder<T> newTask(SubscribeTarget subscribeTarget, RxTask.Async<T> task) {
-        return new RxTaskBuilder<T>(getSubscriptionController())
+        return new RxTaskBuilder<T>(getSubscription())
                 .async(task)
                 .observeOn(ObserveTarget.Alive)
                 .subscribeOn(subscribeTarget);
     }
 
     /**
-     * TODO: データを定期送信する
-     * TODO: 拡張Serviceにデータを送信する
+     * DBの内容を書き出す
+     */
+    void requestCommitDatabase() {
+        new RxTaskBuilder<>(getSubscription())
+                .observeOn(ObserveTarget.FireAndForget)
+                .subscribeOn(SubscribeTarget.GlobalPipeline)
+                .async(task -> {
+                    AppLog.db("CentralCommit Start");
+                    mCentralData.commit();
+                    return this;
+                })
+                .completed((result, task) -> {
+                    AppLog.db("CentralCommit Completed");
+                })
+                .start();
+    }
+
+
+    /**
+     * データを各アプリへ送信する
      */
     void requestBroadcastBasicDatas() {
+        RawCentralData data = mCentralData.getLatestCentralData();
+        if (data == null) {
+            AppLog.broadcast("mCentralData.getLatestCentralData() == null");
+        }
         Intent intent = new Intent();
+        intent.setAction(CentralDataReceiver.INTENT_ACTION);
+        intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
+        try {
+            intent.putExtra(CentralDataReceiver.INTENT_EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(data, true));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mContext.sendBroadcast(intent);
     }
 }

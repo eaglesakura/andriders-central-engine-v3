@@ -1,6 +1,7 @@
 checkout:
   post:
     - chmod 755 ./gradlew
+    - chmod 755 ./script/circleci-invalidate-cache.sh
     - chmod 755 ./script/circleci-build-assemble.sh
     - chmod 755 ./script/circleci-build-testing.sh
     - chmod 755 ./script/circleci-deploy-deploygate.sh
@@ -13,48 +14,37 @@ machine:
     version: oraclejdk8
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
-    GRADLE_OPTS: -Xmx4G -Dorg.gradle.daemon=true
-    JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx4096m -XX:MaxPermSize=2048m
+    BUILD_CACHEDIR: /home/ubuntu/build-cache
+    GRADLE_OPTS: -Xmx2G -Dorg.gradle.daemon=true
+    JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m -XX:MaxPermSize=2048m
 dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
+    - "/home/ubuntu/build-cache"
   override:
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/android-sdk-install-circle.sh)"
-    - rm -rf "/home/ubuntu/.m2"
-    - rm -rf "/home/ubuntu/.ivy2"
-    - rm -rf "/home/ubuntu/.gradle"
     - ./script/developer-install-private.sh
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-android-dependencies.sh)"
+    - ./gradlew :app:dependencies
 test:
   override:
-    - echo "Skip test task"
-deployment:
-  canary:
-    branch: /^v[0-9]\..*$/
-    commands:
-      - ./gradlew app:dependencies
       - ./script/circleci-build-assemble.sh
-      - ./script/circleci-deploy-deploygate.sh
       - ./script/circleci-build-testing.sh
-      - cp -r ./ci-release $CIRCLE_ARTIFACTS
+deployment:
   feature:
     branch: /^feature\/id\/.*$/
     commands:
-      - ./gradlew app:dependencies
-      - ./script/circleci-build-assemble.sh
-      - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
     commands:
-      - ./gradlew app:dependencies
-      - ./script/circleci-build-assemble.sh
       - ./script/circleci-deploy-deploygate.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
-  develop:
+  nightly:
     branch: master
     commands:
-      - ./gradlew app:dependencies
-      - ./script/circleci-build-assemble.sh
-      - ./script/circleci-build-testing.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
-
+  release:
+    branch: /^v[0-9]\..*$/
+    commands:
+      - ./script/circleci-deploy-deploygate.sh
+      - cp -r ./ci-release $CIRCLE_ARTIFACTS

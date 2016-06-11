@@ -1,8 +1,11 @@
 package com.eaglesakura.andriders.central.scsensor;
 
 import com.eaglesakura.andriders.AceUtils;
+import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
+
+import android.support.annotation.NonNull;
 
 public class SensorSpeedData extends BaseCalculator {
 
@@ -31,8 +34,12 @@ public class SensorSpeedData extends BaseCalculator {
      */
     private double mMaxSpeedKmh;
 
-    public SensorSpeedData(Clock clock) {
+    @NonNull
+    Settings mSettings;
+
+    public SensorSpeedData(Clock clock, @NonNull Settings settings) {
         super(clock);
+        mSettings = settings;
     }
 
     public boolean valid() {
@@ -73,7 +80,7 @@ public class SensorSpeedData extends BaseCalculator {
      * ホイールの外周サイズ（mm）を取得する
      */
     public float getWheelOuterLength() {
-        return getSettings().getUserProfiles().getWheelOuterLength();
+        return mSettings.getUserProfiles().getWheelOuterLength();
     }
 
     /**

@@ -4,31 +4,34 @@ import com.eaglesakura.andriders.AceUtils;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialInputDialog;
 
+import android.support.annotation.UiThread;
 import android.widget.EditText;
 import android.widget.TextView;
 
 public class RoadbikeSettingFragment extends AppBaseFragment {
 
+    @Bind(R.id.Setting_RoadBikeProfile_WheelSetting_Value)
+    TextView mWheelOuterLengthValue;
+
     public RoadbikeSettingFragment() {
-        requestInjection(R.layout.fragment_setting_roadbike);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_roadbike);
     }
 
-    @Bind(R.id.Setting_RoadBikeProfile_WheelSetting_Value)
-    TextView wheelOuterLengthValue;
-
     @Override
-    protected void onAfterViews() {
-        super.onAfterViews();
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
         updateUI();
     }
 
+    @UiThread
     void updateUI() {
-        wheelOuterLengthValue.setText(String.valueOf(getSettings().getUserProfiles().getWheelOuterLength()));
+        mWheelOuterLengthValue.setText(String.valueOf(getSettings().getUserProfiles().getWheelOuterLength()));
     }
 
     @OnClick(R.id.Setting_RoadBikeProfile_WheelSetting)

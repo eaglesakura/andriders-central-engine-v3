@@ -2,36 +2,31 @@ package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.freezer.BundleState;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-
-import icepick.State;
 
 /**
  * 表示対象のアプリを選択するFragment
  */
 public class AppTargetSelectFragment extends AppBaseFragment {
 
-    @State
-    String appPackageName;
+    @BundleState
+    String mAppPackageName;
 
-    Bitmap icon;
+    Bitmap mIcon;
 
     Callback mCallback;
 
     public AppTargetSelectFragment() {
-        requestInjection(R.layout.fragment_setting_display_appselect);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_display_appselect);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (!(getParentFragment() instanceof Callback)) {
-            throw new IllegalStateException();
-        } else {
-            mCallback = (Callback) getParentFragment();
-        }
+        mCallback = getParentOrThrow(Callback.class);
     }
 
     @Override

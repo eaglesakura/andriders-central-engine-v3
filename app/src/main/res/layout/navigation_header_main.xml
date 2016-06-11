@@ -17,7 +17,7 @@
             android:paddingTop="@dimen/EsMaterial.Button.Margin"
             android:src="@drawable/ic_launcher"/>
 
-    <com.eaglesakura.material.widget.MaterialSwitch
+    <android.support.v7.widget.SwitchCompat
             android:id="@+id/Main.Menu.BootService"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

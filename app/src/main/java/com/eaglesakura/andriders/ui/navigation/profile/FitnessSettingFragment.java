@@ -4,17 +4,20 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.RequestCodes;
 import com.eaglesakura.andriders.google.GoogleApiUtil;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.playservice.GoogleApiTask;
+import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.util.ViewUtil;
+import com.eaglesakura.freezer.BundleState;
 import com.eaglesakura.material.widget.MaterialInputDialog;
 import com.eaglesakura.util.LogUtil;
 
@@ -26,23 +29,26 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import icepick.State;
-
 public class FitnessSettingFragment extends AppBaseFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    final UserProfiles personalDataSettings = Settings.getInstance().getUserProfiles();
+    UserProfiles mPersonalDataSettings;
 
-    static final int REQUEST_GOOGLEFIT_SETTING = 0x1200;
+    static final int REQUEST_GOOGLEFIT_SETTING = RequestCodes.GOOGLEFIT_SETTING;
 
     public FitnessSettingFragment() {
-        requestInjection(R.layout.fragment_setting_fitness);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_fitness);
     }
 
     @Override
-    protected void onAfterViews() {
-        super.onAfterViews();
-        updatePersonalUI();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPersonalDataSettings = getSettings().getUserProfiles();
     }
 
+    @Override
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
+        updatePersonalUI();
+    }
 
     @Override
     public void onResume() {
@@ -51,22 +57,20 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
         // client add
         getGoogleApiClientToken().registerConnectionCallbacks(this);
         getGoogleApiClientToken().registerConnectionFailedListener(this);
-
-        syncFitnessData();
     }
 
     /**
      * 個人設定を更新する
      */
     void updatePersonalUI() {
-        runOnUiThread(() -> {
+        getSubscription().run(ObserveTarget.Foreground, () -> {
             AQuery q = new AQuery(getView());
 
             // 体重設定
-            q.id(R.id.Setting_Personal_WeightValue).text(String.format("%.1f", personalDataSettings.getUserWeight()));
+            q.id(R.id.Setting_Personal_WeightValue).text(String.format("%.1f", mPersonalDataSettings.getUserWeight()));
             // 心拍設定
-            q.id(R.id.Setting_Personal_NormalHeartrateValue).text(String.valueOf(personalDataSettings.getNormalHeartrate()));
-            q.id(R.id.Setting_Personal_MaxHeartrateValue).text(String.valueOf(personalDataSettings.getMaxHeartrate()));
+            q.id(R.id.Setting_Personal_NormalHeartrateValue).text(String.valueOf(mPersonalDataSettings.getNormalHeartrate()));
+            q.id(R.id.Setting_Personal_MaxHeartrateValue).text(String.valueOf(mPersonalDataSettings.getMaxHeartrate()));
         });
     }
 
@@ -99,7 +103,7 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
 
             @Override
             protected void onCommit(EditText input) {
-                personalDataSettings.setUserWeight(ViewUtil.getDoubleValue(input, personalDataSettings.getUserWeight()));
+                mPersonalDataSettings.setUserWeight(ViewUtil.getDoubleValue(input, mPersonalDataSettings.getUserWeight()));
                 updatePersonalUI();
 
                 asyncCommitSettings();
@@ -150,7 +154,7 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     /**
      * 既にGoogle Fitのメッセージを表示していたらtrue
      */
-    @State
+    @BundleState
     boolean googleFitFailedMessageBooted = false;
 
     /**
@@ -167,9 +171,9 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
                 @Override
                 public Float executeTask(GoogleApiClient client) throws Exception {
                     float userWeight = GoogleApiUtil.getUserWeightFromFit(client);
-                    if (userWeight > 0 && userWeight != personalDataSettings.getUserWeight()) {
-                        personalDataSettings.setUserWeight(userWeight);
-                        personalDataSettings.commit();
+                    if (userWeight > 0 && userWeight != mPersonalDataSettings.getUserWeight()) {
+                        mPersonalDataSettings.setUserWeight(userWeight);
+                        mPersonalDataSettings.commit();
                         toast(R.string.Setting_Fitness_Weight_SyncCompleted);
                     } else if (userWeight <= 0) {
                         toast(R.string.Setting_Fitness_Weight_SyncFailed);
@@ -202,10 +206,10 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     void clickPersonalMaxHeartrate() {
         showHeartrateInputDialog(
                 R.string.Setting_Fitness_MaxHeartrate_DialogTitle, R.string.Setting_Fitness_MaxHeartrate_DialogHiht,
-                personalDataSettings.getMaxHeartrate(),
+                mPersonalDataSettings.getMaxHeartrate(),
                 // 心拍受信ハンドリング
                 bpm -> {
-                    personalDataSettings.setMaxHeartrate(bpm);
+                    mPersonalDataSettings.setMaxHeartrate(bpm);
                     asyncCommitSettings();
                 }
         );
@@ -215,11 +219,11 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     void clickPersonalNormalHeartrate() {
         showHeartrateInputDialog(
                 R.string.Setting_Fitness_NormalHeartrate_DialogTitle, R.string.Setting_Fitness_MaxHeartrate_DialogHiht,
-                personalDataSettings.getNormalHeartrate(),
+                mPersonalDataSettings.getNormalHeartrate(),
                 new HeartrateInputListener() {
                     @Override
                     public void onInputHeartrate(int bpm) {
-                        personalDataSettings.setNormalHeartrate(bpm);
+                        mPersonalDataSettings.setNormalHeartrate(bpm);
                         asyncCommitSettings();
                     }
                 }

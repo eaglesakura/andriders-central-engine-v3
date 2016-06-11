@@ -86,54 +86,6 @@ task generateProps(type: com.eaglesakura.gradle.task.AndroidPropsGenTask) {
 }
 
 /**
- * ロードバイク設定用プロファイルを出力する
- */
-task generateUserProfileDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
-    classPackageBase = "com.eaglesakura.andriders.dao"
-
-    def profileSchema = newSchema(0x01, "profile");
-
-    /**
-     * 切り替え可能なプロファイル情報
-     */
-    def DbUserProfile = profileSchema.addEntity("DbUserProfile");
-
-    DbUserProfile.addStringProperty("uniqueId").notNull().unique().index().primaryKey();
-    DbUserProfile.addDateProperty("createdDate").notNull(); // 作成日時
-    DbUserProfile.addDateProperty("modifiedDate").notNull();    // 更新日時
-    DbUserProfile.addStringProperty("name").notNull();
-    DbUserProfile.addStringProperty("description").notNull();
-
-    // ロードバイク本体設定
-    DbUserProfile.addStringProperty("roadbikeName").notNull(); // ロードバイク名
-    DbUserProfile.addIntProperty("wheelOuterLength").notNull(); // 使用しているホイールの外周サイズ
-    DbUserProfile.addIntProperty("frameMaterial").notNull();  // フレームの材質 （チタン、カーボン、アルミ、クロモリ、その他）
-    DbUserProfile.addIntProperty("roadbikeWeight");  // ロードバイクの重量（未設定あり）
-    DbUserProfile.addByteArrayProperty("gearSetting");  // ギア比の設定（未設定あり）
-
-    // スピードゾーン
-    DbUserProfile.addIntProperty("speedZoneCruise").notNull();  // これよりも早いと巡航域
-    DbUserProfile.addIntProperty("speedZoneSprint").notNull();  // これよりも早いとスプリント領域
-
-    // 個人設定
-    DbUserProfile.addIntProperty("cadenceZoneIdeal").notNull(); // これよりも速いと理想ケイデンス
-    DbUserProfile.addIntProperty("cadenceZoneHigh").notNull(); // これよりも速いと高ケイデンス
-
-    // 周辺機器
-    // スピードセンサー設定と切替
-    DbUserProfile.addBooleanProperty("gpsSpeedSensorEnable").notNull();
-    DbUserProfile.addBooleanProperty("gpsDistanceSensorEnable").notNull();
-    DbUserProfile.addBooleanProperty("bleSpeedSensorEnable").notNull();
-    // BLE HRモニター
-    DbUserProfile.addBooleanProperty("bleHeartrateMonitorEnable").notNull();
-    // BLE ケイデンスセンサー
-    DbUserProfile.addBooleanProperty("bleCadenceSensorEnable").notNull();
-    // リモートセントラル
-    DbUserProfile.addBooleanProperty("btRemoteCentralEnable").notNull();
-}
-
-/**
  * サイクルコンピューター設定用プロファイルを出力する
  */
 task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
@@ -164,76 +116,35 @@ task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     DbDisplayLayout.addStringProperty("valueId").notNull();   // 設定される値の識別
 }
 
-/**
- * 各種設定用DAOを出力
- */
-task generateSettingsDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
-    classPackageBase = "com.eaglesakura.andriders.dao"
-
-    def sessionSchema = newSchema(0x01, "settings");
-    def DbZoneSettings = sessionSchema.addEntity("DbZoneSettings");
-
-    DbZoneSettings.addStringProperty("appExtraKey").notNull().unique().primaryKey(); // 識別ID
-    DbZoneSettings.addStringProperty("name").notNull();   // 設定名
-
-    // 速度域
-    DbZoneSettings.addDoubleProperty("speedCruise").notNull();   // 巡航
-    DbZoneSettings.addDoubleProperty("speedSprint").notNull();   // スプリント
-}
-
 task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
-    /**
-     * グループと日毎ログで共通に使用するプロパティを与える
-     */
-    def addLogProperty = {
-        // 時間関連
-        it.addDateProperty("startTime").notNull();  // その日最初のセッション開始時刻
-        it.addDateProperty("endTime").notNull();  // その日最後のセッション終了時刻
-        it.addLongProperty("activeTimeMs").notNull().index(); // セッションがアクティブ（走行）中だった時間
-
-        // 最高記録
-        it.addDoubleProperty("maxSpeedKmh").notNull().index(); // 最高速
-        it.addIntProperty("maxCadence").notNull();   // この日の最高ケイデンス
-        it.addIntProperty("maxHeartrate").notNull();   // この日の最高心拍
-
-        // 延べ記録
-        it.addDoubleProperty("sumDistanceKm").notNull().index();   // 移動距離合計（キロ単位）
-
-        // 延べ消費Calorie
-        it.addDoubleProperty("calories").notNull();
-        // 延べエクササイズ
-        it.addDoubleProperty("exercise").notNull();
-
-        // 獲得標高
-        it.addDoubleProperty("sumAltitude").notNull();
-        // 検索性を必要としない拡張データ
-        it.addByteArrayProperty("extraPayload").notNull();
-    }
-
     def sessionSchema = newSchema(1, "session");
-
-    /**
-     * 日毎のログ
-     */
-    def DbCycleDateLog = sessionSchema.addEntity("DbCycleDateLog");
-    // yyyyMMddをキーとして保存する
-    DbCycleDateLog.addStringProperty("uniqueId").notNull().index().primaryKey();
-    DbCycleDateLog.addIntProperty("sessionCount").notNull();    // 記録されているセッションの個数
-    addLogProperty(DbCycleDateLog);
 
     /**
      * セッションごとの情報を設定する
      */
     def DbSessionLog = sessionSchema.addEntity("DbSessionLog");
     DbSessionLog.addStringProperty("sessionId").notNull().unique().primaryKey(); // 打刻時間
-    DbSessionLog.addStringProperty("profileId").notNull(); // 走行時に使用したプロファイル
-    // Google Fitにアップロード済みであればtrue
-    DbSessionLog.addBooleanProperty("googleFitUploaded").notNull();
-    addLogProperty(DbSessionLog);   // 共通プロパティを追加
+    DbSessionLog.addDateProperty("startTime").notNull();  // その日最初のセッション開始時刻
+    DbSessionLog.addDateProperty("endTime").notNull();  // その日最後のセッション終了時刻
+    DbSessionLog.addLongProperty("activeTimeMs").notNull(); // セッションがアクティブ（走行）中だった時間
+    DbSessionLog.addDoubleProperty("activeDistanceKm").notNull(); // アクティブ走行した距離
+
+    // 最高記録
+    DbSessionLog.addDoubleProperty("maxSpeedKmh").notNull().index(); // 最高速
+    DbSessionLog.addIntProperty("maxCadence").notNull();   // 最高ケイデンス
+    DbSessionLog.addIntProperty("maxHeartrate").notNull();   // 最高心拍
+    DbSessionLog.addDoubleProperty("sumAltitude").notNull();
+
+    // 延べ記録
+    DbSessionLog.addDoubleProperty("sumDistanceKm").notNull().index();   // 移動距離合計（キロ単位）
+
+    // 延べ消費Calorie
+    DbSessionLog.addDoubleProperty("calories").notNull();
+    // 延べエクササイズ
+    DbSessionLog.addDoubleProperty("exercise").notNull();
 
     /**
      * セッショングループは日単位で設定する。
@@ -243,10 +154,8 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
      * セッションとは、ACEs起動〜ACEs終了までの間である。
      */
     def DbSessionPoint = sessionSchema.addEntity("DbSessionPoint");
-    // unique idはSystem.currentTimeで確定する
-    DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey(); //
-    DbSessionPoint.addStringProperty("sessionId").notNull().index();    // 関連付けるセッション情報
-    DbSessionPoint.addByteArrayProperty("raw").notNull();   // payloadの生情報
+    DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey(); // 打刻時間は常にUniqueになるはず
+    DbSessionPoint.addByteArrayProperty("central").notNull();   // Centralの生バッファ
 }
 
 /**
@@ -277,13 +186,32 @@ task generateBluetoothDeviceDao(type: com.eaglesakura.gradle.task.AndroidDaoGenT
 }
 
 /**
- * 各種コマンド内容を保存するためのDAOを出力
+ * プラグイン設定
+ *
+ * MEMO: プラグインは「現在有効となっているもの」だけを保存する。s
+ * 外部要因によってプラグインが削除されたり、構成が変更される可能性があるため。
  */
 task generateCommandControllDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
+    classPackageBase = "${android.defaultConfig.applicationId}.dao"
+
+    def schema = newSchema(1, "plugin");
+    def DbPluginSetting = schema.addEntity("DbPluginSetting");
+    // プラグイン構成を一意に識別するID(packageName + category + id)
+    DbPluginSetting.addStringProperty("uniqueId").notNull().unique().primaryKey();
+    DbPluginSetting.addStringProperty("packageName").notNull();
+    DbPluginSetting.addStringProperty("category").notNull();
+    DbPluginSetting.addStringProperty("pluginId").notNull();
+}
+
+/**
+ * 各種コマンド内容を保存するためのDAOを出力
+ */
+task generatePluginDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
+    outDirectory = file("src/main/generated/dao")
     classPackageBase = "${android.defaultConfig.applicationId}.dao.command"
 
-    def controllerSchema = newSchema(6, "controller");
+    def controllerSchema = newSchema(1, "controller");
     def DbCommandController = controllerSchema.addEntity("DbAcesCommand");
 
     DbCommandController.addStringProperty("commandKey").notNull().unique().primaryKey();
@@ -307,92 +235,4 @@ task generateCommandControllDao(type: com.eaglesakura.gradle.task.AndroidDaoGenT
     // スピードコマンド用のオプション
     DbCommandController.addIntProperty("speedType");// スピードの種類（上回ったら、下回ったら、最高速開始、最高速終了） version 5
     DbCommandController.addDoubleProperty("speedKmh"); // 速度のしきい値 version 5
-}
-
-/**
- * デフォルトで用意するコマンドのDaoを出力
- */
-task generateAceDefaultCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
-    classPackageBase = "${android.defaultConfig.applicationId}.dao.command"
-    def acesdefScheme = newSchema(2, "acesdef");
-
-    /**
-     * 指定アプリの起動を行う
-     * Intentに統合したため廃止
-     */
-    def DbLaunchAppCommand = acesdefScheme.addEntity("DbLaunchAppCommand");
-    DbLaunchAppCommand.addStringProperty("commandKey").notNull().unique().primaryKey();
-    // 起動するコマンドキー
-    DbLaunchAppCommand.addStringProperty("label").notNull();  // app name
-    DbLaunchAppCommand.addStringProperty("packageName").notNull();  // app package
-    DbLaunchAppCommand.addStringProperty("activityName").notNull(); // app activity
-
-    /**
-     * 通知を行う
-     */
-    def DbNotificationCommand = acesdefScheme.addEntity("DbNotificationCommand");
-    DbNotificationCommand.addStringProperty("commandKey").notNull().unique().primaryKey();
-    // 起動するコマンドキー
-    DbNotificationCommand.addStringProperty("message"); // メッセージを表示する場合
-    DbNotificationCommand.addStringProperty("sound"); // サウンドを再生する場合
-
-    /**
-     * カメラで撮影を行う
-     */
-    def DbCamshotCommand = acesdefScheme.addEntity("DbCamshotCommand");
-
-    DbCamshotCommand.addStringProperty("commandKey").notNull().unique().primaryKey(); // 起動するコマンドキー
-    DbCamshotCommand.addIntProperty("cameraNumber").notNull(); // 使用するカメラ MAIN/SUB
-    DbCamshotCommand.addStringProperty("flash").notNull(); // 使用するフラッシュ
-    DbCamshotCommand.addIntProperty("rotate").notNull(); // 撮影した映像の回転設定
-    DbCamshotCommand.addStringProperty("pictureSizeId").notNull(); // 撮影サイズのID
-    DbCamshotCommand.addStringProperty("scene"); // シーン設定
-    DbCamshotCommand.addBooleanProperty("soundNotification").notNull(); // サウンド通知の有無
-    DbCamshotCommand.addByteArrayProperty("tweet"); // ツイート設定Property
-    // version 2
-    DbCamshotCommand.addIntProperty("recordType");  // 保存タイプ Picture | Video
-    DbCamshotCommand.addIntProperty("videoBitrateBps"); // ビデオのビットレート
-    DbCamshotCommand.addIntProperty("videoFramerate"); // ビデオのフレームレート
-    DbCamshotCommand.addIntProperty("videoRecordSec"); // ビデオの録画秒数
-
-    /**
-     * Twitterのツイート情報を設定する
-     */
-    def DbTweetCommand = acesdefScheme.addEntity("DbTweetCommand");
-    DbTweetCommand.addStringProperty("commandKey").notNull().unique().primaryKey(); // 起動するコマンドキー
-    DbTweetCommand.addByteArrayProperty("tweet").notNull(); // ツイート設定Property
-
-    /**
-     * Action Cameraの設定
-     */
-    def DbActioncamCommand = acesdefScheme.addEntity("DbActioncamCommand");
-    DbActioncamCommand.addStringProperty("commandKey").notNull().unique().primaryKey();
-    // 起動するコマンドキー
-    DbActioncamCommand.addByteArrayProperty("tweet"); // ツイート設定Property
-}
-
-/**
- * サウンド情報を保存するためのDAOを出力
- */
-task generateSoundDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
-    classPackageBase = "${android.defaultConfig.applicationId}.dao"
-
-    def soundSchema = newSchema(0x01, "sound");
-    def DbSoundData = soundSchema.addEntity("DbSoundData");
-
-    /**
-     * サウンドデータ
-     */
-    // サウンドに一意に割り当てられたID
-    DbSoundData.addStringProperty("uniqueId").notNull().unique().primaryKey();
-    // 再生するサウンドファイル実体へのpath
-    DbSoundData.addStringProperty("path").notNull();
-    // 有効・無効
-    // デフォルトは有効
-    DbSoundData.addBooleanProperty("enabled").notNull();
-    // 画面表示名
-    // 将来的な拡張として、後から自由な拡張インストールが可能なようにする
-    DbSoundData.addStringProperty("screenName");
 }

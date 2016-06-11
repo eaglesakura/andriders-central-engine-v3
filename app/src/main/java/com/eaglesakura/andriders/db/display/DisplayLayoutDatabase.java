@@ -67,7 +67,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
         String uniqueId = "target:" + packageName;
 
         DbDisplayTarget result = session.getDbDisplayTargetDao().load(uniqueId);
-        // DBがなければ作成して返す
+        // DBがなければ作成して返すが、insertは行わない
         if (result == null) {
             result = new DbDisplayTarget("target:" + PACKAGE_NAME_DEFAULT);
             result.setCreatedDate(new Date());
@@ -142,19 +142,16 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
             throw new IllegalArgumentException();
         }
 
-        session.runInTx(new Runnable() {
-            @Override
-            public void run() {
-                // グループレイアウトを削除する
-                {
-                    QueryBuilder<DbDisplayLayout> builder = session.getDbDisplayLayoutDao().queryBuilder();
-                    builder.where(DbDisplayLayoutDao.Properties.TargetPackage.eq(target.getTargetPackage()));
-                    builder.buildDelete().executeDeleteWithoutDetachingEntities();
-                }
-
-                // グループ管理を削除する
-                session.getDbDisplayTargetDao().delete(target);
+        session.runInTx(() -> {
+            // グループレイアウトを削除する
+            {
+                QueryBuilder<DbDisplayLayout> builder = session.getDbDisplayLayoutDao().queryBuilder();
+                builder.where(DbDisplayLayoutDao.Properties.TargetPackage.eq(target.getTargetPackage()));
+                builder.buildDelete().executeDeleteWithoutDetachingEntities();
             }
+
+            // グループ管理を削除する
+            session.getDbDisplayTargetDao().delete(target);
         });
     }
 

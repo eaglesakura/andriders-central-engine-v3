@@ -1,10 +1,13 @@
 package com.eaglesakura.andriders.central.scsensor;
 
+import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
-import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
+
+import android.support.annotation.NonNull;
 
 /**
  * ケイデンス情報を保持する
@@ -19,8 +22,12 @@ public class CadenceData extends BaseCalculator {
      */
     private long mUpdatedDate;
 
-    public CadenceData(Clock clock) {
+    @NonNull
+    Settings mSettings;
+
+    public CadenceData(Clock clock, @NonNull Settings settings) {
         super(clock);
+        mSettings = settings;
     }
 
     public long getUpdatedDate() {
@@ -77,8 +84,11 @@ public class CadenceData extends BaseCalculator {
      */
     public CadenceZone getZone() {
         float rpm = getCadenceRpm();
-        UserProfiles userProfiles = getSettings().getUserProfiles();
-        if (rpm < userProfiles.getCadenceZoneIdeal()) {
+        UserProfiles userProfiles = mSettings.getUserProfiles();
+        if (rpm < 5) {
+            // 停止域
+            return CadenceZone.Stop;
+        } else if (rpm < userProfiles.getCadenceZoneIdeal()) {
             // 遅い
             return CadenceZone.Slow;
         } else if (rpm < userProfiles.getCadenceZoneHigh()) {

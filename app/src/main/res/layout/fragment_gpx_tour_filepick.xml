@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
+                 android:layout_weight="1"
+                 style="@style/EsMaterial.Theme.Widget">
+
+        <TextView
+                style="@style/EsMaterial.Font.Normal"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:text="読み込むGPXファイルを選択してください。"/>
+    </FrameLayout>
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
+                 android:layout_weight="1">
+        <android.support.v7.widget.AppCompatButton
+                android:id="@+id/Tour.File.Pick"
+                android:layout_gravity="center"
+                android:text="ファイルを選択"
+                style="@style/EsMaterial.Theme.Button.Green"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/EsMaterial.Button.MinHeight"/>
+    </FrameLayout>
+</LinearLayout>

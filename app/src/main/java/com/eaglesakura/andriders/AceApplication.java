@@ -5,19 +5,17 @@ import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.location.LocationServices;
 
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.util.LogUtil;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 public class AceApplication extends Application implements FrameworkCentral.FrameworkApplication {
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-//        MultiDex.install(this);
-    }
+    Object mCentral;
 
     @Override
     public void onCreate() {
@@ -31,14 +29,16 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
         // Central & DeploygateRemote
         FrameworkCentral.onApplicationCreate(this);
         FrameworkCentral.requestDeploygateInstall();
-
-        // 設定をロードする
-        Settings.getInstance();
     }
 
     @Override
     public void onApplicationUpdated(int oldVersionCode, int newVersionCode, String oldVersionName, String newVersionName) {
-        LogUtil.log("App Updated old(%d:%s) new(%d:%s)", oldVersionCode, oldVersionName, newVersionCode, newVersionName);
+        AppLog.system("App Updated old(%d:%s) new(%d:%s)", oldVersionCode, oldVersionName, newVersionCode, newVersionName);
+    }
+
+    @Override
+    public void onRequestSaveCentral(@NonNull Object central) {
+        mCentral = central;
     }
 
     public static GoogleApiClient.Builder newFullPermissionClientBuilder() {
@@ -50,7 +50,7 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
                 .addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
                 .addScope(Fitness.SCOPE_BODY_READ_WRITE)
                 .addScope(Fitness.SCOPE_LOCATION_READ_WRITE)
-                        // GPS
+                // GPS
                 .addApi(LocationServices.API)
                 ;
     }

@@ -1,23 +1,23 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClient;
-import com.eaglesakura.andriders.computer.extension.client.ExtensionClientManager;
-import com.eaglesakura.andriders.display.DisplaySlot;
-import com.eaglesakura.andriders.display.DisplaySlotManager;
-import com.eaglesakura.andriders.extension.DisplayInformation;
+import com.eaglesakura.andriders.display.data.DataLayoutManager;
+import com.eaglesakura.andriders.display.data.LayoutSlot;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.ExtensionClient;
+import com.eaglesakura.andriders.plugin.ExtensionClientManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.material.widget.MaterialButton;
-import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +31,13 @@ import java.util.List;
  */
 public class DisplayLayoutSetFragment extends AppBaseFragment {
 
-    DisplaySlotManager mDisplaySlotManager;
+    DataLayoutManager mDisplaySlotManager;
 
-    String appPackageName;
+    String mAppPackageName;
 
     ExtensionClientManager mExtensionClientManager;
 
-    List<DisplayInformation> displayValues = new ArrayList<>();
+    List<DisplayKey> mDisplayValues = new ArrayList<>();
 
     public DisplayLayoutSetFragment() {
     }
@@ -50,7 +50,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = DisplaySlotManager.newStubLayout(inflater.getContext());
+        View view = DataLayoutManager.newStubLayout(inflater.getContext());
         return view;
     }
 
@@ -63,7 +63,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        displayValues.clear();
+        mDisplayValues.clear();
         async(SubscribeTarget.Pipeline, ObserveTarget.FireAndForget, it -> {
             if (mExtensionClientManager != null) {
                 mExtensionClientManager.disconnect();
@@ -76,7 +76,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * 拡張機能を読み込む
      */
     private void loadExtensionClients() {
-        displayValues.clear();
+        mDisplayValues.clear();
         async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<ExtensionClientManager> it) -> {
             ExtensionClientManager clientManager = new ExtensionClientManager(getContext());
             try {
@@ -88,7 +88,9 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             return clientManager;
         }).completed((manager, task) -> {
             mExtensionClientManager = manager;
-            loadDisplayDatas(appPackageName);
+            loadDisplayDatas(mAppPackageName);
+        }).failed((error, task) -> {
+            error.printStackTrace();
         }).start();
     }
 
@@ -96,49 +98,46 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * ディスプレイ表示内容を読み込む
      */
     private void loadDisplayDatas(final String newPackageName) {
-        asyncUI((RxTask<DisplaySlotManager> it) -> {
-            DisplaySlotManager slotManager = null;
-            try {
-                pushProgress(R.string.Common_File_Load);
-
-                // 拡張機能のアイコンを読み込む
-                displayValues.clear();
-                for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
-                    client.loadIcon();
-                    for (DisplayInformation info : client.getDisplayInformations()) {
-                        displayValues.add(info);
-                    }
+        asyncUI((RxTask<DataLayoutManager> it) -> {
+            DataLayoutManager slotManager = null;
+            pushProgress(R.string.Common_File_Load);
+            // 拡張機能のアイコンを読み込む
+            mDisplayValues.clear();
+            for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
+                client.loadIcon();
+                for (DisplayKey info : client.getDisplayInformations()) {
+                    mDisplayValues.add(info);
                 }
-
-                slotManager = new DisplaySlotManager(getActivity(), newPackageName, DisplaySlotManager.Mode.Edit);
-                slotManager.load();
-            } finally {
-                popProgress();
             }
+
+            slotManager = new DataLayoutManager(getActivity());
+            slotManager.load(DataLayoutManager.Mode.Edit, newPackageName);
             return slotManager;
         }).completed((slotManager, task) -> {
-            LogUtil.log("display load completed :: %s", slotManager.getAppPackageName());
+            AppLog.system("display load completed :: %s", newPackageName);
             mDisplaySlotManager = slotManager;
-            for (DisplaySlot slot : mDisplaySlotManager.listSlots()) {
+            for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
                 updateSlotPreview(mDisplaySlotManager, slot);
             }
+        }).finalized(task -> {
+            popProgress();
         }).start();
     }
 
     /**
      * ディスプレイスロットを更新する
      */
-    void updateSlotPreview(final DisplaySlotManager slotManager, final DisplaySlot slot) {
+    void updateSlotPreview(final DataLayoutManager slotManager, final LayoutSlot slot) {
         ViewGroup stub = findViewById(ViewGroup.class, slot.getId());
 
         // 一旦個をすべて削除する
         stub.removeAllViews();
 
         // ボタンを生成する
-        MaterialButton button = new MaterialButton(getContext());
+        AppCompatButton button = new AppCompatButton(getContext());
         if (slot.hasLink()) {
             // TODO 値のタイトルを入れる
-            DisplayInformation information = mExtensionClientManager.findDisplayInformation(slot.getExtensionId(), slot.getDisplayValueId());
+            DisplayKey information = mExtensionClientManager.findDisplayInformation(slot.getExtensionId(), slot.getDisplayValueId());
             if (information == null) {
                 // 情報を見失った
                 button.setText("無効な表示内容");
@@ -156,7 +155,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     /**
      * 表示内容の選択ダイアログをブート
      */
-    private void showDisplaySelector(final DisplaySlotManager manager, final DisplaySlot slot) {
+    private void showDisplaySelector(final DataLayoutManager manager, final LayoutSlot slot) {
         List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
 
         final BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
@@ -174,7 +173,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         }
 
         for (final ExtensionClient client : displayClients) {
-            LogUtil.log("Display Extension name(%s)", client.getName());
+            AppLog.system("Display Extension name(%s)", client.getName());
 
             View extensionView = inflater.inflate(R.layout.card_displayinfo_root, null);
 
@@ -185,7 +184,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             ViewGroup insertRoot = q.id(R.id.Extension_ItemSelector_Root).getView(ViewGroup.class);
 
             // Extensionごとの表示内容を並べる
-            for (final DisplayInformation info : client.getDisplayInformations()) {
+            for (final DisplayKey info : client.getDisplayInformations()) {
                 View item = inflater.inflate(R.layout.card_displayinfo_item, null);
                 ((TextView) item.findViewById(R.id.Extension_ItemSelector_Name)).setText(info.getTitle());
                 insertRoot.addView(item, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -208,7 +207,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * @param client      拡張機能
      * @param displayInfo 表示内容
      */
-    private void onSelectedDisplay(DisplaySlotManager manager, DisplaySlot slot, ExtensionClient client, DisplayInformation displayInfo) {
+    private void onSelectedDisplay(DataLayoutManager manager, LayoutSlot slot, ExtensionClient client, DisplayKey displayInfo) {
 
         if (client == null || displayInfo == null) {
             // 非表示にする
@@ -229,7 +228,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     }
 
 
-    private String getUniqueId(ExtensionClient client, DisplayInformation display) {
+    private String getUniqueId(ExtensionClient client, DisplayKey display) {
         return String.format("%s|%s", client.getId(), display.getId());
     }
 }

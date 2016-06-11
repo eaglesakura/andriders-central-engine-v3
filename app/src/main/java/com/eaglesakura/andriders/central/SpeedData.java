@@ -3,9 +3,12 @@ package com.eaglesakura.andriders.central;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.andriders.central.geo.GeoSpeedData;
 import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
-import com.eaglesakura.andriders.internal.protocol.RawSensorData;
+import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.sensor.SpeedZone;
+import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.util.Clock;
+
+import android.support.annotation.NonNull;
 
 /**
  * GPSやセンサーの速度を統括し、適度な情報を取得する
@@ -21,6 +24,9 @@ public class SpeedData extends BaseCalculator {
      * センサー由来の速度
      */
     private final SensorSpeedData mSensorSpeedCalculator;
+
+    @NonNull
+    Settings mSettings;
 
     public enum SpeedSource {
         None {
@@ -45,8 +51,9 @@ public class SpeedData extends BaseCalculator {
         public abstract int getFlag();
     }
 
-    public SpeedData(Clock clock, GeoSpeedData geoSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
+    public SpeedData(Clock clock, Settings settings, GeoSpeedData geoSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
         super(clock);
+        mSettings = settings;
         mLocationSpeedCalculator = geoSpeedCalculator;
         mSensorSpeedCalculator = sensorSpeedCalculator;
     }
@@ -99,10 +106,10 @@ public class SpeedData extends BaseCalculator {
         if (speed < 8) {
             // 適当な閾値よりも下は停止とみなす
             return SpeedZone.Stop;
-        } else if (speed < getSettings().getUserProfiles().getSpeedZoneCruise()) {
+        } else if (speed < mSettings.getUserProfiles().getSpeedZoneCruise()) {
             // 巡航速度よりも下は低速度域
             return SpeedZone.Slow;
-        } else if (speed < getSettings().getUserProfiles().getSpeedZoneSprint()) {
+        } else if (speed < mSettings.getUserProfiles().getSpeedZoneSprint()) {
             // スプリント速度よりも下は巡航速度
             return SpeedZone.Cruise;
         } else {

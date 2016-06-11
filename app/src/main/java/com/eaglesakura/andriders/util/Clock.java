@@ -1,26 +1,42 @@
 package com.eaglesakura.andriders.util;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * 各種クラスで共有する時計を管理する
  *
  * テスト用途を兼ねているため、時計を現在時刻からズラすこともできる。
  */
 public class Clock {
-    private long mCurrentTime;
+    private AtomicLong mCurrentTime = new AtomicLong();
 
     public Clock(long currentTime) {
-        mCurrentTime = currentTime;
+        mCurrentTime.set(currentTime);
     }
 
     public long now() {
-        return mCurrentTime;
+        return mCurrentTime.get();
     }
 
     /**
      * 現在時刻に同期する
      */
     public void sync() {
-        mCurrentTime = System.currentTimeMillis();
+        mCurrentTime.set(System.currentTimeMillis());
+    }
+
+    /**
+     * 時刻を上書きする
+     *
+     * @param time 内部タイマーよりも未来の値
+     */
+    public void set(long time) {
+        if (time < now()) {
+            // 整合性を保ちやすくするため、過去には戻せない
+            throw new IllegalArgumentException();
+        }
+
+        mCurrentTime.set(time);
     }
 
     /**
@@ -36,10 +52,10 @@ public class Clock {
      * 時計を指定時刻だけ進める
      */
     public void offset(long ms) {
-        mCurrentTime += ms;
+        mCurrentTime.addAndGet(ms);
     }
 
-    private static final Clock gRealtimeClock = new Clock(System.currentTimeMillis()) {
+    private static final Clock sRealtimeClock = new Clock(System.currentTimeMillis()) {
         @Override
         public long now() {
             return System.currentTimeMillis();
@@ -60,6 +76,6 @@ public class Clock {
      * リアルタイム同期用インスタンスを取得する
      */
     public static Clock getRealtimeClock() {
-        return gRealtimeClock;
+        return sRealtimeClock;
     }
 }

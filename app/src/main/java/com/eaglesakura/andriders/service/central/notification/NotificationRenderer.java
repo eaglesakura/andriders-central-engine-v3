@@ -1,15 +1,16 @@
 package com.eaglesakura.andriders.service.central.notification;
 
 import com.eaglesakura.andriders.service.central.CentralContext;
-import com.eaglesakura.android.framework.service.BaseService;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
+
+import android.app.Service;
 
 /**
  *
  */
 public class NotificationRenderer {
-    final BaseService mBaseService;
+    final Service mBaseService;
 
     /**
      * 通知フレームレート
@@ -36,7 +37,7 @@ public class NotificationRenderer {
      */
     HandlerLoopController mLoopController;
 
-    public NotificationRenderer(BaseService service, CentralContext centralContext) {
+    public NotificationRenderer(Service service, CentralContext centralContext) {
         mBaseService = service;
         mCentralContext = centralContext;
     }

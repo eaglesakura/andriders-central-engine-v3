@@ -9,9 +9,7 @@ public class DbSessionPoint {
     /** Not-null value. */
     private java.util.Date date;
     /** Not-null value. */
-    private String sessionId;
-    /** Not-null value. */
-    private byte[] raw;
+    private byte[] central;
 
     public DbSessionPoint() {
     }
@@ -20,10 +18,9 @@ public class DbSessionPoint {
         this.date = date;
     }
 
-    public DbSessionPoint(java.util.Date date, String sessionId, byte[] raw) {
+    public DbSessionPoint(java.util.Date date, byte[] central) {
         this.date = date;
-        this.sessionId = sessionId;
-        this.raw = raw;
+        this.central = central;
     }
 
     /** Not-null value. */
@@ -37,23 +34,13 @@ public class DbSessionPoint {
     }
 
     /** Not-null value. */
-    public String getSessionId() {
-        return sessionId;
+    public byte[] getCentral() {
+        return central;
     }
 
     /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    /** Not-null value. */
-    public byte[] getRaw() {
-        return raw;
-    }
-
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setRaw(byte[] raw) {
-        this.raw = raw;
+    public void setCentral(byte[] central) {
+        this.central = central;
     }
 
 }

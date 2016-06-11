@@ -113,7 +113,7 @@
                                 android:text="0.0.0"/>
                     </LinearLayout>
 
-                    <com.eaglesakura.material.widget.MaterialButton
+                    <android.support.v7.widget.AppCompatButton
                             android:id="@+id/Information.Licenses"
                             style="@style/App.Button.Normal"
                             android:layout_width="wrap_content"
@@ -209,7 +209,7 @@
                                 android:visibility="gone"/>
 
 
-                        <com.eaglesakura.material.widget.MaterialButton
+                        <android.support.v7.widget.AppCompatButton
                                 android:id="@+id/Debug.Data.Dump"
                                 style="@style/App.Button.Alert"
                                 android:layout_width="match_parent"

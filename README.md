@@ -11,9 +11,6 @@
 | feature/id/{issue num} | issue対応 | - |
 | v3.0.x | リリースビルド（予定） | - |
 
-
-2016年5月の"アルプスあづみのセンチュリーライド"前後のリリースを目標に開発します。
-
 ## 開発版インストール
 
  * デバッグ版のインストールは下記のリンクから行えます。
@@ -65,7 +62,7 @@ chmod 755 ./gradlew
 ./script/developer-install-private.sh
 
 # ビルドを行う
-./gradlew assembleDebug
+./gradlew --refresh-dependencies assembleDebug
 </pre>
 
 ## ライセンス

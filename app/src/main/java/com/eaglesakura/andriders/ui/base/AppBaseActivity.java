@@ -4,14 +4,18 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.eaglesakura.andriders.AceApplication;
 import com.eaglesakura.andriders.ui.navigation.notification.NotificationFragment;
+import com.eaglesakura.android.framework.ui.BackStackManager;
 import com.eaglesakura.android.framework.ui.UserNotificationController;
-import com.eaglesakura.android.framework.ui.content.ContentHolderActivity;
+import com.eaglesakura.android.framework.ui.support.ContentHolderActivity;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.playservice.GoogleApiFragment;
+import com.eaglesakura.android.util.ContextUtil;
+import com.eaglesakura.freezer.BundleState;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
-
+import android.view.KeyEvent;
 
 public abstract class AppBaseActivity extends ContentHolderActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiFragment.Callback, NotificationFragment.Callback {
     static final String FRAGMENT_TAG_GOOGLE_API_FRAGMENT = "FRAGMENT_TAG_GOOGLE_API_FRAGMENT";
@@ -20,9 +24,16 @@ public abstract class AppBaseActivity extends ContentHolderActivity implements G
 
     UserNotificationController notificationController;
 
+    @BundleState
+    BackStackManager mBackStackManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (mBackStackManager == null) {
+            mBackStackManager = new BackStackManager();
+        }
+
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             {
@@ -31,10 +42,21 @@ public abstract class AppBaseActivity extends ContentHolderActivity implements G
             }
             {
                 NotificationFragment fragment = new NotificationFragment();
-                transaction.add(fragment, fragment.createSimpleTag());
+                transaction.add(fragment, fragment.getClass().getName());
             }
             transaction.commit();
         }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (ContextUtil.isBackKeyEvent(event)) {
+            if (mBackStackManager.onBackPressed(getSupportFragmentManager(), event)) {
+                // ハンドリングを行ったのでここで処理終了
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
@@ -79,5 +101,10 @@ public abstract class AppBaseActivity extends ContentHolderActivity implements G
     @Override
     public void onNotificationDetatched(NotificationFragment self, UserNotificationController controller) {
         notificationController = null;
+    }
+
+    @NonNull
+    public BackStackManager getBackStackManager() {
+        return mBackStackManager;
     }
 }

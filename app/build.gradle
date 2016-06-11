@@ -7,13 +7,19 @@ def ACES_APP_VERSION = "3.0"
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.eaglesakura.ci-support'
+apply plugin: 'com.eaglesakura.android-mipmap'
 apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
-//    all*.exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
-    all*.exclude group: "com.fasterxml.jackson.core"
     all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
+}
+
+mipmap {
+    sources = file("images/");
+    output = file("src/main/generated/images");
+    toolsPath.identify = new File("C:\\dev-home\\tools\\imagemagick\\identify.exe");
+    toolsPath.convert = new File("C:\\dev-home\\tools\\imagemagick\\convert.exe");
 }
 
 dependencies {
@@ -27,7 +33,13 @@ dependencies {
         compile project(':eglibrary:android-framework')
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
-        compile project(':eglibrary:rxandroid-support')
+        compile project(':eglibrary:android-apptour')
+
+        /**
+         * UnitTest
+         */
+        androidTestCompile project(":eglibrary:android-devicetest-support")
+        testCompile project(":eglibrary:android-unittest-support")
     } else {
         compile 'com.eaglesakura:simple-logger:+'
         compile 'com.eaglesakura:simple-utils:+'
@@ -45,13 +57,14 @@ dependencies {
         compile 'com.eaglesakura:onactivityresult-invoke:+'
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
+        compile 'com.eaglesakura:margarineknife:1.+'
+        compile 'com.eaglesakura:android-apptour:+'
 
         /**
-         * Injection / State
+         * UnitTest
          */
-        compile "com.jakewharton:butterknife:+"
-        compile 'frankiesardo:icepick:+'
-        provided 'frankiesardo:icepick-processor:+'
+        androidTestCompile 'com.eaglesakura:android-devicetest-support:1.+'
+        testCompile 'com.eaglesakura:android-unittest-support:1.+'
     }
 
 
@@ -83,21 +96,19 @@ dependencies {
 
     // Remote Debug
     debugCompile 'com.deploygate:sdk:3.1'
-
-    /**
-     * Unit Testing
-     */
-    testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.0"
 }
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    dataBinding {
+        enabled = true
     }
 
     defaultConfig {
@@ -112,23 +123,27 @@ android {
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
         buildConfigField "String", "DEFAULT_PACKAGE_NAME", "\"com.eaglesakura.andriders\""
+
+        // Device Test
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"    // JUnit4
     }
 
     sourceSets {
         main {
             java.srcDirs = [
-                    'src/main/java',
-                    'src/main/generated/dao', 'src/main/generated/props',
+                    'src/main/java', 'src/main/generated/dao', 'src/main/generated/props',
+                    // 内蔵プラグイン
+                    'src/main/java-plugin-basicui', 'src/main/java-plugin-ble', 'src/main/java-plugin-location',
             ]
             res.srcDirs = [
-                    "src/main/res", "private/main/res"
+                    "src/main/res", "src/main/generated/images", "private/main/res"
             ];
         }
     }
 
     dexOptions {
         // memo: http://developer.covelline.com/2015/06/circle-ci/
-        javaMaxHeapSize "4g"
+        javaMaxHeapSize "2g"
         preDexLibraries !(System.getenv()["CIRCLECI"] as boolean)
     }
 
@@ -226,7 +241,3 @@ dexcount {
     orderByMethodCount = true
     verbose = false
 }
-
-//task dexReportDebug(type: com.eaglesakura.gradle.dex.DexReportTask) {
-//
-//}

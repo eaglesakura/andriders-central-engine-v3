@@ -3,10 +3,12 @@ package com.eaglesakura.andriders.ui.navigation.profile;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.context.Resources;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
+import com.eaglesakura.android.util.ResourceUtil;
 import com.edmodo.rangebar.RangeBar;
 
 public class UserZoneSettingFragment extends AppBaseFragment {
@@ -22,27 +24,27 @@ public class UserZoneSettingFragment extends AppBaseFragment {
     RangeBar cruiseZoneBar;
 
     public UserZoneSettingFragment() {
-        requestInjection(R.layout.fragment_setting_userzone);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_userzone);
     }
 
     @Override
-    protected void onAfterViews() {
-        super.onAfterViews();
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
 
         // 巡航速度設定
         {
-            cruiseZoneBar.setBarColor(Resources.argb(R.color.EsMaterial_LightGreen_Button_Normal));
-            cruiseZoneBar.setConnectingLineColor(Resources.argb(R.color.EsMaterial_LightGreen_Button_Focused));
-            cruiseZoneBar.setThumbColorNormal(Resources.argb(R.color.EsMaterial_LightGreen_Button_Normal));
-            cruiseZoneBar.setThumbColorPressed(Resources.argb(R.color.EsMaterial_LightGreen_Button_Pressed));
+            cruiseZoneBar.setBarColor(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Normal));
+            cruiseZoneBar.setConnectingLineColor(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Focused));
+            cruiseZoneBar.setThumbColorNormal(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Normal));
+            cruiseZoneBar.setThumbColorPressed(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Pressed));
             cruiseZoneBar.setTickHeight(0);
             cruiseZoneBar.setTickCount(30);
         }
         {
-            cadenceZoneBar.setBarColor(Resources.argb(R.color.EsMaterial_LightGreen_Button_Normal));
-            cadenceZoneBar.setConnectingLineColor(Resources.argb(R.color.EsMaterial_LightGreen_Button_Focused));
-            cadenceZoneBar.setThumbColorNormal(Resources.argb(R.color.EsMaterial_LightGreen_Button_Normal));
-            cadenceZoneBar.setThumbColorPressed(Resources.argb(R.color.EsMaterial_LightGreen_Button_Pressed));
+            cadenceZoneBar.setBarColor(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Normal));
+            cadenceZoneBar.setConnectingLineColor(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Focused));
+            cadenceZoneBar.setThumbColorNormal(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Normal));
+            cadenceZoneBar.setThumbColorPressed(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Pressed));
             cadenceZoneBar.setTickHeight(0);
             cadenceZoneBar.setTickCount(60);
         }
@@ -62,36 +64,31 @@ public class UserZoneSettingFragment extends AppBaseFragment {
         asyncCommitSettings();
     }
 
-    final RangeBar.OnRangeBarChangeListener cruiseZoneListener = new RangeBar.OnRangeBarChangeListener() {
-        @Override
-        public void onIndexChangeListener(RangeBar rangeBar, int minValue, int maxValue) {
-//            log("cruiseZone updated(%d -> %d)", minValue, maxValue);
-            minValue = Math.max(minValue, 1);
-            maxValue = Math.max(maxValue, minValue + 1);
+    final RangeBar.OnRangeBarChangeListener cruiseZoneListener = (rangeBar, minValue, maxValue) -> {
+        AppLog.widget("cruiseZone updated(%d <--> %d)", minValue, maxValue);
+        minValue = Math.max(minValue, 1);
+        maxValue = Math.max(maxValue, minValue + 1);
 
-            UserProfiles profile = getSettings().getUserProfiles();
+        UserProfiles profile = getSettings().getUserProfiles();
 
-            profile.setSpeedZoneCruise(MIN_CRUISE_SPEED + minValue);
-            profile.setSpeedZoneSprint(MIN_CRUISE_SPEED + maxValue);
+        profile.setSpeedZoneCruise(MIN_CRUISE_SPEED + minValue);
+        profile.setSpeedZoneSprint(MIN_CRUISE_SPEED + maxValue);
 
-            updateUI();
-        }
+        updateUI();
     };
 
-    final RangeBar.OnRangeBarChangeListener cadenceZoneListener = new RangeBar.OnRangeBarChangeListener() {
-        @Override
-        public void onIndexChangeListener(RangeBar rangeBar, int minValue, int maxValue) {
-//            log("cadenceZone updated(%d -> %d)", minValue, maxValue);
-            minValue = Math.max(minValue, 1);
-            maxValue = Math.max(maxValue, minValue + 1);
+    final RangeBar.OnRangeBarChangeListener cadenceZoneListener = (rangeBar, minValue, maxValue) -> {
+        AppLog.widget("cadenceZone updated(%d -> %d)", minValue, maxValue);
+        minValue = Math.max(minValue, 1);
+        maxValue = Math.max(maxValue, minValue + 1);
 
-            UserProfiles profile = getSettings().getUserProfiles();
+        UserProfiles profile = getSettings().getUserProfiles();
 
-            profile.setCadenceZoneIdeal(MIN_CADENCE + minValue);
-            profile.setCadenceZoneHigh(MIN_CADENCE + maxValue);
+        profile.setCadenceZoneIdeal(MIN_CADENCE + minValue);
+        profile.setCadenceZoneHigh(MIN_CADENCE + maxValue);
 
-            updateUI();
-        }
+        updateUI();
+
     };
 
     /**
