@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-        >
+>
 
     <item
             android:id="@+id/Main.Menu.Profile"
@@ -8,14 +8,18 @@
             android:title="@string/Main.Menu.Profile"/>
 
     <item
-            android:id="@+id/Main.Menu.Extensions"
-            android:icon="@android:drawable/ic_dialog_info"
-            android:title="@string/Main.Menu.Extensions"/>
-
-    <item
             android:id="@+id/Main.Menu.CycleComputer"
             android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/Main.Menu.CycleComputer"/>
+
+    <item
+            android:id="@+id/Main.Menu.Plugins"
+            android:icon="@android:drawable/ic_dialog_info"
+            android:title="@string/Main.Menu.Plugins"/>
+    <item
+            android:id="@+id/Main.Menu.Gadgets"
+            android:icon="@android:drawable/ic_dialog_info"
+            android:title="@string/Main.Menu.Gadgets"/>
 
     <item
             android:id="@+id/Main.Menu.UserLog"

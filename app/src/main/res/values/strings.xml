@@ -135,8 +135,9 @@
     <string name="Common.Formatter.Time.S">%1$d 秒</string>
     <string name="Main.Menu.Profile">プロファイル</string>
     <string name="Main.Menu.CycleComputer">サイコン表示内容</string>
-    <string name="Main.Menu.Extensions">サイコン機能詳細</string>
+    <string name="Main.Menu.Plugins">プラグイン</string>
     <string name="Main.Menu.Activity">走行ログ</string>
     <string name="Main.Menu.Information">アプリについて</string>
     <string name="UserLog.Import.GPX">GPX形式で読込</string>
+    <string name="Main.Menu.Gadgets">接続機器</string>
 </resources>

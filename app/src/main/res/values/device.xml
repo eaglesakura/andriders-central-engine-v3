@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="App.Icon.Large">23dp</dimen>
+    <dimen name="App.Icon.Large.Margin">6dp</dimen>
+    <dimen name="App.Icon.Normal">18dp</dimen>
+    <dimen name="App.Icon.Normal.Margin">4dp</dimen>
+    <dimen name="App.Icon.Small">16dp</dimen>
+    <dimen name="App.Icon.Small.Margin">2dp</dimen>
+
+    <dimen name="App.Margin.Indent">12dp</dimen>
+    <dimen name="App.Margin.Basic">3dp</dimen>
+
+    <dimen name="App.Font.Title">18dp</dimen>
+    <dimen name="App.Font.Normal">14dp</dimen>
+    <dimen name="App.Font.Caption">12dp</dimen>
+
+</resources>

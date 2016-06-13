@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.display.data;
 
 import com.eaglesakura.andriders.plugin.DisplayKey;
-import com.eaglesakura.andriders.plugin.ExtensionClient;
+import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.util.AndroidThreadUtil;
@@ -47,7 +47,7 @@ public class DataDisplayManager {
      * @param extension 受信した拡張サービス名
      * @param values    表示内容
      */
-    public void putValue(final ExtensionClient extension, List<DisplayData> values) {
+    public void putValue(final PluginConnector extension, List<DisplayData> values) {
         synchronized (lock) {
             for (DisplayData value : values) {
                 mValues.put(createKey(extension, value), new ValueHolder(value));
@@ -59,7 +59,7 @@ public class DataDisplayManager {
      * スロット表示内容を更新させる
      */
     @UiThread
-    public int bind(@NonNull ExtensionClient extension, @NonNull DisplayKey info, @NonNull DataViewBinder binder, @NonNull ViewGroup slotRoot) {
+    public int bind(@NonNull PluginConnector extension, @NonNull DisplayKey info, @NonNull DataViewBinder binder, @NonNull ViewGroup slotRoot) {
         AndroidThreadUtil.assertUIThread();
         synchronized (lock) {
             ValueHolder holder = mValues.get(createKey(extension, info));
@@ -79,7 +79,7 @@ public class DataDisplayManager {
      * @param info      表示データ名
      */
     @Nullable
-    public DisplayData getValue(ExtensionClient extension, DisplayKey info) {
+    public DisplayData getValue(PluginConnector extension, DisplayKey info) {
         synchronized (lock) {
             ValueHolder holder = mValues.get(createKey(extension, info));
             if (holder != null) {
@@ -109,14 +109,14 @@ public class DataDisplayManager {
     /**
      * 管理用のキーに変換する
      */
-    private String createKey(ExtensionClient extension, DisplayData displayValue) {
+    private String createKey(PluginConnector extension, DisplayData displayValue) {
         return String.format("%s@%s", extension.getInformation().getId(), displayValue.getId());
     }
 
     /**
      * 管理用のキーに変換する
      */
-    private String createKey(ExtensionClient extension, DisplayKey info) {
+    private String createKey(PluginConnector extension, DisplayKey info) {
         return String.format("%s@%s", extension.getInformation().getId(), info.getId());
     }
 }

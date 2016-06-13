@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
-        style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -15,44 +16,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+            <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                    app:headerText="@string/Setting.Gadgets.Heartrate"
+                    app:headerIcon="@mipmap/ic_heart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
             <LinearLayout
+                    style="@style/App.Theme.BasicSetting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-
-                <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                    <ImageView
-                            android:layout_width="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_height="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_marginLeft="@dimen/EsMaterial.Button.Margin"
-                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-                            android:src="@drawable/ic_heart"/>
-                </FrameLayout>
-
-                <LinearLayout
+                <Spinner
+                        android:id="@+id/Setting.RoadBikeProfile.HeartrateMonitor.Selector"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                        android:orientation="vertical">
-
-                    <TextView
-                            android:id="@+id/Setting.RoadBikeProfile.HeartrateMonitor"
-                            style="@style/EsMaterial.Font.Title.Card"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="top"
-                            android:minHeight="@dimen/EsMaterial.Navigation.MinHeight"
-                            android:text="@string/Setting.Gadgets.Heartrate"/>
-
-                    <Spinner
-                            android:id="@+id/Setting.RoadBikeProfile.HeartrateMonitor.Selector"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
-
-                </LinearLayout>
+                        android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -62,52 +40,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+            <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                    app:headerText="@string/Setting.Gadgets.SpeedAndCadence"
+                    app:headerIcon="@mipmap/ic_speed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
             <LinearLayout
+                    style="@style/App.Theme.BasicSetting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-
-                <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                    <ImageView
-                            android:layout_width="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_height="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_marginLeft="@dimen/EsMaterial.Button.Margin"
-                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-                            android:src="@drawable/ic_speed"/>
-                </FrameLayout>
-
-                <LinearLayout
+                <Spinner
+                        android:id="@+id/Setting.RoadBikeProfile.SpeedAndCadence.Selector"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                        android:orientation="vertical">
-
-                    <TextView
-                            android:id="@+id/Setting.RoadBikeProfile.SpeedAndCadence"
-                            style="@style/EsMaterial.Font.Title.Card"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="top"
-                            android:minHeight="@dimen/EsMaterial.Navigation.MinHeight"
-                            android:text="@string/Setting.Gadgets.SpeedAndCadence"/>
-
-                    <Spinner
-                            android:id="@+id/Setting.RoadBikeProfile.SpeedAndCadence.Selector"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
-
-                </LinearLayout>
+                        android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
             </LinearLayout>
         </LinearLayout>
 
         <include layout="@layout/esm_material_separator"/>
-
-
-        <!-- リモートセントラル設定 -->
 
 
         <LinearLayout
@@ -118,7 +69,6 @@
 
             <android.support.v7.widget.AppCompatButton
                     android:id="@+id/Setting.RoadBikeProfile.BleDevice.ScanRequest"
-                    style="@style/App.Button.Normal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="周辺機器検出"/>
@@ -130,7 +80,7 @@
                     android:orientation="horizontal"
                     android:visibility="gone">
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                         style="@style/EsMaterial.Font.Normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -141,7 +91,6 @@
                         style="@android:style/Widget.ProgressBar"
                         android:layout_width="@dimen/EsMaterial.Navigation.MinHeight"
                         android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
-
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

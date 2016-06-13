@@ -1,188 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
-        xmlns:android="http://schemas.android.com/apk/res/android">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable name="value" type="com.eaglesakura.andriders.ui.binding.UserLogSynthesis"/>
     </data>
 
-    <FrameLayout
+    <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <android.support.v7.widget.CardView
-                style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
+        <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                app:headerIcon="@mipmap/ic_launcher"
+                app:headerText="総合記録"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <LinearLayout
+                style="@style/App.Theme.BasicSetting"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
             <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
                     android:layout_height="wrap_content">
 
-                <FrameLayout
+                <TextView
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
+                        android:layout_height="wrap_content"
+                        android:text="合計走行距離"/>
 
-                    <ImageView
-                            android:src="@drawable/ic_launcher"
-                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                            android:layout_width="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_height="@dimen/EsMaterial.Header.Icon.Size"/>
-                </FrameLayout>
-
-                <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_marginRight="@dimen/EsMaterial.Button.Margin"
+                <TextView
+                        android:id="@+id/UserActivity.Total.SumDistance"
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:gravity="right"
+                        android:layout_weight="1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                            android:layout_height="wrap_content">
-
-                        <TextView
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="合計走行距離"/>
-
-                        <TextView
-                                android:id="@+id/UserActivity.Total.SumDistance"
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:gravity="right"
-                                android:layout_weight="1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@{value.sumCyclingDistanceInfo}"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                            android:layout_height="wrap_content">
-
-                        <TextView
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="合計獲得標高"/>
-
-                        <TextView
-                                android:id="@+id/UserActivity.Total.SumAltitude"
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:gravity="right"
-                                android:layout_weight="1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@{value.sumAltitudeInfo}"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                            android:layout_height="wrap_content">
-
-                        <TextView
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="1日最長到達距離"/>
-
-                        <TextView
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:id="@+id/UserActivity.Total.LongestDay"
-                                android:gravity="right"
-                                android:layout_weight="1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@{value.longestDateDistanceInfo}"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                            android:layout_height="wrap_content">
-
-                        <TextView
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="最高速度"/>
-
-                        <TextView
-                                android:id="@+id/UserActivity.Total.FastestSpeed"
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:gravity="right"
-                                android:layout_weight="1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@{value.maxSpeedInfo}"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                            android:layout_height="wrap_content">
-
-                        <TextView
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="最高ケイデンス"/>
-
-                        <TextView
-                                android:id="@+id/UserActivity.Total.HighCadence"
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:gravity="right"
-                                android:layout_weight="1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@{value.maxCadenceInfo}"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                            android:layout_height="wrap_content">
-
-                        <TextView
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="エクササイズ(週総合/達成)"/>
-
-                        <TextView
-                                android:id="@+id/UserActivity.Total.Exercise1w"
-                                android:layout_gravity="center_vertical"
-                                style="@style/EsMaterial.Font.Normal"
-                                android:gravity="right"
-                                android:layout_weight="1"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@{value.exerciseInfo}"/>
-                    </LinearLayout>
-                </LinearLayout>
+                        android:layout_height="wrap_content"
+                        android:text="@{value.sumCyclingDistanceInfo}"/>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
-    </FrameLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="合計獲得標高"/>
+
+                <TextView
+                        android:id="@+id/UserActivity.Total.SumAltitude"
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{value.sumAltitudeInfo}"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1日最長到達距離"/>
+
+                <TextView
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:id="@+id/UserActivity.Total.LongestDay"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{value.longestDateDistanceInfo}"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="最高速度"/>
+
+                <TextView
+                        android:id="@+id/UserActivity.Total.FastestSpeed"
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{value.maxSpeedInfo}"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="最高ケイデンス"/>
+
+                <TextView
+                        android:id="@+id/UserActivity.Total.HighCadence"
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{value.maxCadenceInfo}"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="エクササイズ(週総合/達成)"/>
+
+                <TextView
+                        android:id="@+id/UserActivity.Total.Exercise1w"
+                        android:layout_gravity="center_vertical"
+                        style="@style/EsMaterial.Font.Normal"
+                        android:gravity="right"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{value.exerciseInfo}"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 
 </layout>

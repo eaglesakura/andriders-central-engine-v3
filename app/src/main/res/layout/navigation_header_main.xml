@@ -15,19 +15,17 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:paddingTop="@dimen/EsMaterial.Button.Margin"
-            android:src="@drawable/ic_launcher"/>
+            android:src="@mipmap/ic_launcher"/>
 
-    <android.support.v7.widget.SwitchCompat
-            android:id="@+id/Main.Menu.BootService"
+    <com.eaglesakura.material.widget.TransparentButton
+            style="@style/EsMaterial.Theme.Widget"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/EsMaterial.Button.Margin"
-            android:text="Andriders Central Engine"
-            android:textAppearance="@style/EsMaterial.Font.Normal"/>
-
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="andriders.blog.jp"/>
+            android:layout_height="wrap_content">
+        <android.support.v7.widget.AppCompatTextView
+                android:layout_gravity="center_vertical|right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="andriders.blog.jp"/>
+    </com.eaglesakura.material.widget.TransparentButton>
 
 </LinearLayout>

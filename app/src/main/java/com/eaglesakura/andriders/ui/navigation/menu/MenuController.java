@@ -1,10 +1,10 @@
 package com.eaglesakura.andriders.ui.navigation.menu;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.service.central.CentralService;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
-import com.eaglesakura.andriders.ui.navigation.extension.PluginSettingFragmentMain;
+import com.eaglesakura.andriders.ui.navigation.gadget.GadgetSettingFragmentMain;
+import com.eaglesakura.andriders.ui.navigation.plugin.PluginSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.info.InformationFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.log.UserLogFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.profile.ProfileFragmentMain;
@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
-import android.widget.CompoundButton;
 
 /**
  * メニュー内容を動的に制御するクラス。
@@ -33,23 +32,12 @@ public class MenuController {
     DrawerLayout mDrawerLayout;
 
     @NonNull
-    CompoundButton mBootSwitch;
-
-    @NonNull
     MenuCallback mCallback;
 
     public MenuController(final Context context, NavigationView view, DrawerLayout drawerLayout) {
-        this.mContext = context;
-        this.mNavigationView = view;
-        this.mDrawerLayout = drawerLayout;
-        this.mBootSwitch = (CompoundButton) mNavigationView.getHeaderView(0).findViewById(R.id.Main_Menu_BootService);
-        mBootSwitch.setOnCheckedChangeListener((button, isChecked) -> {
-            if (isChecked) {
-                CentralService.start(context);
-            } else {
-                CentralService.stop(context);
-            }
-        });
+        mContext = context;
+        mNavigationView = view;
+        mDrawerLayout = drawerLayout;
     }
 
     public void initialize() {
@@ -61,7 +49,6 @@ public class MenuController {
     }
 
     public void onResume() {
-        mBootSwitch.setChecked(CentralService.isRunning(mContext));
     }
 
     public void onPause() {
@@ -83,11 +70,14 @@ public class MenuController {
             case R.id.Main_Menu_UserLog:
                 mCallback.requestChangeContent(UserLogFragmentMain.newInstance(mContext));
                 break;
-            case R.id.Main_Menu_Extensions:
+            case R.id.Main_Menu_Plugins:
                 mCallback.requestChangeContent(PluginSettingFragmentMain.newInstance(mContext));
                 break;
             case R.id.Main_Menu_Information:
-                mCallback.requestChangeContent(InformationFragmentMain.createInstance(mContext));
+                mCallback.requestChangeContent(InformationFragmentMain.newInstance(mContext));
+                break;
+            case R.id.Main_Menu_Gadgets:
+                mCallback.requestChangeContent(GadgetSettingFragmentMain.newInstance(mContext));
                 break;
             default:
                 return false;

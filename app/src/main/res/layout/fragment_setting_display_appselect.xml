@@ -20,18 +20,17 @@
 
         <ImageView
                 android:id="@+id/Setting.CycleComputer.TargetApplication.Icon"
-                android:src="@drawable/ic_launcher"
+                android:src="@mipmap/ic_launcher"
                 android:layout_gravity="bottom"
-                android:layout_marginLeft="5dp"
-                android:layout_width="32dp"
-                android:layout_height="32dp"/>
+                android:layout_margin="@dimen/App.Icon.Large.Margin"
+                android:layout_width="@dimen/App.Icon.Large"
+                android:layout_height="@dimen/App.Icon.Large"/>
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/Setting.CycleComputer.TargetApplication.Title"
-                style="@style/EsMaterial.Font.Title.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
+                android:layout_gravity="center"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:gravity="right"
@@ -43,7 +42,7 @@
             android:background="@drawable/esm_button_transparent_fill"
             android:clickable="true"
             android:id="@+id/Setting.CycleComputer.TargetApplication.Delete"
-            android:src="@drawable/ic_delete_grey"
+            android:src="@mipmap/ic_delete_grey"
             android:padding="@dimen/EsMaterial.Button.Margin"
             android:layout_width="@dimen/EsMaterial.Button.MinHeight"
             android:layout_height="@dimen/EsMaterial.Button.MinHeight"/>

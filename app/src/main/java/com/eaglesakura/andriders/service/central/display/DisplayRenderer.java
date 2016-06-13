@@ -5,8 +5,8 @@ import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.display.data.DataViewBinder;
 import com.eaglesakura.andriders.display.data.LayoutSlot;
 import com.eaglesakura.andriders.plugin.DisplayKey;
-import com.eaglesakura.andriders.plugin.ExtensionClient;
-import com.eaglesakura.andriders.plugin.ExtensionClientManager;
+import com.eaglesakura.andriders.plugin.PluginConnector;
+import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.SubscribeTarget;
@@ -101,7 +101,7 @@ public class DisplayRenderer {
             mDisplayStub.addView(root, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
 
-        ExtensionClientManager extensionClientManager = mCentralContext.getExtensionClientManager();
+        PluginManager extensionClientManager = mCentralContext.getExtensionClientManager();
         DataDisplayManager displayManager = mCentralContext.getDisplayManager();
 
         for (LayoutSlot slot : mDisplayLayoutManager.listSlots()) {
@@ -117,7 +117,7 @@ public class DisplayRenderer {
                 viewSlot.setVisibility(View.INVISIBLE);
                 continue;
             } else {
-                ExtensionClient client = extensionClientManager.findClient(slot.getExtensionId());
+                PluginConnector client = extensionClientManager.findClient(slot.getExtensionId());
                 // ディスプレイに対して表示内容を更新させる
                 displayManager.bind(client, information, mDataViewBinder, viewSlot);
             }
@@ -162,7 +162,7 @@ public class DisplayRenderer {
      * 通知のレンダリングを行う
      */
     private void onDisplayRefresh() {
-        ExtensionClientManager extensionClientManager = mCentralContext.getExtensionClientManager();
+        PluginManager extensionClientManager = mCentralContext.getExtensionClientManager();
 
         if (mDisplayLayoutManager == null || !extensionClientManager.isConnected()) {
             return;

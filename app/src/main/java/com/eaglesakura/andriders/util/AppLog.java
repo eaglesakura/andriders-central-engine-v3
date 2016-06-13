@@ -1,13 +1,11 @@
 package com.eaglesakura.andriders.util;
 
-import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.provider.LoggerProvider;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.util.EnvironmentUtil;
 import com.eaglesakura.util.LogUtil;
 
-import android.util.Log;
+import android.content.Context;
 
 /**
  * アプリ用のログ出力をラップする
@@ -20,15 +18,13 @@ public class AppLog {
     @Inject(value = LoggerProvider.class, name = LoggerProvider.NAME_APPLOG)
     static LogUtil.Logger sAppLogger;
 
-    static {
-        inject();
-    }
-
     /**
      * 再度ロガーを注入する
      */
-    public static void inject() {
-        Garnet.inject(AppLog.class);
+    public static void inject(Context context) {
+        Garnet.create(AppLog.class)
+                .depend(Context.class, context)
+                .inject();
         LogUtil.setLogger(sDefaultLogger);
     }
 

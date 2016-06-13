@@ -21,7 +21,7 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
     public void onCreate() {
         super.onCreate();
 
-        LogUtil.setLogger(new LogUtil.AndroidLogger(Log.class).setStackInfo(BuildConfig.DEBUG));
+        AppLog.inject(this);
 
         // ACE環境の初期化を行う
         AcesEnvironment.initialize(this);

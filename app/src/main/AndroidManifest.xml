@@ -68,7 +68,7 @@
         <!-- 組み込み拡張機能 "デフォルト表示" -->
         <service
                 android:name="com.eaglesakura.andriders.basicui.BasicExtensionService"
-                android:icon="@drawable/ic_launcher"
+                android:icon="@mipmap/ic_launcher"
                 android:label="@string/Extension.Inner.Default.Name"
                 android:process=":ace_ext">
             <intent-filter>
@@ -88,7 +88,7 @@
         <!-- 組み込み拡張機能 "BLE心拍" -->
         <service
                 android:name="com.eaglesakura.andriders.ble.service.BleHeartrateExtensionService"
-                android:icon="@drawable/ic_heart"
+                android:icon="@mipmap/ic_heart"
                 android:label="@string/Extension.Inner.BleSensor.Name"
                 android:process=":ble">
             <intent-filter>
@@ -98,7 +98,7 @@
         <!-- 組み込み拡張機能 "BLE S&C" -->
         <service
                 android:name="com.eaglesakura.andriders.ble.service.BleSpeedCadenceExtensionService"
-                android:icon="@drawable/ic_speed"
+                android:icon="@mipmap/ic_speed"
                 android:label="@string/Extension.Inner.BleSensor.Name"
                 android:process=":ble">
             <intent-filter>
