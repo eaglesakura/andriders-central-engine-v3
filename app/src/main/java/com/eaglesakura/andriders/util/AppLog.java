@@ -90,6 +90,12 @@ public class AppLog {
         LogUtil.setLogger(tag, sAppLogger);
         LogUtil.out(tag, fmt, args);
     }
+    public static void plugin(String fmt, Object... args) {
+        String tag = "App.Plugin";
+
+        LogUtil.setLogger(tag, sAppLogger);
+        LogUtil.out(tag, fmt, args);
+    }
 
     public static void test(String fmt, Object... args) {
         String tag = "App.Test";

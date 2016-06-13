@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
+import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.plugin.internal.ExtensionServerImpl;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.CollectionUtil;
@@ -32,7 +34,7 @@ public class PluginManager {
         /**
          * 有効化されているクライアントのみを列挙する
          */
-        Enabled,
+        ActiveOnly,
     }
 
     public PluginManager(Context context) {
@@ -171,9 +173,28 @@ public class PluginManager {
     public void connect(ConnectMode mode) {
         AndroidThreadUtil.assertBackgroundThread();
 
+
         List<ResolveInfo> services = listExtensionServices(mContext);
-        for (ResolveInfo info : services) {
-            connectService(info);
+        if (mode == ConnectMode.ActiveOnly) {
+            // 有効なプラグインだけを列挙する
+            PluginDatabase db = new PluginDatabase(mContext);
+            try {
+                db.openReadOnly();
+                for (ResolveInfo info : services) {
+                    if (db.isActive(info)) {
+                        AppLog.plugin("Active Plugin[%s@%s]", info.serviceInfo.packageName, info.serviceInfo.name);
+                        connectService(info);
+                    }
+                }
+            } finally {
+                db.close();
+            }
+        } else {
+            // 全てのプラグインを接続する
+            for (ResolveInfo info : services) {
+                AppLog.plugin("Connect Plugin[%s@%s]", info.serviceInfo.packageName, info.serviceInfo.name);
+                connectService(info);
+            }
         }
     }
 

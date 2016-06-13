@@ -242,12 +242,13 @@ task generateCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
  */
 task generatePluginDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
-    classPackageBase = "${android.defaultConfig.applicationId}.dao"
+    classPackageBase = "com.eaglesakura.andriders.dao"
 
     def schema = newSchema(1, "plugin");
-    def DbActivePlugin = controllerSchema.addEntity("DbActivePlugin");
+    def DbActivePlugin = schema.addEntity("DbActivePlugin");
 
     DbActivePlugin.addStringProperty("uniqueId").notNull().unique().primaryKey();
-    DbActivePlugin.addStringProperty("packageName").notNull();  // プラグインのapp package name
-    DbActivePlugin.addStringProperty("category").notNull();  // プラグインのカテゴリ
+    DbActivePlugin.addStringProperty("category").notNull().index();  // プラグインのカテゴリ
+    DbActivePlugin.addStringProperty("packageName").notNull().index();  // プラグインのapp package name
+    DbActivePlugin.addStringProperty("className").notNull().index();    // プラグインのfull class name
 }

@@ -2,6 +2,8 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.plugin.ActivePlugin;
+import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
@@ -97,7 +99,23 @@ public class PluginConnector extends CommandClient {
         buildCentralCommands();
         buildDisplayCommands();
 
-        Garnet.create(this).depend(Context.class, context).inject();
+        Garnet.create(this)
+                .depend(Context.class, context)
+                .inject();
+
+    }
+
+    /**
+     * プラグインが有効な状態であればtrue
+     */
+    public boolean isActive() {
+        PluginDatabase db = new PluginDatabase(mContext);
+        try {
+            db.openReadOnly();
+            return db.isActive(mPackageInfo);
+        } finally {
+            db.close();
+        }
     }
 
     public void setCentralWorker(Worker<CentralDataManager> cycleComputerDataWorker) {
@@ -218,14 +236,20 @@ public class PluginConnector extends CommandClient {
      * 拡張機能のON/OFFを切り替える
      */
     public void setEnable(boolean use) {
+        PluginDatabase db = new PluginDatabase(mContext);
         try {
+            db.openWritable();
             if (use) {
                 requestPostToServer(CentralDataCommand.CMD_onExtensionEnable, null);
+                db.active(getInformation(), mPackageInfo);
             } else {
                 requestPostToServer(CentralDataCommand.CMD_onExtensionDisable, null);
+                db.remove(mPackageInfo);
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
+        } finally {
+            db.close();
         }
     }
 

@@ -167,7 +167,7 @@ public class CentralContext implements Disposable {
      * 拡張機能を初期化する
      */
     private void initExtensions() throws Throwable {
-        mExtensionClientManager.connect(PluginManager.ConnectMode.Enabled);
+        mExtensionClientManager.connect(PluginManager.ConnectMode.ActiveOnly);
         for (PluginConnector client : mExtensionClientManager.listClients()) {
             // サイコンデータ用コールバックを指定する
             client.setCentralWorker((PluginConnector.Action<CentralDataManager> action) -> {

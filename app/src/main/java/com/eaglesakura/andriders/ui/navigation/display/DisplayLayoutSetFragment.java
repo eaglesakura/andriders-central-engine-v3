@@ -81,7 +81,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             PluginManager clientManager = new PluginManager(getContext());
             try {
                 pushProgress(R.string.Common_File_Load);
-                clientManager.connect(PluginManager.ConnectMode.Enabled);
+                clientManager.connect(PluginManager.ConnectMode.ActiveOnly);
             } finally {
                 popProgress();
             }

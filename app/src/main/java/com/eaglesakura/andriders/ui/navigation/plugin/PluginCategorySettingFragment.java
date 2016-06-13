@@ -1,6 +1,8 @@
 package com.eaglesakura.andriders.ui.navigation.plugin;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.db.plugin.PluginCollection;
+import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
@@ -125,10 +127,13 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
         View card = View.inflate(getActivity(), R.layout.card_extension_module, null);
         AQuery q = new AQuery(card);
         q.id(R.id.Extension_Module_Icon).image(client.loadIcon());
-        // TODO チェック有無判定
-        q.id(R.id.Extension_Module_Switch).text(client.getName()).checkedChange((button, isChecked) -> {
-            client.setEnable(isChecked);
-        });
+        // チェック有無判定
+        q.id(R.id.Extension_Module_Switch)
+                .text(client.getName())
+                .checked(client.isActive())
+                .checkedChange((button, isChecked) -> {
+                    client.setEnable(isChecked);
+                });
 
         PluginInformation information = client.getInformation();
         if (information != null) {
@@ -137,6 +142,26 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         modulesRoot.addView(card, params);
+    }
+
+    @UiThread
+    void commitEnableChanged(PluginConnector plugin, boolean enabled) {
+        asyncUI(task -> {
+            PluginDatabase db = new PluginDatabase(getActivity());
+            try {
+                db.openWritable();
+
+                Category category = Category.fromName(mCategoryName);
+
+                if (category.hasAttribute(Category.ATTRIBUTE_SINGLE_SELECT)) {
+                    // 属性を指定する
+                }
+            } finally {
+                db.close();
+            }
+
+            return this;
+        }).start();
     }
 
 }
