@@ -22,95 +22,105 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <LinearLayout
+            <com.eaglesakura.material.widget.TransparentButton
                     android:id="@+id/CycleComputer.Personal.Weight"
+                    style="@style/EsMaterial.Theme.Widget"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"
-                    android:background="@drawable/esm_button_transparent_fill"
-                    android:clickable="true"
-                    android:orientation="horizontal">
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="体重"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Setting.Personal.WeightValue"
+                    android:layout_height="wrap_content">
+                <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:gravity="right"
-                        android:text="60"/>
+                        android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text=" kg"/>
-            </LinearLayout>
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="体重"/>
 
-            <LinearLayout
+                    <android.support.v7.widget.AppCompatTextView
+                            android:id="@+id/Setting.Personal.WeightValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:gravity="right"
+                            android:text="60"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text=" kg"/>
+                </LinearLayout>
+            </com.eaglesakura.material.widget.TransparentButton>
+            <com.eaglesakura.material.widget.TransparentButton
+                    android:layout_marginTop="0dp"
                     android:id="@+id/CycleComputer.Personal.NormalHeartrate"
+                    style="@style/EsMaterial.Theme.Widget"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"
-                    android:background="@drawable/esm_button_transparent_fill"
-                    android:clickable="true"
-                    android:orientation="horizontal">
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="安静心拍数"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Setting.Personal.NormalHeartrateValue"
+                    android:layout_height="wrap_content">
+                <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:gravity="right"
-                        android:text="70"/>
+                        android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text=" bpm"/>
-            </LinearLayout>
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="安静心拍数"/>
 
-            <LinearLayout
+                    <android.support.v7.widget.AppCompatTextView
+                            android:id="@+id/Setting.Personal.NormalHeartrateValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:gravity="right"
+                            android:text="70"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text=" bpm"/>
+                </LinearLayout>
+            </com.eaglesakura.material.widget.TransparentButton>
+            <com.eaglesakura.material.widget.TransparentButton
                     android:id="@+id/CycleComputer.Personal.MaxHeartrate"
+                    style="@style/EsMaterial.Theme.Widget"
+                    android:layout_marginTop="0dp"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"
-                    android:background="@drawable/esm_button_transparent_fill"
-                    android:clickable="true"
-                    android:orientation="horizontal">
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="最大心拍数"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Setting.Personal.MaxHeartrateValue"
+                    android:layout_height="wrap_content">
+                <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:gravity="right"
-                        android:text="190"/>
+                        android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text=" bpm"/>
-            </LinearLayout>
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="最大心拍数"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:id="@+id/Setting.Personal.MaxHeartrateValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:gravity="right"
+                            android:text="190"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text=" bpm"/>
+                </LinearLayout>
+            </com.eaglesakura.material.widget.TransparentButton>
+
 
             <android.support.v7.widget.AppCompatButton
                     android:id="@+id/Setting.Fitness.ConnectGoogleFit"
