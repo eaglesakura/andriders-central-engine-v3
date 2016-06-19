@@ -7,7 +7,6 @@ import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.auth.AcesAuthActivity;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.UserNotificationController;
 import com.eaglesakura.android.framework.ui.support.SupportFragment;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.oari.OnActivityResult;
@@ -124,25 +123,14 @@ public abstract class AppBaseFragment extends SupportFragment {
         dialog.show();
     }
 
-    public UserNotificationController getNotificationController() {
-        Activity activity = getActivity();
-        if (activity instanceof AppBaseActivity) {
-            return ((AppBaseActivity) activity).getNotificationController(null);
-        } else {
-            return null;
-        }
-    }
 
     public void pushProgress(@StringRes int resId) {
-        getNotificationController().pushProgress(this, getString(resId));
     }
 
     public void pushProgress(String message) {
-        getNotificationController().pushProgress(this, message);
     }
 
     public void popProgress() {
-        getNotificationController().popProgress(this);
     }
 
     public void toast(@StringRes final int resId) {

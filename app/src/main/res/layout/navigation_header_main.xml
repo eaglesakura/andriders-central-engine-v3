@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="160dp"
+              android:layout_height="wrap_content"
               android:background="@drawable/side_nav_bar"
               android:gravity="bottom"
               android:orientation="vertical"
               android:paddingBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
               android:paddingLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
               android:paddingRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-              android:paddingTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-              android:theme="@style/ThemeOverlay.AppCompat.Dark">
+              android:paddingTop="@dimen/EsMaterial.Margin.KeyLine1Vertical">
 
     <ImageView
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:paddingTop="@dimen/EsMaterial.Button.Margin"
             android:src="@mipmap/ic_launcher"/>
+
+    <android.support.v7.widget.AppCompatButton
+            android:id="@+id/Main.Menu.Session.Boot"
+            android:theme="@style/App.Theme.Button.Session"
+            android:text="セッション開始"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     <com.eaglesakura.material.widget.TransparentButton
             style="@style/EsMaterial.Theme.Widget"

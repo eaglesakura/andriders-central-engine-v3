@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
-import com.eaglesakura.freezer.BundleState;
+import com.eaglesakura.bundle.BundleState;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -1,19 +1,26 @@
 package com.eaglesakura.andriders.ui.navigation.menu;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.service.central.CentralService;
 import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.gadget.GadgetSettingFragmentMain;
-import com.eaglesakura.andriders.ui.navigation.plugin.PluginSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.info.InformationFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.log.UserLogFragmentMain;
+import com.eaglesakura.andriders.ui.navigation.plugin.PluginSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.profile.ProfileFragmentMain;
+import com.eaglesakura.android.margarine.Bind;
+import com.eaglesakura.android.margarine.MargarineKnife;
+import com.eaglesakura.android.margarine.OnClick;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
+import android.widget.Button;
 
 /**
  * メニュー内容を動的に制御するクラス。
@@ -34,14 +41,18 @@ public class MenuController {
     @NonNull
     MenuCallback mCallback;
 
+    /**
+     * セッション開始・シャットダウンボタン
+     */
+    @Bind(R.id.Main_Menu_Session_Boot)
+    Button mServiceButton;
+
+    boolean mInitialized;
+
     public MenuController(final Context context, NavigationView view, DrawerLayout drawerLayout) {
         mContext = context;
         mNavigationView = view;
         mDrawerLayout = drawerLayout;
-    }
-
-    public void initialize() {
-        mNavigationView.setNavigationItemSelectedListener(naviItemSelectedImpl);
     }
 
     public void setCallback(MenuCallback callback) {
@@ -49,17 +60,74 @@ public class MenuController {
     }
 
     public void onResume() {
+
+        if (!mInitialized) {
+            mNavigationView.setNavigationItemSelectedListener(mNaviItemSelectedImpl);
+
+            MargarineKnife.from(mNavigationView.getHeaderView(0))
+                    .to(this)
+                    .bind();
+
+            mInitialized = true;
+        }
+
+        updateServiceButton();
     }
 
     public void onPause() {
+    }
 
+    @OnClick(R.id.Main_Menu_Session_Boot)
+    void clickSessionBoot() {
+        if (CentralService.isRunning(mContext)) {
+            // サービスシャットダウンする？
+            onServiceShutdownCheck();
+        } else {
+            // サービスを起動する？
+            onServiceBootCheck();
+        }
+    }
+
+    /**
+     * Central Serviceの状態をUIに反映させる
+     */
+    private void updateServiceButton() {
+        if (CentralService.isRunning(mContext)) {
+            mServiceButton.setText("セッション記録中");
+        } else {
+            mServiceButton.setText("セッション開始");
+        }
+    }
+
+    private void onServiceShutdownCheck() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("セッション終了");
+        builder.setMessage("走行セッションを終了しますか？");
+        builder.setPositiveButton("セッション終了", (dlg, which) -> {
+            CentralService.stop(mContext);
+            updateServiceButton();
+        });
+        builder.setNegativeButton(R.string.Common_Cancel, null);
+        builder.show();
+    }
+
+    private void onServiceBootCheck() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("セッション開始");
+        builder.setMessage("走行セッションを開始しますか？");
+        builder.setPositiveButton("セッション開始", (dlg, which) -> {
+            CentralService.start(mContext);
+            updateServiceButton();
+        });
+        builder.setNegativeButton(R.string.Common_Cancel, null);
+        builder.show();
     }
 
     public interface MenuCallback {
         void requestChangeContent(BaseNavigationFragment fragment);
     }
 
-    private final NavigationView.OnNavigationItemSelectedListener naviItemSelectedImpl = (menuItem) -> {
+    private final NavigationView.OnNavigationItemSelectedListener mNaviItemSelectedImpl = (menuItem) -> {
         switch (menuItem.getItemId()) {
             case R.id.Main_Menu_Profile:
                 mCallback.requestChangeContent(ProfileFragmentMain.createInstance(mContext));
@@ -82,7 +150,7 @@ public class MenuController {
             default:
                 return false;
         }
-        mDrawerLayout.closeDrawer(Gravity.START);
+        mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     };
 }

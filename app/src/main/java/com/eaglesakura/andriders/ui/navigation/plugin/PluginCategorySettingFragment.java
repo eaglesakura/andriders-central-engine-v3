@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders.ui.navigation.plugin;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.db.plugin.PluginCollection;
 import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.PluginConnector;
@@ -13,7 +12,7 @@ import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelega
 import com.eaglesakura.android.framework.ui.support.SupportAQuery;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.freezer.BundleState;
+import com.eaglesakura.bundle.BundleState;
 import com.eaglesakura.util.Util;
 
 import android.content.Context;
@@ -52,7 +51,7 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
     PluginSettingFragmentMain mParent;
 
     public PluginCategorySettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_extension_modules);
+        mFragmentDelegate.setLayoutId(R.layout.fragment_plugin_modules);
     }
 
     /**

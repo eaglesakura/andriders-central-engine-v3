@@ -6,14 +6,19 @@
         <item name="android:textSize">@dimen/App.Font.Normal</item>
     </style>
 
-    <style name="App.Button.Normal" parent="App.Theme">
-        <item name="buttonBaseColor">@color/EsMaterial.LightGreen.Button.Normal</item>
-        <item name="buttonTextColorMode">light</item>
+    <style name="App.Theme.Button.Normal" parent="App.Theme">
+        <item name="colorButtonNormal">@color/EsMaterial.LightGreen.Button.Normal</item>
+        <item name="android:textColor">@color/EsMaterial.LightGreen.50</item>
     </style>
 
-    <style name="App.Button.Alert" parent="App.Theme">
-        <item name="buttonBaseColor">@color/EsMaterial.Red.Button.Normal</item>
-        <item name="buttonTextColorMode">light</item>
+    <style name="App.Theme.Button.Alert" parent="App.Theme">
+        <item name="colorButtonNormal">@color/EsMaterial.Red.Button.Normal</item>
+        <item name="android:textColor">@color/EsMaterial.Red.50</item>
+    </style>
+
+    <style name="App.Theme.Button.Session" parent="App.Theme">
+        <item name="colorButtonNormal">@color/EsMaterial.Blue.Button.Normal</item>
+        <item name="android:textColor">@color/EsMaterial.Blue.50</item>
     </style>
 
     <style name="App.Theme.Font.Title" parent="App.Theme">

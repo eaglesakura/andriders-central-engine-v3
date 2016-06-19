@@ -17,7 +17,7 @@ import com.eaglesakura.android.playservice.GoogleApiTask;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.freezer.BundleState;
+import com.eaglesakura.bundle.BundleState;
 import com.eaglesakura.material.widget.MaterialInputDialog;
 import com.eaglesakura.util.LogUtil;
 

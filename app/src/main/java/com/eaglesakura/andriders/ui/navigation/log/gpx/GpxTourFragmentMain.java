@@ -7,7 +7,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.apptour.AppTourDelegate;
 import com.eaglesakura.android.framework.ui.BackStackManager;
 import com.eaglesakura.android.util.ResourceUtil;
-import com.eaglesakura.freezer.BundleState;
+import com.eaglesakura.bundle.BundleState;
 
 import android.app.Activity;
 import android.graphics.Color;

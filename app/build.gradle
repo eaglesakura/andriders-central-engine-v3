@@ -99,8 +99,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "24"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -114,7 +114,7 @@ android {
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 24
 
 //        versionCode 99999;
         versionCode eglibrary.ci.buildVersionCode as int
