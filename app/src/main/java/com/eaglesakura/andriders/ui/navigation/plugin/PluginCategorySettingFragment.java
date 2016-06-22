@@ -4,15 +4,15 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.PluginConnector;
-import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.plugin.PluginInformation;
+import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.support.SupportAQuery;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.bundle.BundleState;
+import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.util.Util;
 
 import android.content.Context;

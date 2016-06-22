@@ -11,7 +11,7 @@ import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentPager;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnMenuClick;
 import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.bundle.BundleState;
+import com.eaglesakura.android.saver.BundleState;
 
 import android.content.Context;
 import android.os.Bundle;

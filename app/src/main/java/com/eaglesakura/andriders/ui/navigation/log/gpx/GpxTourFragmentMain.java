@@ -6,8 +6,8 @@ import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.apptour.AppTourDelegate;
 import com.eaglesakura.android.framework.ui.BackStackManager;
+import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ResourceUtil;
-import com.eaglesakura.bundle.BundleState;
 
 import android.app.Activity;
 import android.graphics.Color;

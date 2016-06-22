@@ -14,9 +14,9 @@ import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.PermissionUtil;
-import com.eaglesakura.bundle.BundleState;
 import com.eaglesakura.util.LogUtil;
 
 import android.os.Bundle;

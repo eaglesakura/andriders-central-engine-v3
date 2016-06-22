@@ -29,7 +29,7 @@ task clean(type: Delete) {
 
 // 各グローバル設定
 ext {
-    ANDROID_SUPPORT_LIB_VERSION = "23.4.+"
+    ANDROID_SUPPORT_LIB_VERSION = "24.0.+"
     ANDROID_PLAYSERVICE_LIB_VERSION = "9.0.2"
 }
 

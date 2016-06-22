@@ -7,8 +7,8 @@ import com.eaglesakura.android.framework.ui.BackStackManager;
 import com.eaglesakura.android.framework.ui.support.ContentHolderActivity;
 import com.eaglesakura.android.playservice.GoogleApiClientToken;
 import com.eaglesakura.android.playservice.GoogleApiFragment;
+import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ContextUtil;
-import com.eaglesakura.bundle.BundleState;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
