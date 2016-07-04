@@ -31,6 +31,8 @@ dependencies {
         compile project(':eglibrary:android-command-service')
         compile project(':eglibrary:android-net')
         compile project(':eglibrary:android-framework')
+        compile project(":eglibrary:android-gms")
+        compile project(":eglibrary:android-firebase")
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
         compile project(':eglibrary:android-apptour')

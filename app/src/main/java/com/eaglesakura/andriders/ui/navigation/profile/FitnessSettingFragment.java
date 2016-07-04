@@ -5,23 +5,18 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.RequestCodes;
-import com.eaglesakura.andriders.google.GoogleApiUtil;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.playservice.GoogleApiClientToken;
-import com.eaglesakura.android.playservice.GoogleApiTask;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialInputDialog;
-import com.eaglesakura.util.LogUtil;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
@@ -53,10 +48,6 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     @Override
     public void onResume() {
         super.onResume();
-
-        // client add
-        getGoogleApiClientToken().registerConnectionCallbacks(this);
-        getGoogleApiClientToken().registerConnectionFailedListener(this);
     }
 
     /**
@@ -79,19 +70,20 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
      */
     @OnClick(R.id.CycleComputer_Personal_Weight)
     void clickPersonalWeigth() {
-        if (getGoogleApiClientToken().isLoginCompleted()) {
-            try {
-                ComponentName componentName = new ComponentName("com.google.android.apps.fitness", "com.google.android.apps.fitness.preferences.settings.SettingsActivity");
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setComponent(componentName);
-                startActivityForResult(intent, REQUEST_GOOGLEFIT_SETTING);
-
-                // 起動成功したから何もしない
-                return;
-            } catch (Exception e) {
-                LogUtil.log(e);
-            }
-        }
+        // TODO: Google Fitとの連携を戻す
+//        if (getGoogleApiClientToken().isLoginCompleted()) {
+//            try {
+//                ComponentName componentName = new ComponentName("com.google.android.apps.fitness", "com.google.android.apps.fitness.preferences.settings.SettingsActivity");
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setComponent(componentName);
+//                startActivityForResult(intent, REQUEST_GOOGLEFIT_SETTING);
+//
+//                // 起動成功したから何もしない
+//                return;
+//            } catch (Exception e) {
+//                LogUtil.log(e);
+//            }
+//        }
 
         MaterialInputDialog dialog = new MaterialInputDialog(getActivity()) {
             @Override
@@ -138,7 +130,7 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
 
     @OnClick(R.id.Setting_Fitness_ConnectGoogleFit)
     void clickConnectGoogleFit() {
-        startGooglePlayServiceLogin();
+        // TODO: ログインを行う
     }
 
     @Override
@@ -162,35 +154,36 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
      */
     void syncFitnessData() {
         asyncUI((RxTask<Float> task) -> {
-            GoogleApiClientToken token = getGoogleApiClientToken();
-            if (token == null) {
-                throw new IllegalStateException();
-            }
-
-            return token.executeGoogleApi(new GoogleApiTask<Float>() {
-                @Override
-                public Float executeTask(GoogleApiClient client) throws Exception {
-                    float userWeight = GoogleApiUtil.getUserWeightFromFit(client);
-                    if (userWeight > 0 && userWeight != mPersonalDataSettings.getUserWeight()) {
-                        mPersonalDataSettings.setUserWeight(userWeight);
-                        mPersonalDataSettings.commit();
-                        toast(R.string.Setting_Fitness_Weight_SyncCompleted);
-                    } else if (userWeight <= 0) {
-                        toast(R.string.Setting_Fitness_Weight_SyncFailed);
-                    }
-                    return userWeight;
-                }
-
-                @Override
-                public Float connectedFailed(GoogleApiClient client, ConnectionResult connectionResult) {
-                    throw new IllegalStateException();
-                }
-
-                @Override
-                public boolean isCanceled() {
-                    return task.isCanceled();
-                }
-            });
+//            GoogleApiClientToken token = getGoogleApiClientToken();
+//            if (token == null) {
+//                throw new IllegalStateException();
+//            }
+//
+//            return token.executeGoogleApi(new GoogleApiTask<Float>() {
+//                @Override
+//                public Float executeTask(GoogleApiClient client) throws Exception {
+//                    float userWeight = GoogleApiUtil.getUserWeightFromFit(client);
+//                    if (userWeight > 0 && userWeight != mPersonalDataSettings.getUserWeight()) {
+//                        mPersonalDataSettings.setUserWeight(userWeight);
+//                        mPersonalDataSettings.commit();
+//                        toast(R.string.Setting_Fitness_Weight_SyncCompleted);
+//                    } else if (userWeight <= 0) {
+//                        toast(R.string.Setting_Fitness_Weight_SyncFailed);
+//                    }
+//                    return userWeight;
+//                }
+//
+//                @Override
+//                public Float connectedFailed(GoogleApiClient client, ConnectionResult connectionResult) {
+//                    throw new IllegalStateException();
+//                }
+//
+//                @Override
+//                public boolean isCanceled() {
+//                    return task.isCanceled();
+//                }
+//            });
+            throw new Error("Not Impl");
         }).completed((weight, task) -> {
             updatePersonalUI();
         }).failed((err, task) -> {
@@ -219,13 +212,9 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     void clickPersonalNormalHeartrate() {
         showHeartrateInputDialog(
                 R.string.Setting_Fitness_NormalHeartrate_DialogTitle, R.string.Setting_Fitness_MaxHeartrate_DialogHiht,
-                mPersonalDataSettings.getNormalHeartrate(),
-                new HeartrateInputListener() {
-                    @Override
-                    public void onInputHeartrate(int bpm) {
-                        mPersonalDataSettings.setNormalHeartrate(bpm);
-                        asyncCommitSettings();
-                    }
+                mPersonalDataSettings.getNormalHeartrate(), (bpm) -> {
+                    mPersonalDataSettings.setNormalHeartrate(bpm);
+                    asyncCommitSettings();
                 }
         );
     }
