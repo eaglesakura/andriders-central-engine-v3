@@ -16,10 +16,10 @@ else
 fi
 
 if [ -e "./ace-private/v3.0.x/" ]; then
-    cp -rf ./ace-private/v3.0.x/main           ./app/private/main
-    cp -rf ./ace-private/v3.0.x/sign           ./app/private/sign
-    cp -rf ./ace-private/v3.0.x/googleplay     ./app/private/src/googleplay
-    cp -f  ./ace-private/v3.0.x/private.gradle ./app/private/private.gradle
+    cp -rf ./ace-private/v3.0.x/main           ./app/private/
+    cp -rf ./ace-private/v3.0.x/sign           ./app/private/
+    cp -f  ./ace-private/v3.0.x/private.gradle ./app/private/
+    cp -rf ./ace-private/v3.0.x/googleplay     ./app/src/
 else
     echo "ace-private not sync"
     cp -rf ./app/private.tmp/** ./app/private/
