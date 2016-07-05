@@ -22,8 +22,9 @@ dependencies:
     - "/home/ubuntu/android-sdk"
     - "/home/ubuntu/build-cache"
   override:
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk.sh)"
     - ./script/developer-install-private.sh
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-android-dependencies.sh)"
+    - ./gradlew --refresh-dependencies clean
     - ./gradlew :app:dependencies
 test:
   override:
@@ -37,14 +38,17 @@ deployment:
   develop:
     branch: develop
     commands:
+      - ./gradlew :app:dependencyUpdates
       - ./script/circleci-deploy-deploygate.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   nightly:
     branch: master
     commands:
+      - ./gradlew :app:dependencyUpdates
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   release:
     branch: /^v[0-9]\..*$/
     commands:
+      - ./gradlew :app:dependencyUpdates
       - ./script/circleci-deploy-deploygate.sh
       - cp -r ./ci-release $CIRCLE_ARTIFACTS

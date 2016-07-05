@@ -235,6 +235,23 @@ def getArtifactVersionSuffix() {
 }
 
 apply from: "generator.gradle"
+apply plugin: 'com.google.gms.google-services'
+
+/**
+ * Notifications
+ */
+apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.mindera.gradle.slack'
+apply plugin: 'com.github.ben-manes.versions'
+
+slack {
+    url System.getenv("ACE_SLACK_HOOK_URL");
+    dependsOnTasks 'assembleGoogleplayDebug', 'assembleGoogleplayRelease', 'testGoogleplayDebugUnitTest', 'dependencyUpdates';
+    title 'ACE v3';
+//    enabled = eglibrary.ci.ciRunning
+    enabled = true
+    gitInfo = true
+}
 
 apply plugin: 'com.getkeepsafe.dexcount'
 dexcount {

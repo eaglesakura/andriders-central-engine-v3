@@ -1,8 +1,5 @@
 package com.eaglesakura.andriders;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.util.SerializeUtil;
 
@@ -54,13 +51,13 @@ public class AceUtils {
     }
 
 
-    public static LatLng toLatLng(RawGeoPoint geo) {
-        if (geo == null) {
-            return null;
-        }
-        return new LatLng(geo.latitude, geo.longitude);
-    }
-
+//    public static LatLng toLatLng(RawGeoPoint geo) {
+//        if (geo == null) {
+//            return null;
+//        }
+//        return new LatLng(geo.latitude, geo.longitude);
+//    }
+//
 
     /**
      * Serialize -> Deserializeを行うことで簡易cloneを行う
