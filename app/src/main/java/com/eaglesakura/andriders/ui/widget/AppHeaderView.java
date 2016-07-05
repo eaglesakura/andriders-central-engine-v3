@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.util.ContextUtil;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
