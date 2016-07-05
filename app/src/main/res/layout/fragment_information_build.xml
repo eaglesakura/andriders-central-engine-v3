@@ -1,68 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
-        style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:orientation="vertical">
 
         <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-                android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-                android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
+            <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                    app:headerIcon="@android:drawable/ic_menu_info_details"
+                    app:headerText="@string/Information.Build.Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
             <LinearLayout
+                    style="@style/App.Theme.BasicSetting"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                    <ImageView
-                            android:layout_width="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_height="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_marginLeft="@dimen/EsMaterial.Button.Margin"
-                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-                            android:src="@android:drawable/ic_menu_info_details"/>
-                </FrameLayout>
+                    android:layout_height="wrap_content">
 
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/EsMaterial.Button.Margin"
                         android:orientation="vertical">
-
-                    <TextView
-                            style="@style/EsMaterial.Font.Title.Card"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:text="@string/Information.Build.Title"/>
-
                     <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                        <TextView
-                                style="@style/EsMaterial.Font.Normal"
+                        <android.support.v7.widget.AppCompatTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/Information.App.Version"/>
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                                 android:id="@+id/Information.App.Version"
-                                style="@style/EsMaterial.Font.Normal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -76,15 +57,13 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                        <TextView
-                                style="@style/EsMaterial.Font.Normal"
+                        <android.support.v7.widget.AppCompatTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/Information.App.BuildDate"/>
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                                 android:id="@+id/Information.App.BuildDate"
-                                style="@style/EsMaterial.Font.Normal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -97,15 +76,13 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                        <TextView
-                                style="@style/EsMaterial.Font.Normal"
+                        <android.support.v7.widget.AppCompatTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/Information.App.SDKVersion"/>
 
-                        <TextView
+                        <android.support.v7.widget.AppCompatTextView
                                 android:id="@+id/Information.App.SDKVersion"
-                                style="@style/EsMaterial.Font.Normal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -115,130 +92,90 @@
 
                     <android.support.v7.widget.AppCompatButton
                             android:id="@+id/Information.Licenses"
-                            style="@style/App.Button.Normal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
                             android:text="@string/Information.App.Licenses"/>
+
                 </LinearLayout>
-
             </LinearLayout>
-
-
         </LinearLayout>
 
         <include layout="@layout/esm_material_separator"/>
 
         <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-                android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-                android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
+            <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                    app:headerText="@string/Information.Debug.Title"
+                    app:headerIcon="@android:drawable/ic_menu_info_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
             <LinearLayout
+                    style="@style/App.Theme.BasicSetting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                <FrameLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                    <ImageView
-                            android:layout_width="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_height="@dimen/EsMaterial.Header.Icon.Size"
-                            android:layout_marginLeft="@dimen/EsMaterial.Button.Margin"
-                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-                            android:src="@android:drawable/ic_menu_info_details"/>
-                </FrameLayout>
-
-                <LinearLayout
+                <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/Information.App.Debug"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                        android:orientation="vertical">
+                        android:checked="false"
+                        android:text="開発モード"/>
 
-                    <TextView
-                            style="@style/EsMaterial.Font.Title.Card"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:text="@string/Information.Debug.Title"/>
+                <LinearLayout
+                        android:id="@+id/Information.DebugSettings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
                     <android.support.v7.widget.SwitchCompat
-                            android:id="@+id/Information.App.Debug"
+                            android:id="@+id/Debug.ACEs.DebugRendering"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                             android:checked="false"
-                            android:minHeight="@dimen/EsMaterial.Navigation.MinHeight"
-                            android:text="開発モード"/>
+                            android:text="ACEs render debug info"/>
 
-                    <LinearLayout
-                            android:id="@+id/Information.DebugSettings"
+                    <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/Debug.Location.Rendering"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                            android:orientation="vertical"
-                            android:visibility="gone">
-
-                        <android.support.v7.widget.SwitchCompat
-                                android:id="@+id/Debug.ACEs.DebugRendering"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-                                android:checked="false"
-                                android:text="ACEs render debug info"/>
-
-                        <android.support.v7.widget.SwitchCompat
-                                android:id="@+id/Debug.Location.Rendering"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-                                android:checked="false"
-                                android:text="ACEs render location"/>
+                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                            android:checked="false"
+                            android:text="ACEs render location"/>
 
 
-                        <Button
-                                android:id="@+id/Debug.Meida.MetaGenerate"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="generate media meta"
-                                android:visibility="gone"/>
+                    <android.support.v7.widget.AppCompatButton
+                            android:id="@+id/Debug.Data.Dump"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="backup data"/>
 
+                    <android.support.v7.widget.AppCompatButton
+                            android:id="@+id/Debug.Data.DeleteTodayLog"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="delete today log"
+                            android:visibility="gone"/>
 
-                        <android.support.v7.widget.AppCompatButton
-                                android:id="@+id/Debug.Data.Dump"
-                                style="@style/App.Button.Alert"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="backup data"/>
-
-                        <Button
-                                android:id="@+id/Debug.Data.DeleteTodayLog"
-                                style="@style/EsMaterial.Button.Red"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="delete today log"
-                                android:visibility="gone"/>
-
-                        <Button
-                                android:id="@+id/Debug.Api.CheckSunset"
-                                style="@style/EsMaterial.Button.Red"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="check sunset"
-                                android:visibility="gone"/>
-                    </LinearLayout>
-
-
+                    <android.support.v7.widget.AppCompatButton
+                            android:id="@+id/Debug.Api.CheckSunset"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="check sunset"
+                            android:visibility="gone"/>
                 </LinearLayout>
+
 
             </LinearLayout>
 
         </LinearLayout>
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

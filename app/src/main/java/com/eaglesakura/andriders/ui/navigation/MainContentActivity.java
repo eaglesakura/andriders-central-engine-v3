@@ -52,8 +52,6 @@ public class MainContentActivity extends AppBaseActivity {
                 mDrawerLayout
         );
         mMenuController.setCallback(mMenuCallback);
-        mMenuController.initialize();
-
         mProgress = findViewById(R.id.Main_Progress);
 //        userNotificationController = new UserNotificationController(this) {
 //            @Override

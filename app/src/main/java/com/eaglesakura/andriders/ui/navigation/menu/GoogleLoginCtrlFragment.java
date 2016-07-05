@@ -2,13 +2,10 @@ package com.eaglesakura.andriders.ui.navigation.menu;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.andriders.ui.auth.AcesAuthActivity;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 
 /**
@@ -73,18 +70,12 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
             dialog.setMessage(R.string.Login_Welcome_Information);
         }
         dialog.setCancelable(false);
-        dialog.setPositiveButton(R.string.Login_Initial_Login, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(getActivity(), AcesAuthActivity.class);
-                startActivityForResult(intent, REQUEST_GOOGLE_AUTH);
-            }
+        dialog.setPositiveButton(R.string.Login_Initial_Login, (dlg, which) -> {
+//            Intent intent = new Intent(getActivity(), AcesAuthActivity.class);
+//            startActivityForResult(intent, REQUEST_GOOGLE_AUTH);
         });
-        dialog.setNegativeButton(R.string.Login_Initial_Exit, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                getActivity().finish();
-            }
+        dialog.setNegativeButton(R.string.Login_Initial_Exit, (dlg, which) -> {
+            getActivity().finish();
         });
         dialog.show();
     }

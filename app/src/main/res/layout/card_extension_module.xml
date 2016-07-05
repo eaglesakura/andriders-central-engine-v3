@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:orientation="horizontal">
 
     <ImageView
+            android:layout_gravity="center"
             android:id="@+id/Extension.Module.Icon"
-            android:layout_width="@dimen/EsMaterial.Button.MinHeight"
-            android:layout_height="@dimen/EsMaterial.Button.MinHeight"
-            android:padding="@dimen/EsMaterial.Button.Margin"
-            android:src="@drawable/ic_launcher"/>
+            android:layout_width="@dimen/App.Icon.Normal"
+            android:layout_height="@dimen/App.Icon.Normal"
+            android:layout_margin="@dimen/App.Icon.Normal.Margin"
+            android:src="@mipmap/ic_launcher"/>
 
     <android.support.v7.widget.SwitchCompat
             android:id="@+id/Extension.Module.Switch"
-            style="@style/EsMaterial.Font.Title.Card"
             android:layout_width="match_parent"
             android:layout_height="@dimen/EsMaterial.Button.MinHeight"
             android:clickable="true"

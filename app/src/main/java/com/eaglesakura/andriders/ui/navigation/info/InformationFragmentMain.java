@@ -34,7 +34,7 @@ public class InformationFragmentMain extends BaseNavigationFragment {
         }
     }
 
-    public static InformationFragmentMain createInstance(Context context) {
+    public static InformationFragmentMain newInstance(Context context) {
         return new InformationFragmentMain();
     }
 }

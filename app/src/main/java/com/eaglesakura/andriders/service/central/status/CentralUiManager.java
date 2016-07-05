@@ -62,7 +62,7 @@ public class CentralUiManager {
         builder.setWhen(System.currentTimeMillis());
         builder.setContentTitle("ACEs");
         builder.setContentText("タップでサイコン設定を開きます");
-        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
 
         mUiNotification = builder.build();
 

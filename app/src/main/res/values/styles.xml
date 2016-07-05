@@ -3,17 +3,40 @@
     <style name="App.Theme" parent="EsMaterial.Theme.Red.NoActionBar">
         <item name="colorAccent">@color/EsMaterial.LightGreen.Button.Normal</item>
         <item name="android:windowAnimationStyle">@style/EsMaterial.Animation.Activity</item>
+        <item name="android:textSize">@dimen/App.Font.Normal</item>
     </style>
 
-    <style name="App.Button.Normal" parent="App.Theme">
-        <item name="buttonBaseColor">@color/EsMaterial.LightGreen.Button.Normal</item>
-        <item name="buttonTextColorMode">light</item>
+    <style name="App.Theme.Button.Normal" parent="App.Theme">
+        <item name="colorButtonNormal">@color/EsMaterial.LightGreen.Button.Normal</item>
+        <item name="android:textColor">@color/EsMaterial.LightGreen.50</item>
     </style>
 
-    <style name="App.Button.Alert" parent="App.Theme">
-        <item name="buttonBaseColor">@color/EsMaterial.Red.Button.Normal</item>
-        <item name="buttonTextColorMode">light</item>
+    <style name="App.Theme.Button.Alert" parent="App.Theme">
+        <item name="colorButtonNormal">@color/EsMaterial.Red.Button.Normal</item>
+        <item name="android:textColor">@color/EsMaterial.Red.50</item>
     </style>
+
+    <style name="App.Theme.Button.Session" parent="App.Theme">
+        <item name="colorButtonNormal">@color/EsMaterial.Blue.Button.Normal</item>
+        <item name="android:textColor">@color/EsMaterial.Blue.50</item>
+    </style>
+
+    <style name="App.Theme.Font.Title" parent="App.Theme">
+        <item name="android:textSize">@dimen/App.Font.Title</item>
+    </style>
+    <style name="App.Theme.Font.Caption" parent="App.Theme">
+        <item name="android:textSize">@dimen/App.Font.Caption</item>
+    </style>
+    <style name="App.Theme.BasicSetting" parent="App.Theme">
+        <item name="android:layout_marginLeft">@dimen/App.Margin.Indent</item>
+        <item name="android:layout_marginRight">@dimen/App.Margin.Basic</item>
+        <item name="android:layout_marginBottom">@dimen/App.Margin.Basic</item>
+    </style>
+
+    <declare-styleable name="AppHeaderView">
+        <attr name="headerIcon" format="reference"/>
+        <attr name="headerText" format="string"/>
+    </declare-styleable>
 
     <style name="App.Theme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 

@@ -1,73 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
                                     style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content">
-
     <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-        <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-
-            <ImageView
-                    android:src="@drawable/ic_launcher"
-                    android:layout_marginLeft="@dimen/EsMaterial.Button.Margin"
-                    android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-                    android:layout_width="@dimen/EsMaterial.Header.Icon.Size"
-                    android:layout_height="@dimen/EsMaterial.Header.Icon.Size"/>
-        </FrameLayout>
-
-        <LinearLayout
-
-                android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                android:orientation="vertical"
+        <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                app:headerIcon="@mipmap/ic_launcher"
+                app:headerText="ロードバイク"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                    style="@style/EsMaterial.Font.Title.Card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="ロードバイク"/>
-
-            <LinearLayout
+                android:layout_height="wrap_content"/>
+        <LinearLayout
+                style="@style/App.Theme.BasicSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <com.eaglesakura.material.widget.TransparentButton
+                    style="@style/EsMaterial.Theme.Button"
                     android:id="@+id/Setting.RoadBikeProfile.WheelSetting"
-                    android:background="@drawable/esm_button_transparent_fill"
-                    android:clickable="true"
                     android:layout_width="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_height="@dimen/EsMaterial.Navigation.MinHeight">
-
-                <TextView
-                        android:layout_gravity="center_vertical"
-                        style="@style/EsMaterial.Font.Normal"
-                        android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                <LinearLayout
                         android:layout_height="wrap_content"
-                        android:text="タイヤ外周サイズ"/>
-
-                <TextView
-                        android:layout_gravity="center_vertical"
-                        style="@style/EsMaterial.Font.Normal"
-                        android:id="@+id/Setting.RoadBikeProfile.WheelSetting.Value"
-                        android:gravity="right"
-                        android:layout_weight="1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="2000"/>
+                        android:orientation="horizontal">
 
-                <TextView
-                        android:layout_gravity="center_vertical"
-                        style="@style/EsMaterial.Font.Normal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" mm"/>
-            </LinearLayout>
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_gravity="center_vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="タイヤ外周サイズ"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_gravity="center_vertical"
+                            android:id="@+id/Setting.RoadBikeProfile.WheelSetting.Value"
+                            android:gravity="right"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="2000"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_gravity="center_vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" mm"/>
+                </LinearLayout>
+            </com.eaglesakura.material.widget.TransparentButton>
 
         </LinearLayout>
+
     </LinearLayout>
 </android.support.v7.widget.CardView>

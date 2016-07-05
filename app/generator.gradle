@@ -207,7 +207,7 @@ task generateCommandControllDao(type: com.eaglesakura.gradle.task.AndroidDaoGenT
 /**
  * 各種コマンド内容を保存するためのDAOを出力
  */
-task generatePluginDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
+task generateCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/generated/dao")
     classPackageBase = "${android.defaultConfig.applicationId}.dao.command"
 
@@ -235,4 +235,20 @@ task generatePluginDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     // スピードコマンド用のオプション
     DbCommandController.addIntProperty("speedType");// スピードの種類（上回ったら、下回ったら、最高速開始、最高速終了） version 5
     DbCommandController.addDoubleProperty("speedKmh"); // 速度のしきい値 version 5
+}
+
+/**
+ * 各種コマンド内容を保存するためのDAOを出力
+ */
+task generatePluginDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
+    outDirectory = file("src/main/generated/dao")
+    classPackageBase = "com.eaglesakura.andriders.dao"
+
+    def schema = newSchema(1, "plugin");
+    def DbActivePlugin = schema.addEntity("DbActivePlugin");
+
+    DbActivePlugin.addStringProperty("uniqueId").notNull().unique().primaryKey();
+    DbActivePlugin.addStringProperty("category").notNull().index();  // プラグインのカテゴリ
+    DbActivePlugin.addStringProperty("packageName").notNull().index();  // プラグインのapp package name
+    DbActivePlugin.addStringProperty("className").notNull().index();    // プラグインのfull class name
 }

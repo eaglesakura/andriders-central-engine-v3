@@ -5,7 +5,6 @@ import com.eaglesakura.andriders.data.gpx.Gpx;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.data.gpx.GpxSegment;
-import com.eaglesakura.andriders.util.CancelSignal;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.io.CancelableInputStream;

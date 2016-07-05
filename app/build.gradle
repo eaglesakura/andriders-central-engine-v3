@@ -31,6 +31,8 @@ dependencies {
         compile project(':eglibrary:android-command-service')
         compile project(':eglibrary:android-net')
         compile project(':eglibrary:android-framework')
+        compile project(":eglibrary:android-gms")
+        compile project(":eglibrary:android-firebase")
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
         compile project(':eglibrary:android-apptour')
@@ -53,6 +55,8 @@ dependencies {
         compile 'com.eaglesakura:android-canvas-graphics:+'
         compile 'com.eaglesakura:android-net:+'
         compile 'com.eaglesakura:android-framework:+'
+        compile 'com.eaglesakura:android-gms:+'
+        compile 'com.eaglesakura:android-firebase:+'
         compile 'com.eaglesakura:rxandroid-support:+'
         compile 'com.eaglesakura:onactivityresult-invoke:+'
         compile 'com.eaglesakura:greendao-wrapper:+'
@@ -88,7 +92,7 @@ dependencies {
      * Play Service
      */
     compile "com.google.android.gms:play-services-fitness:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.android.gms:play-services-analytics:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.android.gms:play-services-location:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile 'com.android.support:support-annotations:+'
 
     // UI Library
@@ -99,8 +103,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "24"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -114,7 +118,7 @@ android {
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 24
 
 //        versionCode 99999;
         versionCode eglibrary.ci.buildVersionCode as int
@@ -187,6 +191,7 @@ android {
         disable "NewApi"
         disable "InvalidPackage"
         disable "ProtectedPermissions"
+        disable "ResourceType"
 //        abortOnError false
     }
 
@@ -231,6 +236,23 @@ def getArtifactVersionSuffix() {
 }
 
 apply from: "generator.gradle"
+apply plugin: 'com.google.gms.google-services'
+
+/**
+ * Notifications
+ */
+apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.mindera.gradle.slack'
+apply plugin: 'com.github.ben-manes.versions'
+
+slack {
+    url System.getenv("ACE_SLACK_HOOK_URL");
+    dependsOnTasks 'assembleGoogleplayDebug', 'assembleGoogleplayRelease', 'testGoogleplayDebugUnitTest', 'dependencyUpdates';
+    title 'ACE v3';
+    enabled = eglibrary.ci.ciRunning
+//    enabled = true
+    gitInfo = true
+}
 
 apply plugin: 'com.getkeepsafe.dexcount'
 dexcount {

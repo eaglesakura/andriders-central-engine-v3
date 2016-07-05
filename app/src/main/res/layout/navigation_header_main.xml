@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="160dp"
+              android:layout_height="wrap_content"
               android:background="@drawable/side_nav_bar"
               android:gravity="bottom"
               android:orientation="vertical"
               android:paddingBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
               android:paddingLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
               android:paddingRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-              android:paddingTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-              android:theme="@style/ThemeOverlay.AppCompat.Dark">
+              android:paddingTop="@dimen/EsMaterial.Margin.KeyLine1Vertical">
 
     <ImageView
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:paddingTop="@dimen/EsMaterial.Button.Margin"
-            android:src="@drawable/ic_launcher"/>
+            android:src="@mipmap/ic_launcher"/>
 
-    <android.support.v7.widget.SwitchCompat
-            android:id="@+id/Main.Menu.BootService"
+    <android.support.v7.widget.AppCompatButton
+            android:id="@+id/Main.Menu.Session.Boot"
+            android:theme="@style/App.Theme.Button.Session"
+            android:text="セッション開始"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/EsMaterial.Button.Margin"
-            android:text="Andriders Central Engine"
-            android:textAppearance="@style/EsMaterial.Font.Normal"/>
+            android:layout_height="wrap_content"/>
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="andriders.blog.jp"/>
+    <com.eaglesakura.material.widget.TransparentButton
+            style="@style/EsMaterial.Theme.Widget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <android.support.v7.widget.AppCompatTextView
+                android:layout_gravity="center_vertical|right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="andriders.blog.jp"/>
+    </com.eaglesakura.material.widget.TransparentButton>
 
 </LinearLayout>

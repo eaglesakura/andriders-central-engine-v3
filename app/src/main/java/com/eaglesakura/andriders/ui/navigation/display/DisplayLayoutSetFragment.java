@@ -4,8 +4,8 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.display.data.LayoutSlot;
 import com.eaglesakura.andriders.plugin.DisplayKey;
-import com.eaglesakura.andriders.plugin.ExtensionClient;
-import com.eaglesakura.andriders.plugin.ExtensionClientManager;
+import com.eaglesakura.andriders.plugin.PluginConnector;
+import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
@@ -35,7 +35,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
     String mAppPackageName;
 
-    ExtensionClientManager mExtensionClientManager;
+    PluginManager mExtensionClientManager;
 
     List<DisplayKey> mDisplayValues = new ArrayList<>();
 
@@ -77,11 +77,11 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      */
     private void loadExtensionClients() {
         mDisplayValues.clear();
-        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<ExtensionClientManager> it) -> {
-            ExtensionClientManager clientManager = new ExtensionClientManager(getContext());
+        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<PluginManager> it) -> {
+            PluginManager clientManager = new PluginManager(getContext());
             try {
                 pushProgress(R.string.Common_File_Load);
-                clientManager.connect(ExtensionClientManager.ConnectMode.Enabled);
+                clientManager.connect(PluginManager.ConnectMode.ActiveOnly);
             } finally {
                 popProgress();
             }
@@ -103,7 +103,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             pushProgress(R.string.Common_File_Load);
             // 拡張機能のアイコンを読み込む
             mDisplayValues.clear();
-            for (ExtensionClient client : mExtensionClientManager.listDisplayClients()) {
+            for (PluginConnector client : mExtensionClientManager.listDisplayClients()) {
                 client.loadIcon();
                 for (DisplayKey info : client.getDisplayInformations()) {
                     mDisplayValues.add(info);
@@ -156,7 +156,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * 表示内容の選択ダイアログをブート
      */
     private void showDisplaySelector(final DataLayoutManager manager, final LayoutSlot slot) {
-        List<ExtensionClient> displayClients = mExtensionClientManager.listDisplayClients();
+        List<PluginConnector> displayClients = mExtensionClientManager.listDisplayClients();
 
         final BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -172,7 +172,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             layout.addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        for (final ExtensionClient client : displayClients) {
+        for (final PluginConnector client : displayClients) {
             AppLog.system("Display Extension name(%s)", client.getName());
 
             View extensionView = inflater.inflate(R.layout.card_displayinfo_root, null);
@@ -207,7 +207,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * @param client      拡張機能
      * @param displayInfo 表示内容
      */
-    private void onSelectedDisplay(DataLayoutManager manager, LayoutSlot slot, ExtensionClient client, DisplayKey displayInfo) {
+    private void onSelectedDisplay(DataLayoutManager manager, LayoutSlot slot, PluginConnector client, DisplayKey displayInfo) {
 
         if (client == null || displayInfo == null) {
             // 非表示にする
@@ -228,7 +228,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     }
 
 
-    private String getUniqueId(ExtensionClient client, DisplayKey display) {
+    private String getUniqueId(PluginConnector client, DisplayKey display) {
         return String.format("%s|%s", client.getId(), display.getId());
     }
 }

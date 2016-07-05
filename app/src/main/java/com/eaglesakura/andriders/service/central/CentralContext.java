@@ -5,8 +5,8 @@ import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
-import com.eaglesakura.andriders.plugin.ExtensionClient;
-import com.eaglesakura.andriders.plugin.ExtensionClientManager;
+import com.eaglesakura.andriders.plugin.PluginConnector;
+import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
@@ -88,7 +88,7 @@ public class CentralContext implements Disposable {
      * 拡張機能管理
      */
     @NonNull
-    ExtensionClientManager mExtensionClientManager;
+    PluginManager mExtensionClientManager;
 
     /**
      * 初期化が完了していればtrue
@@ -125,7 +125,7 @@ public class CentralContext implements Disposable {
         mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationDisplayManager(mContext, mClock);
 
-        mExtensionClientManager = new ExtensionClientManager(mContext);
+        mExtensionClientManager = new PluginManager(mContext);
     }
 
     /**
@@ -143,7 +143,7 @@ public class CentralContext implements Disposable {
         return mNotificationManager;
     }
 
-    public ExtensionClientManager getExtensionClientManager() {
+    public PluginManager getExtensionClientManager() {
         return mExtensionClientManager;
     }
 
@@ -167,17 +167,17 @@ public class CentralContext implements Disposable {
      * 拡張機能を初期化する
      */
     private void initExtensions() throws Throwable {
-        mExtensionClientManager.connect(ExtensionClientManager.ConnectMode.Enabled);
-        for (ExtensionClient client : mExtensionClientManager.listClients()) {
+        mExtensionClientManager.connect(PluginManager.ConnectMode.ActiveOnly);
+        for (PluginConnector client : mExtensionClientManager.listClients()) {
             // サイコンデータ用コールバックを指定する
-            client.setCentralWorker((ExtensionClient.Action<CentralDataManager> action) -> {
+            client.setCentralWorker((PluginConnector.Action<CentralDataManager> action) -> {
                 post(() -> {
                     action.callback(mCentralData);
                 });
             });
 
             // TODO ディスプレイ設定用コールバックを指定する
-            client.setDisplayWorker((ExtensionClient.Action<DataDisplayManager> action) -> {
+            client.setDisplayWorker((PluginConnector.Action<DataDisplayManager> action) -> {
                 post(() -> {
                     action.callback(mDisplayManager);
                 });

@@ -1,10 +1,12 @@
 package com.eaglesakura.andriders.provider;
 
-import com.eaglesakura.android.garnet.BuildConfig;
+import com.eaglesakura.android.garnet.Depend;
 import com.eaglesakura.android.garnet.Provide;
 import com.eaglesakura.android.garnet.Provider;
+import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.util.LogUtil;
 
+import android.content.Context;
 import android.util.Log;
 
 public class LoggerProvider implements Provider {
@@ -13,9 +15,18 @@ public class LoggerProvider implements Provider {
 
     public static final String NAME_APPLOG = "app.default";
 
+    Context mContext;
+
+    boolean mDebugable;
+
+    @Depend(require = true)
+    public void setContext(Context context) {
+        mContext = context;
+    }
+
     @Override
     public void onDependsCompleted(Object inject) {
-
+        mDebugable = ContextUtil.isDebug(mContext);
     }
 
     @Override
@@ -28,7 +39,7 @@ public class LoggerProvider implements Provider {
      */
     @Provide(name = NAME_DEFAULT)
     public LogUtil.Logger provideDefaultLogger() {
-        return new LogUtil.AndroidLogger(Log.class).setStackInfo(BuildConfig.DEBUG);
+        return new LogUtil.AndroidLogger(Log.class).setStackInfo(mDebugable);
     }
 
     @Provide(name = NAME_APPLOG)
@@ -38,6 +49,6 @@ public class LoggerProvider implements Provider {
             protected int getStackDepth() {
                 return super.getStackDepth() + 1;
             }
-        }.setStackInfo(BuildConfig.DEBUG);
+        }.setStackInfo(mDebugable);
     }
 }

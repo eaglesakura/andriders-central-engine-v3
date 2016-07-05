@@ -14,8 +14,6 @@ import android.support.v4.app.FragmentManager;
  * <p/>
  * * ゾーン設定
  * <p/>
- * * センサー設定
- * <p/>
  * * パーソナルデータ
  */
 public class ProfileFragmentMain extends BaseNavigationFragment {

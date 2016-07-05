@@ -8,14 +8,14 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-./gradlew assembleRelease
+./gradlew assembleGoogleplayRelease
 
 if [ $? -ne 0 ]; then
     echo "build failed..."
     exit 1
 fi
 
-./gradlew assembleDebug
+./gradlew assembleGoogleplayDebug
 
 if [ $? -ne 0 ]; then
     echo "build failed..."
