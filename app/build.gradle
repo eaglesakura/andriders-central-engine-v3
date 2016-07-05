@@ -248,8 +248,8 @@ slack {
     url System.getenv("ACE_SLACK_HOOK_URL");
     dependsOnTasks 'assembleGoogleplayDebug', 'assembleGoogleplayRelease', 'testGoogleplayDebugUnitTest', 'dependencyUpdates';
     title 'ACE v3';
-//    enabled = eglibrary.ci.ciRunning
-    enabled = true
+    enabled = eglibrary.ci.ciRunning
+//    enabled = true
     gitInfo = true
 }
 
