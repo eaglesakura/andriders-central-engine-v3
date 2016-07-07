@@ -31,7 +31,7 @@
             android:theme="@style/App.Theme">
 
         <activity
-                android:name="com.eaglesakura.andriders.ui.navigation.MainContentActivity"
+                android:name=".ui.navigation.NavigationActivity"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

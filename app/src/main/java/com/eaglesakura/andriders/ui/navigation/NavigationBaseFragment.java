@@ -18,7 +18,7 @@ import android.view.View;
 /**
  * 各画面を統括するFragmentのsuper class
  */
-public class BaseNavigationFragment extends AppBaseFragment {
+public class NavigationBaseFragment extends AppBaseFragment {
     /**
      * Toolbarが存在するなら取得する
      */
@@ -83,8 +83,8 @@ public class BaseNavigationFragment extends AppBaseFragment {
     /**
      * 次の画面遷移を行う
      */
-    public void nextNavigation(BaseNavigationFragment fragment, int flags) {
-        getActivity(MainContentActivity.class).nextNavigation(fragment, flags);
+    public void nextNavigation(NavigationBaseFragment fragment, int flags) {
+        getActivity(NavigationActivity.class).nextNavigation(fragment, flags);
     }
 
     public void closeNavigationDrawer() {

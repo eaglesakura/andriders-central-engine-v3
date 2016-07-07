@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 
 import android.content.Context;
@@ -11,7 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 /**
  * サイコンの表示内容を確定するFragment
  */
-public class DisplaySettingFragmentMain extends BaseNavigationFragment implements AppTargetSelectFragment.Callback {
+public class DisplaySettingFragmentMain extends NavigationBaseFragment implements AppTargetSelectFragment.Callback {
     public DisplaySettingFragmentMain() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_setting_display_main);
     }

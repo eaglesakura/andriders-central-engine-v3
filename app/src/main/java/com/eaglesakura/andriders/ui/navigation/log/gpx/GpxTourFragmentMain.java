@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.log.gpx;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseActivity;
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.apptour.AppTourDelegate;
 import com.eaglesakura.android.framework.ui.BackStackManager;
@@ -21,7 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class GpxTourFragmentMain extends BaseNavigationFragment implements AppTourDelegate.AppTourCompat, BackStackManager.BackStackFragment,
+public class GpxTourFragmentMain extends NavigationBaseFragment implements AppTourDelegate.AppTourCompat, BackStackManager.BackStackFragment,
         TourFileSelectFragment.Listener, GpxTourImportProgressFragment.Listener {
     AppTourDelegate mAppTourDelegate = new AppTourDelegate(this);
 

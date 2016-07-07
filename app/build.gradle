@@ -98,8 +98,15 @@ dependencies {
     // UI Library
     compile 'com.edmodo:rangebar:1.0.0' // Zone Setting
 
+    /**
+     * Smooth ProgressBar
+     * https://github.com/castorflex/SmoothProgressBar
+     */
+    compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
+
     // Remote Debug
     debugCompile 'com.deploygate:sdk:3.1'
+
 }
 
 android {

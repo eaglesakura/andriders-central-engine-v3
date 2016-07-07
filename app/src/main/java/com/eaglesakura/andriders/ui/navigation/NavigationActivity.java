@@ -24,7 +24,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.KeyEvent;
 import android.view.View;
 
-public class MainContentActivity extends AppBaseActivity {
+public class NavigationActivity extends AppBaseActivity {
 
     View mProgress;
 

@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.ui.navigation.profile;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,7 +16,7 @@ import android.support.v4.app.FragmentManager;
  * <p/>
  * * パーソナルデータ
  */
-public class ProfileFragmentMain extends BaseNavigationFragment {
+public class ProfileFragmentMain extends NavigationBaseFragment {
 
     public ProfileFragmentMain() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_simiple_main);
