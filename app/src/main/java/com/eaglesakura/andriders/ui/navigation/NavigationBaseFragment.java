@@ -54,7 +54,14 @@ public class NavigationBaseFragment extends AppBaseFragment {
             ActionBar actionBar = getActionBar();
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayShowTitleEnabled(false);
+
+            CharSequence title = getTitle();
+            if (title != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setTitle(title);
+            } else {
+                actionBar.setDisplayShowTitleEnabled(false);
+            }
 
             if (mDrawerLayout != null) {
                 initializeDrawerToggle();
@@ -139,5 +146,20 @@ public class NavigationBaseFragment extends AppBaseFragment {
         if (mDrawerToggle != null) {
             mDrawerLayout.closeDrawers();
         }
+    }
+
+    /**
+     * 画面タイトルを取得する
+     */
+    @Nullable
+    public CharSequence getTitle() {
+        return null;
+    }
+
+    /**
+     * ナビゲーション識別IDを取得する
+     */
+    public String getNavigationId() {
+        return getClass().getName();
     }
 }

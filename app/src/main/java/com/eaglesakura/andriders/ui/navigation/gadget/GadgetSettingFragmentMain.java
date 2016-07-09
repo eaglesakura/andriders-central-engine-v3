@@ -6,6 +6,7 @@ import com.eaglesakura.android.framework.ui.FragmentHolder;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 /**
  * 接続する機材の設定を行う
@@ -30,6 +31,12 @@ public class GadgetSettingFragmentMain extends NavigationBaseFragment {
         super.onResume();
 
         mGadgetSettingFragment.onResume();
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getTitle() {
+        return getString(R.string.Main_Menu_Gadgets);
     }
 
     public static GadgetSettingFragmentMain newInstance(Context context) {

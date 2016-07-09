@@ -6,6 +6,7 @@ import com.eaglesakura.android.util.AndroidThreadUtil;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 
 /**
@@ -39,6 +40,12 @@ public class DisplaySettingFragmentMain extends NavigationBaseFragment implement
     @Override
     public void onApplicationSelected(AppTargetSelectFragment fragment, AppTargetSelectFragment.AppInfo selected) {
         AndroidThreadUtil.assertUIThread();
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getTitle() {
+        return getString(R.string.Main_Menu_CycleComputer);
     }
 
     public static DisplaySettingFragmentMain newInstance(Context context) {

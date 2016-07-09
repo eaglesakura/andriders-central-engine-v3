@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 
 /**
@@ -46,6 +47,12 @@ public class ProfileFragmentMain extends NavigationBaseFragment {
                         .commit();
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getTitle() {
+        return getString(R.string.Main_Menu_Profile);
     }
 
     public static ProfileFragmentMain createInstance(Context context) {
