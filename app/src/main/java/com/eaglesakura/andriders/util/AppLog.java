@@ -1,5 +1,7 @@
 package com.eaglesakura.andriders.util;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import com.eaglesakura.andriders.provider.LoggerProvider;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
@@ -17,6 +19,19 @@ public class AppLog {
 
     @Inject(value = LoggerProvider.class, name = LoggerProvider.NAME_APPLOG)
     static LogUtil.Logger sAppLogger;
+
+    public static void printStackTrace(Throwable e) {
+        e.printStackTrace();
+    }
+
+    /**
+     * send firebase report
+     * @param e
+     */
+    public static void report(Throwable e) {
+        e.printStackTrace();
+        FirebaseCrash.report(e);
+    }
 
     /**
      * 再度ロガーを注入する
@@ -90,6 +105,7 @@ public class AppLog {
         LogUtil.setLogger(tag, sAppLogger);
         LogUtil.out(tag, fmt, args);
     }
+
     public static void plugin(String fmt, Object... args) {
         String tag = "App.Plugin";
 

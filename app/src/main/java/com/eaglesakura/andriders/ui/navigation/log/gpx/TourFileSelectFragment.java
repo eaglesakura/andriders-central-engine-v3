@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.ui.navigation.log.gpx;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.RequestCodes;
+import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.margarine.OnClick;
@@ -37,13 +37,13 @@ public class TourFileSelectFragment extends AppBaseFragment {
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("application/*");
 
-            startActivityForResult(intent, RequestCodes.PICK_GPXFILE);
+            startActivityForResult(intent, AppConstants.PICK_GPXFILE);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @OnActivityResult(RequestCodes.PICK_GPXFILE)
+    @OnActivityResult(AppConstants.PICK_GPXFILE)
     void resultFilePick(int result, Intent data) {
         if (result != Activity.RESULT_OK) {
             return;

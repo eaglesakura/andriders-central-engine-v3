@@ -3,8 +3,8 @@ package com.eaglesakura.andriders.ui.navigation.log;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotalCollection;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseActivity;
 import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
-import com.eaglesakura.andriders.ui.navigation.NavigationActivity;
 import com.eaglesakura.andriders.ui.navigation.log.gpx.GpxTourFragmentMain;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentPager;
@@ -86,7 +86,7 @@ public class UserLogFragmentMain extends NavigationBaseFragment implements UserL
 
     @OnMenuClick(R.id.UserLog_Import_GPX)
     public void clickImportGpx() {
-        nextNavigation(new GpxTourFragmentMain(), NavigationActivity.NAVIGATION_FLAG_BACKSTACK);
+        nextNavigation(new GpxTourFragmentMain(), NavigationBaseActivity.NAVIGATION_FLAG_BACKSTACK);
     }
 
     public static UserLogFragmentMain newInstance(Context context) {

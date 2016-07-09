@@ -11,6 +11,14 @@ import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.util.ResourceUtil;
 import com.edmodo.rangebar.RangeBar;
 
+import android.support.annotation.UiThread;
+
+
+/**
+ * ゾーン設定を行う
+ * ・巡航速度ゾーン
+ * ・ケイデンスゾーン
+ */
 public class UserZoneSettingFragment extends AppBaseFragment {
 
     final int MIN_CADENCE = 70;
@@ -52,10 +60,15 @@ public class UserZoneSettingFragment extends AppBaseFragment {
         UserProfiles profile = getSettings().getUserProfiles();
         cruiseZoneBar.setThumbIndices(profile.getSpeedZoneCruise() - MIN_CRUISE_SPEED, profile.getSpeedZoneSprint() - MIN_CRUISE_SPEED);
         cadenceZoneBar.setThumbIndices(profile.getCadenceZoneIdeal() - MIN_CADENCE, profile.getCadenceZoneHigh() - MIN_CADENCE);
-        updateUI();
 
-        cruiseZoneBar.setOnRangeBarChangeListener(cruiseZoneListener);
-        cadenceZoneBar.setOnRangeBarChangeListener(cadenceZoneListener);
+        cruiseZoneBar.setOnRangeBarChangeListener(mCruiseZoneListenerImpl);
+        cadenceZoneBar.setOnRangeBarChangeListener(mCadenceZoneListenerImpl);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
     }
 
     @Override
@@ -64,7 +77,10 @@ public class UserZoneSettingFragment extends AppBaseFragment {
         asyncCommitSettings();
     }
 
-    final RangeBar.OnRangeBarChangeListener cruiseZoneListener = (rangeBar, minValue, maxValue) -> {
+    /**
+     * 巡航速度ゾーンを設定する
+     */
+    final RangeBar.OnRangeBarChangeListener mCruiseZoneListenerImpl = (rangeBar, minValue, maxValue) -> {
         AppLog.widget("cruiseZone updated(%d <--> %d)", minValue, maxValue);
         minValue = Math.max(minValue, 1);
         maxValue = Math.max(maxValue, minValue + 1);
@@ -77,7 +93,10 @@ public class UserZoneSettingFragment extends AppBaseFragment {
         updateUI();
     };
 
-    final RangeBar.OnRangeBarChangeListener cadenceZoneListener = (rangeBar, minValue, maxValue) -> {
+    /**
+     * ケイデンスゾーンを設定する
+     */
+    final RangeBar.OnRangeBarChangeListener mCadenceZoneListenerImpl = (rangeBar, minValue, maxValue) -> {
         AppLog.widget("cadenceZone updated(%d -> %d)", minValue, maxValue);
         minValue = Math.max(minValue, 1);
         maxValue = Math.max(maxValue, minValue + 1);
@@ -88,12 +107,12 @@ public class UserZoneSettingFragment extends AppBaseFragment {
         profile.setCadenceZoneHigh(MIN_CADENCE + maxValue);
 
         updateUI();
-
     };
 
     /**
      * UIを同期する
      */
+    @UiThread
     void updateUI() {
         UserProfiles profile = getSettings().getUserProfiles();
 

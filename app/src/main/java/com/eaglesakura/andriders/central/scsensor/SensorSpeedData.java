@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.scsensor;
 
-import com.eaglesakura.andriders.AceUtils;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
@@ -96,7 +96,7 @@ public class SensorSpeedData extends BaseCalculator {
         }
 
         // スピードを計算する
-        mSpeedKmh = (float) AceUtils.calcSpeedKmPerHour(wheelRpm, getWheelOuterLength());
+        mSpeedKmh = (float) AppUtil.calcSpeedKmPerHour(wheelRpm, getWheelOuterLength());
         mMaxSpeedKmh = Math.max(mSpeedKmh, mMaxSpeedKmh);
         mWheelRevolution = wheelRevolution;
         mUpdatedTime = now();

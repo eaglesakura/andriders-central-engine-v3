@@ -84,7 +84,7 @@ public class NavigationBaseFragment extends AppBaseFragment {
      * 次の画面遷移を行う
      */
     public void nextNavigation(NavigationBaseFragment fragment, int flags) {
-        getActivity(NavigationActivity.class).nextNavigation(fragment, flags);
+        getActivity(NavigationBaseActivity.class).nextNavigation(fragment, flags);
     }
 
     public void closeNavigationDrawer() {

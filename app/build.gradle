@@ -17,9 +17,10 @@ configurations {
 
 mipmap {
     sources = file("images/");
-    output = file("src/main/generated/images");
-    toolsPath.identify = new File("C:\\dev-home\\tools\\imagemagick\\identify.exe");
-    toolsPath.convert = new File("C:\\dev-home\\tools\\imagemagick\\convert.exe");
+    output = file("src/main/res");
+    toolsPath.identify = System.getenv("IMGMAGICK_IDENTIFY");
+    toolsPath.convert = System.getenv("IMGMAGICK_CONVERT");
+    cleanOldFiles = false;
 }
 
 dependencies {
@@ -93,6 +94,7 @@ dependencies {
      */
     compile "com.google.android.gms:play-services-fitness:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile "com.google.android.gms:play-services-location:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.android.gms:play-services-maps:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile 'com.android.support:support-annotations:+'
 
     // UI Library
@@ -147,7 +149,7 @@ android {
                     'src/main/java-plugin-basicui', 'src/main/java-plugin-ble', 'src/main/java-plugin-location',
             ]
             res.srcDirs = [
-                    "src/main/res", "src/main/generated/images", "private/main/res"
+                    "src/main/res", "private/main/res"
             ];
         }
     }

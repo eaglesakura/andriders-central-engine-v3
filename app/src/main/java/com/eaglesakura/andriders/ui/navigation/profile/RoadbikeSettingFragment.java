@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ui.navigation.profile;
 
-import com.eaglesakura.andriders.AceUtils;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
@@ -48,8 +48,8 @@ public class RoadbikeSettingFragment extends AppBaseFragment {
             protected void onCommit(EditText input) {
                 UserProfiles userProfiles = getSettings().getUserProfiles();
                 int length = (int) ViewUtil.getLongValue(input, userProfiles.getWheelOuterLength());
-                if (length > AceUtils.WHEEL_LENGTH_MAX) {
-                    toast(getString(R.string.Setting_Roadbike_MaxWheelLength, AceUtils.WHEEL_LENGTH_MAX));
+                if (length > AppUtil.WHEEL_LENGTH_MAX) {
+                    toast(getString(R.string.Setting_Roadbike_MaxWheelLength, AppUtil.WHEEL_LENGTH_MAX));
                 } else {
                     userProfiles.setWheelOuterLength((int) ViewUtil.getLongValue(input, userProfiles.getWheelOuterLength()));
                     asyncCommitSettings();

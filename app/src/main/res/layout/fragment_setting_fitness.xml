@@ -120,16 +120,6 @@
                             android:text=" bpm"/>
                 </LinearLayout>
             </com.eaglesakura.material.widget.TransparentButton>
-
-
-            <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/Setting.Fitness.ConnectGoogleFit"
-                    style="@style/App.Theme.Button.Normal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:text="Google Fit 連携"/>
-
         </LinearLayout>
 
     </LinearLayout>

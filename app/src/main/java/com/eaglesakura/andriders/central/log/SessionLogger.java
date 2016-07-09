@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.log;
 
-import com.eaglesakura.andriders.AceUtils;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
@@ -158,7 +158,7 @@ public class SessionLogger {
             if (mPointTimer.overTimeMs(POINT_COMMIT_INTERVAL_MS)) {
                 DbSessionPoint pt = new DbSessionPoint();
                 pt.setDate(new Date(latest.centralStatus.date));
-                pt.setCentral(AceUtils.publicFieldSerialize(latest));
+                pt.setCentral(AppUtil.publicFieldSerialize(latest));
                 mPoints.add(pt);
 
                 mPointTimer.start();

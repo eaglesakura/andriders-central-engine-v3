@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ble.hw.cadence;
 
-import com.eaglesakura.andriders.AceUtils;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.ble.hw.BleDevice;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.util.Clock;
@@ -11,8 +11,6 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.SubscriptionController;
-import com.eaglesakura.android.thread.HandlerThreadExecuter;
-import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.util.CollectionUtil;
 
 import android.bluetooth.BluetoothDevice;
@@ -133,7 +131,7 @@ public class BleCadenceSpeedSensor extends BleDevice {
                     offset += 2;
 
                     AppLog.bleData(String.format("wheel [%.2f km/h] cumulativeWheelRevolutions(%d)  lastWheelEventTime(%d)",
-                            AceUtils.calcSpeedKmPerHour(mSpeed.getRpm(), getWheelOuterLength()), cumulativeWheelRevolutions, lastWheelEventTime));
+                            AppUtil.calcSpeedKmPerHour(mSpeed.getRpm(), getWheelOuterLength()), cumulativeWheelRevolutions, lastWheelEventTime));
                     // 速度更新
                     mSpeed.update(cumulativeWheelRevolutions, lastWheelEventTime);
                     AppLog.bleData(String.format("wheel %.2f rpm", mSpeed.getRpm()));
