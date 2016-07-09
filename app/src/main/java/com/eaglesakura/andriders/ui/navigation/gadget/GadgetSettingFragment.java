@@ -12,6 +12,7 @@ import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.saver.BundleState;
@@ -137,8 +138,7 @@ public class GadgetSettingFragment extends AppBaseFragment {
     void loadDeviceCache(final FitnessDeviceType type) {
         asyncUI(it -> {
             FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(getActivity());
-            try {
-                pushProgress(R.string.Common_File_Load);
+            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
                 db.openReadOnly();
 
                 List<DbBleFitnessDevice> devices = db.listScanDevices(type);
@@ -155,7 +155,6 @@ public class GadgetSettingFragment extends AppBaseFragment {
                 updateBleSelectorUI(type, devices, selected != null ? selected.getAddress() : null);
             } finally {
                 db.close();
-                popProgress();
             }
             return null;
         }).start();

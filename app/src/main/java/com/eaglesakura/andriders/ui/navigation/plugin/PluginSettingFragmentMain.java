@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
@@ -72,15 +73,11 @@ public class PluginSettingFragmentMain extends NavigationBaseFragment {
         super.onResume();
 
         async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<PluginManager> task) -> {
-            try {
-                pushProgress(R.string.Common_File_Load);
-
+            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
                 PluginManager clientManager = new PluginManager(getActivity());
                 clientManager.connect(PluginManager.ConnectMode.All);
 
                 return clientManager;
-            } finally {
-                popProgress();
             }
         }).completed((it, task) -> {
             mClientManager = it;

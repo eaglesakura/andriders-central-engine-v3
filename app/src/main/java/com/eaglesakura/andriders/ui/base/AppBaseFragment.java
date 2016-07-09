@@ -4,12 +4,16 @@ import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.progress.ProgressStackManager;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.SupportFragment;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.thread.ui.UIHandler;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.widget.Toast;
 
@@ -59,14 +63,37 @@ public abstract class AppBaseFragment extends SupportFragment {
         }).start();
     }
 
-    
-    public void pushProgress(@StringRes int resId) {
+
+    /**
+     * Progress処理クラスを取得する
+     */
+    public ProgressStackManager getProgressStackManager() {
+        return null;
     }
 
-    public void pushProgress(String message) {
+    @NonNull
+    public ProgressToken pushProgress(@StringRes int stringRes) {
+        return pushProgress(getString(stringRes));
     }
 
-    public void popProgress() {
+    @NonNull
+    public ProgressToken pushProgress(String message) {
+        Fragment fragment = this;
+
+        while (fragment != null) {
+            if (fragment instanceof AppBaseFragment) {
+                ProgressStackManager stackManager = ((AppBaseFragment) fragment).getProgressStackManager();
+                if (stackManager != null) {
+                    ProgressToken token = ProgressToken.fromMessage(stackManager, message);
+                    stackManager.push(token);
+                    return token;
+                }
+            }
+
+            fragment = fragment.getParentFragment();
+        }
+
+        throw new IllegalStateException(message);
     }
 
     public void toast(@StringRes final int resId) {

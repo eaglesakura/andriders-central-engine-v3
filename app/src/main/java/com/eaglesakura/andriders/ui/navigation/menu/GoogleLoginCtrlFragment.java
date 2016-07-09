@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.framework.FrameworkCentral;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 
 import android.os.Bundle;
@@ -80,9 +81,7 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
 
     void releaseMigration() {
         asyncUI(it -> {
-            try {
-                pushProgress(R.string.Common_Update_Migration);
-
+            try (ProgressToken token = pushProgress(R.string.Common_Update_Migration)) {
                 int initialVersion = getSettings().getUpdateCheckProps().getInitializeReleased();
 
                 // 初回起動時に初期セットアップを行う
@@ -100,8 +99,6 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
                 Settings settings = getSettings();
                 settings.getUpdateCheckProps().setInitializeReleased(RELEASE_INITIALIZE_NUMBER);
                 settings.commitAndLoad();
-            } finally {
-                popProgress();
             }
             return this;
         }).start();

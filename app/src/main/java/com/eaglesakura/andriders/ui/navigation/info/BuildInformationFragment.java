@@ -10,6 +10,7 @@ import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.device.external.StorageInfo;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.license.LicenseViewActivity;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.margarine.OnCheckedChanged;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.util.PackageUtil;
@@ -112,13 +113,10 @@ public class BuildInformationFragment extends AppBaseFragment {
      */
     @OnClick(R.id.Debug_Data_Dump)
     void debugClickDataDump() {
-        pushProgress("pull");
         asyncUI(it -> {
-            try {
+            try (ProgressToken token = pushProgress("pull")) {
                 File dst = new File(StorageInfo.getExternalStorageRoot(getActivity()), "/debug/" + StringUtil.toString(new Date()));
                 PackageUtil.dumpPackageDataDirectory(getActivity(), dst);
-            } finally {
-                popProgress();
             }
             return this;
         }).start();
