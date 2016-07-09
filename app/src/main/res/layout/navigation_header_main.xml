@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"/>
 
     <com.eaglesakura.material.widget.TransparentButton
-            style="@style/EsMaterial.Theme.Widget"
+            style="@style/EsMaterial.Widget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <android.support.v7.widget.AppCompatTextView

@@ -1,11 +1,11 @@
 package com.eaglesakura.andriders.ui.navigation.session;
 
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 
 /**
  * 現在のセッション状況を表示するFragment
  */
-public class SessionFragmentMain extends BaseNavigationFragment {
+public class SessionFragmentMain extends NavigationBaseFragment {
 
     @Override
     public void onResume() {

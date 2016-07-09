@@ -12,6 +12,7 @@ import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.saver.BundleState;
@@ -59,7 +60,7 @@ public class GadgetSettingFragment extends AppBaseFragment {
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
-        AQuery q = new AQuery(getView());
+        AQuery q = new AQuery(self.getView());
 
         // ハートレートモニター設定
         {
@@ -137,8 +138,7 @@ public class GadgetSettingFragment extends AppBaseFragment {
     void loadDeviceCache(final FitnessDeviceType type) {
         asyncUI(it -> {
             FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(getActivity());
-            try {
-                pushProgress(R.string.Common_File_Load);
+            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
                 db.openReadOnly();
 
                 List<DbBleFitnessDevice> devices = db.listScanDevices(type);
@@ -155,7 +155,6 @@ public class GadgetSettingFragment extends AppBaseFragment {
                 updateBleSelectorUI(type, devices, selected != null ? selected.getAddress() : null);
             } finally {
                 db.close();
-                popProgress();
             }
             return null;
         }).start();
@@ -226,6 +225,9 @@ public class GadgetSettingFragment extends AppBaseFragment {
         return addr.substring(0, 6);
     }
 
+    /**
+     * BLEスキャン結果を受け取る
+     */
     class FitnessDeviceCallbackImpl extends BleScanCallback implements AdapterView.OnItemSelectedListener {
         final FitnessDeviceType type;
         final List<DbBleFitnessDevice> devices;

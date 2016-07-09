@@ -1,33 +1,39 @@
 package com.eaglesakura.andriders.ui.navigation.profile;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.RequestCodes;
+import com.eaglesakura.andriders.google.GoogleApiUtil;
+import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.util.AppSupportUtil;
+import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ViewUtil;
+import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.material.widget.MaterialInputDialog;
+import com.eaglesakura.util.LogUtil;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
-import android.view.View;
+import android.support.annotation.UiThread;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class FitnessSettingFragment extends AppBaseFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    UserProfiles mPersonalDataSettings;
+import java.util.concurrent.TimeUnit;
 
-    static final int REQUEST_GOOGLEFIT_SETTING = RequestCodes.GOOGLEFIT_SETTING;
+public class FitnessSettingFragment extends AppBaseFragment {
+    UserProfiles mPersonalDataSettings;
 
     public FitnessSettingFragment() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_setting_fitness);
@@ -42,27 +48,27 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
-        updatePersonalUI();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        updatePersonalUI();
+        syncFitnessData();
     }
 
     /**
      * 個人設定を更新する
      */
+    @UiThread
     void updatePersonalUI() {
-        getSubscription().run(ObserveTarget.Foreground, () -> {
-            AQuery q = new AQuery(getView());
+        AQuery q = new AQuery(getView());
 
-            // 体重設定
-            q.id(R.id.Setting_Personal_WeightValue).text(String.format("%.1f", mPersonalDataSettings.getUserWeight()));
-            // 心拍設定
-            q.id(R.id.Setting_Personal_NormalHeartrateValue).text(String.valueOf(mPersonalDataSettings.getNormalHeartrate()));
-            q.id(R.id.Setting_Personal_MaxHeartrateValue).text(String.valueOf(mPersonalDataSettings.getMaxHeartrate()));
-        });
+        // 体重設定
+        q.id(R.id.Setting_Personal_WeightValue).text(String.format("%.1f", mPersonalDataSettings.getUserWeight()));
+        // 心拍設定
+        q.id(R.id.Setting_Personal_NormalHeartrateValue).text(String.valueOf(mPersonalDataSettings.getNormalHeartrate()));
+        q.id(R.id.Setting_Personal_MaxHeartrateValue).text(String.valueOf(mPersonalDataSettings.getMaxHeartrate()));
     }
 
     /**
@@ -70,20 +76,17 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
      */
     @OnClick(R.id.CycleComputer_Personal_Weight)
     void clickPersonalWeigth() {
-        // TODO: Google Fitとの連携を戻す
-//        if (getGoogleApiClientToken().isLoginCompleted()) {
-//            try {
-//                ComponentName componentName = new ComponentName("com.google.android.apps.fitness", "com.google.android.apps.fitness.preferences.settings.SettingsActivity");
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setComponent(componentName);
-//                startActivityForResult(intent, REQUEST_GOOGLEFIT_SETTING);
-//
-//                // 起動成功したから何もしない
-//                return;
-//            } catch (Exception e) {
-//                LogUtil.log(e);
-//            }
-//        }
+        try {
+            ComponentName componentName = new ComponentName("com.google.android.apps.fitness", "com.google.android.apps.fitness.preferences.settings.SettingsActivity");
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setComponent(componentName);
+            startActivityForResult(intent, AppConstants.GOOGLE_FIT_SETTING);
+
+            // 起動成功したから何もしない
+            return;
+        } catch (Exception e) {
+            LogUtil.log(e);
+        }
 
         MaterialInputDialog dialog = new MaterialInputDialog(getActivity()) {
             @Override
@@ -109,7 +112,7 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
     /**
      * GoogleFitの設定が完了した
      */
-    @OnActivityResult(REQUEST_GOOGLEFIT_SETTING)
+    @OnActivityResult(AppConstants.GOOGLE_FIT_SETTING)
     void resultGoogleFitSettings(int result, Intent data) {
         syncFitnessData();
     }
@@ -118,78 +121,40 @@ public class FitnessSettingFragment extends AppBaseFragment implements GoogleApi
         void onInputHeartrate(int bpm);
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        // ログインボタンを非表示にする
-        new AQuery(getView()).id(R.id.Setting_Fitness_ConnectGoogleFit).visibility(View.GONE);
-
-        // Google Fitの同期を行う
-        syncFitnessData();
-    }
-
-
-    @OnClick(R.id.Setting_Fitness_ConnectGoogleFit)
-    void clickConnectGoogleFit() {
-        // TODO: ログインを行う
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
     /**
      * 既にGoogle Fitのメッセージを表示していたらtrue
      */
     @BundleState
-    boolean googleFitFailedMessageBooted = false;
+    boolean mGoogleFitFailedMessageBooted = false;
 
     /**
      * Google Fitのデータと同期を行う
      */
     void syncFitnessData() {
         asyncUI((RxTask<Float> task) -> {
-//            GoogleApiClientToken token = getGoogleApiClientToken();
-//            if (token == null) {
-//                throw new IllegalStateException();
-//            }
-//
-//            return token.executeGoogleApi(new GoogleApiTask<Float>() {
-//                @Override
-//                public Float executeTask(GoogleApiClient client) throws Exception {
-//                    float userWeight = GoogleApiUtil.getUserWeightFromFit(client);
-//                    if (userWeight > 0 && userWeight != mPersonalDataSettings.getUserWeight()) {
-//                        mPersonalDataSettings.setUserWeight(userWeight);
-//                        mPersonalDataSettings.commit();
-//                        toast(R.string.Setting_Fitness_Weight_SyncCompleted);
-//                    } else if (userWeight <= 0) {
-//                        toast(R.string.Setting_Fitness_Weight_SyncFailed);
-//                    }
-//                    return userWeight;
-//                }
-//
-//                @Override
-//                public Float connectedFailed(GoogleApiClient client, ConnectionResult connectionResult) {
-//                    throw new IllegalStateException();
-//                }
-//
-//                @Override
-//                public boolean isCanceled() {
-//                    return task.isCanceled();
-//                }
-//            });
-            throw new Error("Not Impl");
+            GoogleApiClient.Builder builder = AppUtil.newFullPermissionClient(getActivity());
+
+            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task, 60, TimeUnit.SECONDS);
+            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(builder, cancelCallback)) {
+                GoogleApiClient client = connection.getClientIfSuccess();
+                float userWeight = GoogleApiUtil.getUserWeightFromFit(client, cancelCallback);
+                if (userWeight > 0 && userWeight != mPersonalDataSettings.getUserWeight()) {
+                    mPersonalDataSettings.setUserWeight(userWeight);
+                    mPersonalDataSettings.commit();
+                    toast(R.string.Setting_Fitness_Weight_SyncCompleted);
+                } else if (userWeight <= 0) {
+                    toast(R.string.Setting_Fitness_Weight_SyncFailed);
+                }
+                return userWeight;
+            }
         }).completed((weight, task) -> {
             updatePersonalUI();
         }).failed((err, task) -> {
-            if (!googleFitFailedMessageBooted) {
+            AppLog.printStackTrace(err);
+
+            if (!mGoogleFitFailedMessageBooted) {
                 toast(R.string.Setting_Fitness_Weight_SyncFailed);
-                googleFitFailedMessageBooted = true;
+                mGoogleFitFailedMessageBooted = true;
             }
         }).start();
     }

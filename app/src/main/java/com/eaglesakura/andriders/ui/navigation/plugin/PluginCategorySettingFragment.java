@@ -43,10 +43,10 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
     String mCategoryName;
 
     @Bind(R.id.Extension_List_Root)
-    ViewGroup modulesRoot;
+    ViewGroup mModulesRoot;
 
     /**
-     * 親は確定している
+     * 親Fragmentは固定
      */
     PluginSettingFragmentMain mParent;
 
@@ -82,7 +82,7 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
 
-        SupportAQuery q = new SupportAQuery(this);
+        SupportAQuery q = new SupportAQuery(self.getView());
         q.id(R.id.App_HeaderView_Icon).image(mIconResId);
         q.id(R.id.App_HeaderView_Title).text(mTitleResId);
         q.id(R.id.Extension_Category_Info).text(mInfoResId);
@@ -108,7 +108,7 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
             throw new IllegalStateException();
         }).completed((manager, task) -> {
             // 取得成功したらViewに反映する
-            modulesRoot.removeAllViews();
+            mModulesRoot.removeAllViews();
 
             List<PluginConnector> clients = manager.listClients(Category.fromName(mCategoryName));
             for (PluginConnector client : clients) {
@@ -140,7 +140,7 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
         }
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        modulesRoot.addView(card, params);
+        mModulesRoot.addView(card, params);
     }
 
     @UiThread

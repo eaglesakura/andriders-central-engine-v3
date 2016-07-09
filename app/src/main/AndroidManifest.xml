@@ -12,6 +12,7 @@
 
     <!-- Logger -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
@@ -31,7 +32,7 @@
             android:theme="@style/App.Theme">
 
         <activity
-                android:name="com.eaglesakura.andriders.ui.navigation.MainContentActivity"
+                android:name=".ui.navigation.AppBootActivity"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -39,25 +40,20 @@
             </intent-filter>
         </activity>
 
-        <!-- GPX Import -->
-        <!--<activity-->
-                <!--android:name="com.eaglesakura.andriders.ui.gpx.GpxImportTourActivity"-->
-                <!--android:screenOrientation="portrait">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
-
         <activity
-                android:name="com.eaglesakura.andriders.ui.auth.AcesAuthActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/EsMaterial.Transparent"/>
+                android:name=".ui.navigation.NavigationActivity"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            </intent-filter>
+        </activity>
 
         <!-- Permission更新用Activity -->
         <activity
                 android:name="com.eaglesakura.andriders.ui.auth.PermissionRequestActivity"
                 android:screenOrientation="portrait"
-                android:theme="@style/EsMaterial.Transparent"/>
+                android:theme="@style/EsMaterial.Theme.Transparent"/>
 
         <!-- ACE Service -->
         <service

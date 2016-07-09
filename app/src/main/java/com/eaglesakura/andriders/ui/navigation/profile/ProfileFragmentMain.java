@@ -1,10 +1,11 @@
 package com.eaglesakura.andriders.ui.navigation.profile;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 
 /**
@@ -16,7 +17,7 @@ import android.support.v4.app.FragmentManager;
  * <p/>
  * * パーソナルデータ
  */
-public class ProfileFragmentMain extends BaseNavigationFragment {
+public class ProfileFragmentMain extends NavigationBaseFragment {
 
     public ProfileFragmentMain() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_simiple_main);
@@ -46,6 +47,12 @@ public class ProfileFragmentMain extends BaseNavigationFragment {
                         .commit();
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getTitle() {
+        return getString(R.string.Main_Menu_Profile);
     }
 
     public static ProfileFragmentMain createInstance(Context context) {

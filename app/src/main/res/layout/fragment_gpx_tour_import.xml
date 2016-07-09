@@ -6,10 +6,9 @@
 
     <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
                  android:layout_weight="1"
-                 style="@style/EsMaterial.Theme.Widget">
+                 style="@style/EsMaterial.Widget">
 
-        <TextView
-                style="@style/EsMaterial.Font.Normal"
+        <android.support.v7.widget.AppCompatTextView
                 android:layout_width="match_parent" android:layout_height="match_parent"
                 android:text="GPXファイルをインポートしています..."/>
     </FrameLayout>
@@ -20,28 +19,26 @@
 
         <LinearLayout android:layout_width="match_parent"
                       android:orientation="horizontal"
-                      style="@style/EsMaterial.Theme.Widget"
+                      style="@style/EsMaterial.Widget"
                       android:layout_height="0dp" android:layout_weight="1">
             <ProgressBar
                     style="?android:attr/progressBarStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-            <TextView
-                    style="@style/EsMaterial.Font.Normal"
+            <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:text="GPXファイルをインポート"/>
         </LinearLayout>
 
         <LinearLayout android:layout_width="match_parent"
                       android:orientation="horizontal"
-                      style="@style/EsMaterial.Theme.Widget"
+                      style="@style/EsMaterial.Widget"
                       android:layout_height="0dp" android:layout_weight="1">
             <ProgressBar
                     style="?android:attr/progressBarStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-            <TextView
-                    style="@style/EsMaterial.Font.Normal"
+            <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:text="データベースへ書き込み"/>
         </LinearLayout>

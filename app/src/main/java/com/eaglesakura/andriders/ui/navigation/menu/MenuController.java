@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.menu;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.service.central.CentralService;
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.gadget.GadgetSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.info.InformationFragmentMain;
@@ -19,7 +19,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.view.Gravity;
 import android.widget.Button;
 
 /**
@@ -124,7 +123,7 @@ public class MenuController {
     }
 
     public interface MenuCallback {
-        void requestChangeContent(BaseNavigationFragment fragment);
+        void requestChangeContent(NavigationBaseFragment fragment);
     }
 
     private final NavigationView.OnNavigationItemSelectedListener mNaviItemSelectedImpl = (menuItem) -> {
