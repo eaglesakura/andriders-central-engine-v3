@@ -40,8 +40,7 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
         super.onCreate(savedInstanceState);
 
         int releasedNumber = getSettings().getUpdateCheckProps().getInitializeReleased();
-        if (!FrameworkCentral.getSettings().getLoginGoogleClientApi()
-                || releasedNumber < RELEASE_INITIALIZE_NUMBER) {
+        if (releasedNumber < RELEASE_INITIALIZE_NUMBER) {
             showLoginDialog(releasedNumber);
         }
 
@@ -56,7 +55,6 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
      */
     void showLoginDialog(int releasedNumber) {
         // 一旦ログイン状態を解除
-        FrameworkCentral.getSettings().setLoginGoogleClientApi(false);
         asyncCommitSettings();
 
         // ログインを必須とする

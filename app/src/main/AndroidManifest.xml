@@ -39,25 +39,11 @@
             </intent-filter>
         </activity>
 
-        <!-- GPX Import -->
-        <!--<activity-->
-                <!--android:name="com.eaglesakura.andriders.ui.gpx.GpxImportTourActivity"-->
-                <!--android:screenOrientation="portrait">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <activity
-                android:name="com.eaglesakura.andriders.ui.auth.AcesAuthActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/EsMaterial.Transparent"/>
-
         <!-- Permission更新用Activity -->
         <activity
                 android:name="com.eaglesakura.andriders.ui.auth.PermissionRequestActivity"
                 android:screenOrientation="portrait"
-                android:theme="@style/EsMaterial.Transparent"/>
+                android:theme="@style/EsMaterial.Theme.Transparent"/>
 
         <!-- ACE Service -->
         <service

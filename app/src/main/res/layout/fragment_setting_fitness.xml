@@ -2,7 +2,7 @@
 <android.support.v7.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
+        style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -24,7 +24,7 @@
 
             <com.eaglesakura.material.widget.TransparentButton
                     android:id="@+id/CycleComputer.Personal.Weight"
-                    style="@style/EsMaterial.Theme.Widget"
+                    style="@style/EsMaterial.Widget"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <LinearLayout
@@ -57,7 +57,7 @@
             <com.eaglesakura.material.widget.TransparentButton
                     android:layout_marginTop="0dp"
                     android:id="@+id/CycleComputer.Personal.NormalHeartrate"
-                    style="@style/EsMaterial.Theme.Widget"
+                    style="@style/EsMaterial.Widget"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <LinearLayout
@@ -89,7 +89,7 @@
             </com.eaglesakura.material.widget.TransparentButton>
             <com.eaglesakura.material.widget.TransparentButton
                     android:id="@+id/CycleComputer.Personal.MaxHeartrate"
-                    style="@style/EsMaterial.Theme.Widget"
+                    style="@style/EsMaterial.Widget"
                     android:layout_marginTop="0dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">

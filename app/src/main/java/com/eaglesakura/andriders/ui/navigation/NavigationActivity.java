@@ -26,8 +26,6 @@ import android.view.View;
 
 public class NavigationActivity extends AppBaseActivity {
 
-    View mProgress;
-
     @Bind(R.id.Content_Drawer)
     DrawerLayout mDrawerLayout;
 
@@ -52,24 +50,6 @@ public class NavigationActivity extends AppBaseActivity {
                 mDrawerLayout
         );
         mMenuController.setCallback(mMenuCallback);
-        mProgress = findViewById(R.id.Main_Progress);
-//        userNotificationController = new UserNotificationController(this) {
-//            @Override
-//            protected void showProgressInterface(Object sender, String message) {
-//                new AQuery(progress)
-//                        .id(R.id.Main_Progress_Text).text(message)
-//                        .id(R.id.Main_Progress).visible();
-//            }
-//
-//            @Override
-//            protected void updateProgressInterface(Object sender, String message) {
-//            }
-//
-//            @Override
-//            protected void dismissProgressInterface(Object sender) {
-//                progress.setVisibility(View.INVISIBLE);
-//            }
-//        };
 
         if (!BuildConfig.DEBUG) {
             UIHandler.postDelayedUI(() -> {
@@ -132,10 +112,6 @@ public class NavigationActivity extends AppBaseActivity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (ContextUtil.isBackKeyEvent(event)) {
-            // progress中ならば作業を中断してはいけない
-            if (mProgress.getVisibility() == View.VISIBLE) {
-                return true;
-            }
         }
 
         return super.dispatchKeyEvent(event);

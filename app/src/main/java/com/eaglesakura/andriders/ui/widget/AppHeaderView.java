@@ -45,5 +45,6 @@ public class AppHeaderView extends FrameLayout {
                 .id(R.id.App_HeaderView_Title).text(typedArray.getString(1));
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         addView(view, params);
+        invalidate();
     }
 }

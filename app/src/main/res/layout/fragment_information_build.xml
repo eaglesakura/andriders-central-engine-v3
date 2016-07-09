@@ -2,103 +2,52 @@
 <android.support.v7.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
+        style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+        <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                app:headerIcon="@android:drawable/ic_menu_info_details"
+                app:headerText="@string/Information.Build.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         <LinearLayout
+                style="@style/App.Theme.BasicSetting"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <com.eaglesakura.andriders.ui.widget.AppHeaderView
-                    app:headerIcon="@android:drawable/ic_menu_info_details"
-                    app:headerText="@string/Information.Build.Title"
+
+            <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                    android:id="@+id/Information.App.Version"
+                    app:keyText="@string/Information.App.Version"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-            <LinearLayout
-                    style="@style/App.Theme.BasicSetting"
-                    android:orientation="vertical"
+            <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                    android:id="@+id/Information.App.BuildDate"
+                    android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                    app:keyText="@string/Information.App.BuildDate"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"/>
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                        android:orientation="vertical">
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+            <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                    android:id="@+id/Information.App.SDKVersion"
+                    android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                    app:keyText="@string/Information.App.SDKVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-                        <android.support.v7.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/Information.App.Version"/>
-
-                        <android.support.v7.widget.AppCompatTextView
-                                android:id="@+id/Information.App.Version"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:ellipsize="middle"
-                                android:gravity="right"
-                                android:text="0.0.0"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                        <android.support.v7.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/Information.App.BuildDate"/>
-
-                        <android.support.v7.widget.AppCompatTextView
-                                android:id="@+id/Information.App.BuildDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="2014/1/1"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                        <android.support.v7.widget.AppCompatTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/Information.App.SDKVersion"/>
-
-                        <android.support.v7.widget.AppCompatTextView
-                                android:id="@+id/Information.App.SDKVersion"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="0.0.0"/>
-                    </LinearLayout>
-
-                    <android.support.v7.widget.AppCompatButton
-                            android:id="@+id/Information.Licenses"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="right"
-                            android:text="@string/Information.App.Licenses"/>
-
-                </LinearLayout>
-            </LinearLayout>
+            <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/Information.Licenses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="@string/Information.App.Licenses"/>
         </LinearLayout>
 
         <include layout="@layout/esm_material_separator"/>
@@ -137,7 +86,6 @@
                             android:id="@+id/Debug.ACEs.DebugRendering"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                             android:checked="false"
                             android:text="ACEs render debug info"/>
 
@@ -145,7 +93,6 @@
                             android:id="@+id/Debug.Location.Rendering"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                             android:checked="false"
                             android:text="ACEs render location"/>
 
@@ -156,26 +103,8 @@
                             android:layout_height="wrap_content"
                             android:text="backup data"/>
 
-                    <android.support.v7.widget.AppCompatButton
-                            android:id="@+id/Debug.Data.DeleteTodayLog"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="delete today log"
-                            android:visibility="gone"/>
-
-                    <android.support.v7.widget.AppCompatButton
-                            android:id="@+id/Debug.Api.CheckSunset"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="check sunset"
-                            android:visibility="gone"/>
                 </LinearLayout>
-
-
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
-
 </android.support.v7.widget.CardView>

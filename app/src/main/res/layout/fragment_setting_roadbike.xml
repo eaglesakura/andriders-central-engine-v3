@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                                    style="@style/EsMaterial.CardView.Light.NoHorizontalMargin"
+                                    style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content">
     <LinearLayout
@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
             <com.eaglesakura.material.widget.TransparentButton
-                    style="@style/EsMaterial.Theme.Button"
+                    style="@style/EsMaterial.Widget.Button"
                     android:id="@+id/Setting.RoadBikeProfile.WheelSetting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
