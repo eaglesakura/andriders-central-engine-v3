@@ -24,7 +24,7 @@ public class NotificationState {
     /**
      * 表示しているカード番号
      */
-    int mCardNumber = 0;
+    int mCardNumber = NotificationCard.MAX_NOTIFICATION_CARDS;
 
     /**
      * 表示カード
@@ -40,21 +40,25 @@ public class NotificationState {
     /**
      * 現在の描画位置
      */
-    Vector2 mCardPosition = new Vector2();
+    final Vector2 mCardPosition = new Vector2();
 
     @NonNull
-    DisplayInfo mDisplayInfo;
+    final DisplayInfo mDisplayInfo;
 
-    public NotificationState(DisplayInfo displayInfo, @NonNull NotificationCard card, int cardNumber, @NonNull Clock clock) {
+    public NotificationState(DisplayInfo displayInfo, @NonNull NotificationCard card, @NonNull Clock clock) {
         mCard = card;
         mClockTimer = new ClockTimer(clock);
-        mCardNumber = cardNumber;
+        mDisplayInfo = displayInfo;
 
         // カード用画像を構築する
-        card.buildCardImage(displayInfo);
+        card.buildCardImage(displayInfo, clock);
 
         // 現在のカード位置を初期化する
         mCardPosition.set(getTargetPositionX(), getTargetPositionY());
+    }
+
+    public String getUniqueId() {
+        return mCard.getUniqueId();
     }
 
     /**
@@ -83,10 +87,6 @@ public class NotificationState {
 
     public void setCardNumber(int cardNumber) {
         this.mCardNumber = cardNumber;
-    }
-
-    public int getCardNumber() {
-        return mCardNumber;
     }
 
     /**
@@ -119,7 +119,7 @@ public class NotificationState {
      * @param deltaTimeSec 経過時間（秒）
      */
     public void update(double deltaTimeSec) {
-        // inとoutは1000msで行う
+        // inとoutは早めにする
         if (getShowTime() < (INOUT_TIME_SEC * 1000)) {
             // カードの出現
             mInsertWeight = (float) getShowTime() / (INOUT_TIME_SEC * 1000);

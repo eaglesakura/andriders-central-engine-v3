@@ -11,6 +11,7 @@ import com.eaglesakura.android.util.ContextUtil;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Debug;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -55,6 +56,8 @@ public class CentralService extends AppBaseService {
     public void onCreate() {
         super.onCreate();
 
+//        Debug.waitForDebugger();
+
         mCentralContext = new CentralContext(this, new Clock(System.currentTimeMillis()));  // データ初期化
         initializeUiManagers();     // ディスプレイ表示
         initializeUpdateLoop();     // 更新ループを開始する
@@ -83,6 +86,7 @@ public class CentralService extends AppBaseService {
         // 通知表示
         {
             mNotificationRenderer = new NotificationRenderer(this, mCentralContext);
+            mNotificationRenderer.setNotificationView(mCentralUiManager.getNotificationView());
             mNotificationRenderer.connect();
         }
     }
@@ -98,7 +102,7 @@ public class CentralService extends AppBaseService {
                 mCentralContext.onUpdated(deltaTimeSec);
             }
         };
-        mLoopController.setFrameRate(5);
+        mLoopController.setFrameRate(60);
         mLoopController.connect();
     }
 

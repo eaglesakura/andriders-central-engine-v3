@@ -2,9 +2,10 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.andriders.db.plugin.ActivePlugin;
 import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
+import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
 import com.eaglesakura.andriders.plugin.internal.DisplayCommand;
@@ -88,6 +89,12 @@ public class PluginConnector extends CommandClient {
     private Worker<DataDisplayManager> mDataDisplayManagerWorker = it -> {
     };
 
+    /**
+     * 通知処理を行う
+     */
+    private Worker<NotificationDisplayManager> mNotificationDisplayManagerWorker = it -> {
+    };
+
     @Inject(StorageProvider.class)
     Settings mSettings;
 
@@ -126,6 +133,10 @@ public class PluginConnector extends CommandClient {
         mDataDisplayManagerWorker = worker;
     }
 
+    public void setNotificationWorker(Worker<NotificationDisplayManager> worker) {
+        mNotificationDisplayManagerWorker = worker;
+    }
+
     /**
      * 拡張機能に接続する
      */
@@ -137,7 +148,7 @@ public class PluginConnector extends CommandClient {
         intent.setComponent(mName);
         intent.putExtra(ExtensionServerImpl.EXTRA_SESSION_ID, mSessionId);
         intent.putExtra(ExtensionServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
-        intent.putExtra(ExtensionServerImpl.EXTRA_DEBUGABLE, mSettings.isDebuggable());
+        intent.putExtra(ExtensionServerImpl.EXTRA_DEBUGGABLE, mSettings.isDebuggable());
 
         if (mCentralServiceMode) {
             intent.putExtra(ExtensionServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
@@ -195,7 +206,7 @@ public class PluginConnector extends CommandClient {
      * 表示IDから情報を取得する
      */
     public DisplayKey findDisplayInformation(String id) {
-        for (DisplayKey info : getDisplayInformations()) {
+        for (DisplayKey info : getDisplayInformationList()) {
             if (info.getId().equals(id)) {
                 return info;
             }
@@ -207,7 +218,7 @@ public class PluginConnector extends CommandClient {
     /**
      * サイコン表示内容を取得する
      */
-    public synchronized List<DisplayKey> getDisplayInformations() {
+    public synchronized List<DisplayKey> getDisplayInformationList() {
         if (mDisplayInformations == null) {
             try {
                 Payload payload = requestPostToServer(CentralDataCommand.CMD_getDisplayInformations, null);
@@ -226,7 +237,7 @@ public class PluginConnector extends CommandClient {
      */
     public void requestReboot() {
         try {
-            requestPostToServer(CentralDataCommand.CMD_requestRebootExtention, null);
+            requestPostToServer(CentralDataCommand.CMD_requestRebootPlugin, null);
         } catch (Exception e) {
 
         }
@@ -296,6 +307,20 @@ public class PluginConnector extends CommandClient {
             mDataDisplayManagerWorker.request(it -> {
                 it.putValue(PluginConnector.this, list);
             });
+            return null;
+        });
+
+        /**
+         * 通知を行う
+         */
+        mCmdMap.addAction(DisplayCommand.CMD_showNotification, (Object sender, String cmd, Payload payload) -> {
+
+            NotificationData notificationData = new NotificationData(mContext, payload.getBuffer());
+            // 通知を送信する
+            mNotificationDisplayManagerWorker.request(it -> {
+                // FIXME: 通知送信を行う
+            });
+
             return null;
         });
     }

@@ -3,8 +3,7 @@ package com.eaglesakura.andriders.service.central.status;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.service.central.notification.NotificationView;
-import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.margarine.MargarineKnife;
+import com.eaglesakura.android.util.ContextUtil;
 
 import android.app.Notification;
 import android.app.Service;
@@ -24,21 +23,14 @@ public class CentralUiManager {
     Notification mUiNotification;
 
     /**
-     * Root
+     * サイコンのKey-Value表示ディスプレイ
      */
-    ViewGroup mRootDisplay;
+    ViewGroup mDataDisplay;
 
     /**
-     * サイコン表示用のView
+     * 通知表示用ディスプレイ
      */
-    @Bind(R.id.Service_Central_Display_Root)
-    ViewGroup mDisplayStub;
-
-    /**
-     * 通知用のView
-     */
-    @Bind(R.id.Service_Central_Notification)
-    NotificationView mNotificationView;
+    ViewGroup mNotificationDisplay;
 
     WindowManager mWindowManager;
 
@@ -48,11 +40,11 @@ public class CentralUiManager {
     }
 
     public ViewGroup getDisplayStub() {
-        return mDisplayStub;
+        return (ViewGroup) mDataDisplay.findViewById(R.id.Service_Central_Display_Root);
     }
 
     public NotificationView getNotificationView() {
-        return mNotificationView;
+        return (NotificationView) mNotificationDisplay.findViewById(R.id.Service_Central_Notification);
     }
 
     private void initializeForground() {
@@ -69,12 +61,8 @@ public class CentralUiManager {
         mService.startForeground(NOTIFICATION_ID_FORGROUND_MENU, mUiNotification);
     }
 
-    private void initializeDisplayView() {
-        mRootDisplay = (ViewGroup) View.inflate(mService, R.layout.service_cycle_display, null);
-        MargarineKnife.bind(this, mRootDisplay);
-        if (mDisplayStub == null || mNotificationView == null) {
-            throw new IllegalStateException();
-        }
+    private void initDisplayView() {
+        mDataDisplay = (ViewGroup) View.inflate(mService, R.layout.service_cycle_display, null);
 
         mWindowManager = (WindowManager) mService.getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
@@ -96,17 +84,47 @@ public class CentralUiManager {
                 ,
                 // 透過属性を持たなければならないため、TRANSLUCENTを利用する
                 PixelFormat.TRANSLUCENT);
-        mWindowManager.addView(mRootDisplay, layoutParams);
+
+        mWindowManager.addView(mDataDisplay, layoutParams);
+    }
+
+    private void initNotificationDisplay() {
+        mNotificationDisplay = (ViewGroup) ContextUtil.getInflater(mService).inflate(R.layout.service_cycle_notification, null);
+
+        mWindowManager = (WindowManager) mService.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
+                // レイアウトの幅 / 高さ設定
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
+                // レイアウトの挿入位置設定
+                // TYPE_SYSTEM_OVERLAYはほぼ最上位に位置して、ロック画面よりも上に表示される。
+                // ただし、タッチを拾うことはできない。
+                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+                // ウィンドウ属性
+                // TextureViewを利用するには、FLAG_HARDWARE_ACCELERATED が必至となる。
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
+                        //
+                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON    // スクリーン表示Keep
+                        | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                ,
+                // 透過属性を持たなければならないため、TRANSLUCENTを利用する
+                PixelFormat.TRANSLUCENT);
+
+        mWindowManager.addView(mNotificationDisplay, layoutParams);
     }
 
     public void connect() {
         initializeForground();
-        initializeDisplayView();
+        initDisplayView();
+        initNotificationDisplay();
     }
 
     public void disconnect() {
         mService.stopForeground(true);
-        mWindowManager.removeView(mRootDisplay);
+        mWindowManager.removeView(mDataDisplay);
+        mWindowManager.removeView(mNotificationDisplay);
     }
 
 }

@@ -106,6 +106,11 @@ public class CentralContext implements Disposable {
     static final int CENTRAL_UPDATE_INTERVAL_MS = 1000;
 
     /**
+     * 通知レンダリングのフレームレート
+     */
+    static final int NOTIFICATION_UPDATE_INTERVAL_MS = 1000 / 30;
+
+    /**
      * セントラルデータをDBに書き出すインターバル（秒）
      */
     static final int CENTRAL_COMMIT_INTERVAL_MS = 1000 * 30;
@@ -171,16 +176,17 @@ public class CentralContext implements Disposable {
         for (PluginConnector client : mExtensionClientManager.listClients()) {
             // サイコンデータ用コールバックを指定する
             client.setCentralWorker((PluginConnector.Action<CentralDataManager> action) -> {
-                post(() -> {
-                    action.callback(mCentralData);
-                });
+                post(() -> action.callback(mCentralData));
             });
 
-            // TODO ディスプレイ設定用コールバックを指定する
+            // ディスプレイ設定用コールバックを指定する
             client.setDisplayWorker((PluginConnector.Action<DataDisplayManager> action) -> {
-                post(() -> {
-                    action.callback(mDisplayManager);
-                });
+                post(() -> action.callback(mDisplayManager));
+            });
+
+            // 通知表示用コールバックを指定する
+            client.setNotificationWorker(action -> {
+                post(() -> action.callback(mNotificationManager));
             });
         }
     }
@@ -205,6 +211,7 @@ public class CentralContext implements Disposable {
         CentralUpdate,
         CentralBroadcast,
         CentralDbCommit,
+        NotificationUpdate,
     }
 
     /**
@@ -225,9 +232,13 @@ public class CentralContext implements Disposable {
             mCentralData.onUpdate();
         }
 
+        if (mTimers.endIfOverTime(TimerType.NotificationUpdate, NOTIFICATION_UPDATE_INTERVAL_MS)) {
+            mNotificationManager.onUpdate();
+        }
+
         // データのブロードキャストを行う
         if (mTimers.endIfOverTime(TimerType.CentralBroadcast, DATA_BROADCAST_INTERVAL_MS)) {
-            requestBroadcastBasicDatas();
+            broadcastCentralData();
         }
 
         // データのコミットを行う
@@ -281,6 +292,9 @@ public class CentralContext implements Disposable {
                 .completed((result, task) -> {
                     AppLog.db("CentralCommit Completed");
                 })
+                .failed((error, task) -> {
+                    AppLog.report(error);
+                })
                 .start();
     }
 
@@ -288,20 +302,19 @@ public class CentralContext implements Disposable {
     /**
      * データを各アプリへ送信する
      */
-    void requestBroadcastBasicDatas() {
+    void broadcastCentralData() {
         RawCentralData data = mCentralData.getLatestCentralData();
         if (data == null) {
             AppLog.broadcast("mCentralData.getLatestCentralData() == null");
         }
         Intent intent = new Intent();
-        intent.setAction(CentralDataReceiver.INTENT_ACTION);
+        intent.setAction(CentralDataReceiver.ACTION_UPDATE_CENTRAL_DATA);
         intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
         try {
-            intent.putExtra(CentralDataReceiver.INTENT_EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(data, true));
+            intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(data, true));
+            mContext.sendBroadcast(intent);
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLog.report(e);
         }
-
-        mContext.sendBroadcast(intent);
     }
 }

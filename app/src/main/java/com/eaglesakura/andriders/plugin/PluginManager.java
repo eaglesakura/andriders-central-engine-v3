@@ -71,7 +71,7 @@ public class PluginManager {
         synchronized (mPlugins) {
             List<PluginConnector> result = new ArrayList<>();
             for (PluginConnector client : mPlugins) {
-                if (!CollectionUtil.isEmpty(client.getDisplayInformations())) {
+                if (!CollectionUtil.isEmpty(client.getDisplayInformationList())) {
                     result.add(client);
                 }
             }
@@ -103,7 +103,7 @@ public class PluginManager {
     public PluginConnector findDisplayClient(DisplayKey check) {
         synchronized (mPlugins) {
             for (PluginConnector client : mPlugins) {
-                List<DisplayKey> informations = client.getDisplayInformations();
+                List<DisplayKey> informations = client.getDisplayInformationList();
                 if (CollectionUtil.isEmpty(informations)) {
                     continue;
                 }

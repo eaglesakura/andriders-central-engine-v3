@@ -104,7 +104,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                 mDisplayValues.clear();
                 for (PluginConnector client : mExtensionClientManager.listDisplayClients()) {
                     client.loadIcon();
-                    for (DisplayKey info : client.getDisplayInformations()) {
+                    for (DisplayKey info : client.getDisplayInformationList()) {
                         mDisplayValues.add(info);
                     }
                 }
@@ -182,7 +182,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             ViewGroup insertRoot = q.id(R.id.Extension_ItemSelector_Root).getView(ViewGroup.class);
 
             // Extensionごとの表示内容を並べる
-            for (final DisplayKey info : client.getDisplayInformations()) {
+            for (final DisplayKey info : client.getDisplayInformationList()) {
                 View item = inflater.inflate(R.layout.card_displayinfo_item, null);
                 ((TextView) item.findViewById(R.id.Extension_ItemSelector_Name)).setText(info.getTitle());
                 insertRoot.addView(item, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

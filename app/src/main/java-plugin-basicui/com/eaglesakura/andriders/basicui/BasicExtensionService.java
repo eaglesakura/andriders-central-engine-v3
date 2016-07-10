@@ -69,7 +69,7 @@ public class BasicExtensionService extends Service implements AcePluginService {
         result.add(CadenceDisplaySender.newInformation(this));
         result.add(SpeedDisplaySender.newInformation(this));
 
-        if (connection.isDebugable()) {
+        if (connection.isDebuggable()) {
             {
                 DisplayKey info = new DisplayKey(this, DEBUG_RANDOM_HEARTRATE);
                 info.setTitle("DBG:ダミー心拍");

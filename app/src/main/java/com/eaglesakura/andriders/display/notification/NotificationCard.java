@@ -1,7 +1,8 @@
 package com.eaglesakura.andriders.display.notification;
 
 import com.eaglesakura.andriders.notification.NotificationData;
-import com.eaglesakura.andriders.notification.NotificationLength;
+import com.eaglesakura.andriders.notification.NotificationDuration;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.device.display.DisplayInfo;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
@@ -23,21 +24,25 @@ public class NotificationCard {
     /**
      * 通知カード
      */
-    Bitmap cardImage;
+    Bitmap mCardImage;
 
     /**
      * 通知データ
      */
-    NotificationData notificationData;
+    NotificationData mNotificationData;
 
     public NotificationCard(NotificationData data) {
-        this.notificationData = data;
+        this.mNotificationData = data;
+    }
+
+    public String getUniqueId() {
+        return mNotificationData.getUniqueId();
     }
 
     /**
      * カード用画像を構築する
      */
-    public void buildCardImage(@NonNull DisplayInfo displayInfo) {
+    public void buildCardImage(@NonNull DisplayInfo displayInfo, @NonNull Clock clock) {
 
         int[] displaySize = {displayInfo.getWidthPixel(), displayInfo.getHeightPixel()};
 
@@ -48,29 +53,29 @@ public class NotificationCard {
 //        final int CARD_WIDTH = (int) ((float) displaySize[0] * 0.4f);
 
         // カードを生成する
-        cardImage = Bitmap.createBitmap(CARD_WIDTH, CARD_HEIGHT, Bitmap.Config.ARGB_8888);
+        mCardImage = Bitmap.createBitmap(CARD_WIDTH, CARD_HEIGHT, Bitmap.Config.ARGB_8888);
 
-        Graphics graphics = new Graphics(new Canvas(cardImage));
+        Graphics graphics = new Graphics(new Canvas(mCardImage));
         graphics.setAntiAlias(true);
 
         // カードの背景を染める
-        graphics.setColorARGB(notificationData.getBackgroundColor());
+        graphics.setColorARGB(mNotificationData.getBackgroundColor());
         graphics.fillRoundRect(0, 0, CARD_WIDTH, CARD_HEIGHT, (float) CARD_HEIGHT * 0.05f);
 
         // 囲い線を入れる
-        graphics.setColorARGB(ImageUtil.getNegaColor(notificationData.getBackgroundColor()));
+        graphics.setColorARGB(ImageUtil.getNegaColor(mNotificationData.getBackgroundColor()));
         graphics.drawRoundRect(0, 0, CARD_WIDTH, CARD_HEIGHT, (float) CARD_HEIGHT * 0.05f);
 
         // アイコンを描画する
         // 多少内側に入れる
         {
             int INSET_PIXEL = 1;
-            graphics.drawBitmap(notificationData.getIcon(), INSET_PIXEL, INSET_PIXEL, CARD_HEIGHT - (INSET_PIXEL * 2), CARD_HEIGHT - (INSET_PIXEL * 2));
+            graphics.drawBitmap(mNotificationData.getIcon(), INSET_PIXEL, INSET_PIXEL, CARD_HEIGHT - (INSET_PIXEL * 2), CARD_HEIGHT - (INSET_PIXEL * 2));
         }
 
         // 通知文字列を描画する
         {
-            int fontColor = ImageUtil.getNegaColor(notificationData.getBackgroundColor());
+            int fontColor = ImageUtil.getNegaColor(mNotificationData.getBackgroundColor());
 
             final int FONT_AREA_WIDTH = CARD_WIDTH - (int) ((float) CARD_HEIGHT * 1.1f);
             final int FONT_HEIGHT = CARD_HEIGHT / MAX_NOTIFICATION_MESSAGE_LINES;
@@ -80,7 +85,7 @@ public class NotificationCard {
             font.setColorARGB(fontColor);
             Canvas canvas = graphics.getCanvas();
             font.drawString(
-                    String.format("%s\n%s", DATE_FORMATTER.format(new Date()), notificationData.getMessage()),
+                    String.format("%s\n%s", DATE_FORMATTER.format(new Date(clock.now())), mNotificationData.getMessage()),
                     "...",
                     (int) ((float) CARD_HEIGHT * 1.05f), FONT_MARGIN,
                     FONT_HEIGHT,
@@ -91,32 +96,32 @@ public class NotificationCard {
     }
 
     public void dispose() {
-        if (cardImage != null) {
-            cardImage.recycle();
+        if (mCardImage != null) {
+            mCardImage.recycle();
         }
-        cardImage = null;
+        mCardImage = null;
 
-        if (notificationData != null) {
-            notificationData.getIcon().recycle();
-            notificationData = null;
+        if (mNotificationData != null) {
+            mNotificationData.getIcon().recycle();
+            mNotificationData = null;
         }
     }
 
     public int getShowTimeMs() {
-        return (int) getNotificationTimeMs(notificationData.getNotificationLength());
+        return (int) getNotificationTimeMs(mNotificationData.getDuration());
     }
 
     /**
      * 表示カードを取得する
      */
     public Bitmap getCardImage() {
-        return cardImage;
+        return mCardImage;
     }
 
     /**
      * 通知時間から表示時間（ミリ秒）へ変換する
      */
-    public static long getNotificationTimeMs(NotificationLength length) {
+    public static long getNotificationTimeMs(NotificationDuration length) {
         switch (length) {
             case Short:
                 return 1000 * 5;
