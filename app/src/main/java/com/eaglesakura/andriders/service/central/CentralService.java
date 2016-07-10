@@ -55,9 +55,6 @@ public class CentralService extends AppBaseService {
     @Override
     public void onCreate() {
         super.onCreate();
-
-//        Debug.waitForDebugger();
-
         mCentralContext = new CentralContext(this, new Clock(System.currentTimeMillis()));  // データ初期化
         initializeUiManagers();     // ディスプレイ表示
         initializeUpdateLoop();     // 更新ループを開始する

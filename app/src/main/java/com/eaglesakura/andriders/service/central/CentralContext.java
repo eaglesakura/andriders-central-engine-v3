@@ -205,16 +205,14 @@ public class CentralContext implements Disposable {
         }).completed((result, task) -> {
             AppLog.system("Completed Initialize");
             mInitialized = true;
+
+            // Pluginに起動完了を通知する
+            for (PluginConnector plugin : mPluginManager.listClients()) {
+                plugin.onCentralBootCompleted(this);
+            }
         }).failed((error, task) -> {
             AppLog.system("Failed Initialize :: " + error.getMessage());
         }).start();
-
-        // 通知を送る
-        mNotificationManager.queue(
-                new NotificationData.Builder(mContext, NotificationData.ID_CENTRAL_SERVICE_BOOT)
-                        .icon(R.mipmap.ic_launcher)
-                        .message("Andriders Central Engineを起動しました").getNotification()
-        );
     }
 
     enum TimerType {

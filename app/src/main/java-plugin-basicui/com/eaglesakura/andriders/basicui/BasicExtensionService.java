@@ -1,10 +1,12 @@
 package com.eaglesakura.andriders.basicui;
 
+import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.basicui.display.CadenceDisplaySender;
 import com.eaglesakura.andriders.basicui.display.DisplayDataSender;
 import com.eaglesakura.andriders.basicui.display.HeartrateDisplaySender;
 import com.eaglesakura.andriders.basicui.display.SpeedDisplaySender;
 import com.eaglesakura.andriders.display.ZoneColor;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.PluginInformation;
@@ -106,6 +108,14 @@ public class BasicExtensionService extends Service implements AcePluginService {
         };
         mDisplayCommitLoop.setFrameRate(1);
         mDisplayCommitLoop.connect();
+
+
+        // 通知を送る
+        connection.getDisplayExtension().queueNotification(
+                new NotificationData.Builder(this, NotificationData.ID_CENTRAL_SERVICE_BOOT)
+                        .icon(R.mipmap.ic_launcher)
+                        .message("Andriders Central Engineを起動しました").getNotification()
+        );
     }
 
     @Override

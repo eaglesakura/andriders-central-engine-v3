@@ -9,12 +9,14 @@ import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
 import com.eaglesakura.andriders.plugin.internal.DisplayCommand;
-import com.eaglesakura.andriders.plugin.internal.ExtensionServerImpl;
+import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.serialize.PluginProtocol;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
+import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.service.central.CentralService;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
@@ -31,6 +33,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -144,14 +147,14 @@ public class PluginConnector extends CommandClient {
         this.mPackageInfo = info;
         mName = new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name);
 
-        final Intent intent = new Intent(ExtensionServerImpl.ACTION_ACE_EXTENSION_BIND + "@" + mSessionId);
+        final Intent intent = new Intent(PluginServerImpl.ACTION_ACE_EXTENSION_BIND + "@" + mSessionId);
         intent.setComponent(mName);
-        intent.putExtra(ExtensionServerImpl.EXTRA_SESSION_ID, mSessionId);
-        intent.putExtra(ExtensionServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
-        intent.putExtra(ExtensionServerImpl.EXTRA_DEBUGGABLE, mSettings.isDebuggable());
+        intent.putExtra(PluginServerImpl.EXTRA_SESSION_ID, mSessionId);
+        intent.putExtra(PluginServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
+        intent.putExtra(PluginServerImpl.EXTRA_DEBUGGABLE, mSettings.isDebuggable());
 
         if (mCentralServiceMode) {
-            intent.putExtra(ExtensionServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
+            intent.putExtra(PluginServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
         }
 
         UIHandler.postUI(() -> connectToSever(intent));
@@ -230,6 +233,17 @@ public class PluginConnector extends CommandClient {
         }
 
         return mDisplayInformations;
+    }
+
+    /**
+     * Centralの起動が完了した
+     */
+    public void onCentralBootCompleted(@NonNull CentralContext centralContext) {
+        try {
+            requestPostToServer(CentralDataCommand.CMD_onCentralBootCompleted, null);
+        } catch (Exception e) {
+            AppLog.report(e);
+        }
     }
 
     /**
