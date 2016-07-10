@@ -5,11 +5,16 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.device.display.DisplayInfo;
+import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.math.Vector2;
 
 import org.junit.Test;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -86,6 +91,31 @@ public class NotificationDisplayManagerTest extends AppUnitTestCase {
             }
         }
         assertEquals(manager.hasNotification(notificationData.getUniqueId()), NotificationDisplayManager.NOTIFICATION_NONE);
+        assertEquals(manager.mPendingNotifications.size(), 0);
+        assertEquals(manager.mNotificationStates.size(), 0);
+    }
+
+    @Test
+    public void レンダリングが落ちずに最後まで行える() throws Throwable {
+
+        Clock clock = new Clock(System.currentTimeMillis());
+        NotificationDisplayManager manager = new NotificationDisplayManager(getContext(), clock);
+
+        for (int i = 0; i < 10; ++i) {
+            manager.queue(newDummyNotification().setUniqueId(UUID.randomUUID().toString()));
+        }
+
+        DisplayInfo info = new DisplayInfo(getContext());
+        Graphics dummyGraphics = new Graphics(new Canvas(Bitmap.createBitmap(info.getWidthPixel(), info.getHeightPixel(), Bitmap.Config.ARGB_8888)));
+
+        // 1分経過させる
+        for (int i = 0; i < (60 * 60); ++i) {
+            clock.offset(1000 / 60);
+            manager.onUpdate();
+            manager.rendering(dummyGraphics);
+        }
+
+        // 全てのレンダリングが完了している
         assertEquals(manager.mPendingNotifications.size(), 0);
         assertEquals(manager.mNotificationStates.size(), 0);
     }

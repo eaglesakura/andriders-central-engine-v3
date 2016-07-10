@@ -157,7 +157,10 @@ public class NotificationDisplayManager {
      * 描画を行う
      */
     public void rendering(Graphics graphics) {
-        synchronized (mNotificationStates) {
+        synchronized (lock) {
+            for (NotificationState state : mNotificationStates) {
+                state.rendering(graphics);
+            }
         }
     }
 }
