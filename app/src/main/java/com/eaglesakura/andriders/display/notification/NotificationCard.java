@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders.display.notification;
 
 import com.eaglesakura.andriders.notification.NotificationData;
-import com.eaglesakura.andriders.notification.NotificationDuration;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.device.display.DisplayInfo;
 import com.eaglesakura.android.graphics.Font;
@@ -121,7 +120,7 @@ public class NotificationCard {
     /**
      * 通知時間から表示時間（ミリ秒）へ変換する
      */
-    public static long getNotificationTimeMs(NotificationDuration length) {
+    public static long getNotificationTimeMs(NotificationData.Duration length) {
         switch (length) {
             case Short:
                 return 1000 * 5;
