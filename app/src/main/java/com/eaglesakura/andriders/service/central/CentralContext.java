@@ -1,10 +1,12 @@
 package com.eaglesakura.andriders.service.central;
 
+import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
@@ -35,7 +37,7 @@ import android.support.annotation.NonNull;
 public class CentralContext implements Disposable {
 
     @NonNull
-    private final Service mContext;
+    private Service mContext;
 
     /**
      * システム時計
@@ -88,7 +90,7 @@ public class CentralContext implements Disposable {
      * 拡張機能管理
      */
     @NonNull
-    PluginManager mExtensionClientManager;
+    PluginManager mPluginManager;
 
     /**
      * 初期化が完了していればtrue
@@ -129,8 +131,9 @@ public class CentralContext implements Disposable {
         mCentralData = new CentralDataManager(context, mClock);
         mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationDisplayManager(mContext, mClock);
+        mNotificationManager.addListener(mNotificationShowingListener);
 
-        mExtensionClientManager = new PluginManager(mContext);
+        mPluginManager = new PluginManager(mContext);
     }
 
     /**
@@ -148,8 +151,8 @@ public class CentralContext implements Disposable {
         return mNotificationManager;
     }
 
-    public PluginManager getExtensionClientManager() {
-        return mExtensionClientManager;
+    public PluginManager getPluginManager() {
+        return mPluginManager;
     }
 
     /**
@@ -171,9 +174,9 @@ public class CentralContext implements Disposable {
     /**
      * 拡張機能を初期化する
      */
-    private void initExtensions() throws Throwable {
-        mExtensionClientManager.connect(PluginManager.ConnectMode.ActiveOnly);
-        for (PluginConnector client : mExtensionClientManager.listClients()) {
+    private void initPlugins() throws Throwable {
+        mPluginManager.connect(PluginManager.ConnectMode.ActiveOnly);
+        for (PluginConnector client : mPluginManager.listClients()) {
             // サイコンデータ用コールバックを指定する
             client.setCentralWorker((PluginConnector.Action<CentralDataManager> action) -> {
                 post(() -> action.callback(mCentralData));
@@ -197,7 +200,7 @@ public class CentralContext implements Disposable {
     public void onServiceInitializeCompleted() {
         mLifecycleDelegate.onCreate();
         newTask(SubscribeTarget.GlobalPipeline, task -> {
-            initExtensions();
+            initPlugins();
             return this;
         }).completed((result, task) -> {
             AppLog.system("Completed Initialize");
@@ -205,6 +208,13 @@ public class CentralContext implements Disposable {
         }).failed((error, task) -> {
             AppLog.system("Failed Initialize :: " + error.getMessage());
         }).start();
+
+        // 通知を送る
+        mNotificationManager.queue(
+                new NotificationData.Builder(mContext, NotificationData.ID_CENTRAL_SERVICE_BOOT)
+                        .icon(R.mipmap.ic_launcher)
+                        .message("Andriders Central Engineを起動しました").getNotification()
+        );
     }
 
     enum TimerType {
@@ -256,7 +266,7 @@ public class CentralContext implements Disposable {
                 .observeOn(ObserveTarget.FireAndForget)
                 .subscribeOn(SubscribeTarget.GlobalPipeline)
                 .async(task -> {
-                    mExtensionClientManager.disconnect();
+                    mPluginManager.disconnect();
                     return this;
                 })
                 .finalized(task -> {
@@ -298,6 +308,21 @@ public class CentralContext implements Disposable {
                 .start();
     }
 
+    /**
+     * 通知のレンダリングを開始したら、全アプリへBroadcastする
+     */
+    NotificationDisplayManager.OnNotificationShowingListener mNotificationShowingListener = (self, data) -> {
+        try {
+            Intent intent = new Intent();
+            intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
+            intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
+            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
+
+            mContext.sendBroadcast(intent);
+        } catch (Throwable e) {
+            AppLog.report(e);
+        }
+    };
 
     /**
      * データを各アプリへ送信する

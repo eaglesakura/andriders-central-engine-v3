@@ -304,22 +304,18 @@ public class PluginConnector extends CommandClient {
         mCmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
             List<DisplayData> list = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
             // 表示内容を更新する
-            mDataDisplayManagerWorker.request(it -> {
-                it.putValue(PluginConnector.this, list);
-            });
+            mDataDisplayManagerWorker.request(it -> it.putValue(PluginConnector.this, list));
             return null;
         });
 
         /**
          * 通知を行う
          */
-        mCmdMap.addAction(DisplayCommand.CMD_showNotification, (Object sender, String cmd, Payload payload) -> {
+        mCmdMap.addAction(DisplayCommand.CMD_queueNotification, (Object sender, String cmd, Payload payload) -> {
 
             NotificationData notificationData = new NotificationData(mContext, payload.getBuffer());
             // 通知を送信する
-            mNotificationDisplayManagerWorker.request(it -> {
-                // FIXME: 通知送信を行う
-            });
+            mNotificationDisplayManagerWorker.request(it -> it.queue(notificationData));
 
             return null;
         });

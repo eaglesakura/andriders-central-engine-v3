@@ -12,8 +12,10 @@ import android.support.annotation.NonNull;
 
 import java.sql.CallableStatement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 通知を管理する
@@ -43,6 +45,8 @@ public class NotificationDisplayManager {
 
     @NonNull
     final DisplayInfo mDisplayInfo;
+
+    final Set<OnNotificationShowingListener> mShowingListeners = new HashSet<>();
 
     private final Object lock = new Object();
 
@@ -81,6 +85,12 @@ public class NotificationDisplayManager {
             }
 
             return NOTIFICATION_NONE;
+        }
+    }
+
+    public void addListener(OnNotificationShowingListener listener) {
+        synchronized (lock) {
+            mShowingListeners.add(listener);
         }
     }
 
@@ -148,6 +158,10 @@ public class NotificationDisplayManager {
 
                     iterator.remove();
                     ++cardNumber;
+
+                    for (OnNotificationShowingListener listener : mShowingListeners) {
+                        listener.onNotificationShowing(this, next.mNotificationData);
+                    }
                 }
             }
         }
@@ -162,5 +176,15 @@ public class NotificationDisplayManager {
                 state.rendering(graphics);
             }
         }
+    }
+
+    public interface OnNotificationShowingListener {
+        /**
+         * 通知の表示を開始した
+         *
+         * @param self Manager本体
+         * @param data 表示開始したデータ
+         */
+        void onNotificationShowing(NotificationDisplayManager self, NotificationData data);
     }
 }

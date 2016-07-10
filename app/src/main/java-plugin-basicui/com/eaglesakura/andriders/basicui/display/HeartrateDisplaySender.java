@@ -35,10 +35,11 @@ public class HeartrateDisplaySender extends DisplayDataSender {
         MargarineKnife.bind(this, this);
     }
 
-    public void bind() {
+    public HeartrateDisplaySender bind() {
         if (mDataReceiver != null) {
             mDataReceiver.addHandler(mHeartrateHandler);
         }
+        return this;
     }
 
 

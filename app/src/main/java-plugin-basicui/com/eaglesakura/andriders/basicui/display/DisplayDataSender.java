@@ -22,6 +22,10 @@ public abstract class DisplayDataSender {
         }
     }
 
+    public void onUpdate(double deltaSec) {
+
+    }
+
     public Context getContext() {
         return mSession.getContext();
     }

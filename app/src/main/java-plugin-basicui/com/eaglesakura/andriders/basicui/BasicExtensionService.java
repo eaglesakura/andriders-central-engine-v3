@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.basicui;
 
 import com.eaglesakura.andriders.basicui.display.CadenceDisplaySender;
+import com.eaglesakura.andriders.basicui.display.DisplayDataSender;
 import com.eaglesakura.andriders.basicui.display.HeartrateDisplaySender;
 import com.eaglesakura.andriders.basicui.display.SpeedDisplaySender;
 import com.eaglesakura.andriders.display.ZoneColor;
@@ -88,14 +89,19 @@ public class BasicExtensionService extends Service implements AcePluginService {
         }
 
         ZoneColor zoneColor = new ZoneColor(this);
-        new HeartrateDisplaySender(connection, zoneColor).bind();
-        new CadenceDisplaySender(connection, zoneColor).bind();
-        new SpeedDisplaySender(connection, zoneColor).bind();
+        List<DisplayDataSender> senders = new ArrayList<>();
+        senders.add(new HeartrateDisplaySender(connection, zoneColor).bind());
+        senders.add(new CadenceDisplaySender(connection, zoneColor).bind());
+        senders.add(new SpeedDisplaySender(connection, zoneColor).bind());
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override
             protected void onUpdate() {
-                postDisplayData(connection);
+                postDummyHeartrate(connection);
+                double delta = mDisplayCommitLoop.getDeltaTime();
+                for (DisplayDataSender sender : senders) {
+                    sender.onUpdate(delta);
+                }
             }
         };
         mDisplayCommitLoop.setFrameRate(1);
@@ -124,11 +130,6 @@ public class BasicExtensionService extends Service implements AcePluginService {
     @Override
     public void startSetting(CentralEngineConnection connection) {
 
-    }
-
-    @UiThread
-    void postDisplayData(CentralEngineConnection session) {
-        postDummyHeartrate(session);
     }
 
     /**
