@@ -24,7 +24,7 @@ dependencies:
   override:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk.sh)"
     - ./script/developer-install-private.sh
-    - ./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 --refresh-dependencies -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false :app:dependencies
+    - ./gradlew --refresh-dependencies -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false :app:dependencies
 test:
   override:
       - ./script/circleci-build-assemble.sh
