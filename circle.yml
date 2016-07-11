@@ -15,8 +15,8 @@ machine:
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
     BUILD_CACHEDIR: /home/ubuntu/build-cache
-    GRADLE_OPTS: -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false
-    JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m -XX:MaxPermSize=2048m
+    GRADLE_OPTS: -Dorg.gradle.parallel=false -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError"
+    JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms512m -Xmx1024m -XX:MaxPermSize=512m
 dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"

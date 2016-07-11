@@ -1,7 +1,10 @@
 #! /bin/sh
 
 # ビルド
-./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false :app:assembleGoogleplayDebug :app:assembleGoogleplayRelease
+./gradlew -Dorg.gradle.parallel=false  \
+          -Dorg.gradle.daemon=false \
+          -Dorg.gradle.jvmargs="-Xmx1024m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" \
+          :app:assembleGoogleplayDebug :app:assembleGoogleplayRelease
 
 if [ $? -ne 0 ]; then
     echo "build failed..."
