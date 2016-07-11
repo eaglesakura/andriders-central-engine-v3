@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.ui.navigation.menu;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.service.central.CentralService;
 import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
+import com.eaglesakura.andriders.ui.navigation.command.CommandSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.gadget.GadgetSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.info.InformationFragmentMain;
@@ -133,6 +134,9 @@ public class MenuController {
                 break;
             case R.id.Main_Menu_CycleComputer:
                 mCallback.requestChangeContent(DisplaySettingFragmentMain.newInstance(mContext));
+                break;
+            case R.id.Main_Menu_Commands:
+                mCallback.requestChangeContent(new CommandSettingFragmentMain());
                 break;
             case R.id.Main_Menu_UserLog:
                 mCallback.requestChangeContent(UserLogFragmentMain.newInstance(mContext));
