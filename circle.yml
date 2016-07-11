@@ -28,7 +28,8 @@ dependencies:
 test:
   override:
       - ./script/circleci-build-assemble.sh
-      - ./script/circleci-build-testing.sh
+      - ./gradlew -Dorg.gradle.parallel=false -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" :app:testGoogleplayDebugUnitTest
+#      - ./script/circleci-build-testing.sh
 deployment:
   feature:
     branch: /^feature\/id\/.*$/
