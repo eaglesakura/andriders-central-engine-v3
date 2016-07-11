@@ -16,7 +16,7 @@ find . -type f -regex ".*/build/test-results/googleplayDebug/.*xml" -exec cp {} 
 }
 
 # テスト実行
-./gradlew  -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxPermSize=1024m -XX:+HeapDumpOnOutOfMemoryError" testGoogleplayDebugUnitTest
+./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false :app:testGoogleplayDebugUnitTest
 
 
 if [ $? -ne 0 ]; then

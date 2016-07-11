@@ -15,7 +15,7 @@ machine:
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
     BUILD_CACHEDIR: /home/ubuntu/build-cache
-    GRADLE_OPTS: -Xmx2G -Dorg.gradle.daemon=true
+    GRADLE_OPTS: -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false
     JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m -XX:MaxPermSize=2048m
 dependencies:
   cache_directories:
