@@ -15,7 +15,7 @@ machine:
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
     BUILD_CACHEDIR: /home/ubuntu/build-cache
-    GRADLE_OPTS: -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false
+    GRADLE_OPTS: -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false
     JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m -XX:MaxPermSize=2048m
 dependencies:
   cache_directories:
@@ -24,8 +24,7 @@ dependencies:
   override:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk.sh)"
     - ./script/developer-install-private.sh
-    - ./gradlew --refresh-dependencies clean
-    - ./gradlew :app:dependencies
+    - ./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 --refresh-dependencies -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false :app:dependencies
 test:
   override:
       - ./script/circleci-build-assemble.sh

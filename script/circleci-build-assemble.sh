@@ -1,21 +1,7 @@
 #! /bin/sh
 
 # ビルド
-./gradlew ciClean clean
-
-if [ $? -ne 0 ]; then
-    echo "build failed..."
-    exit 1
-fi
-
-./gradlew assembleGoogleplayRelease
-
-if [ $? -ne 0 ]; then
-    echo "build failed..."
-    exit 1
-fi
-
-./gradlew assembleGoogleplayDebug
+./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 --refresh-dependencies -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false :app:assembleGoogleplayDebug :app:assembleGoogleplayRelease
 
 if [ $? -ne 0 ]; then
     echo "build failed..."
