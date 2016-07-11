@@ -2,13 +2,12 @@
 
 
 report_cp() {
+mkdir "$CIRCLE_ARTIFACTS/app"
 mkdir "$CIRCLE_TEST_REPORTS/junit/"
 mkdir "$CIRCLE_TEST_REPORTS/junit/googleplayDebug"
 
-find . -type f -regex ".*/build/test-results/googleplayDebug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/googleplayDebug/ \;
-
-mkdir "$CIRCLE_ARTIFACTS/app"
 cp -r ./app/build/reports "$CIRCLE_ARTIFACTS/app"
+find . -type f -regex ".*/build/test-results/googleplayDebug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/googleplayDebug/ \;
 
 #mkdir "$CIRCLE_TEST_REPORTS/junit/googleplayRelease"
 #find . -type f -regex ".*/build/test-results/googleplayRelease/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/googleplayRelease/ \;
