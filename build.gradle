@@ -2,12 +2,13 @@ buildscript {
     repositories {
         maven { url "http://eaglesakura.github.io/maven/" }
         maven { url "https://jitpack.io" }
+        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
         jcenter()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.+'  // for AS 2.1.x
+        classpath 'com.android.tools.build:gradle:2.2.0-alpha5'  // for AS 2.1.x
         classpath "com.eaglesakura:plugin-ci-support:1.0.47"
         classpath "com.eaglesakura:plugin-android-mipmap:1.0.97"
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
@@ -27,6 +28,7 @@ allprojects {
     repositories {
         maven { url "http://eaglesakura.github.io/maven/" }
         maven { url "https://clojars.org/repo/" }
+        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
         mavenCentral()
     }
 }

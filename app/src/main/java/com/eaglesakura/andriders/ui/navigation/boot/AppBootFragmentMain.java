@@ -6,7 +6,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
-import com.google.common.collect.FluentIterable;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.NavigationActivity;
