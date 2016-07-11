@@ -28,7 +28,6 @@ dependencies:
 test:
   override:
       - ./script/circleci-build-assemble.sh
-      - ./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1024m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" :app:testGoogleplayDebugUnitTest
 #      - ./script/circleci-build-testing.sh
 deployment:
   feature:
