@@ -1,6 +1,5 @@
 package com.eaglesakura.andriders.ui.navigation.boot;
 
-import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -16,7 +15,6 @@ import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.firebase.auth.FirebaseAuthorizeManager;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
-import com.eaglesakura.android.gms.error.PlayServiceConnectException;
 import com.eaglesakura.android.gms.error.SignInRequireException;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
 import com.eaglesakura.android.oari.OnActivityResult;
@@ -24,6 +22,7 @@ import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.saver.BundleState;
+import com.eaglesakura.android.util.AndroidNetworkUtil;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.lambda.CancelCallback;
 
@@ -122,20 +121,22 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
                 task.waitTime(100);
             }
 
-            // アカウントログインチェック
-            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, cancelCallback)) {
-                if (!connection.isConnectionSuccess(Auth.GOOGLE_SIGN_IN_API, Fitness.SESSIONS_API, Fitness.HISTORY_API)) {
-                    // 必要なAPIを満たしていない場合、ログインを行わせる
-                    PlayServiceUtil.await(Auth.GoogleSignInApi.signOut(connection.getClient()), cancelCallback);
-                    throw new SignInRequireException(connection.newSignInIntent());
-                }
+            // ネットワーク接続されているならば、アカウントログインチェック
+            if (AndroidNetworkUtil.isNetworkConnected(getContext())) {
+                try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, cancelCallback)) {
+                    if (!connection.isConnectionSuccess(Auth.GOOGLE_SIGN_IN_API, Fitness.SESSIONS_API, Fitness.HISTORY_API)) {
+                        // 必要なAPIを満たしていない場合、ログインを行わせる
+                        PlayServiceUtil.await(Auth.GoogleSignInApi.signOut(connection.getClient()), cancelCallback);
+                        throw new SignInRequireException(connection.newSignInIntent());
+                    }
 
-                // Firebaseログイン
-                if (mSignInAccount != null) {
-                    mFirebaseAuthorizeManager.signIn(mSignInAccount, cancelCallback);
-                } else if (mFirebaseAuthorizeManager.getCurrentUser() == null) {
-                    // Firebaseログインが必要
-                    throw new SignInRequireException(connection.newSignInIntent());
+                    // Firebaseログイン
+                    if (mSignInAccount != null) {
+                        mFirebaseAuthorizeManager.signIn(mSignInAccount, cancelCallback);
+                    } else if (mFirebaseAuthorizeManager.getCurrentUser() == null) {
+                        // Firebaseログインが必要
+                        throw new SignInRequireException(connection.newSignInIntent());
+                    }
                 }
             }
 
