@@ -41,6 +41,7 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
         mCentral = central;
     }
 
+    @Deprecated
     public static GoogleApiClient.Builder newFullPermissionClientBuilder() {
         return new GoogleApiClient.Builder(FrameworkCentral.getApplication())
                 // Google Fit

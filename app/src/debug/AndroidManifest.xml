@@ -5,7 +5,6 @@
         <!-- デバッグ画面 -->
         <activity
                 android:name="com.eaglesakura.android.debug.DebugMenuActivity"
-                android:theme="@style/EsMaterial.Theme.Grey.NoActionBar"
                 android:screenOrientation="portrait"/>
     </application>
 </manifest>

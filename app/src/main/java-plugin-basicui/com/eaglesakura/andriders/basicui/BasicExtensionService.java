@@ -1,9 +1,12 @@
 package com.eaglesakura.andriders.basicui;
 
+import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.basicui.display.CadenceDisplaySender;
+import com.eaglesakura.andriders.basicui.display.DisplayDataSender;
 import com.eaglesakura.andriders.basicui.display.HeartrateDisplaySender;
 import com.eaglesakura.andriders.basicui.display.SpeedDisplaySender;
 import com.eaglesakura.andriders.display.ZoneColor;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.PluginInformation;
@@ -69,7 +72,7 @@ public class BasicExtensionService extends Service implements AcePluginService {
         result.add(CadenceDisplaySender.newInformation(this));
         result.add(SpeedDisplaySender.newInformation(this));
 
-        if (connection.isDebugable()) {
+        if (connection.isDebuggable()) {
             {
                 DisplayKey info = new DisplayKey(this, DEBUG_RANDOM_HEARTRATE);
                 info.setTitle("DBG:ダミー心拍");
@@ -88,18 +91,31 @@ public class BasicExtensionService extends Service implements AcePluginService {
         }
 
         ZoneColor zoneColor = new ZoneColor(this);
-        new HeartrateDisplaySender(connection, zoneColor).bind();
-        new CadenceDisplaySender(connection, zoneColor).bind();
-        new SpeedDisplaySender(connection, zoneColor).bind();
+        List<DisplayDataSender> senders = new ArrayList<>();
+        senders.add(new HeartrateDisplaySender(connection, zoneColor).bind());
+        senders.add(new CadenceDisplaySender(connection, zoneColor).bind());
+        senders.add(new SpeedDisplaySender(connection, zoneColor).bind());
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override
             protected void onUpdate() {
-                postDisplayData(connection);
+                postDummyHeartrate(connection);
+                double delta = mDisplayCommitLoop.getDeltaTime();
+                for (DisplayDataSender sender : senders) {
+                    sender.onUpdate(delta);
+                }
             }
         };
         mDisplayCommitLoop.setFrameRate(1);
         mDisplayCommitLoop.connect();
+
+
+        // 通知を送る
+        connection.getDisplayExtension().queueNotification(
+                new NotificationData.Builder(this, NotificationData.ID_CENTRAL_SERVICE_BOOT)
+                        .icon(R.mipmap.ic_launcher)
+                        .message("Andriders Central Engineを起動しました").getNotification()
+        );
     }
 
     @Override
@@ -124,11 +140,6 @@ public class BasicExtensionService extends Service implements AcePluginService {
     @Override
     public void startSetting(CentralEngineConnection connection) {
 
-    }
-
-    @UiThread
-    void postDisplayData(CentralEngineConnection session) {
-        postDummyHeartrate(session);
     }
 
     /**

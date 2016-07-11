@@ -35,10 +35,11 @@ public class CadenceDisplaySender extends DisplayDataSender {
         MargarineKnife.bind(this, this);
     }
 
-    public void bind() {
+    public CadenceDisplaySender bind() {
         if (mDataReceiver != null) {
             mDataReceiver.addHandler(mCadenceHandler);
         }
+        return this;
     }
 
     private SensorDataReceiver.CadenceHandler mCadenceHandler = new SensorDataReceiver.CadenceHandler() {

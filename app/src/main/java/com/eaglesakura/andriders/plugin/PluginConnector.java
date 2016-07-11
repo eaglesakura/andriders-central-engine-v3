@@ -2,18 +2,21 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.andriders.db.plugin.ActivePlugin;
 import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
+import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
 import com.eaglesakura.andriders.plugin.internal.DisplayCommand;
-import com.eaglesakura.andriders.plugin.internal.ExtensionServerImpl;
+import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.serialize.PluginProtocol;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
+import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.service.central.CentralService;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
@@ -30,6 +33,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -88,6 +92,12 @@ public class PluginConnector extends CommandClient {
     private Worker<DataDisplayManager> mDataDisplayManagerWorker = it -> {
     };
 
+    /**
+     * 通知処理を行う
+     */
+    private Worker<NotificationDisplayManager> mNotificationDisplayManagerWorker = it -> {
+    };
+
     @Inject(StorageProvider.class)
     Settings mSettings;
 
@@ -126,6 +136,10 @@ public class PluginConnector extends CommandClient {
         mDataDisplayManagerWorker = worker;
     }
 
+    public void setNotificationWorker(Worker<NotificationDisplayManager> worker) {
+        mNotificationDisplayManagerWorker = worker;
+    }
+
     /**
      * 拡張機能に接続する
      */
@@ -133,14 +147,14 @@ public class PluginConnector extends CommandClient {
         this.mPackageInfo = info;
         mName = new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name);
 
-        final Intent intent = new Intent(ExtensionServerImpl.ACTION_ACE_EXTENSION_BIND + "@" + mSessionId);
+        final Intent intent = new Intent(PluginServerImpl.ACTION_ACE_EXTENSION_BIND + "@" + mSessionId);
         intent.setComponent(mName);
-        intent.putExtra(ExtensionServerImpl.EXTRA_SESSION_ID, mSessionId);
-        intent.putExtra(ExtensionServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
-        intent.putExtra(ExtensionServerImpl.EXTRA_DEBUGABLE, mSettings.isDebuggable());
+        intent.putExtra(PluginServerImpl.EXTRA_SESSION_ID, mSessionId);
+        intent.putExtra(PluginServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
+        intent.putExtra(PluginServerImpl.EXTRA_DEBUGGABLE, mSettings.isDebuggable());
 
         if (mCentralServiceMode) {
-            intent.putExtra(ExtensionServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
+            intent.putExtra(PluginServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
         }
 
         UIHandler.postUI(() -> connectToSever(intent));
@@ -195,7 +209,7 @@ public class PluginConnector extends CommandClient {
      * 表示IDから情報を取得する
      */
     public DisplayKey findDisplayInformation(String id) {
-        for (DisplayKey info : getDisplayInformations()) {
+        for (DisplayKey info : getDisplayInformationList()) {
             if (info.getId().equals(id)) {
                 return info;
             }
@@ -207,7 +221,7 @@ public class PluginConnector extends CommandClient {
     /**
      * サイコン表示内容を取得する
      */
-    public synchronized List<DisplayKey> getDisplayInformations() {
+    public synchronized List<DisplayKey> getDisplayInformationList() {
         if (mDisplayInformations == null) {
             try {
                 Payload payload = requestPostToServer(CentralDataCommand.CMD_getDisplayInformations, null);
@@ -222,11 +236,22 @@ public class PluginConnector extends CommandClient {
     }
 
     /**
+     * Centralの起動が完了した
+     */
+    public void onCentralBootCompleted(@NonNull CentralContext centralContext) {
+        try {
+            requestPostToServer(CentralDataCommand.CMD_onCentralBootCompleted, null);
+        } catch (Exception e) {
+            AppLog.report(e);
+        }
+    }
+
+    /**
      * 再起動を行う
      */
     public void requestReboot() {
         try {
-            requestPostToServer(CentralDataCommand.CMD_requestRebootExtention, null);
+            requestPostToServer(CentralDataCommand.CMD_requestRebootPlugin, null);
         } catch (Exception e) {
 
         }
@@ -293,9 +318,19 @@ public class PluginConnector extends CommandClient {
         mCmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
             List<DisplayData> list = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
             // 表示内容を更新する
-            mDataDisplayManagerWorker.request(it -> {
-                it.putValue(PluginConnector.this, list);
-            });
+            mDataDisplayManagerWorker.request(it -> it.putValue(PluginConnector.this, list));
+            return null;
+        });
+
+        /**
+         * 通知を行う
+         */
+        mCmdMap.addAction(DisplayCommand.CMD_queueNotification, (Object sender, String cmd, Payload payload) -> {
+
+            NotificationData notificationData = new NotificationData(mContext, payload.getBuffer());
+            // 通知を送信する
+            mNotificationDisplayManagerWorker.request(it -> it.queue(notificationData));
+
             return null;
         });
     }

@@ -1,23 +1,17 @@
 package com.eaglesakura.andriders.ui.navigation.gadget;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.PluginManager;
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
-import com.eaglesakura.andriders.ui.navigation.plugin.PluginCategorySettingFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.android.rx.SubscribeTarget;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.support.annotation.Nullable;
 
 /**
  * 接続する機材の設定を行う
  */
-public class GadgetSettingFragmentMain extends BaseNavigationFragment {
+public class GadgetSettingFragmentMain extends NavigationBaseFragment {
 
     FragmentHolder<GadgetSettingFragment> mGadgetSettingFragment = FragmentHolder.newInstance(this, GadgetSettingFragment.class, R.id.Content_List_Root);
 
@@ -37,6 +31,12 @@ public class GadgetSettingFragmentMain extends BaseNavigationFragment {
         super.onResume();
 
         mGadgetSettingFragment.onResume();
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getTitle() {
+        return getString(R.string.Main_Menu_Gadgets);
     }
 
     public static GadgetSettingFragmentMain newInstance(Context context) {

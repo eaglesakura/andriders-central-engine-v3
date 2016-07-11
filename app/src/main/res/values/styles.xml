@@ -1,14 +1,15 @@
 <resources>
 
-    <style name="App.Theme" parent="EsMaterial.Theme.Red.NoActionBar">
+    <style name="App.Theme" parent="EsMaterial.Theme">
+        <item name="colorPrimaryDark">@color/EsMaterial.Red.600</item>
+        <item name="colorPrimary">@color/EsMaterial.Red.500</item>
         <item name="colorAccent">@color/EsMaterial.LightGreen.Button.Normal</item>
         <item name="android:windowAnimationStyle">@style/EsMaterial.Animation.Activity</item>
-        <item name="android:textSize">@dimen/App.Font.Normal</item>
     </style>
 
     <style name="App.Theme.Button.Normal" parent="App.Theme">
-        <item name="colorButtonNormal">@color/EsMaterial.LightGreen.Button.Normal</item>
-        <item name="android:textColor">@color/EsMaterial.LightGreen.50</item>
+        <item name="colorButtonNormal">@color/EsMaterial.White.Button.Normal</item>
+        <item name="android:textColor">@color/EsMaterial.Grey.800</item>
     </style>
 
     <style name="App.Theme.Button.Alert" parent="App.Theme">
@@ -19,6 +20,10 @@
     <style name="App.Theme.Button.Session" parent="App.Theme">
         <item name="colorButtonNormal">@color/EsMaterial.Blue.Button.Normal</item>
         <item name="android:textColor">@color/EsMaterial.Blue.50</item>
+    </style>
+
+    <style name="App.Theme.Switch" parent="App.Theme">
+        <item name="android:minHeight">@dimen/EsMaterial.Button.MinHeight</item>
     </style>
 
     <style name="App.Theme.Font.Title" parent="App.Theme">
@@ -38,6 +43,13 @@
         <attr name="headerText" format="string"/>
     </declare-styleable>
 
+    <declare-styleable name="AppProgressView">
+        <attr name="progressText" format="string"/>
+    </declare-styleable>
+    <style name="App.Theme.ProgressBar" parent="SmoothProgressBar">
+        <item name="spb_colors">@array/App_Widget_Progress_Color_Table</item>
+        <item name="spb_interpolator">spb_interpolator_decelerate</item>
+    </style>
     <style name="App.Theme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="App.Theme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>

@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.service.central.notification;
 
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
 import com.eaglesakura.android.graphics.Graphics;
+import com.eaglesakura.util.RandomUtil;
 
 import android.content.Context;
 import android.graphics.Canvas;

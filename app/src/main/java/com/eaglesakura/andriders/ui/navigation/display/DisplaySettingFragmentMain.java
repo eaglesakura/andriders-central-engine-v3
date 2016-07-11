@@ -1,17 +1,18 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 
 /**
  * サイコンの表示内容を確定するFragment
  */
-public class DisplaySettingFragmentMain extends BaseNavigationFragment implements AppTargetSelectFragment.Callback {
+public class DisplaySettingFragmentMain extends NavigationBaseFragment implements AppTargetSelectFragment.Callback {
     public DisplaySettingFragmentMain() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_setting_display_main);
     }
@@ -39,6 +40,12 @@ public class DisplaySettingFragmentMain extends BaseNavigationFragment implement
     @Override
     public void onApplicationSelected(AppTargetSelectFragment fragment, AppTargetSelectFragment.AppInfo selected) {
         AndroidThreadUtil.assertUIThread();
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getTitle() {
+        return getString(R.string.Main_Menu_CycleComputer);
     }
 
     public static DisplaySettingFragmentMain newInstance(Context context) {

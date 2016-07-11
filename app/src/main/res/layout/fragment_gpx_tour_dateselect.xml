@@ -6,10 +6,9 @@
 
     <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
                  android:layout_weight="1"
-                 style="@style/EsMaterial.Theme.Widget">
+                 style="@style/EsMaterial.Widget">
 
-        <TextView
-                style="@style/EsMaterial.Font.Normal"
+        <android.support.v7.widget.AppCompatTextView
                 android:layout_width="match_parent" android:layout_height="match_parent"
                 android:text="時差調整方法を選択してください。"/>
     </FrameLayout>
@@ -17,7 +16,7 @@
     <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
                  android:layout_weight="1">
         <RadioGroup
-                style="@style/EsMaterial.Theme.Widget"
+                style="@style/EsMaterial.Widget"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             <android.support.v7.widget.AppCompatRadioButton android:layout_width="match_parent"

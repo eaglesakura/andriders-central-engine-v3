@@ -13,7 +13,7 @@
             android:id="@+id/Service.Central.Display.NotConnected"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
                 style="@style/CycleComputer.Font.Normal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             android:id="@+id/Service.Central.Display.Basic.Root"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/Service.Central.Display.Basic.Value"
                 style="@style/CycleComputer.Font.Normal"
                 android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
                 android:singleLine="true"
                 android:text="@string/Display.Common.NoData"/>
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/Service.Central.Display.Basic.Title"
                 style="@style/CycleComputer.Font.Small"
                 android:layout_width="wrap_content"
@@ -53,13 +53,13 @@
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/CycleComputer.Margin.Normal">
 
-            <View
+            <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/Service.Central.Display.Basic.ZoneColor.Left"
                     android:layout_width="@dimen/CycleComputer.Zonebar.Width"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"/>
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/Service.Central.Display.Basic.ZoneTitle.Left"
                     style="@style/CycleComputer.Font.Small"
                     android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/CycleComputer.Margin.Normal">
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/Service.Central.Display.Basic.ZoneTitle.Right"
                     style="@style/CycleComputer.Font.Small"
                     android:layout_width="wrap_content"

@@ -3,12 +3,14 @@ package com.eaglesakura.andriders.ui.navigation.info;
 import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.ui.widget.AppKeyValueView;
 import com.eaglesakura.andriders.v2.db.CentralServiceSettings;
 import com.eaglesakura.andriders.v2.db.DebugSettings;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.device.external.StorageInfo;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.license.LicenseViewActivity;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.margarine.OnCheckedChanged;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.util.PackageUtil;
@@ -50,10 +52,10 @@ public class BuildInformationFragment extends AppBaseFragment {
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
 
-        AQuery q = new AQuery(getView());
-        q.id(R.id.Information_App_Version).text(BuildConfig.VERSION_NAME);
-        q.id(R.id.Information_App_BuildDate).text(BuildConfig.BUILD_DATE);
-        q.id(R.id.Information_App_SDKVersion).text(com.eaglesakura.andriders.sdk.BuildConfig.ACE_SDK_VERSION);
+        AQuery q = new AQuery(self.getView());
+        q.id(R.id.Information_App_Version).getView(AppKeyValueView.class).setValueText(BuildConfig.VERSION_NAME);
+        q.id(R.id.Information_App_BuildDate).getView(AppKeyValueView.class).setValueText(BuildConfig.BUILD_DATE);
+        q.id(R.id.Information_App_SDKVersion).getView(AppKeyValueView.class).setValueText(com.eaglesakura.andriders.sdk.BuildConfig.ACE_SDK_VERSION);
         q.id(R.id.Information_App_Debug).checked(mDebugSettings.getDebugEnable());
 
         if (mDebugSettings.getDebugEnable()) {
@@ -111,13 +113,10 @@ public class BuildInformationFragment extends AppBaseFragment {
      */
     @OnClick(R.id.Debug_Data_Dump)
     void debugClickDataDump() {
-        pushProgress("pull");
         asyncUI(it -> {
-            try {
+            try (ProgressToken token = pushProgress("pull")) {
                 File dst = new File(StorageInfo.getExternalStorageRoot(getActivity()), "/debug/" + StringUtil.toString(new Date()));
                 PackageUtil.dumpPackageDataDirectory(getActivity(), dst);
-            } finally {
-                popProgress();
             }
             return this;
         }).start();

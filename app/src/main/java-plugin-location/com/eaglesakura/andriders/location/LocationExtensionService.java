@@ -88,7 +88,7 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
 
         List<DisplayKey> result = new ArrayList<>();
 
-        if (connection.isDebugable()) {
+        if (connection.isDebuggable()) {
             // 位置情報をデバッグ表示
             {
                 DisplayKey info = new DisplayKey(this, "debug.loc");

@@ -101,7 +101,7 @@ public class DisplayRenderer {
             mDisplayStub.addView(root, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
 
-        PluginManager extensionClientManager = mCentralContext.getExtensionClientManager();
+        PluginManager extensionClientManager = mCentralContext.getPluginManager();
         DataDisplayManager displayManager = mCentralContext.getDisplayManager();
 
         for (LayoutSlot slot : mDisplayLayoutManager.listSlots()) {
@@ -162,7 +162,7 @@ public class DisplayRenderer {
      * 通知のレンダリングを行う
      */
     private void onDisplayRefresh() {
-        PluginManager extensionClientManager = mCentralContext.getExtensionClientManager();
+        PluginManager extensionClientManager = mCentralContext.getPluginManager();
 
         if (mDisplayLayoutManager == null || !extensionClientManager.isConnected()) {
             return;

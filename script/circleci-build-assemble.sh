@@ -1,21 +1,10 @@
 #! /bin/sh
 
 # ビルド
-./gradlew ciClean clean
-
-if [ $? -ne 0 ]; then
-    echo "build failed..."
-    exit 1
-fi
-
-./gradlew assembleGoogleplayRelease
-
-if [ $? -ne 0 ]; then
-    echo "build failed..."
-    exit 1
-fi
-
-./gradlew assembleGoogleplayDebug
+./gradlew -Dorg.gradle.parallel=false  \
+          -Dorg.gradle.daemon=false \
+          -Dorg.gradle.jvmargs="-Xmx1024m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" \
+          :app:assembleGoogleplayDebug :app:assembleGoogleplayRelease
 
 if [ $? -ne 0 ]; then
     echo "build failed..."

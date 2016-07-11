@@ -42,6 +42,11 @@ public class NotificationRenderer {
         mCentralContext = centralContext;
     }
 
+    public void setNotificationView(NotificationView notificationView) {
+        mNotificationView = notificationView;
+        mNotificationView.setNotificationManager(mCentralContext.getNotificationManager());
+    }
+
     public void connect() {
         mLoopController = new HandlerLoopController(UIHandler.getInstance()) {
             @Override
@@ -51,6 +56,7 @@ public class NotificationRenderer {
                 }
             }
         };
+        mLoopController.setFrameRate(NOTIFICATION_FRAME_RATE);
         mLoopController.connect();
     }
 

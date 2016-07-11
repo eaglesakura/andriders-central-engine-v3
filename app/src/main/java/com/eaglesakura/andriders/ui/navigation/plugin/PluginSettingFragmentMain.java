@@ -3,7 +3,8 @@ package com.eaglesakura.andriders.ui.navigation.plugin;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.ui.navigation.BaseNavigationFragment;
+import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
@@ -15,7 +16,7 @@ import android.support.v4.app.FragmentTransaction;
 /**
  * 拡張機能の設定を行う。
  */
-public class PluginSettingFragmentMain extends BaseNavigationFragment {
+public class PluginSettingFragmentMain extends NavigationBaseFragment {
 
     PluginManager mClientManager;
 
@@ -72,15 +73,11 @@ public class PluginSettingFragmentMain extends BaseNavigationFragment {
         super.onResume();
 
         async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<PluginManager> task) -> {
-            try {
-                pushProgress(R.string.Common_File_Load);
-
+            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
                 PluginManager clientManager = new PluginManager(getActivity());
                 clientManager.connect(PluginManager.ConnectMode.All);
 
                 return clientManager;
-            } finally {
-                popProgress();
             }
         }).completed((it, task) -> {
             mClientManager = it;

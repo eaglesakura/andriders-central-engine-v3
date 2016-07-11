@@ -8,9 +8,15 @@ import com.google.android.gms.fitness.data.Value;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 
+import com.eaglesakura.andriders.util.AppUtil;
+import com.eaglesakura.android.gms.util.PlayServiceUtil;
+import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.Util;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,17 +29,17 @@ public class GoogleApiUtil {
      * <br>
      * 取得できなかったら負の値を返す
      */
-    public static float getUserWeightFromFit(GoogleApiClient client) {
+    public static float getUserWeightFromFit(GoogleApiClient client, CancelCallback cancelCallback) throws TaskCanceledException {
         if (AndroidThreadUtil.isUIThread()) {
             throw new IllegalStateException("call uithread");
         }
 
         DataReadRequest request = new DataReadRequest.Builder()
-                .setTimeRange(Util.getTodayStart().getTime() - (1000 * 3600 * 24 * 7), System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+                .setTimeRange(DateUtil.getDateStart(new Date(), AppUtil.DEFAULT_TIMEZONE).getTime() - (1000 * 3600 * 24 * 7), System.currentTimeMillis(), TimeUnit.MILLISECONDS)
                 .setLimit(1)
                 .read(DataType.TYPE_WEIGHT)
                 .build();
-        DataReadResult readResult = Fitness.HistoryApi.readData(client, request).await();
+        DataReadResult readResult = PlayServiceUtil.await(Fitness.HistoryApi.readData(client, request), cancelCallback);
         DataSet dataSet = readResult.getDataSet(DataType.TYPE_WEIGHT);
 
         try {

@@ -1,10 +1,12 @@
 package com.eaglesakura.andriders.service.central;
 
+import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
@@ -35,7 +37,7 @@ import android.support.annotation.NonNull;
 public class CentralContext implements Disposable {
 
     @NonNull
-    private final Service mContext;
+    private Service mContext;
 
     /**
      * システム時計
@@ -88,7 +90,7 @@ public class CentralContext implements Disposable {
      * 拡張機能管理
      */
     @NonNull
-    PluginManager mExtensionClientManager;
+    PluginManager mPluginManager;
 
     /**
      * 初期化が完了していればtrue
@@ -104,6 +106,11 @@ public class CentralContext implements Disposable {
      * セントラルを更新するインターバル（ミリ秒）
      */
     static final int CENTRAL_UPDATE_INTERVAL_MS = 1000;
+
+    /**
+     * 通知レンダリングのフレームレート
+     */
+    static final int NOTIFICATION_UPDATE_INTERVAL_MS = 1000 / 30;
 
     /**
      * セントラルデータをDBに書き出すインターバル（秒）
@@ -124,8 +131,9 @@ public class CentralContext implements Disposable {
         mCentralData = new CentralDataManager(context, mClock);
         mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationDisplayManager(mContext, mClock);
+        mNotificationManager.addListener(mNotificationShowingListener);
 
-        mExtensionClientManager = new PluginManager(mContext);
+        mPluginManager = new PluginManager(mContext);
     }
 
     /**
@@ -143,8 +151,8 @@ public class CentralContext implements Disposable {
         return mNotificationManager;
     }
 
-    public PluginManager getExtensionClientManager() {
-        return mExtensionClientManager;
+    public PluginManager getPluginManager() {
+        return mPluginManager;
     }
 
     /**
@@ -166,21 +174,22 @@ public class CentralContext implements Disposable {
     /**
      * 拡張機能を初期化する
      */
-    private void initExtensions() throws Throwable {
-        mExtensionClientManager.connect(PluginManager.ConnectMode.ActiveOnly);
-        for (PluginConnector client : mExtensionClientManager.listClients()) {
+    private void initPlugins() throws Throwable {
+        mPluginManager.connect(PluginManager.ConnectMode.ActiveOnly);
+        for (PluginConnector client : mPluginManager.listClients()) {
             // サイコンデータ用コールバックを指定する
             client.setCentralWorker((PluginConnector.Action<CentralDataManager> action) -> {
-                post(() -> {
-                    action.callback(mCentralData);
-                });
+                post(() -> action.callback(mCentralData));
             });
 
-            // TODO ディスプレイ設定用コールバックを指定する
+            // ディスプレイ設定用コールバックを指定する
             client.setDisplayWorker((PluginConnector.Action<DataDisplayManager> action) -> {
-                post(() -> {
-                    action.callback(mDisplayManager);
-                });
+                post(() -> action.callback(mDisplayManager));
+            });
+
+            // 通知表示用コールバックを指定する
+            client.setNotificationWorker(action -> {
+                post(() -> action.callback(mNotificationManager));
             });
         }
     }
@@ -191,11 +200,16 @@ public class CentralContext implements Disposable {
     public void onServiceInitializeCompleted() {
         mLifecycleDelegate.onCreate();
         newTask(SubscribeTarget.GlobalPipeline, task -> {
-            initExtensions();
+            initPlugins();
             return this;
         }).completed((result, task) -> {
             AppLog.system("Completed Initialize");
             mInitialized = true;
+
+            // Pluginに起動完了を通知する
+            for (PluginConnector plugin : mPluginManager.listClients()) {
+                plugin.onCentralBootCompleted(this);
+            }
         }).failed((error, task) -> {
             AppLog.system("Failed Initialize :: " + error.getMessage());
         }).start();
@@ -205,6 +219,7 @@ public class CentralContext implements Disposable {
         CentralUpdate,
         CentralBroadcast,
         CentralDbCommit,
+        NotificationUpdate,
     }
 
     /**
@@ -225,9 +240,13 @@ public class CentralContext implements Disposable {
             mCentralData.onUpdate();
         }
 
+        if (mTimers.endIfOverTime(TimerType.NotificationUpdate, NOTIFICATION_UPDATE_INTERVAL_MS)) {
+            mNotificationManager.onUpdate();
+        }
+
         // データのブロードキャストを行う
         if (mTimers.endIfOverTime(TimerType.CentralBroadcast, DATA_BROADCAST_INTERVAL_MS)) {
-            requestBroadcastBasicDatas();
+            broadcastCentralData();
         }
 
         // データのコミットを行う
@@ -245,7 +264,7 @@ public class CentralContext implements Disposable {
                 .observeOn(ObserveTarget.FireAndForget)
                 .subscribeOn(SubscribeTarget.GlobalPipeline)
                 .async(task -> {
-                    mExtensionClientManager.disconnect();
+                    mPluginManager.disconnect();
                     return this;
                 })
                 .finalized(task -> {
@@ -281,27 +300,44 @@ public class CentralContext implements Disposable {
                 .completed((result, task) -> {
                     AppLog.db("CentralCommit Completed");
                 })
+                .failed((error, task) -> {
+                    AppLog.report(error);
+                })
                 .start();
     }
 
+    /**
+     * 通知のレンダリングを開始したら、全アプリへBroadcastする
+     */
+    NotificationDisplayManager.OnNotificationShowingListener mNotificationShowingListener = (self, data) -> {
+        try {
+            Intent intent = new Intent();
+            intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
+            intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
+            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
+
+            mContext.sendBroadcast(intent);
+        } catch (Throwable e) {
+            AppLog.report(e);
+        }
+    };
 
     /**
      * データを各アプリへ送信する
      */
-    void requestBroadcastBasicDatas() {
+    void broadcastCentralData() {
         RawCentralData data = mCentralData.getLatestCentralData();
         if (data == null) {
             AppLog.broadcast("mCentralData.getLatestCentralData() == null");
         }
         Intent intent = new Intent();
-        intent.setAction(CentralDataReceiver.INTENT_ACTION);
+        intent.setAction(CentralDataReceiver.ACTION_UPDATE_CENTRAL_DATA);
         intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
         try {
-            intent.putExtra(CentralDataReceiver.INTENT_EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(data, true));
+            intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(data, true));
+            mContext.sendBroadcast(intent);
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLog.report(e);
         }
-
-        mContext.sendBroadcast(intent);
     }
 }

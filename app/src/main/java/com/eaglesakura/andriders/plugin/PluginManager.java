@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
 import com.eaglesakura.andriders.db.plugin.PluginDatabase;
-import com.eaglesakura.andriders.plugin.internal.ExtensionServerImpl;
+import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
@@ -50,7 +50,7 @@ public class PluginManager {
      */
     public static List<ResolveInfo> listExtensionServices(Context context) {
         PackageManager pm = context.getPackageManager();
-        Intent intent = new Intent(ExtensionServerImpl.ACTION_ACE_EXTENSION_BIND);
+        Intent intent = new Intent(PluginServerImpl.ACTION_ACE_EXTENSION_BIND);
         List<ResolveInfo> resolveInfos = pm.queryIntentServices(intent, 0);
         return resolveInfos;
     }
@@ -71,7 +71,7 @@ public class PluginManager {
         synchronized (mPlugins) {
             List<PluginConnector> result = new ArrayList<>();
             for (PluginConnector client : mPlugins) {
-                if (!CollectionUtil.isEmpty(client.getDisplayInformations())) {
+                if (!CollectionUtil.isEmpty(client.getDisplayInformationList())) {
                     result.add(client);
                 }
             }
@@ -103,7 +103,7 @@ public class PluginManager {
     public PluginConnector findDisplayClient(DisplayKey check) {
         synchronized (mPlugins) {
             for (PluginConnector client : mPlugins) {
-                List<DisplayKey> informations = client.getDisplayInformations();
+                List<DisplayKey> informations = client.getDisplayInformationList();
                 if (CollectionUtil.isEmpty(informations)) {
                     continue;
                 }

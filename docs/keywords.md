@@ -30,4 +30,3 @@ KeyはExtensionから与えられた一意の文字列（別拡張機能で衝�
 ## plugin
 
 ACE-SDKを通して連携されるService（機能）。実態はAndroidのServiceを用いる。
-全ての

@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
@@ -79,11 +80,8 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         mDisplayValues.clear();
         async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<PluginManager> it) -> {
             PluginManager clientManager = new PluginManager(getContext());
-            try {
-                pushProgress(R.string.Common_File_Load);
+            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
                 clientManager.connect(PluginManager.ConnectMode.ActiveOnly);
-            } finally {
-                popProgress();
             }
             return clientManager;
         }).completed((manager, task) -> {
@@ -100,27 +98,27 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     private void loadDisplayDatas(final String newPackageName) {
         asyncUI((RxTask<DataLayoutManager> it) -> {
             DataLayoutManager slotManager = null;
-            pushProgress(R.string.Common_File_Load);
-            // 拡張機能のアイコンを読み込む
-            mDisplayValues.clear();
-            for (PluginConnector client : mExtensionClientManager.listDisplayClients()) {
-                client.loadIcon();
-                for (DisplayKey info : client.getDisplayInformations()) {
-                    mDisplayValues.add(info);
-                }
-            }
 
-            slotManager = new DataLayoutManager(getActivity());
-            slotManager.load(DataLayoutManager.Mode.Edit, newPackageName);
-            return slotManager;
+            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
+                // 拡張機能のアイコンを読み込む
+                mDisplayValues.clear();
+                for (PluginConnector client : mExtensionClientManager.listDisplayClients()) {
+                    client.loadIcon();
+                    for (DisplayKey info : client.getDisplayInformationList()) {
+                        mDisplayValues.add(info);
+                    }
+                }
+
+                slotManager = new DataLayoutManager(getActivity());
+                slotManager.load(DataLayoutManager.Mode.Edit, newPackageName);
+                return slotManager;
+            }
         }).completed((slotManager, task) -> {
             AppLog.system("display load completed :: %s", newPackageName);
             mDisplaySlotManager = slotManager;
             for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
                 updateSlotPreview(mDisplaySlotManager, slot);
             }
-        }).finalized(task -> {
-            popProgress();
         }).start();
     }
 
@@ -184,7 +182,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             ViewGroup insertRoot = q.id(R.id.Extension_ItemSelector_Root).getView(ViewGroup.class);
 
             // Extensionごとの表示内容を並べる
-            for (final DisplayKey info : client.getDisplayInformations()) {
+            for (final DisplayKey info : client.getDisplayInformationList()) {
                 View item = inflater.inflate(R.layout.card_displayinfo_item, null);
                 ((TextView) item.findViewById(R.id.Extension_ItemSelector_Name)).setText(info.getTitle());
                 insertRoot.addView(item, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
