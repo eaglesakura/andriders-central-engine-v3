@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.dao.session.DaoSession;
 import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
-import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;

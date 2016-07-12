@@ -10,7 +10,7 @@ import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.session.SessionData;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.serialize.RawCentralData;

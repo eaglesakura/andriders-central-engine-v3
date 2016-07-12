@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders;
 
-import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.provider.TestStorageProvider;
 import com.eaglesakura.android.AndroidSupportTestCase;

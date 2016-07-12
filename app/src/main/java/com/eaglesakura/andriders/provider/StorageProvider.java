@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.android.garnet.Depend;
 import com.eaglesakura.android.garnet.Provide;
 import com.eaglesakura.android.garnet.Provider;

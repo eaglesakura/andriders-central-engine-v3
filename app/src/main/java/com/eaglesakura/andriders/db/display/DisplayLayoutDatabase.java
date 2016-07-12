@@ -23,7 +23,7 @@ import de.greenrobot.dao.query.QueryBuilder;
  *
  */
 public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
-    private static final int SUPPORTED_DATABASE_VERSION = 0x01;
+    private static final int SUPPORTED_DATABASE_VERSION = 1;
 
     private static final String PACKAGE_NAME_DEFAULT = "null";
 
@@ -157,7 +157,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, "display_layout.db", null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, context.getDatabasePath("display_layout.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
 
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotal;
-import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSessionData;

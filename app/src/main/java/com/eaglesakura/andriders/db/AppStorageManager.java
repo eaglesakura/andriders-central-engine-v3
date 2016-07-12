@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.db.storage;
+package com.eaglesakura.andriders.db;
 
 import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.android.device.external.StorageInfo;

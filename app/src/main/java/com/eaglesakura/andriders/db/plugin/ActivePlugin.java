@@ -4,6 +4,9 @@ import com.eaglesakura.andriders.dao.plugin.DbActivePlugin;
 
 import android.support.annotation.NonNull;
 
+/**
+ * 有効になっているプラグイン情報を示す
+ */
 public class ActivePlugin {
     @NonNull
     DbActivePlugin mRaw;
