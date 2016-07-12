@@ -16,9 +16,7 @@ find . -type f -regex ".*/build/test-results/googleplayDebug/.*xml" -exec cp {} 
 }
 
 # テスト実行
-./gradlew -Dorg.gradle.parallel=false  \
-          -Dorg.gradle.daemon=false \
-          -Dorg.gradle.jvmargs="-Xmx1024m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" \
+./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1  \
           :app:testGoogleplayDebugUnitTest
 
 

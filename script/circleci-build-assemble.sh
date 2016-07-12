@@ -1,20 +1,11 @@
 #! /bin/sh
 
 # ビルド
-./gradlew -Dorg.gradle.parallel=false  \
-          -Dorg.gradle.daemon=false \
-          -Dorg.gradle.jvmargs="-Xmx1024m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError" \
-          :app:assembleGoogleplayDebug :app:assembleGoogleplayRelease
+./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1  \
+          :app:assembleGoogleplayDebug :app:assembleGoogleplayRelease \
+          ciCollectAndroidApps
 
 if [ $? -ne 0 ]; then
-    echo "build failed..."
-    exit 1
-fi
-
-# 成果物収集
-./gradlew ciCollectAndroidApps
-
-if [ $? -ne 0 ]; then
-    echo "unit test failed..."
+    echo "assemble failed..."
     exit 1
 fi
