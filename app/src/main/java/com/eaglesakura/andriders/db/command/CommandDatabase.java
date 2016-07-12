@@ -41,12 +41,12 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
     /**
      * 指定したカテゴリのコマンドを列挙する
      *
-     * @param cateogry 列挙するコマンド
+     * @param category 列挙するコマンド
      */
     @NonNull
-    public List<CommandData> list(@IntRange(from = CATEGORY_PROXIMITY, to = CATEGORY_DISTANCE) int cateogry) {
+    public List<CommandData> list(@IntRange(from = CATEGORY_PROXIMITY, to = CATEGORY_DISTANCE) int category) {
         List<DbCommand> commands = session.getDbCommandDao().queryBuilder()
-                .where(DbCommandDao.Properties.Category.eq(cateogry))
+                .where(DbCommandDao.Properties.Category.eq(category))
                 .list();
 
         return CollectionUtil.asOtherList(commands, it -> new CommandData(it));

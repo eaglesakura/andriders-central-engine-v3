@@ -201,7 +201,6 @@ task generateCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     DbCommand.addIntProperty("category").notNull().index();    // コマンドの管理カテゴリ
     DbCommand.addStringProperty("packageName").notNull();  // 起動対象の対応アプリpackage
     DbCommand.addByteArrayProperty("iconPng").notNull(); // アイコンファイル
-    DbCommand.addStringProperty("appExtraKey").notNull();  // アプリ側が指定する拡張キー
 
     // 制御情報
     DbCommand.addByteArrayProperty("commandData");  // コマンドの付与情報（タイマー間隔、スピード等のメタ情報

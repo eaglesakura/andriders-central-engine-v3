@@ -27,9 +27,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         public final static Property Category = new Property(1, int.class, "category", false, "CATEGORY");
         public final static Property PackageName = new Property(2, String.class, "packageName", false, "PACKAGE_NAME");
         public final static Property IconPng = new Property(3, byte[].class, "iconPng", false, "ICON_PNG");
-        public final static Property AppExtraKey = new Property(4, String.class, "appExtraKey", false, "APP_EXTRA_KEY");
-        public final static Property CommandData = new Property(5, byte[].class, "commandData", false, "COMMAND_DATA");
-        public final static Property IntentData = new Property(6, byte[].class, "intentData", false, "INTENT_DATA");
+        public final static Property CommandData = new Property(4, byte[].class, "commandData", false, "COMMAND_DATA");
+        public final static Property IntentData = new Property(5, byte[].class, "intentData", false, "INTENT_DATA");
     };
 
 
@@ -49,9 +48,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
                 "'CATEGORY' INTEGER NOT NULL ," + // 1: category
                 "'PACKAGE_NAME' TEXT NOT NULL ," + // 2: packageName
                 "'ICON_PNG' BLOB NOT NULL ," + // 3: iconPng
-                "'APP_EXTRA_KEY' TEXT NOT NULL ," + // 4: appExtraKey
-                "'COMMAND_DATA' BLOB," + // 5: commandData
-                "'INTENT_DATA' BLOB);"); // 6: intentData
+                "'COMMAND_DATA' BLOB," + // 4: commandData
+                "'INTENT_DATA' BLOB);"); // 5: intentData
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_COMMAND_CATEGORY ON DB_COMMAND" +
                 " (CATEGORY);");
@@ -71,16 +69,15 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         stmt.bindLong(2, entity.getCategory());
         stmt.bindString(3, entity.getPackageName());
         stmt.bindBlob(4, entity.getIconPng());
-        stmt.bindString(5, entity.getAppExtraKey());
  
         byte[] commandData = entity.getCommandData();
         if (commandData != null) {
-            stmt.bindBlob(6, commandData);
+            stmt.bindBlob(5, commandData);
         }
  
         byte[] intentData = entity.getIntentData();
         if (intentData != null) {
-            stmt.bindBlob(7, intentData);
+            stmt.bindBlob(6, intentData);
         }
     }
 
@@ -98,9 +95,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
             cursor.getInt(offset + 1), // category
             cursor.getString(offset + 2), // packageName
             cursor.getBlob(offset + 3), // iconPng
-            cursor.getString(offset + 4), // appExtraKey
-            cursor.isNull(offset + 5) ? null : cursor.getBlob(offset + 5), // commandData
-            cursor.isNull(offset + 6) ? null : cursor.getBlob(offset + 6) // intentData
+            cursor.isNull(offset + 4) ? null : cursor.getBlob(offset + 4), // commandData
+            cursor.isNull(offset + 5) ? null : cursor.getBlob(offset + 5) // intentData
         );
         return entity;
     }
@@ -112,9 +108,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         entity.setCategory(cursor.getInt(offset + 1));
         entity.setPackageName(cursor.getString(offset + 2));
         entity.setIconPng(cursor.getBlob(offset + 3));
-        entity.setAppExtraKey(cursor.getString(offset + 4));
-        entity.setCommandData(cursor.isNull(offset + 5) ? null : cursor.getBlob(offset + 5));
-        entity.setIntentData(cursor.isNull(offset + 6) ? null : cursor.getBlob(offset + 6));
+        entity.setCommandData(cursor.isNull(offset + 4) ? null : cursor.getBlob(offset + 4));
+        entity.setIntentData(cursor.isNull(offset + 5) ? null : cursor.getBlob(offset + 5));
      }
     
     /** @inheritdoc */

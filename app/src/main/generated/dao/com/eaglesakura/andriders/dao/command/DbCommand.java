@@ -13,8 +13,6 @@ public class DbCommand {
     private String packageName;
     /** Not-null value. */
     private byte[] iconPng;
-    /** Not-null value. */
-    private String appExtraKey;
     private byte[] commandData;
     private byte[] intentData;
 
@@ -25,12 +23,11 @@ public class DbCommand {
         this.commandKey = commandKey;
     }
 
-    public DbCommand(String commandKey, int category, String packageName, byte[] iconPng, String appExtraKey, byte[] commandData, byte[] intentData) {
+    public DbCommand(String commandKey, int category, String packageName, byte[] iconPng, byte[] commandData, byte[] intentData) {
         this.commandKey = commandKey;
         this.category = category;
         this.packageName = packageName;
         this.iconPng = iconPng;
-        this.appExtraKey = appExtraKey;
         this.commandData = commandData;
         this.intentData = intentData;
     }
@@ -71,16 +68,6 @@ public class DbCommand {
     /** Not-null value; ensure this value is available before it is saved to the database. */
     public void setIconPng(byte[] iconPng) {
         this.iconPng = iconPng;
-    }
-
-    /** Not-null value. */
-    public String getAppExtraKey() {
-        return appExtraKey;
-    }
-
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setAppExtraKey(String appExtraKey) {
-        this.appExtraKey = appExtraKey;
     }
 
     public byte[] getCommandData() {

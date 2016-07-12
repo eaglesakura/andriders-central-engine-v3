@@ -15,4 +15,18 @@ public class CommandData {
     public CommandData(DbCommand raw) {
         mRaw = raw;
     }
+
+    public int getCategory() {
+        return mRaw.getCategory();
+    }
+
+    public String getCommandKey() {
+        return mRaw.getCommandKey();
+    }
+
+    public String getPackageName() {
+        return mRaw.getPackageName();
+    }
+
+
 }
