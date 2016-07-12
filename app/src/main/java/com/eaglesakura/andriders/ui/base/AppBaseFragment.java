@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.ui.base;
 
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 public abstract class AppBaseFragment extends SupportFragment {
     @Inject(StorageProvider.class)
-    protected Settings mSettings;
+    protected AppSettings mSettings;
 
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
@@ -37,16 +37,16 @@ public abstract class AppBaseFragment extends SupportFragment {
 
     }
 
-    public Settings getSettings() {
+    public AppSettings getSettings() {
         return mSettings;
     }
 
     /**
      * ユーザーデータを非同期ロードする
      */
-    public RxTask<Settings> asyncReloadSettings() {
-        return asyncUI((RxTask<Settings> task) -> {
-            Settings settings = getSettings();
+    public RxTask<AppSettings> asyncReloadSettings() {
+        return asyncUI((RxTask<AppSettings> task) -> {
+            AppSettings settings = getSettings();
             settings.load();
             return settings;
         }).start();
@@ -55,9 +55,9 @@ public abstract class AppBaseFragment extends SupportFragment {
     /**
      * ユーザーデータを非同期保存する
      */
-    public RxTask<Settings> asyncCommitSettings() {
-        return asyncUI((RxTask<Settings> task) -> {
-            Settings settings = getSettings();
+    public RxTask<AppSettings> asyncCommitSettings() {
+        return asyncUI((RxTask<AppSettings> task) -> {
+            AppSettings settings = getSettings();
             settings.commitAndLoad();
             return settings;
         }).start();

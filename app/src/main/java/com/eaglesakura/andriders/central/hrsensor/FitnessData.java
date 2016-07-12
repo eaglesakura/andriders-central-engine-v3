@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.central.hrsensor;
 
 import com.eaglesakura.andriders.central.base.BaseCalculator;
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.sensor.HeartrateZone;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.serialize.RawSessionData;
@@ -41,9 +41,9 @@ public class FitnessData extends BaseCalculator {
     private long mHeartrateDataTime;
 
     @NonNull
-    private Settings mSettings;
+    private AppSettings mSettings;
 
-    public FitnessData(@NonNull Clock clock, @NonNull Settings settings) {
+    public FitnessData(@NonNull Clock clock, @NonNull AppSettings settings) {
         super(clock);
         mSettings = settings;
     }
@@ -60,7 +60,7 @@ public class FitnessData extends BaseCalculator {
     }
 
     @NonNull
-    public Settings getSettings() {
+    public AppSettings getSettings() {
         return mSettings;
     }
 

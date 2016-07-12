@@ -1,12 +1,10 @@
 package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.central.log.SessionLogger;
 import com.eaglesakura.andriders.data.gpx.Gpx;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.data.gpx.GpxSegment;
-import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotal;
 import com.eaglesakura.andriders.serialize.RawCentralData;
@@ -17,11 +15,8 @@ import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
-import com.eaglesakura.android.margarine.MargarineKnife;
 import com.eaglesakura.util.CollectionUtil;
-import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.IOUtil;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.SerializeUtil;
 import com.eaglesakura.util.StringUtil;
@@ -33,7 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

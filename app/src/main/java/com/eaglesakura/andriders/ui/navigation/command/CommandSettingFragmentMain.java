@@ -1,12 +1,15 @@
 package com.eaglesakura.andriders.ui.navigation.command;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 import com.eaglesakura.andriders.ui.navigation.command.distance.DistanceCommandFragment;
 import com.eaglesakura.andriders.ui.navigation.command.proximity.ProximityCommandFragment;
 import com.eaglesakura.andriders.ui.navigation.command.speed.SpeedCommandFragment;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentPager;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 
 import android.support.design.widget.TabLayout;

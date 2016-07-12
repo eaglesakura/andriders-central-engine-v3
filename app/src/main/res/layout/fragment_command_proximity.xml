@@ -10,35 +10,55 @@
             android:layout_height="wrap_content">
 
         <LinearLayout
+                android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/EsMaterial.Button.Margin">
+                android:layout_height="wrap_content">
 
-            <include layout="@layout/view_proximity_item" android:layout_height="wrap_content"
-                     android:layout_width="match_parent" android:layout_weight="1"/>
 
-            <include layout="@layout/esm_material_separator_vertical"/>
+            <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/Command.Proximity.DisplayLink"
+                    android:layout_marginBottom="@dimen/EsMaterial.Button.Margin"
+                    android:text="ディスプレイ消灯時に無効化する"
+                    android:checked="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-            <include layout="@layout/view_proximity_item" android:layout_height="wrap_content"
-                     android:layout_width="match_parent" android:layout_weight="1"/>
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <include layout="@layout/esm_material_separator_vertical"/>
+                <include
+                        android:id="@+id/Command.Proximity.Index0"
+                        layout="@layout/view_proximity_item" android:layout_height="wrap_content"
+                        android:layout_width="match_parent" android:layout_weight="1"/>
 
-            <include layout="@layout/view_proximity_item" android:layout_height="wrap_content"
-                     android:layout_width="match_parent" android:layout_weight="1"/>
+                <include layout="@layout/esm_material_separator_vertical"/>
 
-            <include layout="@layout/esm_material_separator_vertical"/>
+                <include
+                        android:id="@+id/Command.Proximity.Index1"
+                        layout="@layout/view_proximity_item"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent" android:layout_weight="1"/>
 
-            <include layout="@layout/view_proximity_item" android:layout_height="wrap_content"
-                     android:layout_width="match_parent" android:layout_weight="1"/>
+                <include layout="@layout/esm_material_separator_vertical"/>
 
+                <include
+                        android:id="@+id/Command.Proximity.Index2"
+                        layout="@layout/view_proximity_item"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent" android:layout_weight="1"/>
+
+                <include layout="@layout/esm_material_separator_vertical"/>
+
+                <include
+                        android:id="@+id/Command.Proximity.Index3"
+                        layout="@layout/view_proximity_item"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent" android:layout_weight="1"/>
+
+            </LinearLayout>
         </LinearLayout>
-    </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.SwitchCompat
-            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-            android:text="ディスプレイ消灯時に無効化する"
-            android:checked="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+    </android.support.v7.widget.CardView>
 </LinearLayout>

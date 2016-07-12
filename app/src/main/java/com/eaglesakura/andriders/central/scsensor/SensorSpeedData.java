@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.central.scsensor;
 
 import com.eaglesakura.andriders.util.AppUtil;
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 
@@ -35,9 +35,9 @@ public class SensorSpeedData extends BaseCalculator {
     private double mMaxSpeedKmh;
 
     @NonNull
-    Settings mSettings;
+    AppSettings mSettings;
 
-    public SensorSpeedData(Clock clock, @NonNull Settings settings) {
+    public SensorSpeedData(Clock clock, @NonNull AppSettings settings) {
         super(clock);
         mSettings = settings;
     }

@@ -20,7 +20,7 @@ import java.io.FileOutputStream;
  * 全設定を管理するためのクラス
  */
 @Singleton
-public class Settings {
+public class AppSettings {
 
     final DebugSettings debugSettings;
 
@@ -34,7 +34,7 @@ public class Settings {
 
     final DefaultCommandSettings defaultCommandSettings;
 
-    public Settings(Context context) {
+    public AppSettings(Context context) {
         mAppContext = context.getApplicationContext();
         debugSettings = new DebugSettings(mAppContext);
         centralSettings = new CentralServiceSettings(mAppContext);

@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.db.storage.AppStorageManager;
 import com.eaglesakura.util.RandomUtil;
 
@@ -36,10 +36,10 @@ public class TestStorageProvider extends StorageProvider {
     }
 
     @Override
-    public Settings provideSettings() {
+    public AppSettings provideSettings() {
         assertEquals(++sCallSettingsCount, 1);  // シングルトンであることを保証する
 
-        Settings settings = super.provideSettings();
+        AppSettings settings = super.provideSettings();
 
         // 計算を確定させるため、フィットネスデータを構築する
         // 計算しやすくするため、データはキリの良い数にしておく

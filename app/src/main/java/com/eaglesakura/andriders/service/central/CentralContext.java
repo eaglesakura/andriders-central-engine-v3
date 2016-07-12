@@ -1,12 +1,10 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
-import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
@@ -66,7 +64,7 @@ public class CentralContext implements Disposable {
      */
     @Inject(StorageProvider.class)
     @NonNull
-    Settings mSettings;
+    AppSettings mSettings;
 
     /**
      * サイコンデータ本体

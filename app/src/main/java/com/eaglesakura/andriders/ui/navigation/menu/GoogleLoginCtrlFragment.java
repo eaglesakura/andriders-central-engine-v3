@@ -1,9 +1,8 @@
 package com.eaglesakura.andriders.ui.navigation.menu;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
-import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 
@@ -96,7 +95,7 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
                 }
 
                 // リリース番号をコミット
-                Settings settings = getSettings();
+                AppSettings settings = getSettings();
                 settings.getUpdateCheckProps().setInitializeReleased(RELEASE_INITIALIZE_NUMBER);
                 settings.commitAndLoad();
             }
