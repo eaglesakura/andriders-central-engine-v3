@@ -162,8 +162,9 @@ android {
 
     testOptions {
         unitTests.all {
-            // All the usual Gradle options.
-            jvmArgs eglibrary.ci.ciRunning ? "-Xms256m -Xmx1024m -XX:MaxPermSize=128m -XX:+HeapDumpOnOutOfMemoryError" : ""
+            if (eglibrary.ci.ciRunning) {
+                jvmArgs '-Xms256m', '-Xmx1024m', '-XX:MaxPermSize=128m', '-XX:+HeapDumpOnOutOfMemoryError'
+            }
         }
     }
     // 署名設定
