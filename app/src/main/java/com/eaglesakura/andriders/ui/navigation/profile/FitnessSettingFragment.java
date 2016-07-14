@@ -80,7 +80,7 @@ public class FitnessSettingFragment extends AppBaseFragment {
             ComponentName componentName = new ComponentName("com.google.android.apps.fitness", "com.google.android.apps.fitness.preferences.settings.SettingsActivity");
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setComponent(componentName);
-            startActivityForResult(intent, AppConstants.GOOGLE_FIT_SETTING);
+            startActivityForResult(intent, AppConstants.REQUEST_GOOGLE_FIT_SETTING);
 
             // 起動成功したから何もしない
             return;
@@ -112,7 +112,7 @@ public class FitnessSettingFragment extends AppBaseFragment {
     /**
      * GoogleFitの設定が完了した
      */
-    @OnActivityResult(AppConstants.GOOGLE_FIT_SETTING)
+    @OnActivityResult(AppConstants.REQUEST_GOOGLE_FIT_SETTING)
     void resultGoogleFitSettings(int result, Intent data) {
         syncFitnessData();
     }

@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.ui.navigation;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.ui.navigation.command.CommandSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.android.framework.BuildConfig;
@@ -48,8 +49,9 @@ public class NavigationActivity extends NavigationBaseActivity {
     @Override
     public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
 //        return new AppBootFragmentMain();
+        return new CommandSettingFragmentMain();
 //        return UserLogMain.newInstance(this);
-        return DisplaySettingFragmentMain.newInstance(this);
+//        return DisplaySettingFragmentMain.newInstance(this);
 //        return GpxImportTourFragmentMain.newInstance(this);
     }
 

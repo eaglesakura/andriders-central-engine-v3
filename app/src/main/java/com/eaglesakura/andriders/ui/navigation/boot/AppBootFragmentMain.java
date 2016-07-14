@@ -28,8 +28,6 @@ import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.lambda.CancelCallback;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.provider.Settings;
 import android.support.annotation.UiThread;
 import android.support.v7.app.AlertDialog;
 
@@ -151,7 +149,7 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
         }).failed((error, task) -> {
             AppLog.report(error);
             if (error instanceof SignInRequireException) {
-                startActivityForResult(((SignInRequireException) error).getSignInIntent(), AppConstants.GOOGLE_AUTH);
+                startActivityForResult(((SignInRequireException) error).getSignInIntent(), AppConstants.REQUEST_GOOGLE_AUTH);
             }
         }).cancelSignal(this).start();
     }
@@ -205,13 +203,13 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
         asyncUI((RxTask<Intent> task) -> {
             return PlayServiceUtil.newSignInIntent(AppUtil.newFullPermissionClient(getActivity()), () -> task.isCanceled());
         }).completed((result, task) -> {
-            startActivityForResult(result, AppConstants.GOOGLE_AUTH);
+            startActivityForResult(result, AppConstants.REQUEST_GOOGLE_AUTH);
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
         }).start();
     }
 
-    @OnActivityResult(AppConstants.GOOGLE_AUTH)
+    @OnActivityResult(AppConstants.REQUEST_GOOGLE_AUTH)
     void resultGoogleAuth(int result, Intent data) {
         GoogleSignInResult signInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         if (signInResult.isSuccess()) {

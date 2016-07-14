@@ -40,6 +40,20 @@
             </intent-filter>
         </activity>
 
+        <!-- 指定アプリ起動 -->
+        <activity
+                android:name=".basicui.command.AppLauncherSelectActivity"
+                android:label="指定アプリを起動"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <!-- acetrigger://で起動する -->
+                <data android:scheme="acecommand"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <!-- デフォルト指定 -->
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
         <activity
                 android:name=".ui.navigation.NavigationActivity"
                 android:screenOrientation="portrait">

@@ -39,6 +39,13 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
     }
 
     /**
+     * コマンドを保存する
+     */
+    public void update(DbCommand cmd) {
+        session.insertOrReplace(cmd);
+    }
+
+    /**
      * 指定したカテゴリのコマンドを列挙する
      *
      * @param category 列挙するコマンド

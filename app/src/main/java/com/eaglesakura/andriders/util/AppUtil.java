@@ -7,14 +7,16 @@ import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.location.LocationServices;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.command.CommandKey;
+import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.util.SerializeUtil;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 
 import java.util.TimeZone;
 
@@ -103,6 +105,17 @@ public class AppUtil {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         }
+    }
+
+    /**
+     * コマンド設定を行うためのIntentを投げる
+     *
+     * @param commandKey コマンド識別キー
+     */
+    public static Intent newCommandSettingIntent(@NonNull Context context, @NonNull CommandKey commandKey) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("acecommand://"));
+        intent.putExtra(CommandSetting.EXTRA_COMMAND_KEY, commandKey);
+        return Intent.createChooser(intent, null);
     }
 
     public static GoogleApiClient.Builder newSignInClient(Context context) {
