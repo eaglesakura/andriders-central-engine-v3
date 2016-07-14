@@ -23,6 +23,7 @@ import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.AndroidNetworkUtil;
+import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.lambda.CancelCallback;
 
@@ -164,9 +165,7 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
         builder.setMessage("アプリの実行に必要な権限を得られませんでした。\nアプリの権限を確認し、再起動してください。");
         builder.setCancelable(false);
         builder.setPositiveButton("権限を確認する", (dlg, which) -> {
-            Intent intent = new Intent("android.intent.action.MANAGE_APP_PERMISSIONS");
-            intent.putExtra("android.intent.extra.PACKAGE_NAME", getContext().getPackageName());
-            AppUtil.startSettingIntent(getActivity(), intent);
+            startActivity(ContextUtil.getAppSettingIntent(getActivity()));
         });
         builder.show();
     }
@@ -180,9 +179,7 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
         builder.setMessage("サイコン表示を行うため、「他のアプリの上に重ねて表示」を許可してください。");
         builder.setCancelable(false);
         builder.setPositiveButton("設定を開く", (dlg, which) -> {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-            intent.setData(Uri.parse("package:" + getContext().getPackageName()));
-            AppUtil.startSettingIntent(getActivity(), intent);
+            startActivity(ContextUtil.getAppOverlaySettingIntent(getActivity()));
         });
         builder.show();
     }
