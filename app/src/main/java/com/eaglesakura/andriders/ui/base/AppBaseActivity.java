@@ -10,8 +10,6 @@ import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 
 public abstract class AppBaseActivity extends ContentHolderActivity {
-    static final String FRAGMENT_TAG_GOOGLE_API_FRAGMENT = "FRAGMENT_TAG_GOOGLE_API_FRAGMENT";
-
     @BundleState
     BackStackManager mBackStackManager;
 
