@@ -40,8 +40,7 @@ public class AppLauncherSelectActivityTest extends DeviceActivityTestCase<AppLau
 
     @Test
     public void アプリの列挙が正常に行える() throws Throwable {
-        AppLauncherSelectActivity activity = getActivity();
-        List<ResolveInfo> infoList = activity.listLauncherApplications();
+        List<ResolveInfo> infoList = getActivity().listLauncherApplications();
         assertNotEquals(infoList.size(), 0);
         for (ResolveInfo info : infoList) {
             AppLog.test("package[%s] activity[%s]", info.activityInfo.packageName, info.activityInfo.name);
