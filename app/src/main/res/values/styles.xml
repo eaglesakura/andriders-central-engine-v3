@@ -43,15 +43,9 @@
         <attr name="headerText" format="string"/>
     </declare-styleable>
 
-    <declare-styleable name="AppProgressView">
-        <attr name="progressText" format="string"/>
-    </declare-styleable>
-    <style name="App.Theme.ProgressBar" parent="SmoothProgressBar">
-        <item name="spb_colors">@array/App_Widget_Progress_Color_Table</item>
-        <item name="spb_interpolator">spb_interpolator_decelerate</item>
+    <style name="App.Theme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColor">@color/EsMaterial.Red.50</item>
     </style>
-    <style name="App.Theme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
     <style name="App.Theme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 </resources>

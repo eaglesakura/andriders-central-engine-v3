@@ -14,10 +14,10 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class AppLauncherSelectActivityTest extends DeviceActivityTestCase<AppLauncherSelectActivity, AceApplication> {
+public class LauncherSelectActivityTest extends DeviceActivityTestCase<LauncherSelectActivity, AceApplication> {
 
-    public AppLauncherSelectActivityTest() {
-        super(AppLauncherSelectActivity.class);
+    public LauncherSelectActivityTest() {
+        super(LauncherSelectActivity.class);
     }
 
     @Override

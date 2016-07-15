@@ -42,7 +42,7 @@
 
         <!-- 指定アプリ起動 -->
         <activity
-                android:name=".basicui.command.AppLauncherSelectActivity"
+                android:name=".basicui.command.LauncherSelectActivity"
                 android:label="指定アプリを起動"
                 android:screenOrientation="portrait">
             <intent-filter>
