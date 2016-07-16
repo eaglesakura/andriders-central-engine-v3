@@ -39,6 +39,13 @@ public class LauncherSelectActivityTest extends DeviceActivityTestCase<LauncherS
     }
 
     @Test
+    public void 起動後にアプリ列挙が行えている() throws Throwable {
+        LauncherSelectActivity activity = getActivity();
+        Util.sleep(1000);
+        assertNotEquals(activity.mAdapter.getCollection().size(), 0);
+    }
+
+    @Test
     public void アプリの列挙が正常に行える() throws Throwable {
         List<ResolveInfo> infoList = getActivity().listLauncherApplications();
         assertNotEquals(infoList.size(), 0);
