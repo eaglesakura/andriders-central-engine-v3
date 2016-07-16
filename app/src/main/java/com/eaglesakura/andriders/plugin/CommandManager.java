@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.dao.command.DbCommand;
+import com.eaglesakura.andriders.db.command.CommandCollection;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
@@ -12,6 +13,8 @@ import android.media.MediaDataSource;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import java.util.List;
 
 /**
  * コマンド管理用Manager
@@ -29,6 +32,15 @@ public class CommandManager {
 
     CommandDatabase open() {
         return mDatabase.openWritable(CommandDatabase.class);
+    }
+
+    /**
+     * カテゴリを指定して列挙する
+     */
+    public CommandCollection loadFromCategory(int category) {
+        try (CommandDatabase db = open()) {
+            return new CommandCollection(db.list(category));
+        }
     }
 
     /**

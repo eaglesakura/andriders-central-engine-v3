@@ -30,12 +30,28 @@ public class CommandData {
     }
 
     @NonNull
-    public CommandKey getCommandKey() {
+    public CommandKey getKey() {
         return CommandKey.fromString(mRaw.getCommandKey());
     }
 
     public String getPackageName() {
         return mRaw.getPackageName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CommandData that = (CommandData) o;
+
+        return getKey().equals(that.getKey());
+
+    }
+
+    @Override
+    public int hashCode() {
+        return mRaw.hashCode();
     }
 
     /**

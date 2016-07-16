@@ -1,6 +1,9 @@
 package com.eaglesakura.andriders.db.command;
 
+import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.lambda.Matcher1;
+
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +14,19 @@ public class CommandCollection {
 
     public CommandCollection(List<CommandData> commands) {
         mCommands = commands;
+    }
+
+    /**
+     * 指定したKeyに一致するコマンドを取得するか、nullを返却する
+     */
+    @Nullable
+    public CommandData getOrNull(CommandKey key) {
+        List<CommandData> list = list(it -> it.getKey().equals(key));
+        if (!list.isEmpty()) {
+            return list.get(0);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -31,7 +47,7 @@ public class CommandCollection {
                 if (l.getCategory() != r.getCategory()) {
                     return Integer.compare(l.getCategory(), r.getCategory());
                 } else {
-                    return l.getCommandKey().getKey().compareTo(r.getCommandKey().getKey());
+                    return l.getKey().getKey().compareTo(r.getKey().getKey());
                 }
             });
             return result;

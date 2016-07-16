@@ -3,6 +3,8 @@ package com.eaglesakura.andriders.ui.navigation.command.proximity;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.db.command.CommandCollection;
+import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
 import com.eaglesakura.andriders.plugin.CommandManager;
@@ -18,6 +20,7 @@ import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.saver.BundleState;
+import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -25,6 +28,7 @@ import android.content.Intent;
 import android.support.annotation.UiThread;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,18 +92,32 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
      */
     @UiThread
     void updateProximityUI() {
+
+        CommandCollection collection = mCommandManager.loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY);
+
+
         int index = 0;
         for (ViewGroup cmdView : mCommandViewList) {
             final int PROXIMITY_INDEX = index;
+            final CommandKey KEY = CommandKey.fromProximity(PROXIMITY_INDEX + 1);
+            CommandData data = collection.getOrNull(KEY);
             new AQuery(cmdView)
                     .clicked(it -> {
                         mLastSelectedProximity = PROXIMITY_INDEX;
                         startActivityForResult(
-                                AppUtil.newCommandSettingIntent(getActivity(), CommandKey.fromProximity(mLastSelectedProximity + 1)),
+                                AppUtil.newCommandSettingIntent(getActivity(), KEY),
                                 AppConstants.REQUEST_COMMAND_SETUP
                         );
                     })
-                    .id(R.id.Setting_Command_ProximitySec).text(StringUtil.format("%d 秒", index + 1));
+                    .id(R.id.Setting_Command_ProximitySec).text(StringUtil.format("%d 秒", index + 1))
+                    .id(R.id.Setting_Command_Icon).ifPresent(ImageView.class,
+                    it -> {
+                        if (data != null) {
+                            it.setImageBitmap(data.decodeIcon());
+                        } else {
+                            it.setImageDrawable(ResourceUtil.drawable(getActivity(), R.mipmap.ic_delete_grey));
+                        }
+                    });
             ++index;
         }
     }
@@ -113,8 +131,9 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
 
         AppLog.plugin("key[%s] package[%s]", setupData.getKey().getKey(), setupData.getPackageName());
 
-        // DBに保存を行わせる
+        // DBに保存を行わせ、更新する
         mCommandManager.save(setupData, CommandDatabase.CATEGORY_PROXIMITY, null);
+        updateProximityUI();
     }
 
 
