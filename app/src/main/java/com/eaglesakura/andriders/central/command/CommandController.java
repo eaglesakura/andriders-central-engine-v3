@@ -6,6 +6,7 @@ import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 
@@ -29,14 +30,14 @@ public abstract class CommandController {
         mBootListener = bootListener;
     }
 
-    void requestCommandBoot(@NonNull CommandData data) {
+    void requestCommandBoot(@Nullable CommandData data) {
         CommandBootListener listener = mBootListener;
         if (listener == null) {
             return;
         }
 
         mSubscriptionController.run(ObserveTarget.Alive, () -> {
-            listener.onBootCommand(data);
+            listener.onBootCommand(this, data);
         });
     }
 
@@ -45,6 +46,6 @@ public abstract class CommandController {
 
     public interface CommandBootListener {
         @UiThread
-        void onBootCommand(CommandData data);
+        void onBootCommand(@NonNull CommandController self, @Nullable CommandData data);
     }
 }

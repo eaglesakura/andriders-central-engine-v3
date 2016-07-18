@@ -108,10 +108,7 @@ public class ProximityCommandController extends CommandController {
      */
     @WorkerThread
     public void onEndCount() {
-        CommandData current = getCurrentCommand();
-        if (current != null) {
-            requestCommandBoot(current);
-        }
+        requestCommandBoot(getCurrentCommand());
     }
 
     public interface ProximityListener {

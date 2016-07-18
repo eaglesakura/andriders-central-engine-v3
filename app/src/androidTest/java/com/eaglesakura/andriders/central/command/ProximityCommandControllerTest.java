@@ -10,6 +10,7 @@ import com.eaglesakura.util.Util;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class ProximityCommandControllerTest extends DeviceTestCase<AceApplication> {
 
@@ -53,6 +54,35 @@ public class ProximityCommandControllerTest extends DeviceTestCase<AceApplicatio
             Util.sleep(100);
             assertEquals(callbackSec.value, ProximityCommandController.MAX_FEEDBACK_SEC);
             assertEquals(callbackNum.value, ProximityCommandController.MAX_FEEDBACK_SEC);
+        }
+    }
+
+    @Test
+    public void 近接コマンドのBootを行える() throws Throwable {
+        // 1秒経過ごとにフィードバックされる
+        for (int i = 0; i < ProximityCommandController.MAX_FEEDBACK_SEC; ++i) {
+            SubscriptionController subscriptionController = SubscriptionController.newUnitTestController();
+            Clock clock = new Clock(System.currentTimeMillis());
+
+            IntHolder holder = new IntHolder(-1);
+
+            ProximityCommandController.CommandBootListener listener = (self, data) -> {
+                holder.value = (data != null ? 1 : 0);
+            };
+
+
+            ProximityCommandController controller = new ProximityCommandController(getApplication(), clock, subscriptionController);
+            controller.setBootListener(listener);
+            controller.onStartCount();
+
+            clock.offset(1000 * i + 1);
+            controller.onUpdate();
+            clock.offset(10);
+            controller.onEndCount();
+            Util.sleep(100);
+
+            // 指定秒でコールバックされる
+            assertNotEquals(holder.value, -1);
         }
     }
 }
