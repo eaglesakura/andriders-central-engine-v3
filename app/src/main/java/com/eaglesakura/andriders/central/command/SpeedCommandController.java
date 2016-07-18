@@ -2,11 +2,14 @@ package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.SensorDataReceiver;
+import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -15,15 +18,8 @@ import android.support.annotation.Nullable;
  */
 public abstract class SpeedCommandController extends CommandController {
 
-    /**
-     * 今日の最高速度
-     */
-    double mTodayMaxSpeedKmh = -1;
-
-    /**
-     * 最高速度
-     */
-    double mMaxSpeedKmh = -1;
+    @Nullable
+    RawRecord mRecord;
 
     /**
      * 前回更新時の速度
@@ -35,8 +31,25 @@ public abstract class SpeedCommandController extends CommandController {
      */
     double mCurrentSpeedKmh;
 
-    public SpeedCommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController) {
+    /**
+     * 基準速度
+     */
+    final double mSpeedKmh;
+
+    /**
+     * コマンドタイプ
+     */
+    final int mCommandType;
+
+    final CommandData mCommandData;
+
+    public SpeedCommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController, CommandData commandData) {
         super(context, subscriptionController);
+        mCommandData = commandData;
+
+        Intent intent = mCommandData.getInternalIntent();
+        mSpeedKmh = intent.getDoubleExtra(CommandData.EXTRA_SPEED_KMH, 25.0);
+        mCommandType = intent.getIntExtra(CommandData.EXTRA_SPEED_TYPE, 0);
     }
 
     /**
@@ -83,15 +96,9 @@ public abstract class SpeedCommandController extends CommandController {
     final SensorDataReceiver.SpeedHandler mSpeedHandler = new SensorDataReceiver.SpeedHandler() {
         @Override
         public void onReceived(@NonNull RawCentralData master, @NonNull RawSensorData.RawSpeed sensor) {
-            // 今日の最高速度更新
-            if (mTodayMaxSpeedKmh < 0) {
-                mTodayMaxSpeedKmh = master.record.maxSpeedKmhToday;
-            }
-
-            // いままでの最高速度
-            if (mMaxSpeedKmh < 0) {
-                mMaxSpeedKmh = master.record.maxSpeedKmh;
-            }
+            // 最高速度の更新
+            mRecord = master.record;
+            onUpdateSpeed(sensor.speedKmPerHour);
         }
 
         @Override

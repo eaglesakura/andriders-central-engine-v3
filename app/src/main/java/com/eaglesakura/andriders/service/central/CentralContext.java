@@ -378,12 +378,17 @@ public class CentralContext implements Disposable {
             Intent intent = new Intent();
             intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
             intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
-            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
+
+            byte[] rawNotification = data.serialize();
+            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, rawNotification);
 
             mContext.sendBroadcast(intent);
+            // ローカル伝達
+            mLocalReceiver.onReceivedNotificationData(rawNotification);
         } catch (Throwable e) {
             AppLog.report(e);
         }
+
     };
 
     /**
