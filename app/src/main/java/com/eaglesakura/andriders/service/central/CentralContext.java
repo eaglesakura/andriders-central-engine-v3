@@ -32,6 +32,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,10 +129,26 @@ public class CentralContext implements Disposable {
 
     private ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
+    /**
+     * ACEのローカル情報を管理するレシーバ
+     */
+    private CentralDataReceiver mLocalReceiver;
+
     public CentralContext(Service context, Clock updateClock) {
         mContext = context;
         mClock = updateClock;
         mTimers = new MultiTimer(mClock);
+        mLocalReceiver = new CentralDataReceiver(context.getApplicationContext()) {
+            @Override
+            public void connect() {
+                throw new Error("not call");
+            }
+
+            @Override
+            public void disconnect() {
+                throw new Error("not call");
+            }
+        };
 
         Garnet.create(this)
                 .depend(Context.class, context.getApplication())
@@ -169,6 +186,10 @@ public class CentralContext implements Disposable {
 
     public PluginManager getPluginManager() {
         return mPluginManager;
+    }
+
+    public CentralDataReceiver getLocalReceiver() {
+        return mLocalReceiver;
     }
 
     /**
@@ -368,11 +389,17 @@ public class CentralContext implements Disposable {
     /**
      * データを各アプリへ送信する
      */
+    @UiThread
     void broadcastCentralData() {
         RawCentralData data = mCentralData.getLatestCentralData();
         if (data == null) {
             AppLog.broadcast("mCentralData.getLatestCentralData() == null");
+            return;
         }
+
+        // ローカル伝達を行う
+        mLocalReceiver.onReceived(data);
+
         Intent intent = new Intent();
         intent.setAction(CentralDataReceiver.ACTION_UPDATE_CENTRAL_DATA);
         intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
