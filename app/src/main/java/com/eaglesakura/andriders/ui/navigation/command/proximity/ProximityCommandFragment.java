@@ -3,11 +3,11 @@ package com.eaglesakura.andriders.ui.navigation.command.proximity;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.db.command.CommandCollection;
+import com.eaglesakura.andriders.db.command.CommandDataCollection;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
-import com.eaglesakura.andriders.plugin.CommandManager;
+import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppConstants;
@@ -55,7 +55,7 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
     @BundleState
     int mLastSelectedProximity;
 
-    CommandManager mCommandManager;
+    CommandDataManager mCommandManager;
 
     public ProximityCommandFragment() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_command_proximity);
@@ -64,7 +64,7 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mCommandManager = new CommandManager(context);
+        mCommandManager = new CommandDataManager(context);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
     @UiThread
     void updateProximityUI() {
 
-        CommandCollection collection = mCommandManager.loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY);
+        CommandDataCollection collection = mCommandManager.loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY);
 
 
         int index = 0;

@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandCollection {
+public class CommandDataCollection {
     final List<CommandData> mCommands;
 
-    public CommandCollection(List<CommandData> commands) {
+    public CommandDataCollection(List<CommandData> commands) {
         mCommands = commands;
     }
 
