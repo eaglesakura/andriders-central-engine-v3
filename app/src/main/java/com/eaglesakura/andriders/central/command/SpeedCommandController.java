@@ -107,4 +107,21 @@ public abstract class SpeedCommandController extends CommandController {
         }
     };
 
+    /**
+     * スピードコマンド用コントローラを生成する
+     */
+    public static SpeedCommandController newSpeedController(Context context, SubscriptionController subscriptionController, CommandData data) {
+        int type = data.getInternalIntent().getIntExtra(CommandData.EXTRA_SPEED_TYPE, 0);
+        SpeedCommandController controller;
+        switch (type) {
+            case CommandData.SPEEDCOMMAND_TYPE_UPPER:
+            case CommandData.SPEEDCOMMAND_TYPE_LOWER:
+                controller = new BasicSpeedCommandController(context, subscriptionController, data);
+                break;
+            default:
+                controller = new MaxSpeedCommandController(context, subscriptionController, data);
+                break;
+        }
+        return controller;
+    }
 }

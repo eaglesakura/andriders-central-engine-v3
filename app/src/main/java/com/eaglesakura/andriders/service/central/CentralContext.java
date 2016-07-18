@@ -4,10 +4,15 @@ import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.command.CommandController;
 import com.eaglesakura.andriders.central.command.ProximityCommandController;
+import com.eaglesakura.andriders.central.command.SpeedCommandController;
 import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.db.command.CommandDataCollection;
+import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
 import com.eaglesakura.andriders.display.notification.ProximityFeedbackManager;
+import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
@@ -235,12 +240,24 @@ public class CentralContext implements Disposable {
      * コマンド制御を初期化する
      */
     private void initCommands() throws Throwable {
+        CommandDataManager commandDataManager = new CommandDataManager(mContext);
+
         // 近接コマンドセットアップ
         {
             ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock, getSubscription());
             proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getSubscription()));
             mProximityFeedbackManager.bind(proximityCommandController);
             mCommandControllers.add(proximityCommandController);
+        }
+        // スピードコマンドを全て列挙し、コントローラを生成する
+        {
+            CommandDataCollection collection = commandDataManager.loadFromCategory(CommandDatabase.CATEGORY_SPEED);
+            for (CommandData data : collection.list(it -> true)) {
+                AppLog.system("Load SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
+                SpeedCommandController controller = SpeedCommandController.newSpeedController(mContext, getSubscription(), data);
+                controller.bind(mLocalReceiver);
+                mCommandControllers.add(controller);
+            }
         }
     }
 
