@@ -107,9 +107,10 @@ public class ProximityCommandController extends CommandController {
             }
 
             final int end = (int) (mTimer.endSec());
-            if (end == mLastFeedbackSec || end > MAX_FEEDBACK_SEC) {
+            if (end == mLastFeedbackSec) {
                 return;
             }
+
             mLastFeedbackSec = end;
 
             ProximityListener listener = mProximityListener;
@@ -117,10 +118,16 @@ public class ProximityCommandController extends CommandController {
                 return;
             }
 
-            mSubscriptionController.run(ObserveTarget.Alive, () -> {
-                CommandData data = getCurrentCommand();
-                listener.onRequestUserFeedback(this, end, data);
-            });
+            if (mLastFeedbackSec > MAX_FEEDBACK_SEC) {
+                mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                    listener.onProximityTimeOver(this, end);
+                });
+            } else {
+                mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                    CommandData data = getCurrentCommand();
+                    listener.onRequestUserFeedback(this, end, data);
+                });
+            }
         }
     }
 
@@ -142,5 +149,11 @@ public class ProximityCommandController extends CommandController {
          */
         @UiThread
         void onRequestUserFeedback(ProximityCommandController self, int sec, @Nullable CommandData data);
+
+        /**
+         * 最大近接コマンド時間を超えた
+         */
+        @UiThread
+        void onProximityTimeOver(ProximityCommandController self, int sec);
     }
 }

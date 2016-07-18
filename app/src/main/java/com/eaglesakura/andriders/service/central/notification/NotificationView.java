@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.service.central.notification;
 
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
+import com.eaglesakura.andriders.display.notification.ProximityFeedbackManager;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.util.RandomUtil;
 
@@ -13,7 +14,16 @@ import android.view.View;
  * 通知の描画を行うView
  */
 public class NotificationView extends View {
+
+    /**
+     * 通知レンダリング
+     */
     NotificationDisplayManager mNotificationManager;
+
+    /**
+     * 近接コマンドフィードバック
+     */
+    ProximityFeedbackManager mProximityFeedbackManager;
 
     public NotificationView(Context context) {
         super(context);
@@ -31,13 +41,24 @@ public class NotificationView extends View {
         mNotificationManager = notificationManager;
     }
 
+    public void setProximityFeedbackManager(ProximityFeedbackManager proximityFeedbackManager) {
+        mProximityFeedbackManager = proximityFeedbackManager;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mNotificationManager == null || isInEditMode()) {
+        if (isInEditMode()) {
             return;
         }
 
         Graphics g = new Graphics(canvas);
-        mNotificationManager.rendering(g);
+
+        if (mProximityFeedbackManager != null) {
+            mProximityFeedbackManager.rendering(g);
+        }
+
+        if (mNotificationManager != null) {
+            mNotificationManager.rendering(g);
+        }
     }
 }

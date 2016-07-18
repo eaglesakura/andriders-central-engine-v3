@@ -10,6 +10,8 @@ import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.device.vibrate.VibrateManager;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.graphics.Font;
+import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTaskBuilder;
 import com.eaglesakura.android.rx.SubscribeTarget;
@@ -17,10 +19,12 @@ import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.system.ScreenEventReceiver;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -68,6 +72,17 @@ public class ProximityFeedbackManager {
     final SubscriptionController mSubscriptionController;
 
     int mTaskId = 0;
+
+    @ColorInt
+    final int[] BACKGROUND_COLOR_TABLE = {
+            0xFFff4500,
+            0xFF87cefa,
+            0xFF228b22,
+            0xFF7cfc00,
+            0xFFffff00,
+    };
+
+    Bitmap mIcon;
 
     public ProximityFeedbackManager(@NonNull Context context, @NonNull Clock clock, @NonNull SubscriptionController subscriptionController) {
         mContext = context;
@@ -164,6 +179,7 @@ public class ProximityFeedbackManager {
      */
     @UiThread
     void startProximityCheckTask(int taskId) {
+        mTimer.start();
         new RxTaskBuilder<>(mSubscriptionController)
                 .observeOn(ObserveTarget.Alive)
                 .subscribeOn(SubscribeTarget.NewThread)
@@ -186,24 +202,90 @@ public class ProximityFeedbackManager {
                 .start();
     }
 
-    ProximityCommandController.ProximityListener mProximityFeedbackListener = (self, sec, data) -> {
+    @UiThread
+    public void rendering(Graphics graphics) {
         if (!mProximityState) {
-            // 近接してないので何もしない
-            mCommandData = null;
+            // 近接状態に無いのでレンダリングしない
             return;
         }
 
-        mCommandData = data;
-        if (data != null) {
-            AppLog.proximity("BootCommand[%s]", data.getPackageName());
+        int CURRENT_TIME_SEC = (int) (mTimer.end() / 1000);
+        graphics.setColorARGB(0xFFFFFFFF);
+
+        final double WINDOW_WIDTH = graphics.getWidth();
+        final double WINDOW_HEIGHT = graphics.getHeight();
+
+        final double WINDOW_CENTER_X = WINDOW_WIDTH / 2;
+        final double WINDOW_CENTER_Y = WINDOW_HEIGHT / 2;
+
+        final double ROUND_RADIUS = Math.min(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.4;
+
+        @ColorInt
+        int backgroundColor = BACKGROUND_COLOR_TABLE[0];
+        if (CURRENT_TIME_SEC < BACKGROUND_COLOR_TABLE.length) {
+            backgroundColor = BACKGROUND_COLOR_TABLE[CURRENT_TIME_SEC];
         }
 
-        if (sec == 0) {
-            // 開始フィードバック
-            VibrateManager.vibrate(mContext, VibrateManager.VIBRATE_TIME_SHORT_MS * 2);
-        } else {
-            // 中途フィードバック
-            VibrateManager.vibrateLong(mContext);
+        // 中心円を表示する
+        {
+            // 待機時間
+            final float CURRENT_WEIGHT = CURRENT_TIME_SEC > 0 ? 1.0f : (float) (mTimer.end() % 1000) / 1000.0f;
+
+            // 中心を指定色で塗りつぶす
+            graphics.setColorARGB(backgroundColor);
+            graphics.fillRoundRect(
+                    (int) (WINDOW_CENTER_X - CURRENT_WEIGHT * ROUND_RADIUS),
+                    (int) (WINDOW_CENTER_Y - CURRENT_WEIGHT * ROUND_RADIUS),
+                    (int) (CURRENT_WEIGHT * ROUND_RADIUS * 2), (int) (CURRENT_WEIGHT * ROUND_RADIUS * 2),
+                    (float) (CURRENT_WEIGHT * ROUND_RADIUS * 0.1f));
+        }
+
+        // アイコンをレンダリングする
+        if (CURRENT_TIME_SEC > 0) {
+            if (mIcon != null) {
+                // アイコンのレンダリング
+                graphics.setColorARGB(0xFFFFFFFF);
+                final double ICON_RADIUS = ROUND_RADIUS * 0.75;
+                graphics.drawBitmap(mIcon, (int) (WINDOW_CENTER_X - ICON_RADIUS), (int) (WINDOW_CENTER_Y - ICON_RADIUS), (int) (ICON_RADIUS * 2), (int) (ICON_RADIUS * 2));
+            } else {
+                graphics.setFontSize(new Font().calcFontSize("0", (int) (WINDOW_HEIGHT * 0.65)));
+                graphics.setColorARGB(0xEF000000);
+                graphics.drawString(String.valueOf(CURRENT_TIME_SEC), (int) WINDOW_CENTER_X, (int) WINDOW_CENTER_Y, -1, -1, Graphics.STRING_CENTER_X | Graphics.STRING_CENTER_Y);
+            }
+        }
+    }
+
+    ProximityCommandController.ProximityListener mProximityFeedbackListener = new ProximityCommandController.ProximityListener() {
+        @Override
+        public void onRequestUserFeedback(ProximityCommandController self, int sec, @Nullable CommandData data) {
+            if (!mProximityState) {
+                // 近接してないので何もしない
+                mCommandData = null;
+                mIcon = null;
+                return;
+            }
+
+            mCommandData = data;
+            if (data != null) {
+                AppLog.proximity("BootCommand[%s]", data.getPackageName());
+                mIcon = data.decodeIcon();
+            } else {
+                mIcon = null;
+            }
+
+            if (sec == 0) {
+                // 開始フィードバック
+                VibrateManager.vibrate(mContext, VibrateManager.VIBRATE_TIME_SHORT_MS * 2);
+            } else {
+                // 中途フィードバック
+                VibrateManager.vibrateLong(mContext);
+            }
+        }
+
+        @Override
+        public void onProximityTimeOver(ProximityCommandController self, int sec) {
+            mCommandData = null;
+            mIcon = null;
         }
     };
 }

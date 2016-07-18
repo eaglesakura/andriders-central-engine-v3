@@ -45,6 +45,7 @@ public class NotificationRenderer {
     public void setNotificationView(NotificationView notificationView) {
         mNotificationView = notificationView;
         mNotificationView.setNotificationManager(mCentralContext.getNotificationManager());
+        mNotificationView.setProximityFeedbackManager(mCentralContext.getProximityFeedbackManager());
     }
 
     public void connect() {

@@ -156,8 +156,14 @@ public class CentralContext implements Disposable {
         return mDisplayManager;
     }
 
+    @NonNull
     public NotificationDisplayManager getNotificationManager() {
         return mNotificationManager;
+    }
+
+    @NonNull
+    public ProximityFeedbackManager getProximityFeedbackManager() {
+        return mProximityFeedbackManager;
     }
 
     public PluginManager getPluginManager() {

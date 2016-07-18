@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.AceApplication;
+import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.devicetest.DeviceTestCase;
 import com.eaglesakura.android.rx.SubscriptionController;
@@ -8,6 +9,8 @@ import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
 
 import org.junit.Test;
+
+import android.support.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -18,11 +21,19 @@ public class ProximityCommandControllerTest extends DeviceTestCase<AceApplicatio
     public void 毎秒フィードバックが送られてくる() throws Throwable {
         IntHolder callbackSec = new IntHolder(-1);
         IntHolder callbackNum = new IntHolder(0);
-        ProximityCommandController.ProximityListener proximityListener = (self, sec, data) -> {
-            // 1秒ごとにフィードバックが送られる
-            assertEquals(callbackSec.value + 1, sec);
-            callbackSec.value = sec;
-            callbackNum.value++;
+        ProximityCommandController.ProximityListener proximityListener = new ProximityCommandController.ProximityListener() {
+            @Override
+            public void onRequestUserFeedback(ProximityCommandController self, int sec, @Nullable CommandData data) {
+                // 1秒ごとにフィードバックが送られる
+                assertEquals(callbackSec.value + 1, sec);
+                callbackSec.value = sec;
+                callbackNum.value++;
+            }
+
+            @Override
+            public void onProximityTimeOver(ProximityCommandController self, int sec) {
+
+            }
         };
 
         Clock clock = new Clock(System.currentTimeMillis());
