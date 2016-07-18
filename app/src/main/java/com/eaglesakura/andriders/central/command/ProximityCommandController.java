@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.RxTaskBuilder;
 import com.eaglesakura.android.rx.SubscribeTarget;
@@ -31,6 +32,18 @@ public class ProximityCommandController extends CommandController {
     final ClockTimer mTimer;
 
     /**
+     * 待機状態
+     */
+    static final int STATE_WAITING = 0;
+
+    /**
+     * ハンドリング中
+     */
+    static final int STATE_PROXIMITY_HANDLING = 1;
+
+    int mState = STATE_WAITING;
+
+    /**
      * 最後にバイブレーションを鳴らしたカウント秒
      *
      * 開始, 1, 2, 3, 4秒でそれぞれバイブを振動させる
@@ -40,6 +53,8 @@ public class ProximityCommandController extends CommandController {
     static final int MAX_FEEDBACK_SEC = 4;
 
     ProximityListener mProximityListener;
+
+    final Object lock = new Object();
 
     public ProximityCommandController(@NonNull Context context, @NonNull Clock clock, @NonNull SubscriptionController subscriptionController) {
         super(context, subscriptionController);
@@ -63,52 +78,62 @@ public class ProximityCommandController extends CommandController {
     /**
      * 手をかざし始めた
      */
-    @WorkerThread
     public void onStartCount() {
-        mLastFeedbackSec = -1;
-        mTimer.start();
-        new RxTaskBuilder<CommandDataCollection>(mSubscriptionController)
-                .subscribeOn(SubscribeTarget.Parallels)
-                .observeOn(ObserveTarget.Alive)
-                .async(task -> {
-                    return new CommandDataManager(mContext).loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY);
-                })
-                .completed((result, task) -> {
-                    mCommands = result;
-                })
-                .failed((error, task) -> {
-                    AppLog.report(error);
-                }).start();
-        onUpdate();
+        synchronized (lock) {
+            mLastFeedbackSec = -1;
+            mTimer.start();
+            mState = STATE_PROXIMITY_HANDLING;
+            new RxTaskBuilder<CommandDataCollection>(mSubscriptionController)
+                    .subscribeOn(SubscribeTarget.Parallels)
+                    .observeOn(ObserveTarget.Alive)
+                    .async(task -> {
+                        return new CommandDataManager(mContext).loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY);
+                    })
+                    .completed((result, task) -> {
+                        mCommands = result;
+                    })
+                    .failed((error, task) -> {
+                        AppLog.report(error);
+                    }).start();
+            onUpdate();
+        }
     }
 
-    @WorkerThread
     @Override
     public void onUpdate() {
-        final int end = (int) (mTimer.endSec());
-        if (end == mLastFeedbackSec || end > MAX_FEEDBACK_SEC) {
-            return;
-        }
-        mLastFeedbackSec = end;
+        synchronized (lock) {
+            if (mState != STATE_PROXIMITY_HANDLING) {
+                return;
+            }
 
-        ProximityListener listener = mProximityListener;
-        if (listener == null) {
-            return;
-        }
+            final int end = (int) (mTimer.endSec());
+            if (end == mLastFeedbackSec || end > MAX_FEEDBACK_SEC) {
+                return;
+            }
+            mLastFeedbackSec = end;
 
-        mSubscriptionController.run(ObserveTarget.Alive, () -> {
-            CommandData data = getCurrentCommand();
-            listener.onRequestUserFeedback(this, end, data);
-        });
+            ProximityListener listener = mProximityListener;
+            if (listener == null) {
+                return;
+            }
+
+            mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                CommandData data = getCurrentCommand();
+                listener.onRequestUserFeedback(this, end, data);
+            });
+        }
     }
 
 
     /**
      * カウントを停止する
      */
-    @WorkerThread
     public void onEndCount() {
-        requestCommandBoot(getCurrentCommand());
+        synchronized (lock) {
+            requestCommandBoot(getCurrentCommand());
+            mLastFeedbackSec = -1;
+            mState = STATE_WAITING;
+        }
     }
 
     public interface ProximityListener {

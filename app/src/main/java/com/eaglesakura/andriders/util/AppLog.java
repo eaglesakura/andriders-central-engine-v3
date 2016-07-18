@@ -26,7 +26,6 @@ public class AppLog {
 
     /**
      * send firebase report
-     * @param e
      */
     public static void report(Throwable e) {
         e.printStackTrace();
@@ -86,7 +85,7 @@ public class AppLog {
     }
 
     public static void broadcast(String fmt, Object... args) {
-        String tag = "App.broadcast";
+        String tag = "App.Broadcast";
 
         LogUtil.setLogger(tag, sAppLogger);
         LogUtil.out(tag, fmt, args);
@@ -101,6 +100,13 @@ public class AppLog {
 
     public static void bleData(String fmt, Object... args) {
         String tag = "App.Ble.Data";
+
+        LogUtil.setLogger(tag, sAppLogger);
+        LogUtil.out(tag, fmt, args);
+    }
+
+    public static void proximity(String fmt, Object... args) {
+        String tag = "App.Sensor.Proximity";
 
         LogUtil.setLogger(tag, sAppLogger);
         LogUtil.out(tag, fmt, args);

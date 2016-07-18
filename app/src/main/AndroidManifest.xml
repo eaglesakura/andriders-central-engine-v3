@@ -24,6 +24,8 @@
     <!-- Android 5.x ForegroundApp -->
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
 
+    <!-- Vibrate -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <application
             android:name="com.eaglesakura.andriders.AceApplication"
             android:allowBackup="true"

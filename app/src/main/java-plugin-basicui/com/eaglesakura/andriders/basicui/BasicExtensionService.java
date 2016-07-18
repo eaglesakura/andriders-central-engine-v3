@@ -55,7 +55,6 @@ public class BasicExtensionService extends Service implements AcePluginService {
         return super.onUnbind(intent);
     }
 
-
     @Override
     public PluginInformation getExtensionInformation(CentralEngineConnection connection) {
         PluginInformation info = new PluginInformation(this, "basic_extension");

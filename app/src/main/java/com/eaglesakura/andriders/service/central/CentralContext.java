@@ -2,9 +2,12 @@ package com.eaglesakura.andriders.service.central;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
+import com.eaglesakura.andriders.central.command.CommandController;
+import com.eaglesakura.andriders.central.command.ProximityCommandController;
 import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
+import com.eaglesakura.andriders.display.notification.ProximityFeedbackManager;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
@@ -29,6 +32,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ACEの表示状態
  */
@@ -48,16 +54,6 @@ public class CentralContext implements Disposable {
      */
     @NonNull
     private final MultiTimer mTimers;
-
-    /**
-     * サイコン情報を表示する場合はtrue
-     */
-    private boolean mDisplayEnable = true;
-
-    /**
-     * 通知情報を表示する場合はtrue
-     */
-    private boolean mNotificationEnable = true;
 
     /**
      * 設定
@@ -85,6 +81,15 @@ public class CentralContext implements Disposable {
     NotificationDisplayManager mNotificationManager;
 
     /**
+     * コマンド管理
+     */
+    @NonNull
+    List<CommandController> mCommandControllers = new ArrayList<>();
+
+    @NonNull
+    ProximityFeedbackManager mProximityFeedbackManager;
+
+    /**
      * 拡張機能管理
      */
     @NonNull
@@ -104,6 +109,11 @@ public class CentralContext implements Disposable {
      * セントラルを更新するインターバル（ミリ秒）
      */
     static final int CENTRAL_UPDATE_INTERVAL_MS = 1000;
+
+    /**
+     * コマンド管理のインターバル
+     */
+    static final int COMMAND_UPDATE_INTERVAL_MS = 1000 / 15;
 
     /**
      * 通知レンダリングのフレームレート
@@ -130,6 +140,7 @@ public class CentralContext implements Disposable {
         mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationDisplayManager(mContext, mClock);
         mNotificationManager.addListener(mNotificationShowingListener);
+        mProximityFeedbackManager = new ProximityFeedbackManager(mContext, mClock, getSubscription());
 
         mPluginManager = new PluginManager(mContext);
     }
@@ -193,14 +204,31 @@ public class CentralContext implements Disposable {
     }
 
     /**
+     * コマンド制御を初期化する
+     */
+    private void initCommands() throws Throwable {
+        // 近接コマンドセットアップ
+        {
+            ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock, getSubscription());
+            mProximityFeedbackManager.bind(proximityCommandController);
+            mCommandControllers.add(proximityCommandController);
+        }
+    }
+
+    /**
      * データ接続を開始する
      */
     public void onServiceInitializeCompleted() {
         mLifecycleDelegate.onCreate();
         newTask(SubscribeTarget.GlobalPipeline, task -> {
             initPlugins();
+            task.throwIfCanceled();
+            initCommands();
+            task.throwIfCanceled();
             return this;
         }).completed((result, task) -> {
+            mProximityFeedbackManager.connect();
+
             AppLog.system("Completed Initialize");
             mInitialized = true;
 
@@ -215,6 +243,7 @@ public class CentralContext implements Disposable {
 
     enum TimerType {
         CentralUpdate,
+        CommandsUpdate,
         CentralBroadcast,
         CentralDbCommit,
         NotificationUpdate,
@@ -238,6 +267,13 @@ public class CentralContext implements Disposable {
             mCentralData.onUpdate();
         }
 
+        // コマンドの更新を行う
+        if (mTimers.endIfOverTime(TimerType.CommandsUpdate, COMMAND_UPDATE_INTERVAL_MS)) {
+            for (CommandController controller : mCommandControllers) {
+                controller.onUpdate();
+            }
+        }
+
         if (mTimers.endIfOverTime(TimerType.NotificationUpdate, NOTIFICATION_UPDATE_INTERVAL_MS)) {
             mNotificationManager.onUpdate();
         }
@@ -255,6 +291,7 @@ public class CentralContext implements Disposable {
 
     @Override
     public void dispose() {
+        mProximityFeedbackManager.disconnect(); // 近接コマンドを切断する
         requestCommitDatabase();    // セントラルにコミットをかける
 
         // その他の終了タスクを投げる
