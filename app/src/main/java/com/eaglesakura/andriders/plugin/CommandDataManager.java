@@ -56,6 +56,12 @@ public class CommandDataManager {
         }
     }
 
+    public void save(CommandData data) {
+        try (CommandDatabase db = open()) {
+            db.update(data.getRaw());
+        }
+    }
+
     /**
      * コマンドを保存する
      */

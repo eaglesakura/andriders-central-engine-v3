@@ -5,16 +5,17 @@
              android:orientation="vertical">
 
     <com.eaglesakura.material.widget.support.SupportRecyclerView
-            android:id="@+id/Command.Item.List"
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            style="@style/EsMaterial.Widget.RootLayout"
+            android:id="@+id/Command.Item.List"
             app:esmEmptyText="コマンドが登録されていません"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
     <android.support.design.widget.FloatingActionButton
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/Command.Item.Add"
             style="@style/EsMaterial.Widget.RootLayout"
+            android:src="@mipmap/ic_create"
             android:layout_gravity="bottom|right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>

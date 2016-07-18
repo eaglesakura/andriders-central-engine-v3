@@ -47,7 +47,7 @@ public class CommandDataCollection {
                 if (l.getCategory() != r.getCategory()) {
                     return Integer.compare(l.getCategory(), r.getCategory());
                 } else {
-                    return l.getKey().getKey().compareTo(r.getKey().getKey());
+                    return r.getKey().getKey().compareTo(l.getKey().getKey());
                 }
             });
             return result;

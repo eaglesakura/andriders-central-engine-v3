@@ -141,4 +141,36 @@
     <string name="Main.Menu.Information">アプリについて</string>
     <string name="UserLog.Import.GPX">GPX形式で読込</string>
     <string name="Main.Menu.Gadgets">センサー・周辺機器</string>
+
+    <string-array name="Command_Speed_TypeInfo">
+        <item>%dkm/hより高速</item>
+        <item>%dkm/hより低速</item>
+        <item>最高速の更新開始</item>
+        <item>最高速の記録更新</item>
+        <item>最高速の更新終了</item>
+        <item>今日最高速の更新開始</item>
+        <item>今日最高速の記録更新</item>
+        <item>今日最高速の更新終了</item>
+    </string-array>
+    <string-array name="Command_Speed_TypeSelector">
+        <item>加速したら</item>
+        <item>減速したら</item>
+        <item>最高速の更新開始</item>
+        <item>最高速の記録更新</item>
+        <item>最高速の更新終了</item>
+        <item>今日最高速の更新開始</item>
+        <item>今日最高速の記録更新</item>
+        <item>今日最高速の更新終了</item>
+    </string-array>
+    <string-array name="Command_Speed_TypeFooter">
+        <item>km/hより高速</item>
+        <item>km/hより低速</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
 </resources>
