@@ -105,9 +105,9 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
             new AQuery(cmdView)
                     .clicked(it -> {
                         if (data == null) {
-                            startCommandSetup(PROXIMITY_INDEX, KEY);
+                            startCommandSetup(KEY);
                         } else {
-                            bootDeleteCheckDialog(PROXIMITY_INDEX, data);
+                            bootDeleteCheckDialog(data);
                         }
                     })
                     .id(R.id.Setting_Command_ProximitySec).text(StringUtil.format("%d 秒", index + 1))
@@ -124,7 +124,7 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
     }
 
     @UiThread
-    void bootDeleteCheckDialog(int index, CommandData data) {
+    void bootDeleteCheckDialog(CommandData data) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("確認");
         builder.setTitle("既にコマンドが存在します。\n古いコマンドを削除しますか？");
@@ -133,14 +133,13 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
             updateProximityUI();
         });
         builder.setNeutralButton("上書", (dlg, which) -> {
-            startCommandSetup(index, data.getKey());
+            startCommandSetup(data.getKey());
         });
         builder.show();
     }
 
     @UiThread
-    void startCommandSetup(int index, CommandKey key) {
-        mLastSelectedProximity = index;
+    void startCommandSetup(CommandKey key) {
         startActivityForResult(
                 AppUtil.newCommandSettingIntent(getActivity(), key),
                 AppConstants.REQUEST_COMMAND_SETUP

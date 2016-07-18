@@ -4,10 +4,15 @@ import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.command.CommandController;
 import com.eaglesakura.andriders.central.command.ProximityCommandController;
+import com.eaglesakura.andriders.central.command.SpeedCommandController;
 import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.db.command.CommandDataCollection;
+import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
 import com.eaglesakura.andriders.display.notification.ProximityFeedbackManager;
+import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
@@ -32,6 +37,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,10 +134,26 @@ public class CentralContext implements Disposable {
 
     private ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
+    /**
+     * ACEのローカル情報を管理するレシーバ
+     */
+    private CentralDataReceiver mLocalReceiver;
+
     public CentralContext(Service context, Clock updateClock) {
         mContext = context;
         mClock = updateClock;
         mTimers = new MultiTimer(mClock);
+        mLocalReceiver = new CentralDataReceiver(context.getApplicationContext()) {
+            @Override
+            public void connect() {
+                throw new Error("not call");
+            }
+
+            @Override
+            public void disconnect() {
+                throw new Error("not call");
+            }
+        };
 
         Garnet.create(this)
                 .depend(Context.class, context.getApplication())
@@ -169,6 +191,10 @@ public class CentralContext implements Disposable {
 
     public PluginManager getPluginManager() {
         return mPluginManager;
+    }
+
+    public CentralDataReceiver getLocalReceiver() {
+        return mLocalReceiver;
     }
 
     /**
@@ -214,12 +240,24 @@ public class CentralContext implements Disposable {
      * コマンド制御を初期化する
      */
     private void initCommands() throws Throwable {
+        CommandDataManager commandDataManager = new CommandDataManager(mContext);
+
         // 近接コマンドセットアップ
         {
             ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock, getSubscription());
             proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getSubscription()));
             mProximityFeedbackManager.bind(proximityCommandController);
             mCommandControllers.add(proximityCommandController);
+        }
+        // スピードコマンドを全て列挙し、コントローラを生成する
+        {
+            CommandDataCollection collection = commandDataManager.loadFromCategory(CommandDatabase.CATEGORY_SPEED);
+            for (CommandData data : collection.list(it -> true)) {
+                AppLog.system("Load SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
+                SpeedCommandController controller = SpeedCommandController.newSpeedController(mContext, getSubscription(), data);
+                controller.bind(mLocalReceiver);
+                mCommandControllers.add(controller);
+            }
         }
     }
 
@@ -357,22 +395,33 @@ public class CentralContext implements Disposable {
             Intent intent = new Intent();
             intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
             intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
-            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
+
+            byte[] rawNotification = data.serialize();
+            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, rawNotification);
 
             mContext.sendBroadcast(intent);
+            // ローカル伝達
+            mLocalReceiver.onReceivedNotificationData(rawNotification);
         } catch (Throwable e) {
             AppLog.report(e);
         }
+
     };
 
     /**
      * データを各アプリへ送信する
      */
+    @UiThread
     void broadcastCentralData() {
         RawCentralData data = mCentralData.getLatestCentralData();
         if (data == null) {
             AppLog.broadcast("mCentralData.getLatestCentralData() == null");
+            return;
         }
+
+        // ローカル伝達を行う
+        mLocalReceiver.onReceived(data);
+
         Intent intent = new Intent();
         intent.setAction(CentralDataReceiver.ACTION_UPDATE_CENTRAL_DATA);
         intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);

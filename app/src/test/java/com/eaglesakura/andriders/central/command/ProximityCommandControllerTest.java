@@ -1,9 +1,8 @@
 package com.eaglesakura.andriders.central.command;
 
-import com.eaglesakura.andriders.AceApplication;
+import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.android.devicetest.DeviceTestCase;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
@@ -15,7 +14,7 @@ import android.support.annotation.Nullable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class ProximityCommandControllerTest extends DeviceTestCase<AceApplication> {
+public class ProximityCommandControllerTest extends AppUnitTestCase {
 
     @Test
     public void 毎秒フィードバックが送られてくる() throws Throwable {

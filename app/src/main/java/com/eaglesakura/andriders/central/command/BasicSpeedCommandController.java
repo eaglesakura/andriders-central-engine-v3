@@ -1,0 +1,35 @@
+package com.eaglesakura.andriders.central.command;
+
+import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.android.rx.SubscriptionController;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+public class BasicSpeedCommandController extends SpeedCommandController {
+
+    public BasicSpeedCommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController, CommandData data) {
+        super(context, subscriptionController, data);
+    }
+
+    @Override
+    void onUpdateSpeed(float currentSpeedKmh) {
+        super.onUpdateSpeed(currentSpeedKmh);
+        if (mCommandType == CommandData.SPEEDCOMMAND_TYPE_UPPER) {
+            // 速度上昇でコマンド
+            if (nowSpeedUpper(mSpeedKmh)) {
+                requestCommandBoot(mCommandData);
+            }
+        } else {
+            // 速度が下降でコマンド
+            if (nowSpeedLower(mSpeedKmh)) {
+                requestCommandBoot(mCommandData);
+            }
+        }
+    }
+
+    @Override
+    public void onUpdate() {
+
+    }
+}
