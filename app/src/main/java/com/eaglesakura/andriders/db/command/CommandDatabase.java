@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.db.command;
 
-import com.android.annotations.NonNull;
+import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.dao.command.DaoMaster;
 import com.eaglesakura.andriders.dao.command.DaoSession;
 import com.eaglesakura.andriders.dao.command.DbCommand;
@@ -12,6 +12,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -43,6 +44,13 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
      */
     public void update(DbCommand cmd) {
         session.insertOrReplace(cmd);
+    }
+
+    /**
+     * 指定したコマンドを削除する
+     */
+    public void remove(@NonNull CommandKey key) {
+        session.getDbCommandDao().deleteByKey(key.getKey());
     }
 
     /**

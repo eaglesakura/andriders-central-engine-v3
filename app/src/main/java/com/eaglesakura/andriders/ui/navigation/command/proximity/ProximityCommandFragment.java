@@ -26,6 +26,7 @@ import com.eaglesakura.util.StringUtil;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.UiThread;
+import android.support.v7.app.AlertDialog;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -103,11 +104,11 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
             CommandData data = collection.getOrNull(KEY);
             new AQuery(cmdView)
                     .clicked(it -> {
-                        mLastSelectedProximity = PROXIMITY_INDEX;
-                        startActivityForResult(
-                                AppUtil.newCommandSettingIntent(getActivity(), KEY),
-                                AppConstants.REQUEST_COMMAND_SETUP
-                        );
+                        if (data == null) {
+                            startCommandSetup(PROXIMITY_INDEX, KEY);
+                        } else {
+                            bootDeleteCheckDialog(PROXIMITY_INDEX, data);
+                        }
                     })
                     .id(R.id.Setting_Command_ProximitySec).text(StringUtil.format("%d 秒", index + 1))
                     .id(R.id.Setting_Command_Icon).ifPresent(ImageView.class,
@@ -115,11 +116,35 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
                         if (data != null) {
                             it.setImageBitmap(data.decodeIcon());
                         } else {
-                            it.setImageDrawable(ResourceUtil.drawable(getActivity(), R.mipmap.ic_delete_grey));
+                            it.setImageDrawable(ResourceUtil.drawable(getActivity(), R.mipmap.ic_common_none));
                         }
                     });
             ++index;
         }
+    }
+
+    @UiThread
+    void bootDeleteCheckDialog(int index, CommandData data) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("確認");
+        builder.setTitle("既にコマンドが存在します。\n古いコマンドを削除しますか？");
+        builder.setPositiveButton("削除", (dlg, which) -> {
+            mCommandManager.remove(data);
+            updateProximityUI();
+        });
+        builder.setNeutralButton("上書", (dlg, which) -> {
+            startCommandSetup(index, data.getKey());
+        });
+        builder.show();
+    }
+
+    @UiThread
+    void startCommandSetup(int index, CommandKey key) {
+        mLastSelectedProximity = index;
+        startActivityForResult(
+                AppUtil.newCommandSettingIntent(getActivity(), key),
+                AppConstants.REQUEST_COMMAND_SETUP
+        );
     }
 
     @OnActivityResult(AppConstants.REQUEST_COMMAND_SETUP)

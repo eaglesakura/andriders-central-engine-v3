@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.plugin;
 
+import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.dao.command.DbCommand;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
@@ -36,6 +37,22 @@ public class CommandDataManager {
     public CommandDataCollection loadFromCategory(int category) {
         try (CommandDatabase db = open()) {
             return new CommandDataCollection(db.list(category));
+        }
+    }
+
+    public void remove(@NonNull CommandData data) {
+        if (data == null) {
+            return;
+        }
+        remove(data.getKey());
+    }
+
+    public void remove(@NonNull CommandKey key) {
+        if (key == null) {
+            return;
+        }
+        try (CommandDatabase db = open()) {
+            db.remove(key);
         }
     }
 
