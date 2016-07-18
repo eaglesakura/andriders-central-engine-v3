@@ -190,14 +190,15 @@ public class ProximityFeedbackManager {
                             task.waitTime(100);
                         }
                     } finally {
-                        if (!mProximityState) {
-                            mCommandController.onEndCount();
-                        }
+                        mCommandController.onEndCount();
                     }
                     return this;
                 })
                 .cancelSignal(task -> {
-                    return taskId == mTaskId && mProximityState;
+                    return taskId != mTaskId || !mProximityState;
+                })
+                .failed((error, task) -> {
+                    AppLog.printStackTrace(error);
                 })
                 .start();
     }

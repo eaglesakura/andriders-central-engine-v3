@@ -50,8 +50,9 @@ public class CommandDataManager {
             dbCommand.setCommandData(data.getUserIntent());
             dbCommand.setIconPng(data.getIconFile());
             dbCommand.setPackageName(data.getPackageName());
+            dbCommand.setIntentData(data.getUserIntent());
             if (internalIntent != null) {
-                dbCommand.setIntentData(internalIntent.serialize());
+                dbCommand.setCommandData(internalIntent.serialize());
             }
 
             db.update(dbCommand);

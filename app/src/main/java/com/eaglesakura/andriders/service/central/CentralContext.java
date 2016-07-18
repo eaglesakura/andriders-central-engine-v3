@@ -12,6 +12,7 @@ import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.service.central.internal.CommandBootListenerImpl;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.MultiTimer;
@@ -216,6 +217,7 @@ public class CentralContext implements Disposable {
         // 近接コマンドセットアップ
         {
             ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock, getSubscription());
+            proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getSubscription()));
             mProximityFeedbackManager.bind(proximityCommandController);
             mCommandControllers.add(proximityCommandController);
         }
