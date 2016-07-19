@@ -8,8 +8,8 @@ import android.support.annotation.NonNull;
 
 public class BasicSpeedCommandController extends SpeedCommandController {
 
-    public BasicSpeedCommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController, CommandData data) {
-        super(context, subscriptionController, data);
+    public BasicSpeedCommandController(@NonNull Context context, CommandData data) {
+        super(context, data);
     }
 
     @Override

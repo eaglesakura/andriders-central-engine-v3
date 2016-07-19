@@ -40,14 +40,12 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
 
         {
             MaxSpeedCommandController controller = new MaxSpeedCommandController(getApplication(),
-                    SubscriptionController.newUnitTestController(),
                     newCommand(25.0f, CommandData.SPEEDCOMMAND_TYPE_MAX_FINISHED));
             controller.mRecord = newRecord(40.0f, 30.0f);
             assertEquals(controller.getTargetMaxSpeed(), 40.0f, 1.0f);
         }
         {
             MaxSpeedCommandController controller = new MaxSpeedCommandController(getApplication(),
-                    SubscriptionController.newUnitTestController(),
                     newCommand(25.0f, CommandData.SPEEDCOMMAND_TYPE_TODAY_MAX_FINISHED));
             controller.mRecord = newRecord(40.0f, 30.0f);
             assertEquals(controller.getTargetMaxSpeed(), 30.0f, 1.0f);
@@ -62,7 +60,6 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
         IntHolder bootHolder = new IntHolder(0);
 
         MaxSpeedCommandController controller = new MaxSpeedCommandController(getApplication(),
-                SubscriptionController.newUnitTestController(),
                 newCommand(25.0f, CommandData.SPEEDCOMMAND_TYPE_MAX_START));
         controller.mRecord = newRecord(MAXSPEED, MAXSPEED_TODAY);
         controller.setBootListener(((self, data) -> {
@@ -105,7 +102,6 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
         IntHolder bootHolder = new IntHolder(0);
 
         MaxSpeedCommandController controller = new MaxSpeedCommandController(getApplication(),
-                SubscriptionController.newUnitTestController(),
                 newCommand(25.0f, CommandData.SPEEDCOMMAND_TYPE_MAX_UPDATED));
         controller.mRecord = newRecord(MAXSPEED, MAXSPEED_TODAY);
         controller.setBootListener(((self, data) -> {
@@ -163,7 +159,6 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
         IntHolder bootHolder = new IntHolder(0);
 
         MaxSpeedCommandController controller = new MaxSpeedCommandController(getApplication(),
-                SubscriptionController.newUnitTestController(),
                 newCommand(25.0f, CommandData.SPEEDCOMMAND_TYPE_MAX_FINISHED));
         controller.mRecord = newRecord(MAXSPEED, MAXSPEED_TODAY);
         controller.setBootListener(((self, data) -> {
@@ -193,7 +188,6 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
 
         BasicSpeedCommandController controller =
                 new BasicSpeedCommandController(getApplication(),
-                        SubscriptionController.newUnitTestController(),
                         newCommand(25.0f, CommandData.SPEEDCOMMAND_TYPE_UPPER));
 
         // callback
@@ -225,7 +219,6 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
 
         BasicSpeedCommandController controller =
                 new BasicSpeedCommandController(getApplication(),
-                        SubscriptionController.newUnitTestController(),
                         newCommand(25.0f, CommandData.SPEEDCOMMAND_TYPE_LOWER));
 
         // callback

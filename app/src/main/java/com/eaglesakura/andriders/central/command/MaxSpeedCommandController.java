@@ -34,8 +34,8 @@ public class MaxSpeedCommandController extends SpeedCommandController {
      */
     double mChallengeMaxSpeed;
 
-    public MaxSpeedCommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController, CommandData commandData) {
-        super(context, subscriptionController, commandData);
+    public MaxSpeedCommandController(@NonNull Context context, CommandData commandData) {
+        super(context, commandData);
     }
 
     /**

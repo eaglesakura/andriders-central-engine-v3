@@ -16,14 +16,11 @@ import android.support.annotation.WorkerThread;
 public abstract class CommandController {
     @NonNull
     final Context mContext;
-    @NonNull
-    final SubscriptionController mSubscriptionController;
 
     CommandBootListener mBootListener;
 
-    public CommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController) {
+    public CommandController(@NonNull Context context) {
         mContext = context.getApplicationContext();
-        mSubscriptionController = subscriptionController;
     }
 
     public void setBootListener(@NonNull CommandBootListener bootListener) {
@@ -36,16 +33,19 @@ public abstract class CommandController {
             return;
         }
 
-        mSubscriptionController.run(ObserveTarget.Alive, () -> {
-            listener.onBootCommand(this, data);
-        });
+        listener.onBootCommand(this, data);
     }
 
     @WorkerThread
     public abstract void onUpdate();
 
     public interface CommandBootListener {
-        @UiThread
+
+        /**
+         * コマンドを起動する
+         *
+         * MEMO: コールされるスレッドは不定であるため、実装側で適宜調整する
+         */
         void onBootCommand(@NonNull CommandController self, @Nullable CommandData data);
     }
 }

@@ -56,8 +56,8 @@ public class ProximityCommandController extends CommandController {
 
     final Object lock = new Object();
 
-    public ProximityCommandController(@NonNull Context context, @NonNull Clock clock, @NonNull SubscriptionController subscriptionController) {
-        super(context, subscriptionController);
+    public ProximityCommandController(@NonNull Context context, @NonNull Clock clock) {
+        super(context);
         mTimer = new ClockTimer(clock);
     }
 
@@ -78,23 +78,12 @@ public class ProximityCommandController extends CommandController {
     /**
      * 手をかざし始めた
      */
-    public void onStartCount() {
+    public void onStartCount(CommandDataCollection collection) {
         synchronized (lock) {
             mLastFeedbackSec = -1;
             mTimer.start();
             mState = STATE_PROXIMITY_HANDLING;
-            new RxTaskBuilder<CommandDataCollection>(mSubscriptionController)
-                    .subscribeOn(SubscribeTarget.Parallels)
-                    .observeOn(ObserveTarget.Alive)
-                    .async(task -> {
-                        return new CommandDataManager(mContext).loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY);
-                    })
-                    .completed((result, task) -> {
-                        mCommands = result;
-                    })
-                    .failed((error, task) -> {
-                        AppLog.report(error);
-                    }).start();
+            mCommands = collection;
             onUpdate();
         }
     }
@@ -119,14 +108,10 @@ public class ProximityCommandController extends CommandController {
             }
 
             if (mLastFeedbackSec > MAX_FEEDBACK_SEC) {
-                mSubscriptionController.run(ObserveTarget.Alive, () -> {
-                    listener.onProximityTimeOver(this, end);
-                });
+                listener.onProximityTimeOver(this, end);
             } else {
-                mSubscriptionController.run(ObserveTarget.Alive, () -> {
-                    CommandData data = getCurrentCommand();
-                    listener.onRequestUserFeedback(this, end, data);
-                });
+                CommandData data = getCurrentCommand();
+                listener.onRequestUserFeedback(this, end, data);
             }
         }
     }
@@ -147,13 +132,11 @@ public class ProximityCommandController extends CommandController {
         /**
          * 振動等のユーザーフィードバックを行わせる
          */
-        @UiThread
         void onRequestUserFeedback(ProximityCommandController self, int sec, @Nullable CommandData data);
 
         /**
          * 最大近接コマンド時間を超えた
          */
-        @UiThread
         void onProximityTimeOver(ProximityCommandController self, int sec);
     }
 }
