@@ -6,7 +6,6 @@ import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 import android.content.Intent;

@@ -6,7 +6,6 @@ import com.eaglesakura.andriders.v2.db.DefaultCommandSettings;
 import com.eaglesakura.andriders.v2.db.UpdateCheckProps;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.device.external.StorageInfo;
-import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.garnet.Singleton;
 import com.eaglesakura.util.LogUtil;
 

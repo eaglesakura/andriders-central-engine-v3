@@ -6,7 +6,6 @@ import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.dao.command.DbCommand;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawRecord;
-import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
 

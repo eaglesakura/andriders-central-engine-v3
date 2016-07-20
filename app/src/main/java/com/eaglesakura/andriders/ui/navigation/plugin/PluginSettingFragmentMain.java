@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.ui.navigation.plugin;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.rx.ObserveTarget;

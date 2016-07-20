@@ -3,8 +3,6 @@ package com.eaglesakura.andriders.central.command;
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
-import com.eaglesakura.andriders.db.command.CommandDatabase;
-import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.thread.IntHolder;
@@ -15,9 +13,6 @@ import org.junit.Test;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
-import kotlin.collections.EmptyList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;

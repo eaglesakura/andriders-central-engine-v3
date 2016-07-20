@@ -3,22 +3,12 @@ package com.eaglesakura.andriders.central.command;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
-import com.eaglesakura.andriders.db.command.CommandDatabase;
-import com.eaglesakura.andriders.plugin.CommandDataManager;
-import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
-import com.eaglesakura.android.graphics.Graphics;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTaskBuilder;
-import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
-import android.support.annotation.WorkerThread;
 
 public class ProximityCommandController extends CommandController {
 

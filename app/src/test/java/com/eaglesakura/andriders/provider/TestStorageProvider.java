@@ -7,7 +7,7 @@ import com.eaglesakura.util.RandomUtil;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TestStorageProvider extends StorageProvider {
 

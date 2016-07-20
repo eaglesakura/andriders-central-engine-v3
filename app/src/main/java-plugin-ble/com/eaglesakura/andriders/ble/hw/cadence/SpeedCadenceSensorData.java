@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.ble.hw.cadence;
 
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.Clock;
 
 /**
  * ユーザーのケイデンス/スピード情報

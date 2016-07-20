@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.ui.navigation.profile;
 
-import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;

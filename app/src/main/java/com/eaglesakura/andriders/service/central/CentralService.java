@@ -11,7 +11,6 @@ import com.eaglesakura.android.util.ContextUtil;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Debug;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 

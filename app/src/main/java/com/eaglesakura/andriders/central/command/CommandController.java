@@ -1,13 +1,10 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 
 /**
