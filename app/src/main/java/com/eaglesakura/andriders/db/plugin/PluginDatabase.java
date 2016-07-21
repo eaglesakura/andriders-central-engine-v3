@@ -10,6 +10,8 @@ import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.StringUtil;
 
+import org.greenrobot.greendao.database.StandardDatabase;
+
 import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
@@ -104,7 +106,7 @@ public class PluginDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }

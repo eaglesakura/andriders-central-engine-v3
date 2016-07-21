@@ -8,6 +8,8 @@ import com.eaglesakura.andriders.dao.command.DbCommandDao;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.CollectionUtil;
 
+import org.greenrobot.greendao.database.StandardDatabase;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -77,7 +79,7 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }
