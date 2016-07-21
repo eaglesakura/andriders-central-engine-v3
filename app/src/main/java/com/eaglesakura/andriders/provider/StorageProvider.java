@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.provider;
 
-import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.android.garnet.Depend;
 import com.eaglesakura.android.garnet.Provide;
 import com.eaglesakura.android.garnet.Provider;
@@ -27,8 +27,8 @@ public class StorageProvider implements Provider {
     }
 
     @Provide
-    public Settings provideSettings() {
-        return new Settings(mContext);
+    public AppSettings provideSettings() {
+        return new AppSettings(mContext);
     }
 
     @Override

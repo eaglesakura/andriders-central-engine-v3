@@ -7,10 +7,8 @@ import com.eaglesakura.android.device.display.DisplayInfo;
 import com.eaglesakura.android.graphics.Graphics;
 
 import android.content.Context;
-import android.os.NetworkOnMainThreadException;
 import android.support.annotation.NonNull;
 
-import java.sql.CallableStatement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;

@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders;
 
-import com.eaglesakura.andriders.db.storage.AppStorageManager;
+import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.provider.TestStorageProvider;
 import com.eaglesakura.android.AndroidSupportTestCase;
@@ -12,9 +12,10 @@ import org.robolectric.annotation.Config;
 
 import android.content.Context;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
-@Config(constants = BuildConfig.class, application = AceApplication.class, packageName = BuildConfig.DEFAULT_PACKAGE_NAME)
+@Config(constants = BuildConfig.class, application = AceApplication.class, packageName = BuildConfig.DEFAULT_PACKAGE_NAME, sdk = 23)
 public abstract class AppUnitTestCase extends AndroidSupportTestCase {
     /**
      * ユーザー体重のデフォルト値

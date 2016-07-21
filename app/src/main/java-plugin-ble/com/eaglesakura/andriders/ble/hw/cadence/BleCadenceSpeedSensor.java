@@ -1,11 +1,11 @@
 package com.eaglesakura.andriders.ble.hw.cadence;
 
-import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.ble.hw.BleDevice;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.provider.StorageProvider;
-import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.AppUtil;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
@@ -61,7 +61,7 @@ public class BleCadenceSpeedSensor extends BleDevice {
     final SubscriptionController mSubscriptionController;
 
     @Inject(StorageProvider.class)
-    Settings mSettings;
+    AppSettings mSettings;
 
     public BleCadenceSpeedSensor(Context context, SubscriptionController subscriptionController, BluetoothDevice device, Clock clock) {
         super(context, device);

@@ -24,6 +24,7 @@ mipmap {
 }
 
 dependencies {
+    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     if (EGLIBRARY_COMPILE_LOCAL) {
         compile project(":eglibrary:simple-logger")
         compile project(":eglibrary:simple-utils")
@@ -156,10 +157,17 @@ android {
 
     dexOptions {
         // memo: http://developer.covelline.com/2015/06/circle-ci/
-        javaMaxHeapSize "2g"
-        preDexLibraries !(System.getenv()["CIRCLECI"] as boolean)
+        javaMaxHeapSize eglibrary.ci.ciRunning ? "1g" : "4g"
+        preDexLibraries !eglibrary.ci.ciRunning
     }
 
+    testOptions {
+        unitTests.all {
+            if (eglibrary.ci.ciRunning) {
+                jvmArgs '-Xms256m', '-Xmx1024m', '-XX:MaxPermSize=128m', '-XX:+HeapDumpOnOutOfMemoryError'
+            }
+        }
+    }
     // 署名設定
     signingConfigs {
         debug {

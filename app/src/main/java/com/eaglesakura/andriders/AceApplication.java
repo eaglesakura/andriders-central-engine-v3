@@ -4,15 +4,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.location.LocationServices;
 
-import com.eaglesakura.andriders.db.Settings;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.util.LogUtil;
 
 import android.app.Application;
-import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 public class AceApplication extends Application implements FrameworkCentral.FrameworkApplication {
     Object mCentral;

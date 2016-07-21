@@ -1,10 +1,5 @@
 package com.eaglesakura.andriders.plugin;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-
 import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
 import com.eaglesakura.andriders.util.AppLog;
@@ -12,6 +7,11 @@ import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.Timer;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 
 import java.util.ArrayList;
 import java.util.List;

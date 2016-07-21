@@ -17,7 +17,6 @@ import com.eaglesakura.material.widget.support.SupportRecyclerView;
 
 import android.content.Context;
 import android.support.annotation.UiThread;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 

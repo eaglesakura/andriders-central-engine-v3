@@ -1,16 +1,23 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.central.command.CommandController;
+import com.eaglesakura.andriders.central.command.ProximityCommandController;
+import com.eaglesakura.andriders.central.command.SpeedCommandController;
+import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.db.command.CommandDataCollection;
+import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.display.data.DataDisplayManager;
 import com.eaglesakura.andriders.display.notification.NotificationDisplayManager;
-import com.eaglesakura.andriders.notification.NotificationData;
+import com.eaglesakura.andriders.display.notification.ProximityFeedbackManager;
+import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.service.central.internal.CommandBootListenerImpl;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.MultiTimer;
@@ -30,6 +37,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ACEの表示状態
@@ -52,21 +63,11 @@ public class CentralContext implements Disposable {
     private final MultiTimer mTimers;
 
     /**
-     * サイコン情報を表示する場合はtrue
-     */
-    private boolean mDisplayEnable = true;
-
-    /**
-     * 通知情報を表示する場合はtrue
-     */
-    private boolean mNotificationEnable = true;
-
-    /**
      * 設定
      */
     @Inject(StorageProvider.class)
     @NonNull
-    Settings mSettings;
+    AppSettings mSettings;
 
     /**
      * サイコンデータ本体
@@ -85,6 +86,15 @@ public class CentralContext implements Disposable {
      */
     @NonNull
     NotificationDisplayManager mNotificationManager;
+
+    /**
+     * コマンド管理
+     */
+    @NonNull
+    List<CommandController> mCommandControllers = new ArrayList<>();
+
+    @NonNull
+    ProximityFeedbackManager mProximityFeedbackManager;
 
     /**
      * 拡張機能管理
@@ -108,6 +118,11 @@ public class CentralContext implements Disposable {
     static final int CENTRAL_UPDATE_INTERVAL_MS = 1000;
 
     /**
+     * コマンド管理のインターバル
+     */
+    static final int COMMAND_UPDATE_INTERVAL_MS = 1000 / 15;
+
+    /**
      * 通知レンダリングのフレームレート
      */
     static final int NOTIFICATION_UPDATE_INTERVAL_MS = 1000 / 30;
@@ -119,10 +134,26 @@ public class CentralContext implements Disposable {
 
     private ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
+    /**
+     * ACEのローカル情報を管理するレシーバ
+     */
+    private CentralDataReceiver mLocalReceiver;
+
     public CentralContext(Service context, Clock updateClock) {
         mContext = context;
         mClock = updateClock;
         mTimers = new MultiTimer(mClock);
+        mLocalReceiver = new CentralDataReceiver(context.getApplicationContext()) {
+            @Override
+            public void connect() {
+                throw new Error("not call");
+            }
+
+            @Override
+            public void disconnect() {
+                throw new Error("not call");
+            }
+        };
 
         Garnet.create(this)
                 .depend(Context.class, context.getApplication())
@@ -132,6 +163,7 @@ public class CentralContext implements Disposable {
         mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationDisplayManager(mContext, mClock);
         mNotificationManager.addListener(mNotificationShowingListener);
+        mProximityFeedbackManager = new ProximityFeedbackManager(mContext, mClock, getSubscription());
 
         mPluginManager = new PluginManager(mContext);
     }
@@ -147,12 +179,22 @@ public class CentralContext implements Disposable {
         return mDisplayManager;
     }
 
+    @NonNull
     public NotificationDisplayManager getNotificationManager() {
         return mNotificationManager;
     }
 
+    @NonNull
+    public ProximityFeedbackManager getProximityFeedbackManager() {
+        return mProximityFeedbackManager;
+    }
+
     public PluginManager getPluginManager() {
         return mPluginManager;
+    }
+
+    public CentralDataReceiver getLocalReceiver() {
+        return mLocalReceiver;
     }
 
     /**
@@ -195,14 +237,44 @@ public class CentralContext implements Disposable {
     }
 
     /**
+     * コマンド制御を初期化する
+     */
+    private void initCommands() throws Throwable {
+        CommandDataManager commandDataManager = new CommandDataManager(mContext);
+
+        // 近接コマンドセットアップ
+        {
+            ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock);
+            proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getSubscription()));
+            mProximityFeedbackManager.bind(proximityCommandController);
+            mCommandControllers.add(proximityCommandController);
+        }
+        // スピードコマンドを全て列挙し、コントローラを生成する
+        {
+            CommandDataCollection collection = commandDataManager.loadFromCategory(CommandDatabase.CATEGORY_SPEED);
+            for (CommandData data : collection.list(it -> true)) {
+                AppLog.system("Load SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
+                SpeedCommandController controller = SpeedCommandController.newSpeedController(mContext, data);
+                controller.bind(mLocalReceiver);
+                mCommandControllers.add(controller);
+            }
+        }
+    }
+
+    /**
      * データ接続を開始する
      */
     public void onServiceInitializeCompleted() {
         mLifecycleDelegate.onCreate();
         newTask(SubscribeTarget.GlobalPipeline, task -> {
             initPlugins();
+            task.throwIfCanceled();
+            initCommands();
+            task.throwIfCanceled();
             return this;
         }).completed((result, task) -> {
+            mProximityFeedbackManager.connect();
+
             AppLog.system("Completed Initialize");
             mInitialized = true;
 
@@ -217,6 +289,7 @@ public class CentralContext implements Disposable {
 
     enum TimerType {
         CentralUpdate,
+        CommandsUpdate,
         CentralBroadcast,
         CentralDbCommit,
         NotificationUpdate,
@@ -240,6 +313,13 @@ public class CentralContext implements Disposable {
             mCentralData.onUpdate();
         }
 
+        // コマンドの更新を行う
+        if (mTimers.endIfOverTime(TimerType.CommandsUpdate, COMMAND_UPDATE_INTERVAL_MS)) {
+            for (CommandController controller : mCommandControllers) {
+                controller.onUpdate();
+            }
+        }
+
         if (mTimers.endIfOverTime(TimerType.NotificationUpdate, NOTIFICATION_UPDATE_INTERVAL_MS)) {
             mNotificationManager.onUpdate();
         }
@@ -257,6 +337,7 @@ public class CentralContext implements Disposable {
 
     @Override
     public void dispose() {
+        mProximityFeedbackManager.disconnect(); // 近接コマンドを切断する
         requestCommitDatabase();    // セントラルにコミットをかける
 
         // その他の終了タスクを投げる
@@ -314,22 +395,33 @@ public class CentralContext implements Disposable {
             Intent intent = new Intent();
             intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
             intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
-            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
+
+            byte[] rawNotification = data.serialize();
+            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, rawNotification);
 
             mContext.sendBroadcast(intent);
+            // ローカル伝達
+            mLocalReceiver.onReceivedNotificationData(rawNotification);
         } catch (Throwable e) {
             AppLog.report(e);
         }
+
     };
 
     /**
      * データを各アプリへ送信する
      */
+    @UiThread
     void broadcastCentralData() {
         RawCentralData data = mCentralData.getLatestCentralData();
         if (data == null) {
             AppLog.broadcast("mCentralData.getLatestCentralData() == null");
+            return;
         }
+
+        // ローカル伝達を行う
+        mLocalReceiver.onReceived(data);
+
         Intent intent = new Intent();
         intent.setAction(CentralDataReceiver.ACTION_UPDATE_CENTRAL_DATA);
         intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);

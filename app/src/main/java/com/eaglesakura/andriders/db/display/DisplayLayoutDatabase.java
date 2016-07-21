@@ -9,6 +9,9 @@ import com.eaglesakura.andriders.dao.display.DbDisplayTargetDao;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.StringUtil;
 
+import org.greenrobot.greendao.database.StandardDatabase;
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -17,13 +20,11 @@ import android.support.annotation.Nullable;
 import java.util.Date;
 import java.util.List;
 
-import de.greenrobot.dao.query.QueryBuilder;
-
 /**
  *
  */
 public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
-    private static final int SUPPORTED_DATABASE_VERSION = 0x01;
+    private static final int SUPPORTED_DATABASE_VERSION = 1;
 
     private static final String PACKAGE_NAME_DEFAULT = "null";
 
@@ -157,7 +158,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, "display_layout.db", null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, context.getDatabasePath("display_layout.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
 
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -166,7 +167,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }

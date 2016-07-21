@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.central;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.andriders.central.geo.GeoSpeedData;
 import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
-import com.eaglesakura.andriders.db.Settings;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.util.Clock;
@@ -26,7 +26,7 @@ public class SpeedData extends BaseCalculator {
     private final SensorSpeedData mSensorSpeedCalculator;
 
     @NonNull
-    Settings mSettings;
+    AppSettings mSettings;
 
     public enum SpeedSource {
         None {
@@ -51,7 +51,7 @@ public class SpeedData extends BaseCalculator {
         public abstract int getFlag();
     }
 
-    public SpeedData(Clock clock, Settings settings, GeoSpeedData geoSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
+    public SpeedData(Clock clock, AppSettings settings, GeoSpeedData geoSpeedCalculator, SensorSpeedData sensorSpeedCalculator) {
         super(clock);
         mSettings = settings;
         mLocationSpeedCalculator = geoSpeedCalculator;

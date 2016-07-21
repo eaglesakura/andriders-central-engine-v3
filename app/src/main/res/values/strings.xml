@@ -134,10 +134,43 @@
     <string name="Common.Formatter.Time.MS">%1$d 分 %2$d 秒</string>
     <string name="Common.Formatter.Time.S">%1$d 秒</string>
     <string name="Main.Menu.Profile">プロファイル</string>
-    <string name="Main.Menu.CycleComputer">サイコン表示内容</string>
+    <string name="Main.Menu.CycleComputer">サイコン表示</string>
+    <string name="Main.Menu.Commands">コマンド</string>
     <string name="Main.Menu.Plugins">プラグイン</string>
     <string name="Main.Menu.Activity">走行ログ</string>
     <string name="Main.Menu.Information">アプリについて</string>
     <string name="UserLog.Import.GPX">GPX形式で読込</string>
     <string name="Main.Menu.Gadgets">センサー・周辺機器</string>
+
+    <string-array name="Command_Speed_TypeInfo">
+        <item>%dkm/hより高速</item>
+        <item>%dkm/hより低速</item>
+        <item>最高速の更新開始</item>
+        <item>最高速の記録更新</item>
+        <item>最高速の更新終了</item>
+        <item>今日最高速の更新開始</item>
+        <item>今日最高速の記録更新</item>
+        <item>今日最高速の更新終了</item>
+    </string-array>
+    <string-array name="Command_Speed_TypeSelector">
+        <item>加速したら</item>
+        <item>減速したら</item>
+        <item>最高速の更新開始</item>
+        <item>最高速の記録更新</item>
+        <item>最高速の更新終了</item>
+        <item>今日最高速の更新開始</item>
+        <item>今日最高速の記録更新</item>
+        <item>今日最高速の更新終了</item>
+    </string-array>
+    <string-array name="Command_Speed_TypeFooter">
+        <item>km/hより高速</item>
+        <item>km/hより低速</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
 </resources>

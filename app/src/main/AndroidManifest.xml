@@ -24,6 +24,8 @@
     <!-- Android 5.x ForegroundApp -->
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
 
+    <!-- Vibrate -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <application
             android:name="com.eaglesakura.andriders.AceApplication"
             android:allowBackup="true"
@@ -37,6 +39,20 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- 指定アプリ起動 -->
+        <activity
+                android:name=".basicui.command.LauncherSelectActivity"
+                android:label="指定アプリを起動"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <!-- acetrigger://で起動する -->
+                <data android:scheme="acecommand"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <!-- デフォルト指定 -->
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 

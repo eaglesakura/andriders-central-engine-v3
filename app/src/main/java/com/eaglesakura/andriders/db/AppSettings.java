@@ -6,7 +6,6 @@ import com.eaglesakura.andriders.v2.db.DefaultCommandSettings;
 import com.eaglesakura.andriders.v2.db.UpdateCheckProps;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.device.external.StorageInfo;
-import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.garnet.Singleton;
 import com.eaglesakura.util.LogUtil;
 
@@ -20,7 +19,7 @@ import java.io.FileOutputStream;
  * 全設定を管理するためのクラス
  */
 @Singleton
-public class Settings {
+public class AppSettings {
 
     final DebugSettings debugSettings;
 
@@ -34,7 +33,7 @@ public class Settings {
 
     final DefaultCommandSettings defaultCommandSettings;
 
-    public Settings(Context context) {
+    public AppSettings(Context context) {
         mAppContext = context.getApplicationContext();
         debugSettings = new DebugSettings(mAppContext);
         centralSettings = new CentralServiceSettings(mAppContext);

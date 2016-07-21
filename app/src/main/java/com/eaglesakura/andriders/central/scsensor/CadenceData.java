@@ -1,10 +1,10 @@
 package com.eaglesakura.andriders.central.scsensor;
 
-import com.eaglesakura.andriders.db.Settings;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
-import com.eaglesakura.andriders.serialize.RawSensorData;
+import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.sensor.CadenceZone;
+import com.eaglesakura.andriders.serialize.RawSensorData;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.v2.db.UserProfiles;
 
 import android.support.annotation.NonNull;
@@ -23,9 +23,9 @@ public class CadenceData extends BaseCalculator {
     private long mUpdatedDate;
 
     @NonNull
-    Settings mSettings;
+    AppSettings mSettings;
 
-    public CadenceData(Clock clock, @NonNull Settings settings) {
+    public CadenceData(Clock clock, @NonNull AppSettings settings) {
         super(clock);
         mSettings = settings;
     }

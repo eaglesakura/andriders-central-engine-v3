@@ -2,11 +2,11 @@ package com.eaglesakura.andriders.db.session;
 
 import com.eaglesakura.andriders.dao.session.DbSessionLog;
 
+import org.greenrobot.greendao.query.CloseableListIterator;
+
 import android.support.annotation.NonNull;
 
 import java.util.Date;
-
-import de.greenrobot.dao.query.CloseableListIterator;
 
 /**
  * 各セッションの合計情報を管理する
