@@ -5,7 +5,6 @@ import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.db.importer.GpxImporter;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.material.widget.MaterialAlertDialog;
 
 import android.app.AlertDialog;
 import android.content.Context;

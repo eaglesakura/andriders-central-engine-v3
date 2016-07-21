@@ -24,6 +24,7 @@ mipmap {
 }
 
 dependencies {
+    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     if (EGLIBRARY_COMPILE_LOCAL) {
         compile project(":eglibrary:simple-logger")
         compile project(":eglibrary:simple-utils")

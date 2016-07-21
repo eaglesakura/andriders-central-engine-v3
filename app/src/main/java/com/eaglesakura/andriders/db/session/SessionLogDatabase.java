@@ -16,6 +16,10 @@ import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.Timer;
 
+import org.greenrobot.greendao.database.StandardDatabase;
+import org.greenrobot.greendao.query.CloseableListIterator;
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -27,9 +31,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
-
-import de.greenrobot.dao.query.CloseableListIterator;
-import de.greenrobot.dao.query.QueryBuilder;
 
 /**
  * セッションごとのログを保持する
@@ -206,7 +207,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }

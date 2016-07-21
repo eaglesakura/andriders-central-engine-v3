@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -34,8 +33,8 @@ public class MaxSpeedCommandController extends SpeedCommandController {
      */
     double mChallengeMaxSpeed;
 
-    public MaxSpeedCommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController, CommandData commandData) {
-        super(context, subscriptionController, commandData);
+    public MaxSpeedCommandController(@NonNull Context context, CommandData commandData) {
+        super(context, commandData);
     }
 
     /**

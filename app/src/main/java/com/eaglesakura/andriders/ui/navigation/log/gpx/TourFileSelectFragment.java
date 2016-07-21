@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.ui.navigation.log.gpx;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;

@@ -5,11 +5,11 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import com.eaglesakura.andriders.plugin.DisplayKey;
-import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.PluginInformation;
-import com.eaglesakura.andriders.plugin.CentralEngineConnection;
 import com.eaglesakura.andriders.plugin.AcePluginService;
+import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.plugin.data.CentralEngineData;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.display.DisplayDataSender;

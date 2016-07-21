@@ -6,7 +6,6 @@ import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,8 +42,8 @@ public abstract class SpeedCommandController extends CommandController {
 
     final CommandData mCommandData;
 
-    public SpeedCommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController, CommandData commandData) {
-        super(context, subscriptionController);
+    public SpeedCommandController(@NonNull Context context, CommandData commandData) {
+        super(context);
         mCommandData = commandData;
 
         Intent intent = mCommandData.getInternalIntent();
@@ -110,16 +109,16 @@ public abstract class SpeedCommandController extends CommandController {
     /**
      * スピードコマンド用コントローラを生成する
      */
-    public static SpeedCommandController newSpeedController(Context context, SubscriptionController subscriptionController, CommandData data) {
+    public static SpeedCommandController newSpeedController(Context context, CommandData data) {
         int type = data.getInternalIntent().getIntExtra(CommandData.EXTRA_SPEED_TYPE, 0);
         SpeedCommandController controller;
         switch (type) {
             case CommandData.SPEEDCOMMAND_TYPE_UPPER:
             case CommandData.SPEEDCOMMAND_TYPE_LOWER:
-                controller = new BasicSpeedCommandController(context, subscriptionController, data);
+                controller = new BasicSpeedCommandController(context, data);
                 break;
             default:
-                controller = new MaxSpeedCommandController(context, subscriptionController, data);
+                controller = new MaxSpeedCommandController(context, data);
                 break;
         }
         return controller;

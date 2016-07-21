@@ -9,6 +9,9 @@ import com.eaglesakura.andriders.dao.display.DbDisplayTargetDao;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.StringUtil;
 
+import org.greenrobot.greendao.database.StandardDatabase;
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -16,8 +19,6 @@ import android.support.annotation.Nullable;
 
 import java.util.Date;
 import java.util.List;
-
-import de.greenrobot.dao.query.QueryBuilder;
 
 /**
  *
@@ -166,7 +167,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }

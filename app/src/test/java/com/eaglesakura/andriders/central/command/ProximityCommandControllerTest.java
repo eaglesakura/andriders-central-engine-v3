@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.db.command.CommandDataCollection;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.thread.IntHolder;
@@ -10,6 +11,8 @@ import com.eaglesakura.util.Util;
 import org.junit.Test;
 
 import android.support.annotation.Nullable;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -37,12 +40,12 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
 
         Clock clock = new Clock(System.currentTimeMillis());
         SubscriptionController subscriptionController = SubscriptionController.newUnitTestController();
-        ProximityCommandController controller = new ProximityCommandController(getApplication(), clock, subscriptionController);
+        ProximityCommandController controller = new ProximityCommandController(getApplication(), clock);
         controller.setProximityListener(proximityListener);
 
         // フィードバックを開始する
         {
-            controller.onStartCount();
+            controller.onStartCount(new CommandDataCollection(new ArrayList<>()));
             Util.sleep(100);
             assertEquals(callbackSec.value, 0);
             assertEquals(callbackNum.value, 1);
@@ -81,9 +84,9 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
             };
 
 
-            ProximityCommandController controller = new ProximityCommandController(getApplication(), clock, subscriptionController);
+            ProximityCommandController controller = new ProximityCommandController(getApplication(), clock);
             controller.setBootListener(listener);
-            controller.onStartCount();
+            controller.onStartCount(new CommandDataCollection(new ArrayList<>()));
 
             clock.offset(1000 * i + 1);
             controller.onUpdate();

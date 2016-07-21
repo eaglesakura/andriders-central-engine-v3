@@ -2,7 +2,6 @@ package com.eaglesakura.andriders.basicui.command;
 
 import com.eaglesakura.andriders.AceApplication;
 import com.eaglesakura.andriders.AppDeviceTestUtil;
-import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
@@ -16,18 +15,17 @@ import org.junit.Test;
 
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.support.test.annotation.UiThreadTest;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerViewAccessibilityDelegate;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class LauncherSelectActivityTest extends DeviceActivityTestCase<LauncherSelectActivity, AceApplication> {
 

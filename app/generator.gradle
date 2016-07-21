@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.eaglesakura:plugin-android-dbgenerator:1.0.2"
+        classpath "com.eaglesakura:plugin-android-dbgenerator:2.0.146"
     }
 }
 

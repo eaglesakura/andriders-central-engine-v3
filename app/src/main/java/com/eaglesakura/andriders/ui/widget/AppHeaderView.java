@@ -1,13 +1,10 @@
 package com.eaglesakura.andriders.ui.widget;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.util.ContextUtil;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;

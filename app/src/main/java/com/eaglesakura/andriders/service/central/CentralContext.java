@@ -244,7 +244,7 @@ public class CentralContext implements Disposable {
 
         // 近接コマンドセットアップ
         {
-            ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock, getSubscription());
+            ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock);
             proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getSubscription()));
             mProximityFeedbackManager.bind(proximityCommandController);
             mCommandControllers.add(proximityCommandController);
@@ -254,7 +254,7 @@ public class CentralContext implements Disposable {
             CommandDataCollection collection = commandDataManager.loadFromCategory(CommandDatabase.CATEGORY_SPEED);
             for (CommandData data : collection.list(it -> true)) {
                 AppLog.system("Load SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
-                SpeedCommandController controller = SpeedCommandController.newSpeedController(mContext, getSubscription(), data);
+                SpeedCommandController controller = SpeedCommandController.newSpeedController(mContext, data);
                 controller.bind(mLocalReceiver);
                 mCommandControllers.add(controller);
             }

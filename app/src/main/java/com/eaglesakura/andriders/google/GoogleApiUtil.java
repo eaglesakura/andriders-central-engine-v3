@@ -14,7 +14,6 @@ import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.DateUtil;
-import com.eaglesakura.util.Util;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;

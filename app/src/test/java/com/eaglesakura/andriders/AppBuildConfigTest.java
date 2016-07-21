@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders;
 
 import com.eaglesakura.thread.Holder;
-import com.eaglesakura.util.LogUtil;
 
 import org.junit.Test;
 

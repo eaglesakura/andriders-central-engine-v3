@@ -1,15 +1,12 @@
 package com.eaglesakura.andriders.google;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.data.BleDevice;
 import com.google.android.gms.fitness.request.BleScanCallback;
 import com.google.android.gms.fitness.request.StartBleScanRequest;
 
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;

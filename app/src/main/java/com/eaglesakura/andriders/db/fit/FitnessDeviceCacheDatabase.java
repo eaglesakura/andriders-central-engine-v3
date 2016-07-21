@@ -9,14 +9,15 @@ import com.eaglesakura.andriders.dao.bledevice.DbBleFitnessDeviceDao;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
 import com.eaglesakura.android.db.DaoDatabase;
 
+import org.greenrobot.greendao.database.StandardDatabase;
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.Date;
 import java.util.List;
-
-import de.greenrobot.dao.query.QueryBuilder;
 
 /**
  * 一度検索されたFitnessデバイスを管理する
@@ -40,7 +41,7 @@ public class FitnessDeviceCacheDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }

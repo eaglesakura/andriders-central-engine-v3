@@ -4,8 +4,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.google.GoogleApiUtil;
-import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.v2.db.UserProfiles;

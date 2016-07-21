@@ -1,13 +1,10 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 
 /**
@@ -16,14 +13,11 @@ import android.support.annotation.WorkerThread;
 public abstract class CommandController {
     @NonNull
     final Context mContext;
-    @NonNull
-    final SubscriptionController mSubscriptionController;
 
     CommandBootListener mBootListener;
 
-    public CommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController) {
+    public CommandController(@NonNull Context context) {
         mContext = context.getApplicationContext();
-        mSubscriptionController = subscriptionController;
     }
 
     public void setBootListener(@NonNull CommandBootListener bootListener) {
@@ -36,16 +30,19 @@ public abstract class CommandController {
             return;
         }
 
-        mSubscriptionController.run(ObserveTarget.Alive, () -> {
-            listener.onBootCommand(this, data);
-        });
+        listener.onBootCommand(this, data);
     }
 
     @WorkerThread
     public abstract void onUpdate();
 
     public interface CommandBootListener {
-        @UiThread
+
+        /**
+         * コマンドを起動する
+         *
+         * MEMO: コールされるスレッドは不定であるため、実装側で適宜調整する
+         */
         void onBootCommand(@NonNull CommandController self, @Nullable CommandData data);
     }
 }

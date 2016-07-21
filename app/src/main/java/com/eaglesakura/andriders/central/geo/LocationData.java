@@ -1,12 +1,11 @@
 package com.eaglesakura.andriders.central.geo;
 
-import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
+import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.andriders.serialize.RawLocation;
 import com.eaglesakura.andriders.serialize.RawSensorData;
-import com.eaglesakura.andriders.sensor.InclinationType;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.Clock;
 
 /**
  * 位置情報を統括する
