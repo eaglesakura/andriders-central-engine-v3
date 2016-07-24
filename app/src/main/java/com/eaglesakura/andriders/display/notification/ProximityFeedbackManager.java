@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
@@ -43,7 +44,7 @@ public class ProximityFeedbackManager {
     @NonNull
     final ClockTimer mTimer;
 
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
 
     /**
@@ -96,9 +97,7 @@ public class ProximityFeedbackManager {
         mCommandDataManager = new CommandDataManager(mContext);
         mSubscriptionController = subscriptionController;
 
-        Garnet.create(this)
-                .depend(Context.class, context)
-                .inject();
+        Garnet.inject(this);
     }
 
     /**

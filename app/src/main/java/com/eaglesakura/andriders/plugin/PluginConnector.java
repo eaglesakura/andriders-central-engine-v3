@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
 import com.eaglesakura.andriders.plugin.internal.DisplayCommand;
 import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
@@ -98,21 +99,17 @@ public class PluginConnector extends CommandClient {
     private Worker<NotificationDisplayManager> mNotificationDisplayManagerWorker = it -> {
     };
 
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     AppSettings mSettings;
 
     PluginConnector(Context context, PluginManager parent, String sessionId) {
         super(context, String.format("%s", UUID.randomUUID().toString()));
+        Garnet.inject(this);
         mCentralServiceMode = (context instanceof CentralService);
         mSessionId = sessionId;
         mParent = parent;
         buildCentralCommands();
         buildDisplayCommands();
-
-        Garnet.create(this)
-                .depend(Context.class, context)
-                .inject();
-
     }
 
     /**

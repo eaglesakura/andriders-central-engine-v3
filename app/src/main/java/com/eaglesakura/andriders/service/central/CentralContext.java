@@ -15,9 +15,8 @@ import com.eaglesakura.andriders.display.notification.ProximityFeedbackManager;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.andriders.service.central.internal.CommandBootListenerImpl;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.MultiTimer;
@@ -34,7 +33,6 @@ import com.eaglesakura.io.Disposable;
 import com.eaglesakura.util.SerializeUtil;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
@@ -48,24 +46,24 @@ import java.util.List;
 public class CentralContext implements Disposable {
 
     @NonNull
-    private Service mContext;
+    Service mContext;
 
     /**
      * システム時計
      */
     @NonNull
-    private final Clock mClock;
+    final Clock mClock;
 
     /**
      * 更新用のタイマーリスト
      */
     @NonNull
-    private final MultiTimer mTimers;
+    final MultiTimer mTimers;
 
     /**
      * 設定
      */
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     @NonNull
     AppSettings mSettings;
 
@@ -137,7 +135,7 @@ public class CentralContext implements Disposable {
     /**
      * ACEのローカル情報を管理するレシーバ
      */
-    private CentralDataReceiver mLocalReceiver;
+    CentralDataReceiver mLocalReceiver;
 
     public CentralContext(Service context, Clock updateClock) {
         mContext = context;
@@ -155,14 +153,12 @@ public class CentralContext implements Disposable {
             }
         };
 
-        Garnet.create(this)
-                .depend(Context.class, context.getApplication())
-                .inject();
+        Garnet.inject(this);
 
         mCentralData = new CentralDataManager(context, mClock);
         mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationDisplayManager(mContext, mClock);
-        mNotificationManager.addListener(mNotificationShowingListener);
+        mNotificationManager.addListener(new NotificationShowingListenerImpl(this));
         mProximityFeedbackManager = new ProximityFeedbackManager(mContext, mClock, getSubscription());
 
         mPluginManager = new PluginManager(mContext);
@@ -331,14 +327,15 @@ public class CentralContext implements Disposable {
 
         // データのコミットを行う
         if (mTimers.endIfOverTime(TimerType.CentralDbCommit, CENTRAL_COMMIT_INTERVAL_MS)) {
-            requestCommitDatabase();
+            CentralContextImpl.commitLogDatabase(this);
         }
     }
 
     @Override
     public void dispose() {
         mProximityFeedbackManager.disconnect(); // 近接コマンドを切断する
-        requestCommitDatabase();    // セントラルにコミットをかける
+
+        CentralContextImpl.commitLogDatabase(this);   // セントラルにコミットをかける
 
         // その他の終了タスクを投げる
         new RxTaskBuilder<>(getSubscription())
@@ -365,48 +362,6 @@ public class CentralContext implements Disposable {
                 .observeOn(ObserveTarget.Alive)
                 .subscribeOn(subscribeTarget);
     }
-
-    /**
-     * DBの内容を書き出す
-     */
-    void requestCommitDatabase() {
-        new RxTaskBuilder<>(getSubscription())
-                .observeOn(ObserveTarget.FireAndForget)
-                .subscribeOn(SubscribeTarget.GlobalPipeline)
-                .async(task -> {
-                    AppLog.db("CentralCommit Start");
-                    mCentralData.commit();
-                    return this;
-                })
-                .completed((result, task) -> {
-                    AppLog.db("CentralCommit Completed");
-                })
-                .failed((error, task) -> {
-                    AppLog.report(error);
-                })
-                .start();
-    }
-
-    /**
-     * 通知のレンダリングを開始したら、全アプリへBroadcastする
-     */
-    NotificationDisplayManager.OnNotificationShowingListener mNotificationShowingListener = (self, data) -> {
-        try {
-            Intent intent = new Intent();
-            intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
-            intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
-
-            byte[] rawNotification = data.serialize();
-            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, rawNotification);
-
-            mContext.sendBroadcast(intent);
-            // ローカル伝達
-            mLocalReceiver.onReceivedNotificationData(rawNotification);
-        } catch (Throwable e) {
-            AppLog.report(e);
-        }
-
-    };
 
     /**
      * データを各アプリへ送信する

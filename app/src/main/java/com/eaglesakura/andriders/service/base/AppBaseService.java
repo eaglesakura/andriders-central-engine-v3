@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.service.base;
 
 import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
@@ -14,16 +15,14 @@ import android.content.Context;
 public abstract class AppBaseService extends Service {
     ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     protected AppSettings mSettings;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Garnet.create(this)
-                .depend(Context.class, this)
-                .inject();
+        Garnet.inject(this);
 
         mLifecycleDelegate.onCreate();
     }

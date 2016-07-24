@@ -1,8 +1,6 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.dao.command.DbCommand;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawRecord;
@@ -17,14 +15,11 @@ import static org.junit.Assert.assertNotNull;
 public class SpeedCommandControllerTest extends AppUnitTestCase {
 
     CommandData newCommand(double speed, int type) throws Throwable {
-        DbCommand db = new DbCommand();
-        db.setCommandData(new SerializableIntent()
-                .putExtra(CommandData.EXTRA_SPEED_KMH, speed)
-                .putExtra(CommandData.EXTRA_SPEED_TYPE, type)
-                .serialize()
-        );
-        db.setCommandKey(CommandKey.fromSpeed(System.currentTimeMillis()).getKey());
-        return new CommandData(db);
+        CommandData result = new CommandData(new DbCommand());
+        CommandData.RawExtra extra = result.getInternalExtra();
+        extra.speedKmh = (float) speed;
+        extra.speedType = type;
+        return result;
     }
 
     RawRecord newRecord(double maxSpeed, double todayMaxSpeed) throws Throwable {
@@ -52,6 +47,7 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
     }
 
     final double MAXSPEED = 40.0;
+    
     final double MAXSPEED_TODAY = 30.0;
 
     @Test

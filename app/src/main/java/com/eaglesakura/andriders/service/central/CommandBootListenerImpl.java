@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.service.central.internal;
+package com.eaglesakura.andriders.service.central;
 
 import com.eaglesakura.andriders.central.command.CommandController;
 import com.eaglesakura.andriders.command.SerializableIntent;
@@ -13,7 +13,10 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public class CommandBootListenerImpl implements CommandController.CommandBootListener {
+/**
+ * コマンド実行の実装本体
+ */
+class CommandBootListenerImpl implements CommandController.CommandBootListener {
 
     @NonNull
     Context mContext;

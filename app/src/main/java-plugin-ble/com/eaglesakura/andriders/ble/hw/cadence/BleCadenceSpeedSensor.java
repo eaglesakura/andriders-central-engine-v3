@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ble.hw.cadence;
 
 import com.eaglesakura.andriders.ble.hw.BleDevice;
 import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.util.Clock;
@@ -60,18 +60,17 @@ public class BleCadenceSpeedSensor extends BleDevice {
     @NonNull
     final SubscriptionController mSubscriptionController;
 
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     AppSettings mSettings;
 
     public BleCadenceSpeedSensor(Context context, SubscriptionController subscriptionController, BluetoothDevice device, Clock clock) {
         super(context, device);
+        Garnet.inject(this);
 
         // スピードセンサーはタイヤの回転数的に頻繁な更新で問題ない
         mCadence = new SpeedCadenceSensorData(clock, (int) (1000.0 * 3.0), (int) (1000.0 * 2));
         mSpeed = new SpeedCadenceSensorData(clock, (int) (1000.0 * 3.0), (int) (1000.0 * 2));
         mSubscriptionController = subscriptionController;
-
-        Garnet.create(this).depend(Context.class, context).inject();
     }
 
     /**

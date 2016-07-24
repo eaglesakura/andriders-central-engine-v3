@@ -6,6 +6,7 @@ import com.eaglesakura.android.garnet.Singleton;
 import com.eaglesakura.util.IOUtil;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,10 +55,20 @@ public class AppStorageManager {
     }
 
     /**
-     * 内部データを管理する（万一消えても問題ない）DB領域を取得する
+     * データベース領域を取得する
+     *
+     * MEMO: KitkatはSDカードアクセスが行えないため、内部ストレージ限定とする。
+     *
+     * この場合、Kitkat -> Lollipopアップデートでlogを見失う場合があるが、
+     * 2016年現在Kitkatのママの端末はLollipopへのアップデートを行わない可能性が高いため、
+     * 問題は軽微であると考えて無視する。
      */
     @Nullable
     public String getDatabasePath(@NonNull String name) {
-        return new File(IOUtil.mkdirs(getDatabaseDirectory()), name).getAbsolutePath();
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            return mContext.getDatabasePath(name).getAbsolutePath();
+        } else {
+            return new File(getDatabaseDirectory(), name).getAbsolutePath();
+        }
     }
 }

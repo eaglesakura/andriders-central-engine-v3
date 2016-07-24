@@ -1,13 +1,13 @@
 package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.dao.command.DbCommand;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
 import com.eaglesakura.serialize.error.SerializeException;
+import com.eaglesakura.util.SerializeUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -65,7 +65,7 @@ public class CommandDataManager {
     /**
      * コマンドを保存する
      */
-    public CommandData save(CommandSetupData data, int category, @Nullable SerializableIntent internalIntent) {
+    public CommandData save(CommandSetupData data, int category, @Nullable CommandData.RawExtra extra) {
         try (CommandDatabase db = open()) {
             DbCommand dbCommand = new DbCommand();
             dbCommand.setCommandKey(data.getKey().getKey());
@@ -74,8 +74,8 @@ public class CommandDataManager {
             dbCommand.setIconPng(data.getIconFile());
             dbCommand.setPackageName(data.getPackageName());
             dbCommand.setIntentData(data.getUserIntent());
-            if (internalIntent != null) {
-                dbCommand.setCommandData(internalIntent.serialize());
+            if (extra != null) {
+                dbCommand.setCommandData(SerializeUtil.serializePublicFieldObject(extra, false));
             }
 
             db.update(dbCommand);

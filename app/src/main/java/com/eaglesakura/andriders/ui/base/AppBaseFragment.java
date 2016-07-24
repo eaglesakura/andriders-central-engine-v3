@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.ui.base;
 
 import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
@@ -19,7 +20,7 @@ import android.widget.Toast;
 
 
 public abstract class AppBaseFragment extends SupportFragment {
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     protected AppSettings mSettings;
 
     @Override
@@ -37,7 +38,7 @@ public abstract class AppBaseFragment extends SupportFragment {
 
     }
 
-    public AppSettings getSettings() {
+    public synchronized AppSettings getSettings() {
         return mSettings;
     }
 
