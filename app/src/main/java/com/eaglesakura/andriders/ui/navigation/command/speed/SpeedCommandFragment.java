@@ -43,7 +43,7 @@ import java.util.List;
 
 public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPagerTitle {
 
-    int mCategory;
+    final int TARGET_CATEGORY = CommandDatabase.CATEGORY_SPEED;
 
     @Bind(R.id.Command_Item_List)
     SupportRecyclerView mRecyclerView;
@@ -55,7 +55,6 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
 
     public SpeedCommandFragment() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_command_list);
-        mCategory = CommandDatabase.CATEGORY_SPEED;
     }
 
     @Override
@@ -87,7 +86,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
     @UiThread
     void loadDatabases() {
         asyncUI((BackgroundTask<CommandDataCollection> task) -> {
-            return mCommandDataManager.loadFromCategory(mCategory);
+            return mCommandDataManager.loadFromCategory(TARGET_CATEGORY);
         }).completed((result, task) -> {
             onCommandLoaded(result);
         }).failed((error, task) -> {
@@ -256,7 +255,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
         CommandData.RawExtra extra = new CommandData.RawExtra();
         extra.speedKmh = 25.0f;
         extra.speedType = CommandData.SPEEDCOMMAND_TYPE_UPPER;
-        CommandData commandData = mCommandDataManager.save(data, mCategory, extra);
+        CommandData commandData = mCommandDataManager.save(data, TARGET_CATEGORY, extra);
         mAdapter.getCollection().insertOrReplace(0, commandData);
     }
 
