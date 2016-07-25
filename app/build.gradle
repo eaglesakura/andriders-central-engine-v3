@@ -127,7 +127,7 @@ android {
 
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 24
 
 //        versionCode 99999;
