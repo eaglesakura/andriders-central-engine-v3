@@ -68,7 +68,7 @@ public class AppStorageManager {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             return mContext.getDatabasePath(name).getAbsolutePath();
         } else {
-            return new File(getDatabaseDirectory(), name).getAbsolutePath();
+            return new File(IOUtil.mkdirs(getDatabaseDirectory()), name).getAbsolutePath();
         }
     }
 }
