@@ -11,7 +11,7 @@ import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.support.SupportAQuery;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.util.Util;
 
@@ -96,7 +96,7 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
 
     @UiThread
     void updateExtensionViews() {
-        asyncUI((RxTask<PluginManager> it) -> {
+        asyncUI((BackgroundTask<PluginManager> it) -> {
             while (!it.isCanceled()) {
                 PluginManager manager = mParent.getClientManager();
                 if (manager != null) {

@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -53,12 +53,12 @@ public class BleHeartrateMonitor extends BleDevice {
     private BluetoothGatt mHeartrateGatt;
 
     @NonNull
-    private final SubscriptionController mSubscriptionController;
+    private final PendingCallbackQueue mCallbackQueue;
 
-    public BleHeartrateMonitor(Context context, SubscriptionController subscriptionController, BluetoothDevice device, Clock clock) {
+    public BleHeartrateMonitor(Context context, PendingCallbackQueue callbackQueue, BluetoothDevice device, Clock clock) {
         super(context, device);
         mHeartrateData = new HeartrateSensorData(clock);
-        mSubscriptionController = subscriptionController;
+        mCallbackQueue = callbackQueue;
     }
 
     private final BluetoothGattCallback gattCallback = new BleDevice.BaseBluetoothGattCallback() {
@@ -70,13 +70,13 @@ public class BleHeartrateMonitor extends BleDevice {
                 if (notificationEnable(BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT)) {
                     mHeartrateGatt = gatt;
                     AppLog.ble("enable cadence notification");
-                    mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                    mCallbackQueue.run(ObserveTarget.Alive, () -> {
                         for (BleHeartrateListener listener : mListeners) {
                             listener.onDeviceSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
                         }
                     });
                 } else {
-                    mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                    mCallbackQueue.run(ObserveTarget.Alive, () -> {
                         for (BleHeartrateListener listener : mListeners) {
                             listener.onDeviceNotSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
                         }

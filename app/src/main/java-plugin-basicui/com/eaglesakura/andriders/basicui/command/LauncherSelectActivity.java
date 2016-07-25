@@ -6,7 +6,7 @@ import com.eaglesakura.andriders.databinding.CardLauncherBinding;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.ui.support.SupportActivity;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
 import com.eaglesakura.util.CollectionUtil;
@@ -49,7 +49,7 @@ public class LauncherSelectActivity extends SupportActivity {
 
     @UiThread
     void loadLaunchers() {
-        asyncUI((RxTask<List<ResolveInfo>> task) -> {
+        asyncUI((BackgroundTask<List<ResolveInfo>> task) -> {
             return listLauncherApplications();
         }).completed((result, task) -> {
             mAdapter.getCollection().addAllAnimated(result);

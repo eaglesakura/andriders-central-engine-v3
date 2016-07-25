@@ -7,6 +7,7 @@ import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDele
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.LifecycleState;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.app.Service;
@@ -37,8 +38,8 @@ public abstract class AppBaseService extends Service {
         return mLifecycleDelegate.getLifecycleState();
     }
 
-    public SubscriptionController getSubscription() {
-        return mLifecycleDelegate.getSubscription();
+    public PendingCallbackQueue getCallbackQueue() {
+        return mLifecycleDelegate.getCallbackQueue();
     }
 
 

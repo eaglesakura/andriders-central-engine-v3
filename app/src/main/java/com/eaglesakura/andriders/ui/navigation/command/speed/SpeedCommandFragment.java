@@ -19,7 +19,7 @@ import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
@@ -86,7 +86,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
 
     @UiThread
     void loadDatabases() {
-        asyncUI((RxTask<CommandDataCollection> task) -> {
+        asyncUI((BackgroundTask<CommandDataCollection> task) -> {
             return mCommandDataManager.loadFromCategory(mCategory);
         }).completed((result, task) -> {
             onCommandLoaded(result);

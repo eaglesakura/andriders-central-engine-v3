@@ -15,7 +15,7 @@ import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.lambda.CancelCallback;
@@ -131,7 +131,7 @@ public class FitnessSettingFragment extends AppBaseFragment {
      * Google Fitのデータと同期を行う
      */
     void syncFitnessData() {
-        asyncUI((RxTask<Float> task) -> {
+        asyncUI((BackgroundTask<Float> task) -> {
             GoogleApiClient.Builder builder = AppUtil.newFullPermissionClient(getActivity());
 
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task, 60, TimeUnit.SECONDS);

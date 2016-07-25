@@ -10,8 +10,10 @@ import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
 
 import android.content.Context;
@@ -78,7 +80,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      */
     private void loadExtensionClients() {
         mDisplayValues.clear();
-        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<PluginManager> it) -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<PluginManager> it) -> {
             PluginManager clientManager = new PluginManager(getContext());
             try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
                 clientManager.connect(PluginManager.ConnectMode.ActiveOnly);
@@ -96,7 +98,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * ディスプレイ表示内容を読み込む
      */
     private void loadDisplayDatas(final String newPackageName) {
-        asyncUI((RxTask<DataLayoutManager> it) -> {
+        asyncUI((BackgroundTask<DataLayoutManager> it) -> {
             DataLayoutManager slotManager = null;
 
             try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {

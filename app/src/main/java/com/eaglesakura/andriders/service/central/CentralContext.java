@@ -23,11 +23,13 @@ import com.eaglesakura.andriders.util.MultiTimer;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.BackgroundTaskBuilder;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.android.rx.RxTaskBuilder;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.io.Disposable;
 import com.eaglesakura.util.SerializeUtil;
@@ -159,7 +161,7 @@ public class CentralContext implements Disposable {
         mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationDisplayManager(mContext, mClock);
         mNotificationManager.addListener(new NotificationShowingListenerImpl(this));
-        mProximityFeedbackManager = new ProximityFeedbackManager(mContext, mClock, getSubscription());
+        mProximityFeedbackManager = new ProximityFeedbackManager(mContext, mClock, getCallbackQueue());
 
         mPluginManager = new PluginManager(mContext);
     }
@@ -199,14 +201,14 @@ public class CentralContext implements Disposable {
      * タスクはUIスレッドで実行される。
      */
     public void post(Runnable task) {
-        getSubscription().run(ObserveTarget.Alive, task);
+        getCallbackQueue().run(CallbackTime.Alive, task);
     }
 
     /**
      * コールバック管理を取得する
      */
-    public SubscriptionController getSubscription() {
-        return mLifecycleDelegate.getSubscription();
+    public PendingCallbackQueue getCallbackQueue() {
+        return mLifecycleDelegate.getCallbackQueue();
     }
 
     /**
@@ -241,7 +243,7 @@ public class CentralContext implements Disposable {
         // 近接コマンドセットアップ
         {
             ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock);
-            proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getSubscription()));
+            proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getCallbackQueue()));
             mProximityFeedbackManager.bind(proximityCommandController);
             mCommandControllers.add(proximityCommandController);
         }
@@ -262,9 +264,10 @@ public class CentralContext implements Disposable {
      */
     public void onServiceInitializeCompleted() {
         mLifecycleDelegate.onCreate();
-        newTask(SubscribeTarget.GlobalPipeline, task -> {
+        newTask(ExecuteTarget.GlobalQueue, task -> {
             initPlugins();
             task.throwIfCanceled();
+
             initCommands();
             task.throwIfCanceled();
             return this;
@@ -338,7 +341,7 @@ public class CentralContext implements Disposable {
         CentralContextImpl.commitLogDatabase(this);   // セントラルにコミットをかける
 
         // その他の終了タスクを投げる
-        new RxTaskBuilder<>(getSubscription())
+        new BackgroundTaskBuilder<>(getCallbackQueue())
                 .observeOn(ObserveTarget.FireAndForget)
                 .subscribeOn(SubscribeTarget.GlobalPipeline)
                 .async(task -> {
@@ -356,11 +359,11 @@ public class CentralContext implements Disposable {
     /**
      * 非同期タスクを生成する
      */
-    public <T> RxTaskBuilder<T> newTask(SubscribeTarget subscribeTarget, RxTask.Async<T> task) {
-        return new RxTaskBuilder<T>(getSubscription())
+    public <T> BackgroundTaskBuilder<T> newTask(ExecuteTarget executeTarget, BackgroundTask.Async<T> task) {
+        return new BackgroundTaskBuilder<T>(getCallbackQueue())
                 .async(task)
-                .observeOn(ObserveTarget.Alive)
-                .subscribeOn(subscribeTarget);
+                .callbackOn(CallbackTime.Alive)
+                .executeOn(executeTarget);
     }
 
     /**

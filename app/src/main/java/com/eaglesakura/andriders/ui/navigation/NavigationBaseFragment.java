@@ -37,7 +37,7 @@ public class NavigationBaseFragment extends AppBaseFragment {
     DrawerLayout mDrawerLayout;
 
     @NonNull
-    private final ProgressStackManager mProgressStackManager = new ProgressStackManager(mLifecycleDelegate.getSubscription());
+    private final ProgressStackManager mProgressStackManager = new ProgressStackManager(mLifecycleDelegate.getCallbackQueue());
 
     public NavigationBaseFragment() {
         mProgressStackManager.setListener(mStackManagerListener);

@@ -7,8 +7,10 @@ import com.eaglesakura.andriders.db.session.SessionTotalCollection;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
+import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.BindingUtil;
@@ -51,7 +53,7 @@ public class UserLogDailyFragment extends AppBaseFragment {
 
     @UiThread
     void loadActivities() {
-        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<SessionTotalCollection> task) -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<SessionTotalCollection> task) -> {
             while (!task.isCanceled()) {
                 SessionTotalCollection result = mParent.getUserLogCollection();
                 if (result != null) {

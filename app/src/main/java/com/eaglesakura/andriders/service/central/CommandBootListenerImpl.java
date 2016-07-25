@@ -6,7 +6,7 @@ import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,11 +22,11 @@ class CommandBootListenerImpl implements CommandController.CommandBootListener {
     Context mContext;
 
     @NonNull
-    SubscriptionController mSubscriptionController;
+    PendingCallbackQueue mCallbackQueue;
 
-    public CommandBootListenerImpl(@NonNull Context context, @NonNull SubscriptionController subscriptionController) {
+    public CommandBootListenerImpl(@NonNull Context context, @NonNull PendingCallbackQueue callbackQueue) {
         mContext = context.getApplicationContext();
-        mSubscriptionController = subscriptionController;
+        mCallbackQueue = callbackQueue;
     }
 
     @Override
@@ -35,7 +35,7 @@ class CommandBootListenerImpl implements CommandController.CommandBootListener {
             return;
         }
 
-        mSubscriptionController.run(ObserveTarget.Alive, () -> {
+        mCallbackQueue.run(ObserveTarget.Alive, () -> {
             try {
                 RawIntent rawIntent = data.getIntent();
                 Intent intent = SerializableIntent.newIntent(rawIntent);
