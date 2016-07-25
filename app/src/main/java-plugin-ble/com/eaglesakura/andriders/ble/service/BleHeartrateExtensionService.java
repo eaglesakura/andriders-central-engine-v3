@@ -70,7 +70,7 @@ public class BleHeartrateExtensionService extends AppBaseService implements AceP
             return;
         }
 
-        receiver = new HeartrateGattReceiver(this, getSubscription(), mClock);
+        receiver = new HeartrateGattReceiver(this, getCallbackQueue(), mClock);
         receiver.setTargetFitnessDeviceAddress(address);
         receiver.setHeartrateListener(new BleHeartrateMonitor.BleHeartrateListener() {
             @Override

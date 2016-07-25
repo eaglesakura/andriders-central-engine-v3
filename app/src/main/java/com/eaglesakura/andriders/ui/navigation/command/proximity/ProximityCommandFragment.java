@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.db.command.CommandDataCollection;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppConstants;
@@ -46,9 +47,6 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
      * 近接コマンドボタン
      */
     final List<ViewGroup> mCommandViewList = new ArrayList<>();
-
-    @Inject(StorageProvider.class)
-    AppSettings mAppSettings;
 
     /**
      * 最後に選択した近接コマンドボタン

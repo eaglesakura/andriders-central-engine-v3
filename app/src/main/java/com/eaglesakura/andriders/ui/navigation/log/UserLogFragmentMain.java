@@ -10,7 +10,7 @@ import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelega
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentPager;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnMenuClick;
-import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.saver.BundleState;
 
 import android.content.Context;
@@ -65,7 +65,7 @@ public class UserLogFragmentMain extends NavigationBaseFragment implements UserL
     @UiThread
     void loadSessionTotal() {
         mSessionTotalCollection = null;
-        asyncUI((RxTask<SessionTotalCollection> task) -> {
+        asyncUI((BackgroundTask<SessionTotalCollection> task) -> {
             SessionLogDatabase db = new SessionLogDatabase(getActivity());
             try {
                 db.openReadOnly();

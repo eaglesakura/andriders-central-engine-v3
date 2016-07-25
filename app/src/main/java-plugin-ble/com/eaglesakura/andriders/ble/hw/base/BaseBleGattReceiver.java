@@ -5,7 +5,11 @@ import com.eaglesakura.andriders.ble.hw.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.dao.bledevice.DbBleFitnessDevice;
 import com.eaglesakura.andriders.db.fit.FitnessDeviceCacheDatabase;
 import com.eaglesakura.andriders.google.FitnessDeviceType;
+import com.eaglesakura.android.rx.BackgroundTaskBuilder;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.rx.RxTaskBuilder;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.SubscriptionController;
@@ -52,11 +56,11 @@ public abstract class BaseBleGattReceiver {
     protected Context mContext;
 
     @NonNull
-    protected final SubscriptionController mSubscriptionController;
+    protected final PendingCallbackQueue mCallbackQueue;
 
-    public BaseBleGattReceiver(Context context, SubscriptionController subscriptionController, FitnessDeviceType type) {
+    public BaseBleGattReceiver(Context context, PendingCallbackQueue pendingCallbackQueue, FitnessDeviceType type) {
         mContext = context.getApplicationContext();
-        mSubscriptionController = subscriptionController;
+        mCallbackQueue = pendingCallbackQueue;
         mFitnessDeviceType = type;
     }
 
@@ -70,9 +74,9 @@ public abstract class BaseBleGattReceiver {
 
         onSensorScanStart();
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        new RxTaskBuilder<BluetoothDevice>(mSubscriptionController)
-                .observeOn(ObserveTarget.Alive)
-                .subscribeOn(SubscribeTarget.Parallels)
+        new BackgroundTaskBuilder<BluetoothDevice>(mCallbackQueue)
+                .callbackOn(CallbackTime.Alive)
+                .executeOn(ExecuteTarget.LocalParallel)
                 .async(task -> {
                     BluetoothDevice device = adapter.getRemoteDevice(mTargetFitnessDeviceAddress);
                     if (!adapter.isEnabled() || device == null) {
@@ -127,7 +131,7 @@ public abstract class BaseBleGattReceiver {
     private final BleDeviceListener mBaseDeviceListener = new BleDeviceListener() {
         @Override
         public void onDeviceConnected(BleDevice self, BluetoothDevice device) {
-            mSubscriptionController.run(ObserveTarget.Alive, () -> {
+            mCallbackQueue.run(ObserveTarget.Alive, () -> {
                 incrementConnectCount(device);
             });
         }
@@ -135,7 +139,7 @@ public abstract class BaseBleGattReceiver {
         @Override
         public void onDeviceDisconnected(BleDevice self) {
             // 再度検出を行わせる
-            mSubscriptionController.run(ObserveTarget.Alive, () -> {
+            mCallbackQueue.run(ObserveTarget.Alive, () -> {
                 disconnect();
                 requestReScan(DEFAULT_RECONNECT_DELAY_MS);
             });
@@ -143,9 +147,9 @@ public abstract class BaseBleGattReceiver {
     };
 
     void incrementConnectCount(final BluetoothDevice device) {
-        new RxTaskBuilder<Void>(mSubscriptionController)
-                .observeOn(ObserveTarget.Foreground)
-                .subscribeOn(SubscribeTarget.Parallels)
+        new BackgroundTaskBuilder<Void>(mCallbackQueue)
+                .callbackOn(CallbackTime.Foreground)
+                .executeOn(ExecuteTarget.LocalParallel)
                 .async(task -> {
                     FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(mContext);
                     try {

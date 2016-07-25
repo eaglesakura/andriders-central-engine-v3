@@ -88,6 +88,8 @@ public class BasicExtensionService extends Service implements AcePluginService {
             return;
         }
 
+        AppLog.system("Wheel Length[%.1f]", connection.getCentralDataExtension().getWheelOuterLength());
+
         ZoneColor zoneColor = new ZoneColor(this);
         List<DisplayDataSender> senders = new ArrayList<>();
         senders.add(new HeartrateDisplaySender(connection, zoneColor).bind());

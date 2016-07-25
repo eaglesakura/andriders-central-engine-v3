@@ -18,8 +18,10 @@ import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.gms.error.SignInRequireException;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
 import com.eaglesakura.android.oari.OnActivityResult;
+import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.AndroidNetworkUtil;
@@ -107,7 +109,7 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             return;
         }
 
-        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<Intent> task) -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<Intent> task) -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
 
             // 所定のパーミッションを得るまで起動させない
@@ -200,7 +202,7 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
      * Google Sign Inを開始する
      */
     void startGoogleSignIn() {
-        asyncUI((RxTask<Intent> task) -> {
+        asyncUI((BackgroundTask<Intent> task) -> {
             return PlayServiceUtil.newSignInIntent(AppUtil.newFullPermissionClient(getActivity()), () -> task.isCanceled());
         }).completed((result, task) -> {
             startActivityForResult(result, AppConstants.REQUEST_GOOGLE_AUTH);

@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.service.central.CentralContext;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
@@ -137,7 +138,7 @@ public class DisplayRenderer {
         mLoopController.setFrameRate(DISPLAY_REFRESH_SEC);
         mLoopController.connect();
 
-        mCentralContext.newTask(SubscribeTarget.Pipeline, task -> {
+        mCentralContext.newTask(ExecuteTarget.LocalQueue, task -> {
             reloadSlots(mService.getPackageName());
             return this;
         }).start();

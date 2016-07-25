@@ -10,8 +10,7 @@ import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
 import com.eaglesakura.andriders.central.session.SessionData;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.db.AppStorageManager;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawGeoPoint;
@@ -112,11 +111,7 @@ public class CentralDataManager {
     @NonNull
     SessionData mSessionData;
 
-
-    @Inject(StorageProvider.class)
-    AppStorageManager mStorageManager;
-
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     AppSettings mSettings;
 
     /**
@@ -143,9 +138,7 @@ public class CentralDataManager {
         mClockTimer = new ClockTimer(clock);
 
         // 依存性解決
-        Garnet.create(this)
-                .depend(Context.class, context)
-                .inject();
+        Garnet.inject(this);
 
         mSessionData = new SessionData(mClock, mClock.now());
         mFitnessData = new FitnessData(mClock, mSettings);
@@ -158,7 +151,7 @@ public class CentralDataManager {
         mLocationData = new LocationData(mClock, geoSpeedData);
         mSpeedData = new SpeedData(mClock, mSettings, geoSpeedData, mSensorSpeedData);
 
-        mSessionLogger = new SessionLogger(mContext, mSessionData.getSessionId(), mStorageManager, mClock);
+        mSessionLogger = new SessionLogger(mContext, mSessionData.getSessionId(), mClock);
     }
 
     @NonNull
