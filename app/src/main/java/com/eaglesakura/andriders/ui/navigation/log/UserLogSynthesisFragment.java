@@ -4,8 +4,10 @@ import com.eaglesakura.andriders.databinding.FragmentUserLogSynthesisBinding;
 import com.eaglesakura.andriders.db.session.SessionTotalCollection;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.ui.binding.UserLogSynthesis;
+import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTask;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.util.DateUtil;
@@ -53,7 +55,7 @@ public class UserLogSynthesisFragment extends AppBaseFragment {
      */
     @UiThread
     void loadSynthesisLog() {
-        async(SubscribeTarget.Pipeline, ObserveTarget.CurrentForeground, (RxTask<SessionTotalCollection> task) -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<SessionTotalCollection> task) -> {
             while (!task.isCanceled()) {
                 SessionTotalCollection result = mParent.getUserLogCollection();
                 if (result != null) {

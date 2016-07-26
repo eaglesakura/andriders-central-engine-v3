@@ -8,7 +8,6 @@ import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -46,9 +45,9 @@ public abstract class SpeedCommandController extends CommandController {
         super(context);
         mCommandData = commandData;
 
-        Intent intent = mCommandData.getInternalIntent();
-        mSpeedKmh = intent.getDoubleExtra(CommandData.EXTRA_SPEED_KMH, 25.0);
-        mCommandType = intent.getIntExtra(CommandData.EXTRA_SPEED_TYPE, 0);
+        CommandData.RawExtra extra = mCommandData.getInternalExtra();
+        mSpeedKmh = extra.speedKmh;
+        mCommandType = extra.speedType;
     }
 
     /**
@@ -110,7 +109,7 @@ public abstract class SpeedCommandController extends CommandController {
      * スピードコマンド用コントローラを生成する
      */
     public static SpeedCommandController newSpeedController(Context context, CommandData data) {
-        int type = data.getInternalIntent().getIntExtra(CommandData.EXTRA_SPEED_TYPE, 0);
+        final int type = data.getInternalExtra().speedType;
         SpeedCommandController controller;
         switch (type) {
             case CommandData.SPEEDCOMMAND_TYPE_UPPER:

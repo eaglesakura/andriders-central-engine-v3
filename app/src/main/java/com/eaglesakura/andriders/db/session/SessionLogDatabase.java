@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.AppStorageManager;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
@@ -38,15 +39,13 @@ import java.util.TimeZone;
 public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     private static final int SUPPORTED_DATABASE_VERSION = 1;
 
-    @Inject(StorageProvider.class)
+    @Inject(AppManagerProvider.class)
     AppStorageManager mStorageManager;
 
     public SessionLogDatabase(@NonNull Context context) {
         super(context, DaoMaster.class);
 
-        Garnet.create(this)
-                .depend(Context.class, context)
-                .inject();
+        Garnet.inject(this);
     }
 
     /**

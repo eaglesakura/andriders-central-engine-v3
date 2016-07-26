@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
@@ -39,7 +40,7 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
         };
 
         Clock clock = new Clock(System.currentTimeMillis());
-        SubscriptionController subscriptionController = SubscriptionController.newUnitTestController();
+        PendingCallbackQueue callbackQueue = PendingCallbackQueue.newUnitTestController();
         ProximityCommandController controller = new ProximityCommandController(getApplication(), clock);
         controller.setProximityListener(proximityListener);
 
@@ -74,7 +75,7 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
     public void 近接コマンドのBootを行える() throws Throwable {
         // 1秒経過ごとにフィードバックされる
         for (int i = 0; i < ProximityCommandController.MAX_FEEDBACK_SEC; ++i) {
-            SubscriptionController subscriptionController = SubscriptionController.newUnitTestController();
+            PendingCallbackQueue callbackQueue = PendingCallbackQueue.newUnitTestController();
             Clock clock = new Clock(System.currentTimeMillis());
 
             IntHolder holder = new IntHolder(-1);

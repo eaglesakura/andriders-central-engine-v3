@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ble.hw.cadence;
 
 import com.eaglesakura.andriders.ble.hw.BleDevice;
 import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.util.Clock;
@@ -10,7 +10,7 @@ import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.util.CollectionUtil;
 
 import android.bluetooth.BluetoothDevice;
@@ -58,20 +58,19 @@ public class BleCadenceSpeedSensor extends BleDevice {
     protected final SpeedCadenceSensorData mSpeed;
 
     @NonNull
-    final SubscriptionController mSubscriptionController;
+    final PendingCallbackQueue mCallbackQueue;
 
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     AppSettings mSettings;
 
-    public BleCadenceSpeedSensor(Context context, SubscriptionController subscriptionController, BluetoothDevice device, Clock clock) {
+    public BleCadenceSpeedSensor(Context context, PendingCallbackQueue callbackQueue, BluetoothDevice device, Clock clock) {
         super(context, device);
+        Garnet.inject(this);
 
         // スピードセンサーはタイヤの回転数的に頻繁な更新で問題ない
         mCadence = new SpeedCadenceSensorData(clock, (int) (1000.0 * 3.0), (int) (1000.0 * 2));
         mSpeed = new SpeedCadenceSensorData(clock, (int) (1000.0 * 3.0), (int) (1000.0 * 2));
-        mSubscriptionController = subscriptionController;
-
-        Garnet.create(this).depend(Context.class, context).inject();
+        mCallbackQueue = callbackQueue;
     }
 
     /**
@@ -88,13 +87,13 @@ public class BleCadenceSpeedSensor extends BleDevice {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (notificationEnable(BLE_UUID_SERVICE_SPEED_AND_CADENCE, BLE_UUID_SPEEDCADENCE_MEASUREMENT)) {
                     AppLog.ble("enable cadence notification");
-                    mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                    mCallbackQueue.run(ObserveTarget.Alive, () -> {
                         for (BleSpeedCadenceListener listener : mListeners) {
                             listener.onDeviceSupportedSpeedCadence(BleCadenceSpeedSensor.this, mDevice);
                         }
                     });
                 } else {
-                    mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                    mCallbackQueue.run(ObserveTarget.Alive, () -> {
                         for (BleSpeedCadenceListener listener : mListeners) {
                             listener.onDeviceNotSupportedSpeedCadence(BleCadenceSpeedSensor.this, mDevice);
                         }
@@ -135,7 +134,7 @@ public class BleCadenceSpeedSensor extends BleDevice {
                     // 速度更新
                     mSpeed.update(cumulativeWheelRevolutions, lastWheelEventTime);
                     AppLog.bleData(String.format("wheel %.2f rpm", mSpeed.getRpm()));
-                    mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                    mCallbackQueue.run(ObserveTarget.Alive, () -> {
                         for (BleSpeedCadenceListener listener : mListeners) {
                             listener.onSpeedUpdated(BleCadenceSpeedSensor.this, mSpeed);
                         }
@@ -154,7 +153,7 @@ public class BleCadenceSpeedSensor extends BleDevice {
                     mCadence.update(cumulativeCrankRevolutions, lastCrankEventTime);
                     AppLog.bleData(String.format("cadence %d rpm", (int) mCadence.getRpm()));
 
-                    mSubscriptionController.run(ObserveTarget.Alive, () -> {
+                    mCallbackQueue.run(ObserveTarget.Alive, () -> {
                         for (BleSpeedCadenceListener listener : mListeners) {
                             listener.onCadenceUpdated(BleCadenceSpeedSensor.this, mCadence);
                         }

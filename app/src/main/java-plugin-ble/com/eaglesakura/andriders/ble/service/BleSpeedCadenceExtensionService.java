@@ -68,7 +68,7 @@ public class BleSpeedCadenceExtensionService extends AppBaseService implements A
         if (StringUtil.isEmpty(address)) {
             return;
         }
-        mReceiver = new SpeedCadenceGattReceiver(this, getSubscription(), mClock);
+        mReceiver = new SpeedCadenceGattReceiver(this, getCallbackQueue(), mClock);
         mReceiver.setTargetFitnessDeviceAddress(address);
         mReceiver.setSpeedCadenceListener(new BleCadenceSpeedSensor.BleSpeedCadenceListener() {
             @Override

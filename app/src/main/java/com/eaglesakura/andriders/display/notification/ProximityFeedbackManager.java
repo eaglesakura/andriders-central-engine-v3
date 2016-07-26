@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
@@ -14,8 +14,11 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
+import com.eaglesakura.android.rx.BackgroundTaskBuilder;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTaskBuilder;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.system.ScreenEventReceiver;
@@ -43,7 +46,7 @@ public class ProximityFeedbackManager {
     @NonNull
     final ClockTimer mTimer;
 
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
 
     /**
@@ -71,7 +74,7 @@ public class ProximityFeedbackManager {
 
     ProximityCommandController mCommandController;
 
-    final SubscriptionController mSubscriptionController;
+    final PendingCallbackQueue mCallbackQueue;
 
     final CommandDataManager mCommandDataManager;
 
@@ -88,17 +91,15 @@ public class ProximityFeedbackManager {
 
     Bitmap mIcon;
 
-    public ProximityFeedbackManager(@NonNull Context context, @NonNull Clock clock, @NonNull SubscriptionController subscriptionController) {
+    public ProximityFeedbackManager(@NonNull Context context, @NonNull Clock clock, @NonNull PendingCallbackQueue callbackQueue) {
         mContext = context;
         mTimer = new ClockTimer(clock);
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
         mScreenEventReceiver = new ScreenEventReceiver(mContext);
         mCommandDataManager = new CommandDataManager(mContext);
-        mSubscriptionController = subscriptionController;
+        mCallbackQueue = callbackQueue;
 
-        Garnet.create(this)
-                .depend(Context.class, context)
-                .inject();
+        Garnet.inject(this);
     }
 
     /**
@@ -187,9 +188,9 @@ public class ProximityFeedbackManager {
     @UiThread
     void startProximityCheckTask(int taskId) {
         mTimer.start();
-        new RxTaskBuilder<>(mSubscriptionController)
-                .observeOn(ObserveTarget.Alive)
-                .subscribeOn(SubscribeTarget.NewThread)
+        new BackgroundTaskBuilder<>(mCallbackQueue)
+                .callbackOn(CallbackTime.Alive)
+                .executeOn(ExecuteTarget.NewThread)
                 .async(task -> {
                     try {
                         mCommandController.onStartCount(mCommandDataManager.loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY));
@@ -272,7 +273,7 @@ public class ProximityFeedbackManager {
     ProximityCommandController.ProximityListener mProximityFeedbackListener = new ProximityCommandController.ProximityListener() {
         @Override
         public void onRequestUserFeedback(ProximityCommandController self, int sec, @Nullable CommandData data) {
-            mSubscriptionController.run(ObserveTarget.Alive, () -> {
+            mCallbackQueue.run(ObserveTarget.Alive, () -> {
                 if (!mProximityState) {
                     // 近接してないので何もしない
                     mCommandData = null;

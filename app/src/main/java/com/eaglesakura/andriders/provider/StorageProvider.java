@@ -8,6 +8,7 @@ import com.eaglesakura.android.garnet.Provider;
 
 import android.content.Context;
 
+@Deprecated
 public class StorageProvider implements Provider {
     Context mContext;
 

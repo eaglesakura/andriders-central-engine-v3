@@ -2,7 +2,6 @@ package com.eaglesakura.andriders.ui.navigation.command.speed;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.databinding.CardCommandSpeedBinding;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
@@ -20,7 +19,7 @@ import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
@@ -87,7 +86,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
 
     @UiThread
     void loadDatabases() {
-        asyncUI((RxTask<CommandDataCollection> task) -> {
+        asyncUI((BackgroundTask<CommandDataCollection> task) -> {
             return mCommandDataManager.loadFromCategory(mCategory);
         }).completed((result, task) -> {
             onCommandLoaded(result);
@@ -125,9 +124,9 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
 
                 @Override
                 public String getTitle() {
-                    Intent intent = item.getInternalIntent();
-                    int type = intent.getIntExtra(CommandData.EXTRA_SPEED_TYPE, CommandData.SPEEDCOMMAND_TYPE_MAX_FINISHED);
-                    double speed = intent.getDoubleExtra(CommandData.EXTRA_SPEED_KMH, 0.0);
+                    CommandData.RawExtra extra = item.getInternalExtra();
+                    int type = extra.speedType;
+                    double speed = extra.speedKmh;
 
                     return StringUtil.format(mSpeedInfoFormats[type], (int) speed);
                 }
@@ -137,9 +136,9 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
 
     @UiThread
     void onClickCommand(CommandData data) {
-        Intent intent = data.getInternalIntent();
-        final double SPEED_KMH = intent.getDoubleExtra(CommandData.EXTRA_SPEED_KMH, 0);
-        final int TYPE = intent.getIntExtra(CommandData.EXTRA_SPEED_TYPE, 0);
+        CommandData.RawExtra extra = data.getInternalExtra();
+        final double SPEED_KMH = extra.speedKmh;
+        final int TYPE = extra.speedType;
 
         MaterialAlertDialog dialog = new MaterialAlertDialog(getActivity()) {
             String[] mFooters;
@@ -220,10 +219,9 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
                     }
                 }
 
-                SerializableIntent internal = new SerializableIntent();
-                internal.putExtra(CommandData.EXTRA_SPEED_TYPE, mSelectedType);
-                internal.putExtra(CommandData.EXTRA_SPEED_KMH, speed);
-                data.setInternalIntent(internal);
+                CommandData.RawExtra extra = data.getInternalExtra();
+                extra.speedType = mSelectedType;
+                extra.speedKmh = (float) speed;
 
                 mCommandDataManager.save(data);
 
@@ -255,12 +253,10 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
             return;
         }
 
-        SerializableIntent internalIntent =
-                new SerializableIntent()
-                        .putExtra(CommandData.EXTRA_SPEED_KMH, 25.0)
-                        .putExtra(CommandData.EXTRA_SPEED_TYPE, CommandData.SPEEDCOMMAND_TYPE_UPPER);
-
-        CommandData commandData = mCommandDataManager.save(data, mCategory, internalIntent);
+        CommandData.RawExtra extra = new CommandData.RawExtra();
+        extra.speedKmh = 25.0f;
+        extra.speedType = CommandData.SPEEDCOMMAND_TYPE_UPPER;
+        CommandData commandData = mCommandDataManager.save(data, mCategory, extra);
         mAdapter.getCollection().insertOrReplace(0, commandData);
     }
 
