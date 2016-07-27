@@ -45,6 +45,8 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
 
     final int TARGET_CATEGORY = CommandDatabase.CATEGORY_SPEED;
 
+    final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_SPEED;
+
     @Bind(R.id.Command_Item_List)
     SupportRecyclerView mRecyclerView;
 
@@ -79,7 +81,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
     void clickAddButton() {
         startActivityForResult(
                 AppUtil.newCommandSettingIntent(getActivity(), CommandKey.fromSpeed(System.currentTimeMillis())),
-                AppConstants.REQUEST_COMMAND_SETUP
+                REQUEST_COMMAND_SETUP
         );
     }
 
@@ -245,7 +247,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
         builder.show();
     }
 
-    @OnActivityResult(AppConstants.REQUEST_COMMAND_SETUP)
+    @OnActivityResult(REQUEST_COMMAND_SETUP)
     void resultCommandSetup(int result, Intent intent) {
         CommandSetupData data = CommandSetupData.getFromResult(intent);
         if (data == null) {

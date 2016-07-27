@@ -2,14 +2,11 @@ package com.eaglesakura.andriders.ui.navigation.command.proximity;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
-import com.eaglesakura.andriders.provider.AppContextProvider;
-import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
@@ -17,10 +14,8 @@ import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.IFragmentPagerTitle;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.util.StringUtil;
 
@@ -48,12 +43,6 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
      */
     final List<ViewGroup> mCommandViewList = new ArrayList<>();
 
-    /**
-     * 最後に選択した近接コマンドボタン
-     */
-    @BundleState
-    int mLastSelectedProximity;
-
     CommandDataManager mCommandManager;
 
     public ProximityCommandFragment() {
@@ -71,7 +60,7 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
         super.onAfterViews(self, flags);
 
         // ディスプレイリンクの設定
-        mLinkDisplaySwitch.setChecked(mSettings.getCentralSettings().getProximityCommandScreenLink());
+        mLinkDisplaySwitch.setChecked(mSettings.getCentralSettings().isProximityCommandScreenLink());
         mLinkDisplaySwitch.setOnCheckedChangeListener((it, checked) -> {
             mLinkDisplaySwitch.setChecked(checked);
             mSettings.getCentralSettings().setProximityCommandScreenLink(checked);
@@ -140,11 +129,11 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
     void startCommandSetup(CommandKey key) {
         startActivityForResult(
                 AppUtil.newCommandSettingIntent(getActivity(), key),
-                AppConstants.REQUEST_COMMAND_SETUP
+                AppConstants.REQUEST_COMMAND_SETUP_PROXIMITY
         );
     }
 
-    @OnActivityResult(AppConstants.REQUEST_COMMAND_SETUP)
+    @OnActivityResult(AppConstants.REQUEST_COMMAND_SETUP_PROXIMITY)
     void resultCommandSetup(int result, Intent data) {
         CommandSetupData setupData = CommandSetupData.getFromResult(data);
         if (setupData == null) {

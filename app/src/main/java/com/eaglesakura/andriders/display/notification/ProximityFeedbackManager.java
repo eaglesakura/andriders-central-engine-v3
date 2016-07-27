@@ -19,8 +19,6 @@ import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
-import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.system.ScreenEventReceiver;
 
 import android.content.Context;
@@ -141,7 +139,7 @@ public class ProximityFeedbackManager {
     }
 
     private boolean isScreenLink() {
-        return mAppSettings.getCentralSettings().getProximityCommandScreenLink();
+        return mAppSettings.getCentralSettings().isProximityCommandScreenLink();
     }
 
 

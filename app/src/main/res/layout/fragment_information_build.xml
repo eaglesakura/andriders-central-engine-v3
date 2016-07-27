@@ -82,21 +82,6 @@
                         android:orientation="vertical"
                         android:visibility="gone">
 
-                    <android.support.v7.widget.SwitchCompat
-                            android:id="@+id/Debug.ACEs.DebugRendering"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="false"
-                            android:text="ACEs render debug info"/>
-
-                    <android.support.v7.widget.SwitchCompat
-                            android:id="@+id/Debug.Location.Rendering"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="false"
-                            android:text="ACEs render location"/>
-
-
                     <android.support.v7.widget.AppCompatButton
                             android:id="@+id/Debug.Data.Dump"
                             android:layout_width="match_parent"

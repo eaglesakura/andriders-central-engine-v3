@@ -1,12 +1,15 @@
 package com.eaglesakura.andriders.db;
 
-import com.eaglesakura.andriders.v2.db.CentralServiceSettings;
-import com.eaglesakura.andriders.v2.db.DebugSettings;
-import com.eaglesakura.andriders.v2.db.DefaultCommandSettings;
-import com.eaglesakura.andriders.v2.db.UpdateCheckProps;
-import com.eaglesakura.andriders.v2.db.UserProfiles;
+import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.gen.prop.CentralServiceSettings;
+import com.eaglesakura.andriders.gen.prop.DebugSettings;
+import com.eaglesakura.andriders.gen.prop.UpdateCheckProps;
+import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.android.device.external.StorageInfo;
+import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Singleton;
+import com.eaglesakura.android.property.PropertyStore;
+import com.eaglesakura.android.property.TextDatabasePropertyStore;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
@@ -21,45 +24,42 @@ import java.io.FileOutputStream;
 @Singleton
 public class AppSettings {
 
-    final DebugSettings debugSettings;
+    DebugSettings mDebugSettings;
 
-    final CentralServiceSettings centralSettings;
+    CentralServiceSettings mCentralSettings;
 
-    final UserProfiles userProfiles;
+    UserProfiles mUserProfiles;
 
-    final Context mAppContext;
+    Context mAppContext;
 
-    final UpdateCheckProps updateCheckProps;
+    UpdateCheckProps mUpdateCheckProps;
 
-    final DefaultCommandSettings defaultCommandSettings;
+    PropertyStore mPropertyStore;
 
     public AppSettings(Context context) {
         mAppContext = context.getApplicationContext();
-        debugSettings = new DebugSettings(mAppContext);
-        centralSettings = new CentralServiceSettings(mAppContext);
-        userProfiles = new UserProfiles(mAppContext);
-        updateCheckProps = new UpdateCheckProps(mAppContext);
-        defaultCommandSettings = new DefaultCommandSettings(mAppContext);
-    }
 
-    public DefaultCommandSettings getDefaultCommandSettings() {
-        return defaultCommandSettings;
+        mPropertyStore = newDatabasePropertyStore(context);
+        mDebugSettings = new DebugSettings(mPropertyStore);
+        mCentralSettings = new CentralServiceSettings(mPropertyStore);
+        mUserProfiles = new UserProfiles(mPropertyStore);
+        mUpdateCheckProps = new UpdateCheckProps(mPropertyStore);
     }
 
     public UpdateCheckProps getUpdateCheckProps() {
-        return updateCheckProps;
+        return mUpdateCheckProps;
     }
 
     public UserProfiles getUserProfiles() {
-        return userProfiles;
+        return mUserProfiles;
     }
 
     public CentralServiceSettings getCentralSettings() {
-        return centralSettings;
+        return mCentralSettings;
     }
 
     public DebugSettings getDebugSettings() {
-        return debugSettings;
+        return mDebugSettings;
     }
 
 
@@ -78,29 +78,14 @@ public class AppSettings {
      * デバッグが有効化されていたらtrue
      */
     public boolean isDebuggable() {
-        return getDebugSettings().getDebugEnable();
-    }
-
-    /**
-     * リロードを行う
-     */
-    public void load() {
-        debugSettings.load();
-        centralSettings.load();
-        userProfiles.load();
-        updateCheckProps.load();
-        defaultCommandSettings.load();
+        return getDebugSettings().isDebugEnable();
     }
 
     /**
      * 全てのデータを最新版に更新する
      */
-    public void commitAndLoad() {
-        debugSettings.commitAndLoad();
-        centralSettings.commitAndLoad();
-        userProfiles.commitAndLoad();
-        updateCheckProps.commitAndLoad();
-        defaultCommandSettings.commitAndLoad();
+    public void commit() {
+        mPropertyStore.commit();
     }
 
     /**
@@ -122,4 +107,12 @@ public class AppSettings {
         return path;
     }
 
+    /**
+     * Load Database Store
+     */
+    public static PropertyStore newDatabasePropertyStore(Context context) {
+        TextDatabasePropertyStore store = new TextDatabasePropertyStore(context, "settings.db");
+        store.loadProperties(AppSupportUtil.loadPropertySource(context, R.raw.app_properties));
+        return store;
+    }
 }

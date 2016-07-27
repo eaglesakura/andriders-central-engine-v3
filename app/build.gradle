@@ -5,9 +5,20 @@
 // 3.0.x  : モジュール細分化バージョン
 def ACES_APP_VERSION = "3.0"
 
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "http://eaglesakura.github.io/maven/" }
+    }
+    dependencies {
+        classpath "com.eaglesakura:plugin-android-dbgenerator:2.1.162"
+    }
+}
 apply plugin: 'com.android.application'
 apply plugin: 'com.eaglesakura.ci-support'
 apply plugin: 'com.eaglesakura.android-mipmap'
+apply plugin: 'com.eaglesakura.android-props'
 apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
@@ -15,8 +26,18 @@ configurations {
     all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
 }
 
+/**
+ * アプリのプロパティ管理
+ */
+props {
+    property file("config/properties.json")
+}
+
+/**
+ * mipmap生成管理
+ */
 mipmap {
-    sources = file("images/");
+    sources = file("image/");
     output = file("src/main/res");
     toolsPath.identify = System.getenv("IMGMAGICK_IDENTIFY");
     toolsPath.convert = System.getenv("IMGMAGICK_CONVERT");
@@ -144,13 +165,15 @@ android {
 
     sourceSets {
         main {
-            java.srcDirs = [
-                    'src/main/java', 'src/main/generated/dao', 'src/main/generated/props',
+            java.srcDirs += [
+                    'src/main/gen/java',
                     // 内蔵プラグイン
-                    'src/main/java-plugin-basicui', 'src/main/java-plugin-ble', 'src/main/java-plugin-location',
+                    'src/main/java-plugin-basicui',
+                    'src/main/java-plugin-ble',
+                    'src/main/java-plugin-location',
             ]
-            res.srcDirs = [
-                    "src/main/res", "private/main/res"
+            res.srcDirs += [
+                    "private/main/res"
             ];
         }
     }

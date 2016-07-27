@@ -21,6 +21,16 @@ public interface AppConstants {
      */
     int REQUEST_GOOGLE_AUTH = 0x3702;
 
-    int REQUEST_COMMAND_SETUP = 0x3703;
+    /**
+     * 近接コマンド戻り値
+     */
+    int REQUEST_COMMAND_SETUP_PROXIMITY = 0x3703;
+
+    /**
+     * 速度コマンド戻り値
+     *
+     * MEMO: 別なFragmentが勝手にハンドリングするのを防ぐため、別々のREQUESTがひつよう
+     */
+    int REQUEST_COMMAND_SETUP_SPEED = 0x3704;
 }
 

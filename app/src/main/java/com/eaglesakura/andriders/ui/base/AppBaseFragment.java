@@ -42,23 +42,12 @@ public abstract class AppBaseFragment extends SupportFragment {
     }
 
     /**
-     * ユーザーデータを非同期ロードする
-     */
-    public BackgroundTask<AppSettings> asyncReloadSettings() {
-        return asyncUI((BackgroundTask<AppSettings> task) -> {
-            AppSettings settings = getSettings();
-            settings.load();
-            return settings;
-        }).start();
-    }
-
-    /**
      * ユーザーデータを非同期保存する
      */
     public BackgroundTask<AppSettings> asyncCommitSettings() {
         return asyncUI((BackgroundTask<AppSettings> task) -> {
             AppSettings settings = getSettings();
-            settings.commitAndLoad();
+            settings.commit();
             return settings;
         }).start();
     }
