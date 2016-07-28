@@ -22,7 +22,10 @@ import com.eaglesakura.util.StringUtil;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.UiThread;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageView;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -98,12 +101,14 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
                         }
                     })
                     .id(R.id.Setting_Command_ProximitySec).text(StringUtil.format("%d 秒", index + 1))
-                    .id(R.id.Setting_Command_Icon).ifPresent(ImageView.class,
+                    .id(R.id.Setting_Command_Icon).ifPresent(AppCompatImageView.class,
                     it -> {
                         if (data != null) {
                             it.setImageBitmap(data.decodeIcon());
                         } else {
-                            it.setImageDrawable(ResourceUtil.drawable(getActivity(), R.mipmap.ic_common_none));
+                            VectorDrawableCompat drawableCompat = VectorDrawableCompat.create(getActivity().getResources(), R.drawable.ic_common_none, getActivity().getTheme());
+                            drawableCompat.setTint(ContextCompat.getColor(getActivity(), R.color.App_Icon_Grey));
+                            it.setImageDrawable(drawableCompat);
                         }
                     });
             ++index;

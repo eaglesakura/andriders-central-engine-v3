@@ -11,7 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <com.eaglesakura.andriders.ui.widget.AppHeaderView
-                app:headerIcon="@android:drawable/ic_menu_info_details"
+                app:headerIcon="@drawable/ic_info"
                 app:headerText="@string/Information.Build.Title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content">
             <com.eaglesakura.andriders.ui.widget.AppHeaderView
                     app:headerText="@string/Information.Debug.Title"
-                    app:headerIcon="@android:drawable/ic_menu_info_details"
+                    app:headerIcon="@drawable/ic_developer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 

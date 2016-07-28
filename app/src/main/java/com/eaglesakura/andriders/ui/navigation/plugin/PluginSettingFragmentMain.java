@@ -33,10 +33,10 @@ public class PluginSettingFragmentMain extends NavigationBaseFragment {
         if (savedInstanceState == null) {
 
             int[] ICON_TABLE = {
-                    R.mipmap.ic_launcher,
-                    R.mipmap.ic_launcher,
-                    R.mipmap.ic_launcher,
-                    R.mipmap.ic_launcher,
+                    R.drawable.ic_location,
+                    R.drawable.ic_heart_beats,
+                    R.drawable.ic_speed,
+                    R.drawable.ic_single_module,
             };
             int[] TITLE_TABLE = {
                     R.string.Extension_Category_Location,

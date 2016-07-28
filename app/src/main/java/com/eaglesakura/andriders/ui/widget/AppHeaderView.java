@@ -5,6 +5,10 @@ import com.eaglesakura.android.util.ContextUtil;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.DrawableRes;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.TypedArrayUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +39,7 @@ public class AppHeaderView extends FrameLayout {
 
 
     void init(Context context, AttributeSet attrs, int defStyleAttr) {
-        LayoutInflater inflater = ContextUtil.getInflater(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.view_item_header, this);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, new int[]{
@@ -52,7 +56,12 @@ public class AppHeaderView extends FrameLayout {
             mTitle = (TextView) ((ViewGroup) ((ViewGroup) view).getChildAt(0)).getChildAt(1);
         }
 
-        mIcon.setImageDrawable(typedArray.getDrawable(0));
+        {
+            @DrawableRes int resId = typedArray.getResourceId(0, 0);
+            VectorDrawableCompat drawableCompat = VectorDrawableCompat.create(context.getResources(), resId, context.getTheme());
+            drawableCompat.setTint(ContextCompat.getColor(context, R.color.App_Icon_Grey));
+            mIcon.setImageDrawable(drawableCompat);
+        }
         mTitle.setText(typedArray.getString(1));
     }
 }

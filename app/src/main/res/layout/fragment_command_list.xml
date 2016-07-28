@@ -15,7 +15,8 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/Command.Item.Add"
             style="@style/EsMaterial.Widget.RootLayout"
-            android:src="@mipmap/ic_create"
+            app:srcCompat="@drawable/ic_create"
+            android:tint="@color/App.Icon.White"
             android:layout_gravity="bottom|right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
