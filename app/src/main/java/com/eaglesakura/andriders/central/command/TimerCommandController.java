@@ -31,7 +31,7 @@ public class TimerCommandController extends CommandController {
     /**
      * 次に反応すべき時刻を更新する
      */
-    void updateNextTriggerTime() {
+    protected void updateNextTriggerTime() {
         CommandData.RawExtra extra = mCommandData.getInternalExtra();
 
         final long INTERVAL_MS = Timer.toMilliSec(0, 0, 0, Math.max(extra.timerIntervalSec, 1), 0);
@@ -60,7 +60,7 @@ public class TimerCommandController extends CommandController {
     /**
      * トリガーを実行する
      */
-    void onTriggerTime() {
+    protected void onTriggerTime() {
         // コマンドの実行リクエストを送る
         requestCommandBoot(mCommandData);
     }
