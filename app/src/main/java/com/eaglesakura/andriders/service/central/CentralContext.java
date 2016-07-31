@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.command.CommandController;
 import com.eaglesakura.andriders.central.command.ProximityCommandController;
 import com.eaglesakura.andriders.central.command.SpeedCommandController;
+import com.eaglesakura.andriders.central.command.TimerCommandController;
 import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
@@ -240,10 +241,11 @@ public class CentralContext implements Disposable {
     private void initCommands() throws Throwable {
         CommandDataManager commandDataManager = new CommandDataManager(mContext);
 
+        CommandController.CommandBootListener bootListener = new CommandBootListenerImpl(mContext, getCallbackQueue());
         // 近接コマンドセットアップ
         {
             ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock);
-            proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getCallbackQueue()));
+            proximityCommandController.setBootListener(bootListener);
             mProximityFeedbackManager.bind(proximityCommandController);
             mCommandControllers.add(proximityCommandController);
         }
@@ -253,7 +255,18 @@ public class CentralContext implements Disposable {
             for (CommandData data : collection.list(it -> true)) {
                 AppLog.system("Load SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
                 SpeedCommandController controller = SpeedCommandController.newSpeedController(mContext, data);
+                controller.setBootListener(bootListener);
                 controller.bind(mLocalReceiver);
+                mCommandControllers.add(controller);
+            }
+        }
+        // タイマーコマンドを列挙し、コントローラを生成する
+        {
+            CommandDataCollection collection = commandDataManager.loadFromCategory(CommandDatabase.CATEGORY_TIMER);
+            for (CommandData data : collection.list(it -> true)) {
+                AppLog.system("Timer SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
+                TimerCommandController controller = new TimerCommandController(mContext, data, mClock);
+                controller.setBootListener(bootListener);
                 mCommandControllers.add(controller);
             }
         }

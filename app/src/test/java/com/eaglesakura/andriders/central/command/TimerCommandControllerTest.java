@@ -81,4 +81,33 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
             assertEquals(holder.value, i + 1);
         }
     }
+
+    @Test
+    public void Clockの絶対時間を基準にタイマーが起動することを確認する() throws Throwable {
+
+        Clock clock = new Clock(10500);
+        TimerCommandController commandController =
+                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMERCOMMAND_TYPE_REALTIME, 0x00), clock);
+
+        IntHolder holder = new IntHolder();
+        commandController.setBootListener((self, data) -> {
+            ++holder.value;
+        });
+
+        // 1秒未満進む
+        // 絶対時間が基準のため、コールされている
+        for (int i = 0; i < 50; ++i) {
+            clock.offset(1000 / 100);
+            commandController.onUpdate();
+        }
+
+        assertEquals(holder.value, 1);
+
+        // もう絶対にコールされない
+        for (int i = 0; i < (100 * 60 * 24); ++i) {
+            clock.offset(1000 / 100);
+            commandController.onUpdate();
+            assertEquals(holder.value, 1);
+        }
+    }
 }

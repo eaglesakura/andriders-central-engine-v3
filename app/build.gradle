@@ -211,8 +211,9 @@ android {
 
     buildTypes {
         debug {
-            // デバッグビルド時は"package名+.debug"を入れる
-            applicationIdSuffix ".debug"
+            // Pluginとの連携やデバッグを楽にするため、Package名は共通にする
+//            applicationIdSuffix ".debug"
+            versionNameSuffix ".debug"    // バージョン名にデバッグフラグを付与する
             signingConfig signingConfigs.debug
         }
 
@@ -233,7 +234,6 @@ android {
         disable "InvalidPackage"
         disable "ProtectedPermissions"
         disable "ResourceType"
-//        abortOnError false
     }
 
     // ignore include

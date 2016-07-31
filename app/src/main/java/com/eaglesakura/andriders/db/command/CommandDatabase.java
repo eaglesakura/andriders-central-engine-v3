@@ -37,6 +37,11 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
      */
     public static final int CATEGORY_DISTANCE = 3;
 
+    /**
+     * タイマーコマンド
+     */
+    public static final int CATEGORY_TIMER = 4;
+
     public CommandDatabase(Context context) {
         super(context, DaoMaster.class);
     }
@@ -61,7 +66,7 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
      * @param category 列挙するコマンド
      */
     @NonNull
-    public List<CommandData> list(@IntRange(from = CATEGORY_PROXIMITY, to = CATEGORY_DISTANCE) int category) {
+    public List<CommandData> list(@IntRange(from = CATEGORY_PROXIMITY, to = CATEGORY_TIMER) int category) {
         List<DbCommand> commands = session.getDbCommandDao().queryBuilder()
                 .where(DbCommandDao.Properties.Category.eq(category))
                 .list();
