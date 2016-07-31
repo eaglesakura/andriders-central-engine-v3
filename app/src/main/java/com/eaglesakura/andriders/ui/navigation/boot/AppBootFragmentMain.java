@@ -21,8 +21,6 @@ import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.AndroidNetworkUtil;
 import com.eaglesakura.android.util.ContextUtil;
@@ -110,6 +108,8 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
         }
 
         async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<Intent> task) -> {
+            task.throwIfCanceled();
+
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
 
             // 所定のパーミッションを得るまで起動させない
@@ -117,17 +117,22 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
                 task.waitTime(100);
             }
 
+            task.throwIfCanceled();
+
             // UsageStatusチェックが行えるか
             while (!PermissionUtil.canDrawOverlays(getContext())) {
                 task.waitTime(100);
             }
 
+            task.throwIfCanceled();
+
             // ネットワーク接続されているならば、アカウントログインチェック
             if (AndroidNetworkUtil.isNetworkConnected(getContext())) {
                 try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, cancelCallback)) {
                     if (!connection.isConnectionSuccess(Auth.GOOGLE_SIGN_IN_API, Fitness.SESSIONS_API, Fitness.HISTORY_API)) {
+                        task.throwIfCanceled();
                         // 必要なAPIを満たしていない場合、ログインを行わせる
-                        PlayServiceUtil.await(Auth.GoogleSignInApi.signOut(connection.getClient()), cancelCallback);
+                        PlayServiceUtil.await(Auth.GoogleSignInApi.revokeAccess(connection.getClient()), cancelCallback);
                         throw new SignInRequireException(connection.newSignInIntent());
                     }
 
@@ -141,6 +146,8 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
                 }
             }
 
+            task.throwIfCanceled();
+
             AppLog.system("Boot Success");
             Intent intent = new Intent(getActivity(), NavigationActivity.class);
             return intent;
@@ -150,7 +157,8 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             getActivity().finish();
         }).failed((error, task) -> {
             AppLog.report(error);
-            if (error instanceof SignInRequireException) {
+            if (error instanceof SignInRequireException && mGoogleAutStep == GOOGLE_AUTH_STEP_NONE) {
+                mGoogleAutStep = GOOGLE_AUTH_STEP_API_CONNECT;
                 startActivityForResult(((SignInRequireException) error).getSignInIntent(), AppConstants.REQUEST_GOOGLE_AUTH);
             }
         }).cancelSignal(this).start();

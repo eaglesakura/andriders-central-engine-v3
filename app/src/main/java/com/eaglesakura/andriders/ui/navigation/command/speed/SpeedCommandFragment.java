@@ -43,20 +43,27 @@ import java.util.List;
 
 public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPagerTitle {
 
-    final int TARGET_CATEGORY = CommandDatabase.CATEGORY_SPEED;
-
     final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_SPEED;
+
+    protected CommandDataManager mCommandDataManager;
 
     @Bind(R.id.Command_Item_List)
     SupportRecyclerView mRecyclerView;
 
     @BindStringArray(R.array.Command_Speed_TypeInfo)
-    String[] mSpeedInfoFormats;
+    protected String[] mSpeedInfoFormats;
 
-    CommandDataManager mCommandDataManager;
+    CardAdapter<CommandData> mAdapter;
 
     public SpeedCommandFragment() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_command_list);
+    }
+
+    /**
+     * このFragmentが扱うカテゴリを取得する
+     */
+    protected int getCommandCategory() {
+        return CommandDatabase.CATEGORY_SPEED;
     }
 
     @Override
@@ -68,6 +75,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
+        mAdapter = newCardAdapter();
         mRecyclerView.setAdapter(mAdapter, true);
     }
 
@@ -78,7 +86,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
     }
 
     @OnClick(R.id.Command_Item_Add)
-    void clickAddButton() {
+    protected void clickAddButton() {
         startActivityForResult(
                 AppUtil.newCommandSettingIntent(getActivity(), CommandKey.fromSpeed(System.currentTimeMillis())),
                 REQUEST_COMMAND_SETUP
@@ -86,9 +94,9 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
     }
 
     @UiThread
-    void loadDatabases() {
+    protected void loadDatabases() {
         asyncUI((BackgroundTask<CommandDataCollection> task) -> {
-            return mCommandDataManager.loadFromCategory(TARGET_CATEGORY);
+            return mCommandDataManager.loadFromCategory(getCommandCategory());
         }).completed((result, task) -> {
             onCommandLoaded(result);
         }).failed((error, task) -> {
@@ -97,86 +105,114 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
     }
 
     @UiThread
-    void onCommandLoaded(CommandDataCollection commands) {
+    protected void onCommandLoaded(CommandDataCollection commands) {
         List<CommandData> list = commands.list(it -> true);
         mRecyclerView.setProgressVisibly(false, list.size());
         mAdapter.getCollection().addAllAnimated(list);
     }
 
-    CardAdapter<CommandData> mAdapter = new CardAdapter<CommandData>() {
-        @Override
-        protected View onCreateCard(ViewGroup parent, int viewType) {
-            return CardCommandSpeedBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
-        }
-
-        @Override
-        protected void onBindCard(CardBind<CommandData> bind, int position) {
-            CommandData item = bind.getItem();
-            CardCommandSpeedBinding binding = DataBindingUtil.getBinding(bind.getCard());
-
-            binding.CommandItem.setOnClickListener(it -> {
-                onClickCommand(item);
-            });
-            binding.setItem(new CardBinding() {
-                @Override
-                public Drawable getIcon() {
-                    return new BitmapDrawable(getResources(), item.decodeIcon());
-                }
-
-                @Override
-                public String getTitle() {
-                    CommandData.RawExtra extra = item.getInternalExtra();
-                    int type = extra.speedType;
-                    double speed = extra.speedKmh;
-
-                    return StringUtil.format(mSpeedInfoFormats[type], (int) speed);
-                }
-            });
-        }
-    };
-
     @UiThread
-    void onClickCommand(CommandData data) {
-        CommandData.RawExtra extra = data.getInternalExtra();
-        final double SPEED_KMH = extra.speedKmh;
-        final int TYPE = extra.speedType;
+    protected void onClickCard(CommandData data) {
+        MaterialAlertDialog dialog = newSettingDialog(data);
+        addAutoDismiss(dialog).show();
+    }
 
-        MaterialAlertDialog dialog = new MaterialAlertDialog(getActivity()) {
+    /**
+     * データを保存し、UI反映する
+     */
+    @UiThread
+    protected void onCommitData(CommandData data) {
+        mCommandDataManager.save(data);
+        mAdapter.getCollection().insertOrReplace(data);
+    }
+
+    /**
+     * 削除ダイアログを表示する
+     */
+    @UiThread
+    protected void showDeleteDialog(CommandData data) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("コマンド削除");
+        builder.setMessage("選択したコマンドを削除しますか?");
+        builder.setPositiveButton("削除", (dlg, which) -> {
+            mCommandDataManager.remove(data);
+            mAdapter.getCollection().remove(data);
+        });
+        builder.setNegativeButton("キャンセル", null);
+        builder.show();
+    }
+
+    /**
+     * リスト表示用Adapterを生成する
+     */
+    protected CardAdapter<CommandData> newCardAdapter() {
+        return new CardAdapter<CommandData>() {
+            @Override
+            protected View onCreateCard(ViewGroup parent, int viewType) {
+                return CardCommandSpeedBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
+            }
+
+            @Override
+            protected void onBindCard(CardBind<CommandData> bind, int position) {
+                CommandData item = bind.getItem();
+                CardCommandSpeedBinding binding = DataBindingUtil.getBinding(bind.getCard());
+
+                binding.CommandItem.setOnClickListener(it -> {
+                    onClickCard(item);
+                });
+                binding.setItem(new CardBinding() {
+                    @Override
+                    public Drawable getIcon() {
+                        return new BitmapDrawable(getResources(), item.decodeIcon());
+                    }
+
+                    @Override
+                    public String getTitle() {
+                        CommandData.RawExtra extra = item.getInternalExtra();
+                        int type = extra.speedType;
+                        double speed = extra.speedKmh;
+
+                        return StringUtil.format(mSpeedInfoFormats[type], (int) speed);
+                    }
+                });
+            }
+        };
+    }
+
+    @OnActivityResult(REQUEST_COMMAND_SETUP)
+    void resultCommandSetup(int result, Intent intent) {
+        CommandSetupData data = CommandSetupData.getFromResult(intent);
+        if (data == null) {
+            return;
+        }
+
+        CommandData.RawExtra extra = new CommandData.RawExtra();
+        extra.speedKmh = 25.0f;
+        extra.speedType = CommandData.SPEEDCOMMAND_TYPE_UPPER;
+        CommandData commandData = mCommandDataManager.save(data, getCommandCategory(), extra);
+        mAdapter.getCollection().insertOrReplace(0, commandData);
+    }
+
+    /**
+     * 設定用のDialogを開く
+     *
+     * @param data 設定対象のデータ
+     */
+    protected MaterialAlertDialog newSettingDialog(CommandData data) {
+        return new MaterialAlertDialog(getActivity()) {
             String[] mFooters;
 
             /**
              * 選択されているタイプ
              */
-            int mSelectedType = TYPE;
+            int mSelectedType = data.getInternalExtra().speedType;
 
             MaterialAlertDialog init() {
                 setDialogContent(R.layout.dialog_speed_command);
                 mFooters = getResources().getStringArray(R.array.Command_Speed_TypeFooter);
 
-                AQuery q = new AQuery(root);
-                {
-                    String[] information = getResources().getStringArray(R.array.Command_Speed_TypeSelector);
-                    BasicSpinnerAdapter adapter = new BasicSpinnerAdapter(getActivity());
-                    for (String s : information) {
-                        adapter.add(s);
-                    }
-                    q
-                            .id(R.id.Command_Speed_Type)
-                            .adapter(adapter)
-                            .setSelection(TYPE)
-                            .itemSelected(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    onTypeSelected(position);
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> parent) {
-
-                                }
-                            });
-                }
-                q.id(R.id.Command_Speed_Kmh).text(String.format("%d", (int) Math.max(SPEED_KMH, 0.0)));
+                initTypeSelector();
+                initSpeedInput();
 
                 setTitle("条件変更");
                 setPositiveButton("保存", (dlg, which) -> {
@@ -189,6 +225,36 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
                 return this;
             }
 
+
+            /**
+             * type設定のUIを構築する
+             */
+            void initTypeSelector() {
+                String[] information = getResources().getStringArray(R.array.Command_Speed_TypeSelector);
+                BasicSpinnerAdapter adapter = new BasicSpinnerAdapter(getContext());
+                for (String s : information) {
+                    adapter.add(s);
+                }
+                new AQuery(root).id(R.id.Command_Speed_Type)
+                        .adapter(adapter)
+                        .setSelection(mSelectedType)
+                        .itemSelected(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                onTypeSelected(position);
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+
+                            }
+                        });
+            }
+
+            void initSpeedInput() {
+                new AQuery(root).id(R.id.Command_Speed_Kmh)
+                        .text(String.format("%d", (int) Math.max(data.getInternalExtra().speedKmh, 0.0)));
+            }
 
             /**
              *
@@ -224,41 +290,9 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
                 extra.speedType = mSelectedType;
                 extra.speedKmh = (float) speed;
 
-                mCommandDataManager.save(data);
-
-                // UIを更新させる
-                mAdapter.getCollection().insertOrReplace(data);
+                onCommitData(data);
             }
         }.init();
-
-        addAutoDismiss(dialog).show();
-    }
-
-    @UiThread
-    void showDeleteDialog(CommandData data) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("コマンド削除");
-        builder.setMessage("選択したコマンドを削除しますか?");
-        builder.setPositiveButton("削除", (dlg, which) -> {
-            mCommandDataManager.remove(data);
-            mAdapter.getCollection().remove(data);
-        });
-        builder.setNegativeButton("キャンセル", null);
-        builder.show();
-    }
-
-    @OnActivityResult(REQUEST_COMMAND_SETUP)
-    void resultCommandSetup(int result, Intent intent) {
-        CommandSetupData data = CommandSetupData.getFromResult(intent);
-        if (data == null) {
-            return;
-        }
-
-        CommandData.RawExtra extra = new CommandData.RawExtra();
-        extra.speedKmh = 25.0f;
-        extra.speedType = CommandData.SPEEDCOMMAND_TYPE_UPPER;
-        CommandData commandData = mCommandDataManager.save(data, TARGET_CATEGORY, extra);
-        mAdapter.getCollection().insertOrReplace(0, commandData);
     }
 
     public interface CardBinding {

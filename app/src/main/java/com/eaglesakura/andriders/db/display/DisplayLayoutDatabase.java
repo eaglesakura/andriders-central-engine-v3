@@ -158,7 +158,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, context.getDatabasePath("display_layout.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, context.getDatabasePath("v3_display_layout.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
 
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

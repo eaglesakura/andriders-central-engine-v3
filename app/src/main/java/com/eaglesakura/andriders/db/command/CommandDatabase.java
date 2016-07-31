@@ -76,7 +76,7 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, context.getDatabasePath("commands.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, context.getDatabasePath("v3_commands.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
