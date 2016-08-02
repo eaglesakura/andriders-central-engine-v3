@@ -135,7 +135,7 @@ dependencies {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24"
+    buildToolsVersion "24.0.1"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -181,14 +181,14 @@ android {
 
     dexOptions {
         // memo: http://developer.covelline.com/2015/06/circle-ci/
-        javaMaxHeapSize eglibrary.ci.ciRunning ? "1g" : "4g"
+        javaMaxHeapSize eglibrary.ci.ciRunning ? "2g" : "4g"
         preDexLibraries !eglibrary.ci.ciRunning
     }
 
     testOptions {
         unitTests.all {
             if (eglibrary.ci.ciRunning) {
-                jvmArgs '-Xms256m', '-Xmx1024m', '-XX:MaxPermSize=128m', '-XX:+HeapDumpOnOutOfMemoryError'
+                jvmArgs '-Xms256m', '-Xmx2048m', '-XX:MaxPermSize=128m', '-XX:+HeapDumpOnOutOfMemoryError'
             }
         }
     }

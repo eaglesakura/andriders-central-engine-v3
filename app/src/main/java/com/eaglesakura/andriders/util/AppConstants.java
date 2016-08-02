@@ -29,8 +29,22 @@ public interface AppConstants {
     /**
      * 速度コマンド戻り値
      *
-     * MEMO: 別なFragmentが勝手にハンドリングするのを防ぐため、別々のREQUESTがひつよう
+     * MEMO: 別なFragmentが勝手にハンドリングするのを防ぐため、別々のREQUESTが必要
      */
     int REQUEST_COMMAND_SETUP_SPEED = 0x3704;
+
+    /**
+     * タイマーコマンド戻り値
+     *
+     * MEMO: 別なFragmentが勝手にハンドリングするのを防ぐため、別々のREQUESTが必要
+     */
+    int REQUEST_COMMAND_SETUP_TIMER = 0x3705;
+
+    /**
+     * 距離コマンド戻り値
+     *
+     * MEMO: 別なFragmentが勝手にハンドリングするのを防ぐため、別々のREQUESTが必要
+     */
+    int REQUEST_COMMAND_SETUP_DISTANCE = 0x3706;
 }
 

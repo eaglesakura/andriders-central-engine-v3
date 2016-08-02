@@ -2,7 +2,7 @@
 <layout>
     <data>
         <variable name="item"
-                  type="com.eaglesakura.andriders.ui.navigation.command.speed.SpeedCommandFragment.CardBinding"/>
+                  type="com.eaglesakura.andriders.ui.navigation.command.timer.TimerCommandFragment.CardBinding"/>
     </data>
     <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"

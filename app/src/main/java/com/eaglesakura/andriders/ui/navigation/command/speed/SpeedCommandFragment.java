@@ -4,147 +4,50 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.databinding.CardCommandSpeedBinding;
 import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.andriders.db.command.CommandDataCollection;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
-import com.eaglesakura.andriders.plugin.CommandDataManager;
-import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.ui.navigation.command.CommandBaseFragment;
 import com.eaglesakura.andriders.util.AppConstants;
-import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.IFragmentPagerTitle;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
-import com.eaglesakura.material.widget.support.SupportRecyclerView;
 import com.eaglesakura.util.StringUtil;
 
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.support.annotation.UiThread;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import java.util.List;
-
-public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPagerTitle {
+public class SpeedCommandFragment extends CommandBaseFragment implements IFragmentPagerTitle {
 
     final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_SPEED;
 
-    protected CommandDataManager mCommandDataManager;
-
-    @Bind(R.id.Command_Item_List)
-    SupportRecyclerView mRecyclerView;
-
     @BindStringArray(R.array.Command_Speed_TypeInfo)
-    protected String[] mSpeedInfoFormats;
-
-    CardAdapter<CommandData> mAdapter;
+    protected String[] mInfoFormats;
 
     public SpeedCommandFragment() {
         mFragmentDelegate.setLayoutId(R.layout.fragment_command_list);
     }
 
-    /**
-     * このFragmentが扱うカテゴリを取得する
-     */
+    @Override
     protected int getCommandCategory() {
         return CommandDatabase.CATEGORY_SPEED;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mCommandDataManager = new CommandDataManager(context);
-    }
-
-    @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-        mAdapter = newCardAdapter();
-        mRecyclerView.setAdapter(mAdapter, true);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        loadDatabases();
-    }
-
-    @OnClick(R.id.Command_Item_Add)
-    protected void clickAddButton() {
-        startActivityForResult(
-                AppUtil.newCommandSettingIntent(getActivity(), CommandKey.fromSpeed(System.currentTimeMillis())),
-                REQUEST_COMMAND_SETUP
-        );
-    }
-
-    @UiThread
-    protected void loadDatabases() {
-        asyncUI((BackgroundTask<CommandDataCollection> task) -> {
-            return mCommandDataManager.loadFromCategory(getCommandCategory());
-        }).completed((result, task) -> {
-            onCommandLoaded(result);
-        }).failed((error, task) -> {
-            AppLog.report(error);
-        }).start();
-    }
-
-    @UiThread
-    protected void onCommandLoaded(CommandDataCollection commands) {
-        List<CommandData> list = commands.list(it -> true);
-        mRecyclerView.setProgressVisibly(false, list.size());
-        mAdapter.getCollection().addAllAnimated(list);
-    }
-
-    @UiThread
-    protected void onClickCard(CommandData data) {
-        MaterialAlertDialog dialog = newSettingDialog(data);
-        addAutoDismiss(dialog).show();
-    }
-
-    /**
-     * データを保存し、UI反映する
-     */
-    @UiThread
-    protected void onCommitData(CommandData data) {
-        mCommandDataManager.save(data);
-        mAdapter.getCollection().insertOrReplace(data);
-    }
-
-    /**
-     * 削除ダイアログを表示する
-     */
-    @UiThread
-    protected void showDeleteDialog(CommandData data) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("コマンド削除");
-        builder.setMessage("選択したコマンドを削除しますか?");
-        builder.setPositiveButton("削除", (dlg, which) -> {
-            mCommandDataManager.remove(data);
-            mAdapter.getCollection().remove(data);
-        });
-        builder.setNegativeButton("キャンセル", null);
-        builder.show();
     }
 
     /**
      * リスト表示用Adapterを生成する
      */
+    @Override
     protected CardAdapter<CommandData> newCardAdapter() {
         return new CardAdapter<CommandData>() {
             @Override
@@ -172,11 +75,19 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
                         int type = extra.speedType;
                         double speed = extra.speedKmh;
 
-                        return StringUtil.format(mSpeedInfoFormats[type], (int) speed);
+                        return StringUtil.format(mInfoFormats[type], (int) speed);
                     }
                 });
             }
         };
+    }
+
+    @OnClick(R.id.Command_Item_Add)
+    protected void clickAddButton() {
+        startActivityForResult(
+                AppUtil.newCommandSettingIntent(getActivity(), CommandKey.fromSpeed(System.currentTimeMillis())),
+                REQUEST_COMMAND_SETUP
+        );
     }
 
     @OnActivityResult(REQUEST_COMMAND_SETUP)
@@ -198,6 +109,7 @@ public class SpeedCommandFragment extends AppBaseFragment implements IFragmentPa
      *
      * @param data 設定対象のデータ
      */
+    @Override
     protected MaterialAlertDialog newSettingDialog(CommandData data) {
         return new MaterialAlertDialog(getActivity()) {
             String[] mFooters;
