@@ -85,7 +85,7 @@ public class FitnessSettingFragment extends AppBaseFragment {
             // 起動成功したから何もしない
             return;
         } catch (Exception e) {
-            LogUtil.log(e);
+            AppLog.printStackTrace(e);
         }
 
         MaterialInputDialog dialog = new MaterialInputDialog(getActivity()) {
