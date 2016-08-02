@@ -5,6 +5,8 @@
           :app:assembleGoogleplayDebug :app:assembleGoogleplayRelease \
           ciCollectAndroidApps
 
+# lint check
+cat  ./app/build/outputs/lint-results-googleplayDebug.xml
 if [ $? -ne 0 ]; then
     echo "assemble failed..."
     exit 1
