@@ -9,12 +9,16 @@ import com.eaglesakura.andriders.db.command.CommandSetupData;
 import com.eaglesakura.andriders.ui.navigation.command.CommandBaseFragment;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppUtil;
+import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.IFragmentPagerTitle;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
+import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
+import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
+import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Intent;
@@ -67,7 +71,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
                                 AppUtil.formatTimeMilliSecToString(item.getInternalExtra().timerIntervalSec * 1000)
                         );
                         if ((item.getInternalExtra().flags & CommandData.TIMERCOMMAND_FLAG_REPEAT) != 0) {
-                            text = ("/" + getString(R.string.Command_Timer_Repeat));
+                            text += (" / " + getString(R.string.Command_Timer_Repeat));
                         }
                         return text;
                     }
@@ -103,7 +107,64 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
 
     @Override
     protected MaterialAlertDialog newSettingDialog(CommandData data) {
-        return null;
+        return new MaterialAlertDialog(getActivity()) {
+            MaterialAlertDialog init() {
+                setDialogContent(R.layout.dialog_timer_command);
+
+                initTimerUi();
+
+                setTitle("条件変更");
+                setPositiveButton("保存", (dlg, which) -> {
+                    onCommit();
+                });
+
+                setNeutralButton("削除", (dlg, which) -> {
+                    showDeleteDialog(data);
+                });
+                return this;
+            }
+
+            /**
+             * type設定のUIを構築する
+             */
+            void initTimerUi() {
+                String[] information = getResources().getStringArray(R.array.Command_Timer_TypeSelector);
+                BasicSpinnerAdapter adapter = new BasicSpinnerAdapter(getContext());
+                for (String s : information) {
+                    adapter.add(s);
+                }
+
+                CommandData.RawExtra extra = data.getInternalExtra();
+                new AQuery(root)
+                        .id(R.id.Command_Timer_Type)
+                        .adapter(adapter)
+                        .setSelection(data.getInternalExtra().timerType)
+                        .id(R.id.Command_Timer_Text)
+                        .text(StringUtil.format("%d", extra.timerIntervalSec))
+                        .id(R.id.Command_Timer_Repeat)
+                        .checked((extra.flags & CommandData.TIMERCOMMAND_FLAG_REPEAT) != 0)
+                ;
+            }
+
+            /**
+             * 変更を確定する
+             */
+            void onCommit() {
+                AQuery q = new AQuery(root);
+                CommandData.RawExtra extra = data.getInternalExtra();
+                int interval = (int) ViewUtil.getLongValue(q.id(R.id.Command_Timer_Text).getEditText(), -1);
+                if (interval < 0) {
+                    toast("速度設定に間違いがあります");
+                    return;
+                }
+
+                extra.timerType = q.id(R.id.Command_Timer_Type).getSelectedItemPosition();
+                extra.timerIntervalSec = interval;
+                extra.flags = MathUtil.setFlag(extra.flags, CommandData.TIMERCOMMAND_FLAG_REPEAT, q.id(R.id.Command_Timer_Repeat).isChecked());
+
+                onCommitData(data);
+            }
+        }.init();
     }
 
     public interface CardBinding {
