@@ -1,17 +1,14 @@
 package com.eaglesakura.andriders.ui.widget;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.android.aquery.AQuery;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
-import android.databinding.BindingMethod;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 

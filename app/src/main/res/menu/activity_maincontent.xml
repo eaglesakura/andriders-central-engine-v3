@@ -4,34 +4,34 @@
 
     <item
             android:id="@+id/Main.Menu.Profile"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_bicycle"
             android:title="@string/Main.Menu.Profile"/>
 
     <item
             android:id="@+id/Main.Menu.CycleComputer"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_cycle_computer"
             android:title="@string/Main.Menu.CycleComputer"/>
     <item
             android:id="@+id/Main.Menu.Commands"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_command"
             android:title="@string/Main.Menu.Commands"/>
 
     <item
             android:id="@+id/Main.Menu.Plugins"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_plugins"
             android:title="@string/Main.Menu.Plugins"/>
     <item
             android:id="@+id/Main.Menu.Gadgets"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_heart_beats"
             android:title="@string/Main.Menu.Gadgets"/>
 
     <item
             android:id="@+id/Main.Menu.UserLog"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_calendar"
             android:title="@string/Main.Menu.Activity"/>
     <item
             android:id="@+id/Main.Menu.Information"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_info"
             android:title="@string/Main.Menu.Information"/>
 
 </menu>

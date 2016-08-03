@@ -3,7 +3,9 @@ package com.eaglesakura.andriders.display.notification;
 import com.eaglesakura.andriders.central.command.ProximityCommandController;
 import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.db.command.CommandDatabase;
+import com.eaglesakura.andriders.plugin.CommandDataManager;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
@@ -12,10 +14,11 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
+import com.eaglesakura.android.rx.BackgroundTaskBuilder;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTaskBuilder;
-import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.system.ScreenEventReceiver;
 
 import android.content.Context;
@@ -41,7 +44,7 @@ public class ProximityFeedbackManager {
     @NonNull
     final ClockTimer mTimer;
 
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
 
     /**
@@ -69,7 +72,9 @@ public class ProximityFeedbackManager {
 
     ProximityCommandController mCommandController;
 
-    final SubscriptionController mSubscriptionController;
+    final PendingCallbackQueue mCallbackQueue;
+
+    final CommandDataManager mCommandDataManager;
 
     int mTaskId = 0;
 
@@ -84,16 +89,15 @@ public class ProximityFeedbackManager {
 
     Bitmap mIcon;
 
-    public ProximityFeedbackManager(@NonNull Context context, @NonNull Clock clock, @NonNull SubscriptionController subscriptionController) {
+    public ProximityFeedbackManager(@NonNull Context context, @NonNull Clock clock, @NonNull PendingCallbackQueue callbackQueue) {
         mContext = context;
         mTimer = new ClockTimer(clock);
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
         mScreenEventReceiver = new ScreenEventReceiver(mContext);
-        mSubscriptionController = subscriptionController;
+        mCommandDataManager = new CommandDataManager(mContext);
+        mCallbackQueue = callbackQueue;
 
-        Garnet.create(this)
-                .depend(Context.class, context)
-                .inject();
+        Garnet.inject(this);
     }
 
     /**
@@ -135,7 +139,7 @@ public class ProximityFeedbackManager {
     }
 
     private boolean isScreenLink() {
-        return mAppSettings.getCentralSettings().getProximityCommandScreenLink();
+        return mAppSettings.getCentralSettings().isProximityCommandScreenLink();
     }
 
 
@@ -176,16 +180,18 @@ public class ProximityFeedbackManager {
 
     /**
      * 近接状態の監視を行う
+     *
+     * MEMO: 近接コマンド実行中は監視スレッドを立てて常に実行チェックを行う
      */
     @UiThread
     void startProximityCheckTask(int taskId) {
         mTimer.start();
-        new RxTaskBuilder<>(mSubscriptionController)
-                .observeOn(ObserveTarget.Alive)
-                .subscribeOn(SubscribeTarget.NewThread)
+        new BackgroundTaskBuilder<>(mCallbackQueue)
+                .callbackOn(CallbackTime.Alive)
+                .executeOn(ExecuteTarget.NewThread)
                 .async(task -> {
                     try {
-                        mCommandController.onStartCount();
+                        mCommandController.onStartCount(mCommandDataManager.loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY));
                         while (!task.isCanceled()) {
                             task.waitTime(100);
                         }
@@ -203,6 +209,9 @@ public class ProximityFeedbackManager {
                 .start();
     }
 
+    /**
+     * UIのレンダリングを行う
+     */
     @UiThread
     public void rendering(Graphics graphics) {
         if (!mProximityState) {
@@ -256,31 +265,37 @@ public class ProximityFeedbackManager {
         }
     }
 
+    /**
+     * 近接コマンドのハンドリング状況に応じて処理を行う
+     */
     ProximityCommandController.ProximityListener mProximityFeedbackListener = new ProximityCommandController.ProximityListener() {
         @Override
         public void onRequestUserFeedback(ProximityCommandController self, int sec, @Nullable CommandData data) {
-            if (!mProximityState) {
-                // 近接してないので何もしない
-                mCommandData = null;
-                mIcon = null;
-                return;
-            }
+            mCallbackQueue.run(ObserveTarget.Alive, () -> {
+                if (!mProximityState) {
+                    // 近接してないので何もしない
+                    mCommandData = null;
+                    mIcon = null;
+                    return;
+                }
 
-            mCommandData = data;
-            if (data != null) {
-                AppLog.proximity("BootCommand[%s]", data.getPackageName());
-                mIcon = data.decodeIcon();
-            } else {
-                mIcon = null;
-            }
+                mCommandData = data;
+                if (data != null) {
+                    AppLog.proximity("BootCommand[%s]", data.getPackageName());
+                    mIcon = data.decodeIcon();
+                } else {
+                    mIcon = null;
+                }
 
-            if (sec == 0) {
-                // 開始フィードバック
-                VibrateManager.vibrate(mContext, VibrateManager.VIBRATE_TIME_SHORT_MS * 2);
-            } else {
-                // 中途フィードバック
-                VibrateManager.vibrateLong(mContext);
-            }
+                if (sec == 0) {
+                    // 開始フィードバック
+                    VibrateManager.vibrate(mContext, VibrateManager.VIBRATE_TIME_SHORT_MS * 2);
+                } else {
+                    // 中途フィードバック
+                    VibrateManager.vibrateLong(mContext);
+                }
+            });
+
         }
 
         @Override

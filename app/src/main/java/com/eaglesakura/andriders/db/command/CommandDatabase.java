@@ -8,6 +8,8 @@ import com.eaglesakura.andriders.dao.command.DbCommandDao;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.CollectionUtil;
 
+import org.greenrobot.greendao.database.StandardDatabase;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -35,6 +37,11 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
      */
     public static final int CATEGORY_DISTANCE = 3;
 
+    /**
+     * タイマーコマンド
+     */
+    public static final int CATEGORY_TIMER = 4;
+
     public CommandDatabase(Context context) {
         super(context, DaoMaster.class);
     }
@@ -59,7 +66,7 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
      * @param category 列挙するコマンド
      */
     @NonNull
-    public List<CommandData> list(@IntRange(from = CATEGORY_PROXIMITY, to = CATEGORY_DISTANCE) int category) {
+    public List<CommandData> list(@IntRange(from = CATEGORY_PROXIMITY, to = CATEGORY_TIMER) int category) {
         List<DbCommand> commands = session.getDbCommandDao().queryBuilder()
                 .where(DbCommandDao.Properties.Category.eq(category))
                 .list();
@@ -69,7 +76,7 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, context.getDatabasePath("commands.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, context.getDatabasePath("v3_commands.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
@@ -77,7 +84,7 @@ public class CommandDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }

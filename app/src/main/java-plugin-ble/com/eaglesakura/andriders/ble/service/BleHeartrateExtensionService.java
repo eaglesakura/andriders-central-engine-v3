@@ -3,11 +3,11 @@ package com.eaglesakura.andriders.ble.service;
 import com.eaglesakura.andriders.ble.hw.heartrate.BleHeartrateMonitor;
 import com.eaglesakura.andriders.ble.hw.heartrate.HeartrateGattReceiver;
 import com.eaglesakura.andriders.ble.hw.heartrate.HeartrateSensorData;
-import com.eaglesakura.andriders.plugin.DisplayKey;
-import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.PluginInformation;
-import com.eaglesakura.andriders.plugin.CentralEngineConnection;
 import com.eaglesakura.andriders.plugin.AcePluginService;
+import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.plugin.data.CentralEngineData;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.service.base.AppBaseService;
@@ -70,7 +70,7 @@ public class BleHeartrateExtensionService extends AppBaseService implements AceP
             return;
         }
 
-        receiver = new HeartrateGattReceiver(this, getSubscription(), mClock);
+        receiver = new HeartrateGattReceiver(this, getCallbackQueue(), mClock);
         receiver.setTargetFitnessDeviceAddress(address);
         receiver.setHeartrateListener(new BleHeartrateMonitor.BleHeartrateListener() {
             @Override

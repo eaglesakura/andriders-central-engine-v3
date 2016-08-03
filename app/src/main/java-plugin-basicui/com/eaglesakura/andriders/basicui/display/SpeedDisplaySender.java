@@ -5,8 +5,8 @@ import com.eaglesakura.andriders.central.SensorDataReceiver;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.andriders.display.ZoneColor;
 import com.eaglesakura.andriders.notification.NotificationData;
-import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.display.BasicValue;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
@@ -80,7 +80,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
                 speed = 0;
                 if (!mTimeoutMessageSend) {
                     NotificationData notification = new NotificationData.Builder(context)
-                            .icon(R.mipmap.ic_speed)
+//                            .icon(R.mipmap.ic_speed)
                             .message("GPS速度 / タイムアウト")
                             .getNotification();
                     mSession.getDisplayExtension().queueNotification(notification);

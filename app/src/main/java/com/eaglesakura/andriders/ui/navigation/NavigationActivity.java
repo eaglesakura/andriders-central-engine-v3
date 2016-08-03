@@ -2,7 +2,6 @@ package com.eaglesakura.andriders.ui.navigation;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.command.CommandSettingFragmentMain;
-import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.android.framework.BuildConfig;
 import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;

@@ -1,0 +1,152 @@
+{
+  "classesOutputPath": "src/main/gen/java",
+  "configOutputPath": "src/main/res/raw",
+  "packageName": "com.eaglesakura.andriders.gen.prop",
+  "configName": "app_properties.json",
+  "groups": [
+    {
+      "comment": "アップデート管理",
+      "name": "UpdateCheckProps",
+      "properties": [
+        {
+          "comment": "マイグレーション番号",
+          "type": "int",
+          "name": "initializeReleased",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "comment": "Central Serviceの設定",
+      "name": "CentralServiceSettings",
+      "properties": [
+        {
+          "comment": "WiFiの強制Offを行う",
+          "type": "boolean",
+          "name": "wifiDisable",
+          "value": "true"
+        },
+        {
+          "comment": "CPUを寝かさない",
+          "type": "boolean",
+          "name": "cpuNoSleep",
+          "value": "true"
+        },
+        {
+          "comment": "近接コマンド有効化",
+          "type": "boolean",
+          "name": "proximityCommandEnable",
+          "value": "true"
+        },
+        {
+          "comment": "近接コマンドでディスプレイON/OFFに合わせて無効化",
+          "type": "boolean",
+          "name": "proximityCommandScreenLink",
+          "value": "true"
+        },
+        {
+          "comment": "タイマーコマンドON/OFF",
+          "type": "boolean",
+          "name": "timerCommandEnable",
+          "value": "true"
+        },
+        {
+          "comment": "速度コマンドON/OFF",
+          "type": "boolean",
+          "name": "speedCommandEnable",
+          "value": "true"
+        },
+        {
+          "comment": "距離コマンドON/OFF",
+          "type": "boolean",
+          "name": "distanceCommandEnable",
+          "value": "true"
+        },
+        {
+          "comment": "信頼できるGPS精度（メートル）",
+          "type": "float",
+          "name": "gpsAccuracy",
+          "value": "50"
+        }
+      ]
+    },
+    {
+      "comment": "プロファイル設定",
+      "name": "UserProfiles",
+      "properties": [
+        {
+          "comment": "ユーザー体重",
+          "type": "float",
+          "name": "userWeight",
+          "value": "65"
+        },
+        {
+          "comment": "通常心拍",
+          "type": "int",
+          "name": "normalHeartrate",
+          "value": "70"
+        },
+        {
+          "comment": "最大心拍",
+          "type": "int",
+          "name": "maxHeartrate",
+          "value": "190"
+        },
+        {
+          "comment": "タイヤ外周サイズ(mm)",
+          "type": "int",
+          "name": "wheelOuterLength",
+          "value": "2096"
+        },
+        {
+          "comment": "これより早いと巡航",
+          "type": "int",
+          "name": "speedZoneCruise",
+          "value": "25"
+        },
+        {
+          "comment": "これより早いとスプリント",
+          "type": "int",
+          "name": "speedZoneSprint",
+          "value": "35"
+        },
+        {
+          "comment": "これより早いと標準ケイデンス",
+          "type": "int",
+          "name": "cadenceZoneIdeal",
+          "value": "80"
+        },
+        {
+          "comment": "これより早いと高ケイデンス",
+          "type": "int",
+          "name": "cadenceZoneHigh",
+          "value": "95"
+        },
+        {
+          "comment": "使用するBLE心拍計のMACアドレス",
+          "type": "String",
+          "name": "bleHeartrateMonitorAddress",
+          "value": ""
+        },
+        {
+          "comment": "使用するBLE速度計のMACアドレス",
+          "type": "String",
+          "name": "bleSpeedCadenceSensorAddress",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "comment": "デバッグ管理",
+      "name": "DebugSettings",
+      "properties": [
+        {
+          "comment": "デバッグをONにする場合はtrue",
+          "type": "boolean",
+          "name": "debugEnable",
+          "value": "false"
+        }
+      ]
+    }
+  ]
+}

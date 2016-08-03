@@ -1,14 +1,14 @@
 package com.eaglesakura.andriders.ui.base;
 
 import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.android.framework.FrameworkCentral;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.progress.ProgressStackManager;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.SupportFragment;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.RxTask;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.thread.ui.UIHandler;
 
 import android.support.annotation.NonNull;
@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 
 public abstract class AppBaseFragment extends SupportFragment {
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     protected AppSettings mSettings;
 
     @Override
@@ -37,28 +37,17 @@ public abstract class AppBaseFragment extends SupportFragment {
 
     }
 
-    public AppSettings getSettings() {
+    public synchronized AppSettings getSettings() {
         return mSettings;
-    }
-
-    /**
-     * ユーザーデータを非同期ロードする
-     */
-    public RxTask<AppSettings> asyncReloadSettings() {
-        return asyncUI((RxTask<AppSettings> task) -> {
-            AppSettings settings = getSettings();
-            settings.load();
-            return settings;
-        }).start();
     }
 
     /**
      * ユーザーデータを非同期保存する
      */
-    public RxTask<AppSettings> asyncCommitSettings() {
-        return asyncUI((RxTask<AppSettings> task) -> {
+    public BackgroundTask<AppSettings> asyncCommitSettings() {
+        return asyncUI((BackgroundTask<AppSettings> task) -> {
             AppSettings settings = getSettings();
-            settings.commitAndLoad();
+            settings.commit();
             return settings;
         }).start();
     }
@@ -102,7 +91,7 @@ public abstract class AppBaseFragment extends SupportFragment {
         });
     }
 
-    public void toast(@StringRes final String msg) {
+    public void toast(final String msg) {
         UIHandler.postUI(() -> {
             Toast.makeText(FrameworkCentral.getApplication(), msg, Toast.LENGTH_SHORT).show();
         });

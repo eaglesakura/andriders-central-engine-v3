@@ -1,9 +1,9 @@
 package com.eaglesakura.andriders.central.scsensor;
 
-import com.eaglesakura.andriders.util.AppUtil;
-import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
+import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.util.AppUtil;
+import com.eaglesakura.andriders.util.Clock;
 
 import android.support.annotation.NonNull;
 

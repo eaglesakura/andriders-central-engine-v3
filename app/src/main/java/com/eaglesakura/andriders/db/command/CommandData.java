@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.dao.command.DbCommand;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.android.util.ImageUtil;
+import com.eaglesakura.serialize.Serialize;
 import com.eaglesakura.serialize.error.SerializeException;
 import com.eaglesakura.util.SerializeUtil;
 
@@ -20,6 +21,9 @@ import android.support.annotation.NonNull;
 public class CommandData {
     @NonNull
     final DbCommand mRaw;
+
+    @NonNull
+    RawExtra mExtra;
 
     /**
      * 基準となる速度 / double
@@ -71,8 +75,33 @@ public class CommandData {
      */
     public static final int SPEEDCOMMAND_TYPE_TODAY_MAX_FINISHED = 7;
 
+    /**
+     * セッションの時間ごとにタイマー起動
+     */
+    public static final int TIMERCOMMAND_TYPE_SESSION = 0;
+
+    /**
+     * 現実時間ごとにタイマー起動
+     */
+    public static final int TIMERCOMMAND_TYPE_REALTIME = 1;
+
+    /**
+     * タイマーコマンドで繰り返し実行を行う
+     */
+    public static final int TIMERCOMMAND_FLAG_REPEAT = 0x1 << 0;
+
     public CommandData(DbCommand raw) {
         mRaw = raw;
+
+        if (mRaw.getCommandData() == null) {
+            mExtra = new RawExtra();
+        } else {
+            try {
+                mExtra = SerializeUtil.deserializePublicFieldObject(RawExtra.class, mRaw.getCommandData());
+            } catch (Throwable e) {
+                mExtra = new RawExtra();
+            }
+        }
     }
 
     public int getCategory() {
@@ -90,6 +119,11 @@ public class CommandData {
 
     @NonNull
     public DbCommand getRaw() {
+        try {
+            mRaw.setCommandData(SerializeUtil.serializePublicFieldObject(mRaw, false));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return mRaw;
     }
 
@@ -112,7 +146,7 @@ public class CommandData {
     /**
      * ACE制御用Intentを保存する
      */
-    public void setInternalIntent(SerializableIntent intent) {
+    private void setInternalIntent(SerializableIntent intent) {
         try {
             mRaw.setCommandData(intent.serialize());
         } catch (SerializeException e) {
@@ -127,11 +161,17 @@ public class CommandData {
         return ImageUtil.decode(mRaw.getIconPng());
     }
 
+    @NonNull
+    public RawExtra getInternalExtra() {
+        return mExtra;
+    }
+
     /**
+     * s
      * ACEが制御用に利用するIntentを取得する
      */
     @NonNull
-    public Intent getInternalIntent() {
+    private Intent getInternalIntent() {
         try {
             RawIntent intent = SerializeUtil.deserializePublicFieldObject(RawIntent.class, mRaw.getCommandData());
             return SerializableIntent.newIntent(intent);
@@ -152,4 +192,35 @@ public class CommandData {
         }
     }
 
+    public static class RawExtra {
+        /**
+         * 共有 フラグ情報
+         */
+        @Serialize(id = 1)
+        public int flags;
+
+        /**
+         * 速度コマンドの基準速度
+         */
+        @Serialize(id = 11)
+        public float speedKmh = 25.0f;
+
+        /**
+         * 速度コマンドの種別
+         */
+        @Serialize(id = 12)
+        public int speedType = SPEEDCOMMAND_TYPE_UPPER;
+
+        /**
+         * タイマーの種類
+         */
+        @Serialize(id = 21)
+        public int timerType = TIMERCOMMAND_TYPE_SESSION;
+
+        /**
+         * タイマーの実行間隔（秒単位）
+         */
+        @Serialize(id = 22)
+        public int timerIntervalSec = 30;
+    }
 }

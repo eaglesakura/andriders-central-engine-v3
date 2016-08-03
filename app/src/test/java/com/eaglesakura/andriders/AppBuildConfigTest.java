@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders;
 
 import com.eaglesakura.thread.Holder;
-import com.eaglesakura.util.LogUtil;
 
 import org.junit.Test;
 
@@ -15,7 +14,7 @@ public class AppBuildConfigTest extends AppUnitTestCase {
         assertNotNull(getContext());
         assertNotNull(getContext() instanceof AceApplication);
         assertNotNull(getContext().getString(R.string.Common_File_Load));
-        assertTrue(BuildConfig.DEBUG == BuildConfig.APPLICATION_ID.endsWith(".debug"));
+        assertTrue(BuildConfig.DEBUG == BuildConfig.VERSION_NAME.endsWith(".debug"));
     }
 
     @Test

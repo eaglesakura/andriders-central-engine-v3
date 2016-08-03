@@ -5,6 +5,9 @@
     <color name="App.Theme.Blue">@color/EsMaterial.Blue.400</color>
     <color name="App.Theme.HalfAlphaBlack">#7F000000</color>
 
+    <color name="App.Icon.Grey">@color/EsMaterial.Grey.500</color>
+    <color name="App.Icon.White">@color/EsMaterial.Grey.50</color>
+
     <integer-array name="App_Widget_Progress_Color_Table">
         <item>@color/App.Theme.Red</item>
     </integer-array>

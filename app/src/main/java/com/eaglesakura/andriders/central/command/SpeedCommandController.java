@@ -6,10 +6,8 @@ import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -43,13 +41,13 @@ public abstract class SpeedCommandController extends CommandController {
 
     final CommandData mCommandData;
 
-    public SpeedCommandController(@NonNull Context context, @NonNull SubscriptionController subscriptionController, CommandData commandData) {
-        super(context, subscriptionController);
+    public SpeedCommandController(@NonNull Context context, CommandData commandData) {
+        super(context);
         mCommandData = commandData;
 
-        Intent intent = mCommandData.getInternalIntent();
-        mSpeedKmh = intent.getDoubleExtra(CommandData.EXTRA_SPEED_KMH, 25.0);
-        mCommandType = intent.getIntExtra(CommandData.EXTRA_SPEED_TYPE, 0);
+        CommandData.RawExtra extra = mCommandData.getInternalExtra();
+        mSpeedKmh = extra.speedKmh;
+        mCommandType = extra.speedType;
     }
 
     /**
@@ -110,16 +108,16 @@ public abstract class SpeedCommandController extends CommandController {
     /**
      * スピードコマンド用コントローラを生成する
      */
-    public static SpeedCommandController newSpeedController(Context context, SubscriptionController subscriptionController, CommandData data) {
-        int type = data.getInternalIntent().getIntExtra(CommandData.EXTRA_SPEED_TYPE, 0);
+    public static SpeedCommandController newSpeedController(Context context, CommandData data) {
+        final int type = data.getInternalExtra().speedType;
         SpeedCommandController controller;
         switch (type) {
             case CommandData.SPEEDCOMMAND_TYPE_UPPER:
             case CommandData.SPEEDCOMMAND_TYPE_LOWER:
-                controller = new BasicSpeedCommandController(context, subscriptionController, data);
+                controller = new BasicSpeedCommandController(context, data);
                 break;
             default:
-                controller = new MaxSpeedCommandController(context, subscriptionController, data);
+                controller = new MaxSpeedCommandController(context, data);
                 break;
         }
         return controller;

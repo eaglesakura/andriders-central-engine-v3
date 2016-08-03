@@ -4,7 +4,7 @@ import com.eaglesakura.android.devicetest.DeviceTestCase;
 
 import android.support.annotation.NonNull;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 public class AppDeviceTestUtil {
 

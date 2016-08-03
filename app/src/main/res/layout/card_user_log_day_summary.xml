@@ -25,7 +25,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <com.eaglesakura.andriders.ui.widget.AppHeaderView
-                        app:headerIcon="@mipmap/ic_launcher"
+                        app:headerIcon="@drawable/ic_record"
                         app:headerText="走行日"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>

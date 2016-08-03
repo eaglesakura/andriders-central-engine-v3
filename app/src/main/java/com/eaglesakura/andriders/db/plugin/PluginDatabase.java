@@ -1,14 +1,16 @@
 package com.eaglesakura.andriders.db.plugin;
 
-import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.dao.plugin.DaoMaster;
 import com.eaglesakura.andriders.dao.plugin.DaoSession;
 import com.eaglesakura.andriders.dao.plugin.DbActivePlugin;
 import com.eaglesakura.andriders.dao.plugin.DbActivePluginDao;
+import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.StringUtil;
+
+import org.greenrobot.greendao.database.StandardDatabase;
 
 import android.content.Context;
 import android.content.pm.ResolveInfo;
@@ -104,7 +106,7 @@ public class PluginDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }

@@ -37,12 +37,14 @@
                 android:text="デフォルト"/>
     </LinearLayout>
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:srcCompat="@drawable/ic_delete"
+            android:tint="@color/App.Icon.Grey"
             android:visibility="gone"
             android:background="@drawable/esm_button_transparent_fill"
             android:clickable="true"
             android:id="@+id/Setting.CycleComputer.TargetApplication.Delete"
-            android:src="@mipmap/ic_delete_grey"
             android:padding="@dimen/EsMaterial.Button.Margin"
             android:layout_width="@dimen/EsMaterial.Button.MinHeight"
             android:layout_height="@dimen/EsMaterial.Button.MinHeight"/>

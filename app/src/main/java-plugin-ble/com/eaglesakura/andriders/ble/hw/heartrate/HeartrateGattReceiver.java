@@ -7,6 +7,7 @@ import com.eaglesakura.andriders.ble.hw.heartrate.BleHeartrateMonitor.BleHeartra
 import com.eaglesakura.andriders.google.FitnessDeviceType;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.bluetooth.BluetoothDevice;
@@ -24,8 +25,8 @@ public class HeartrateGattReceiver extends BaseBleGattReceiver {
      */
     private final Clock mClock;
 
-    public HeartrateGattReceiver(Context context, SubscriptionController subscriptionController, Clock clock) {
-        super(context, subscriptionController, FitnessDeviceType.HEARTRATE_MONITOR);
+    public HeartrateGattReceiver(Context context, PendingCallbackQueue callbackQueue, Clock clock) {
+        super(context, callbackQueue, FitnessDeviceType.HEARTRATE_MONITOR);
         this.mClock = clock;
     }
 
@@ -35,7 +36,7 @@ public class HeartrateGattReceiver extends BaseBleGattReceiver {
 
     @Override
     protected BleDevice newBleDevice(BluetoothDevice device) {
-        BleHeartrateMonitor sensor = new BleHeartrateMonitor(mContext, mSubscriptionController, device, mClock);
+        BleHeartrateMonitor sensor = new BleHeartrateMonitor(mContext, mCallbackQueue, device, mClock);
         sensor.registerHeartrateListener(mHeartrateListener);
         sensor.registerDeviceListener(new BleDeviceListener() {
             @Override

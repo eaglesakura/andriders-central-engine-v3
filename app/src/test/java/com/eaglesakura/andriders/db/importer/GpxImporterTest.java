@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders.db.importer;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.central.log.SessionLogger;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotalCollection;

@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.eaglesakura:plugin-android-dbgenerator:1.0.2"
+        classpath "com.eaglesakura:plugin-android-dbgenerator:2.0.146"
     }
 }
 
@@ -155,7 +155,9 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
      */
     def DbSessionPoint = sessionSchema.addEntity("DbSessionPoint");
     DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey(); // 打刻時間は常にUniqueになるはず
-    DbSessionPoint.addByteArrayProperty("central").notNull();   // Centralの生バッファ
+    DbSessionPoint.addIntProperty("uploadState").notNull().index();     // サーバー同期フラグ
+    DbSessionPoint.addByteArrayProperty("central").notNull();           // Centralの生バッファ
+    DbSessionPoint.addByteArrayProperty("extra").notNull();             // その他メタ情報用のバッファ
 }
 
 /**

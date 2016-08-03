@@ -1,11 +1,11 @@
 package com.eaglesakura.andriders.central.scsensor;
 
-import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
-import com.eaglesakura.andriders.serialize.RawSensorData;
+import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.sensor.CadenceZone;
-import com.eaglesakura.andriders.v2.db.UserProfiles;
+import com.eaglesakura.andriders.serialize.RawSensorData;
+import com.eaglesakura.andriders.util.Clock;
 
 import android.support.annotation.NonNull;
 

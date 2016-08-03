@@ -3,11 +3,11 @@ package com.eaglesakura.andriders.ble.service;
 import com.eaglesakura.andriders.ble.hw.cadence.BleCadenceSpeedSensor;
 import com.eaglesakura.andriders.ble.hw.cadence.SpeedCadenceGattReceiver;
 import com.eaglesakura.andriders.ble.hw.cadence.SpeedCadenceSensorData;
-import com.eaglesakura.andriders.plugin.DisplayKey;
-import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.PluginInformation;
-import com.eaglesakura.andriders.plugin.CentralEngineConnection;
 import com.eaglesakura.andriders.plugin.AcePluginService;
+import com.eaglesakura.andriders.plugin.Category;
+import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.DisplayKey;
+import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.plugin.data.CentralEngineData;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.service.base.AppBaseService;
@@ -68,7 +68,7 @@ public class BleSpeedCadenceExtensionService extends AppBaseService implements A
         if (StringUtil.isEmpty(address)) {
             return;
         }
-        mReceiver = new SpeedCadenceGattReceiver(this, getSubscription(), mClock);
+        mReceiver = new SpeedCadenceGattReceiver(this, getCallbackQueue(), mClock);
         mReceiver.setTargetFitnessDeviceAddress(address);
         mReceiver.setSpeedCadenceListener(new BleCadenceSpeedSensor.BleSpeedCadenceListener() {
             @Override

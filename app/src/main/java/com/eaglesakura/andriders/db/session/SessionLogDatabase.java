@@ -6,7 +6,7 @@ import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.AppStorageManager;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.db.DaoDatabase;
@@ -15,6 +15,10 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.Timer;
+
+import org.greenrobot.greendao.database.StandardDatabase;
+import org.greenrobot.greendao.query.CloseableListIterator;
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,24 +32,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
 
-import de.greenrobot.dao.query.CloseableListIterator;
-import de.greenrobot.dao.query.QueryBuilder;
-
 /**
  * セッションごとのログを保持する
  */
 public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     private static final int SUPPORTED_DATABASE_VERSION = 1;
 
-    @Inject(StorageProvider.class)
+    @Inject(AppManagerProvider.class)
     AppStorageManager mStorageManager;
 
     public SessionLogDatabase(@NonNull Context context) {
         super(context, DaoMaster.class);
 
-        Garnet.create(this)
-                .depend(Context.class, context)
-                .inject();
+        Garnet.inject(this);
     }
 
     /**
@@ -198,7 +197,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, mStorageManager.getDatabasePath("session_log.db"), null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, mStorageManager.getDatabasePath("v3_session_log.db"), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
@@ -206,7 +205,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
             @Override
             public void onCreate(SQLiteDatabase db) {
-                DaoMaster.createAllTables(db, false);
+                DaoMaster.createAllTables(new StandardDatabase(db), false);
             }
         };
     }

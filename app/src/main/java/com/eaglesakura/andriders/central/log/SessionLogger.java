@@ -1,15 +1,14 @@
 package com.eaglesakura.andriders.central.log;
 
-import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.dao.session.DbSessionLog;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
 import com.eaglesakura.andriders.db.session.SessionTotal;
-import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
 
@@ -64,7 +63,7 @@ public class SessionLogger {
      */
     static final int POINT_COMMIT_INTERVAL_MS = 1000 * 5;
 
-    public SessionLogger(@NonNull Context context, @NonNull String sessionId, @NonNull AppStorageManager storageManager, @NonNull Clock clock) {
+    public SessionLogger(@NonNull Context context, @NonNull String sessionId, @NonNull Clock clock) {
         mContext = context.getApplicationContext();
         mPointTimer = new ClockTimer(clock);
         mSessionId = sessionId;
@@ -73,13 +72,9 @@ public class SessionLogger {
         mSessionLog.setStartTime(new Date(clock.now()));
         mSessionLog.setEndTime(mSessionLog.getStartTime());
 
-        SessionLogDatabase db = new SessionLogDatabase(context);
-        try {
-            db.openReadOnly();
+        try (SessionLogDatabase db = new SessionLogDatabase(context).openReadOnly(SessionLogDatabase.class)) {
             mTodayTotal = db.loadTodayTotal(clock);
             mTotalFastestSpeedKmh = db.loadMaxSpeedKmh();
-        } finally {
-            db.close();
         }
     }
 
@@ -208,8 +203,7 @@ public class SessionLogger {
 
 
         // DBを書き込む
-        SessionLogDatabase db = new SessionLogDatabase(mContext);
-        try {
+        try (SessionLogDatabase db = new SessionLogDatabase(mContext).openWritable(SessionLogDatabase.class)) {
             db.openWritable();
             db.update(mSessionLog, points);
             AppLog.db("Session Log Commit :: time[%s] pt[%d]", mSessionLog.getEndTime(), points.size());
@@ -224,8 +218,6 @@ public class SessionLogger {
                     AppLog.db("SessionLog write failed. rollback failed.");
                 }
             }
-        } finally {
-            db.close();
         }
     }
 }

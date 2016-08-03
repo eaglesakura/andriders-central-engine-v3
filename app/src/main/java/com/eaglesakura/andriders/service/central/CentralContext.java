@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.command.CommandController;
 import com.eaglesakura.andriders.central.command.ProximityCommandController;
 import com.eaglesakura.andriders.central.command.SpeedCommandController;
+import com.eaglesakura.andriders.central.command.TimerCommandController;
 import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
@@ -15,26 +16,26 @@ import com.eaglesakura.andriders.display.notification.ProximityFeedbackManager;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
-import com.eaglesakura.andriders.provider.StorageProvider;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.andriders.service.central.internal.CommandBootListenerImpl;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.MultiTimer;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.BackgroundTaskBuilder;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.RxTask;
-import com.eaglesakura.android.rx.RxTaskBuilder;
+import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.io.Disposable;
 import com.eaglesakura.util.SerializeUtil;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
@@ -48,24 +49,24 @@ import java.util.List;
 public class CentralContext implements Disposable {
 
     @NonNull
-    private Service mContext;
+    Service mContext;
 
     /**
      * システム時計
      */
     @NonNull
-    private final Clock mClock;
+    final Clock mClock;
 
     /**
      * 更新用のタイマーリスト
      */
     @NonNull
-    private final MultiTimer mTimers;
+    final MultiTimer mTimers;
 
     /**
      * 設定
      */
-    @Inject(StorageProvider.class)
+    @Inject(AppContextProvider.class)
     @NonNull
     AppSettings mSettings;
 
@@ -137,7 +138,7 @@ public class CentralContext implements Disposable {
     /**
      * ACEのローカル情報を管理するレシーバ
      */
-    private CentralDataReceiver mLocalReceiver;
+    CentralDataReceiver mLocalReceiver;
 
     public CentralContext(Service context, Clock updateClock) {
         mContext = context;
@@ -155,15 +156,13 @@ public class CentralContext implements Disposable {
             }
         };
 
-        Garnet.create(this)
-                .depend(Context.class, context.getApplication())
-                .inject();
+        Garnet.inject(this);
 
         mCentralData = new CentralDataManager(context, mClock);
         mDisplayManager = new DataDisplayManager(mContext, mClock);
         mNotificationManager = new NotificationDisplayManager(mContext, mClock);
-        mNotificationManager.addListener(mNotificationShowingListener);
-        mProximityFeedbackManager = new ProximityFeedbackManager(mContext, mClock, getSubscription());
+        mNotificationManager.addListener(new NotificationShowingListenerImpl(this));
+        mProximityFeedbackManager = new ProximityFeedbackManager(mContext, mClock, getCallbackQueue());
 
         mPluginManager = new PluginManager(mContext);
     }
@@ -203,14 +202,14 @@ public class CentralContext implements Disposable {
      * タスクはUIスレッドで実行される。
      */
     public void post(Runnable task) {
-        getSubscription().run(ObserveTarget.Alive, task);
+        getCallbackQueue().run(CallbackTime.Alive, task);
     }
 
     /**
      * コールバック管理を取得する
      */
-    public SubscriptionController getSubscription() {
-        return mLifecycleDelegate.getSubscription();
+    public PendingCallbackQueue getCallbackQueue() {
+        return mLifecycleDelegate.getCallbackQueue();
     }
 
     /**
@@ -242,10 +241,11 @@ public class CentralContext implements Disposable {
     private void initCommands() throws Throwable {
         CommandDataManager commandDataManager = new CommandDataManager(mContext);
 
+        CommandController.CommandBootListener bootListener = new CommandBootListenerImpl(mContext, getCallbackQueue());
         // 近接コマンドセットアップ
         {
-            ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock, getSubscription());
-            proximityCommandController.setBootListener(new CommandBootListenerImpl(mContext, getSubscription()));
+            ProximityCommandController proximityCommandController = new ProximityCommandController(mContext, mClock);
+            proximityCommandController.setBootListener(bootListener);
             mProximityFeedbackManager.bind(proximityCommandController);
             mCommandControllers.add(proximityCommandController);
         }
@@ -254,8 +254,19 @@ public class CentralContext implements Disposable {
             CommandDataCollection collection = commandDataManager.loadFromCategory(CommandDatabase.CATEGORY_SPEED);
             for (CommandData data : collection.list(it -> true)) {
                 AppLog.system("Load SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
-                SpeedCommandController controller = SpeedCommandController.newSpeedController(mContext, getSubscription(), data);
+                SpeedCommandController controller = SpeedCommandController.newSpeedController(mContext, data);
+                controller.setBootListener(bootListener);
                 controller.bind(mLocalReceiver);
+                mCommandControllers.add(controller);
+            }
+        }
+        // タイマーコマンドを列挙し、コントローラを生成する
+        {
+            CommandDataCollection collection = commandDataManager.loadFromCategory(CommandDatabase.CATEGORY_TIMER);
+            for (CommandData data : collection.list(it -> true)) {
+                AppLog.system("Timer SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
+                TimerCommandController controller = new TimerCommandController(mContext, data, mClock);
+                controller.setBootListener(bootListener);
                 mCommandControllers.add(controller);
             }
         }
@@ -266,9 +277,10 @@ public class CentralContext implements Disposable {
      */
     public void onServiceInitializeCompleted() {
         mLifecycleDelegate.onCreate();
-        newTask(SubscribeTarget.GlobalPipeline, task -> {
+        newTask(ExecuteTarget.GlobalQueue, task -> {
             initPlugins();
             task.throwIfCanceled();
+
             initCommands();
             task.throwIfCanceled();
             return this;
@@ -331,17 +343,18 @@ public class CentralContext implements Disposable {
 
         // データのコミットを行う
         if (mTimers.endIfOverTime(TimerType.CentralDbCommit, CENTRAL_COMMIT_INTERVAL_MS)) {
-            requestCommitDatabase();
+            CentralContextImpl.commitLogDatabase(this);
         }
     }
 
     @Override
     public void dispose() {
         mProximityFeedbackManager.disconnect(); // 近接コマンドを切断する
-        requestCommitDatabase();    // セントラルにコミットをかける
+
+        CentralContextImpl.commitLogDatabase(this);   // セントラルにコミットをかける
 
         // その他の終了タスクを投げる
-        new RxTaskBuilder<>(getSubscription())
+        new BackgroundTaskBuilder<>(getCallbackQueue())
                 .observeOn(ObserveTarget.FireAndForget)
                 .subscribeOn(SubscribeTarget.GlobalPipeline)
                 .async(task -> {
@@ -359,54 +372,12 @@ public class CentralContext implements Disposable {
     /**
      * 非同期タスクを生成する
      */
-    public <T> RxTaskBuilder<T> newTask(SubscribeTarget subscribeTarget, RxTask.Async<T> task) {
-        return new RxTaskBuilder<T>(getSubscription())
+    public <T> BackgroundTaskBuilder<T> newTask(ExecuteTarget executeTarget, BackgroundTask.Async<T> task) {
+        return new BackgroundTaskBuilder<T>(getCallbackQueue())
                 .async(task)
-                .observeOn(ObserveTarget.Alive)
-                .subscribeOn(subscribeTarget);
+                .callbackOn(CallbackTime.Alive)
+                .executeOn(executeTarget);
     }
-
-    /**
-     * DBの内容を書き出す
-     */
-    void requestCommitDatabase() {
-        new RxTaskBuilder<>(getSubscription())
-                .observeOn(ObserveTarget.FireAndForget)
-                .subscribeOn(SubscribeTarget.GlobalPipeline)
-                .async(task -> {
-                    AppLog.db("CentralCommit Start");
-                    mCentralData.commit();
-                    return this;
-                })
-                .completed((result, task) -> {
-                    AppLog.db("CentralCommit Completed");
-                })
-                .failed((error, task) -> {
-                    AppLog.report(error);
-                })
-                .start();
-    }
-
-    /**
-     * 通知のレンダリングを開始したら、全アプリへBroadcastする
-     */
-    NotificationDisplayManager.OnNotificationShowingListener mNotificationShowingListener = (self, data) -> {
-        try {
-            Intent intent = new Intent();
-            intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
-            intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
-
-            byte[] rawNotification = data.serialize();
-            intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, rawNotification);
-
-            mContext.sendBroadcast(intent);
-            // ローカル伝達
-            mLocalReceiver.onReceivedNotificationData(rawNotification);
-        } catch (Throwable e) {
-            AppLog.report(e);
-        }
-
-    };
 
     /**
      * データを各アプリへ送信する
