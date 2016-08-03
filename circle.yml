@@ -14,8 +14,8 @@ machine:
     version: oraclejdk8
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
-    GRADLE_OPTS: -Dorg.gradle.parallel=false -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xms256m -Xmx2500m -XX:MaxPermSize=128m -XX:+HeapDumpOnOutOfMemoryError"
-    JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms256m -Xmx2500m -XX:MaxPermSize=128m
+    GRADLE_OPTS: -Dorg.gradle.parallel=false -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xms256m -Xmx3000m -XX:MaxPermSize=128m -XX:+HeapDumpOnOutOfMemoryError"
+    JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms256m -Xmx3000m -XX:MaxPermSize=128m
 dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
