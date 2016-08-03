@@ -234,6 +234,7 @@ android {
         disable "InvalidPackage"
         disable "ProtectedPermissions"
         disable "ResourceType"
+        abortOnError false
     }
 
     // ignore include
