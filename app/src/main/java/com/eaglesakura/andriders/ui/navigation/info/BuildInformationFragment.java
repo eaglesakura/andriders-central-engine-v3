@@ -70,6 +70,10 @@ public class BuildInformationFragment extends AppBaseFragment {
 
     @OnCheckedChanged(R.id.Information_App_Debug)
     void changedAppDebug(CompoundButton button, boolean enabled) {
+        if (mDebugSettings.isDebugEnable() == enabled) {
+            return;
+        }
+
         (new AQuery(getView()))
                 .id(R.id.Information_DebugSettings).visibility(enabled ? View.VISIBLE : View.GONE);
 
