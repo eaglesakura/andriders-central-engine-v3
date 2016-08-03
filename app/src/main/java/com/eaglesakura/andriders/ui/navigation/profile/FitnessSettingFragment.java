@@ -3,12 +3,12 @@ package com.eaglesakura.andriders.ui.navigation.profile;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.google.GoogleApiUtil;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
-import com.eaglesakura.andriders.v2.db.UserProfiles;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
@@ -85,7 +85,7 @@ public class FitnessSettingFragment extends AppBaseFragment {
             // 起動成功したから何もしない
             return;
         } catch (Exception e) {
-            LogUtil.log(e);
+            AppLog.printStackTrace(e);
         }
 
         MaterialInputDialog dialog = new MaterialInputDialog(getActivity()) {
@@ -98,7 +98,7 @@ public class FitnessSettingFragment extends AppBaseFragment {
 
             @Override
             protected void onCommit(EditText input) {
-                mPersonalDataSettings.setUserWeight(ViewUtil.getDoubleValue(input, mPersonalDataSettings.getUserWeight()));
+                mPersonalDataSettings.setUserWeight((float) ViewUtil.getDoubleValue(input, mPersonalDataSettings.getUserWeight()));
                 updatePersonalUI();
 
                 asyncCommitSettings();

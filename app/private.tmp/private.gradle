@@ -9,6 +9,14 @@
 ext.EGLIBRARY_COMPILE_LOCAL = false
 ext.ACESDK_COMPILE_LOCAL = true
 
+// 強制的にコンパイル済Jarを使用する
+if ("true" == "${System.properties["app.lib_no_compile"]}") {
+    println("Libs, Using maven repository")
+    ext.EGLIBRARY_COMPILE_LOCAL = false;
+} else {
+    println("Libs, Using local projects, using maven -> `-Dapp.lib_no_compile=true`")
+}
+
 /**
  * デバッグ用署名設定
  *

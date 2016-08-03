@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
 
 import android.content.Context;
@@ -35,7 +35,7 @@ class CommandBootListenerImpl implements CommandController.CommandBootListener {
             return;
         }
 
-        mCallbackQueue.run(ObserveTarget.Alive, () -> {
+        mCallbackQueue.run(CallbackTime.Alive, () -> {
             try {
                 RawIntent rawIntent = data.getIntent();
                 Intent intent = SerializableIntent.newIntent(rawIntent);

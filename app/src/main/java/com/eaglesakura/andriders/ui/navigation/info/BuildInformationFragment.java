@@ -2,10 +2,10 @@ package com.eaglesakura.andriders.ui.navigation.info;
 
 import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.gen.prop.CentralServiceSettings;
+import com.eaglesakura.andriders.gen.prop.DebugSettings;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.ui.widget.AppKeyValueView;
-import com.eaglesakura.andriders.v2.db.CentralServiceSettings;
-import com.eaglesakura.andriders.v2.db.DebugSettings;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.device.external.StorageInfo;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
@@ -56,9 +56,9 @@ public class BuildInformationFragment extends AppBaseFragment {
         q.id(R.id.Information_App_Version).getView(AppKeyValueView.class).setValueText(BuildConfig.VERSION_NAME);
         q.id(R.id.Information_App_BuildDate).getView(AppKeyValueView.class).setValueText(BuildConfig.BUILD_DATE);
         q.id(R.id.Information_App_SDKVersion).getView(AppKeyValueView.class).setValueText(com.eaglesakura.andriders.sdk.BuildConfig.ACE_SDK_VERSION);
-        q.id(R.id.Information_App_Debug).checked(mDebugSettings.getDebugEnable());
+        q.id(R.id.Information_App_Debug).checked(mDebugSettings.isDebugEnable());
 
-        if (mDebugSettings.getDebugEnable()) {
+        if (mDebugSettings.isDebugEnable()) {
             q.id(R.id.Information_DebugSettings).visible();
         }
     }
@@ -73,10 +73,6 @@ public class BuildInformationFragment extends AppBaseFragment {
         (new AQuery(getView()))
                 .id(R.id.Information_DebugSettings).visibility(enabled ? View.VISIBLE : View.GONE);
 
-        if (enabled == mDebugSettings.getDebugEnable()) {
-            return;
-        }
-
         mDebugSettings.setDebugEnable(enabled);
         asyncCommitSettings();
 
@@ -87,25 +83,6 @@ public class BuildInformationFragment extends AppBaseFragment {
             dialog.setPositiveButton(R.string.Common_OK, null);
             dialog.show();
         }
-    }
-
-
-    /**
-     * debug rendering
-     */
-    @OnCheckedChanged(R.id.Debug_ACEs_DebugRendering)
-    void debugCheckAcesDebugRendering(CompoundButton button, boolean checked) {
-        mDebugSettings.setAcesRenderDebugInfo(checked);
-        asyncCommitSettings();
-    }
-
-    /**
-     * loc rendering
-     */
-    @OnCheckedChanged(R.id.Debug_Location_Rendering)
-    void debugCheckLocationRendering(CompoundButton button, boolean checked) {
-        mDebugSettings.setRenderLocation(checked);
-        asyncCommitSettings();
     }
 
     /**

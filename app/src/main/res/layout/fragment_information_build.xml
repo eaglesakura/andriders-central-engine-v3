@@ -11,7 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <com.eaglesakura.andriders.ui.widget.AppHeaderView
-                app:headerIcon="@android:drawable/ic_menu_info_details"
+                app:headerIcon="@drawable/ic_info"
                 app:headerText="@string/Information.Build.Title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content">
             <com.eaglesakura.andriders.ui.widget.AppHeaderView
                     app:headerText="@string/Information.Debug.Title"
-                    app:headerIcon="@android:drawable/ic_menu_info_details"
+                    app:headerIcon="@drawable/ic_developer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -81,21 +81,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:visibility="gone">
-
-                    <android.support.v7.widget.SwitchCompat
-                            android:id="@+id/Debug.ACEs.DebugRendering"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="false"
-                            android:text="ACEs render debug info"/>
-
-                    <android.support.v7.widget.SwitchCompat
-                            android:id="@+id/Debug.Location.Rendering"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:checked="false"
-                            android:text="ACEs render location"/>
-
 
                     <android.support.v7.widget.AppCompatButton
                             android:id="@+id/Debug.Data.Dump"
