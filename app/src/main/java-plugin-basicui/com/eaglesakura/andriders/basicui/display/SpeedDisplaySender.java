@@ -80,7 +80,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
                 speed = 0;
                 if (!mTimeoutMessageSend) {
                     NotificationData notification = new NotificationData.Builder(context)
-                            .icon(R.mipmap.ic_speed)
+//                            .icon(R.mipmap.ic_speed)
                             .message("GPS速度 / タイムアウト")
                             .getNotification();
                     mSession.getDisplayExtension().queueNotification(notification);

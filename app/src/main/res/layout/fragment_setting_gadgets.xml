@@ -18,7 +18,7 @@
 
             <com.eaglesakura.andriders.ui.widget.AppHeaderView
                     app:headerText="@string/Setting.Gadgets.Heartrate"
-                    app:headerIcon="@mipmap/ic_heart"
+                    app:headerIcon="@drawable/ic_heart_beats"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -42,7 +42,7 @@
                 android:orientation="vertical">
             <com.eaglesakura.andriders.ui.widget.AppHeaderView
                     app:headerText="@string/Setting.Gadgets.SpeedAndCadence"
-                    app:headerIcon="@mipmap/ic_speed"
+                    app:headerIcon="@drawable/ic_speed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 

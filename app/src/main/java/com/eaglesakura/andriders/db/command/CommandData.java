@@ -75,6 +75,21 @@ public class CommandData {
      */
     public static final int SPEEDCOMMAND_TYPE_TODAY_MAX_FINISHED = 7;
 
+    /**
+     * セッションの時間ごとにタイマー起動
+     */
+    public static final int TIMERCOMMAND_TYPE_SESSION = 0;
+
+    /**
+     * 現実時間ごとにタイマー起動
+     */
+    public static final int TIMERCOMMAND_TYPE_REALTIME = 1;
+
+    /**
+     * タイマーコマンドで繰り返し実行を行う
+     */
+    public static final int TIMERCOMMAND_FLAG_REPEAT = 0x1 << 0;
+
     public CommandData(DbCommand raw) {
         mRaw = raw;
 
@@ -179,6 +194,12 @@ public class CommandData {
 
     public static class RawExtra {
         /**
+         * 共有 フラグ情報
+         */
+        @Serialize(id = 1)
+        public int flags;
+
+        /**
          * 速度コマンドの基準速度
          */
         @Serialize(id = 11)
@@ -189,5 +210,17 @@ public class CommandData {
          */
         @Serialize(id = 12)
         public int speedType = SPEEDCOMMAND_TYPE_UPPER;
+
+        /**
+         * タイマーの種類
+         */
+        @Serialize(id = 21)
+        public int timerType = TIMERCOMMAND_TYPE_SESSION;
+
+        /**
+         * タイマーの実行間隔（秒単位）
+         */
+        @Serialize(id = 22)
+        public int timerIntervalSec = 30;
     }
 }

@@ -97,7 +97,7 @@ public class GoogleLoginCtrlFragment extends AppBaseFragment {
                 // リリース番号をコミット
                 AppSettings settings = getSettings();
                 settings.getUpdateCheckProps().setInitializeReleased(RELEASE_INITIALIZE_NUMBER);
-                settings.commitAndLoad();
+                settings.commit();
             }
             return this;
         }).start();

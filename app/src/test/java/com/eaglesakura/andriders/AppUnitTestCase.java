@@ -20,7 +20,7 @@ public abstract class AppUnitTestCase extends AndroidSupportTestCase {
     /**
      * ユーザー体重のデフォルト値
      */
-    public static final double USER_WEIGHT = 65;
+    public static final float USER_WEIGHT = 65;
 
     private AppStorageManager mStorageManager;
 

@@ -8,7 +8,7 @@
                   android:layout_width="match_parent"
                   android:layout_height="match_parent">
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/Setting.Command.Icon"
                 android:layout_width="@dimen/EsMaterial.Button.MinHeight"
                 android:layout_height="@dimen/EsMaterial.Button.MinHeight"
@@ -16,7 +16,7 @@
                 android:layout_gravity="center_horizontal"
                 android:src="@mipmap/ic_launcher"/>
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/Setting.Command.ProximitySec"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

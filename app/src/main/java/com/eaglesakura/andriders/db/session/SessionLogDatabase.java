@@ -7,7 +7,6 @@ import com.eaglesakura.andriders.dao.session.DbSessionLogDao;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.db.AppStorageManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
-import com.eaglesakura.andriders.provider.StorageProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.db.DaoDatabase;
@@ -198,7 +197,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, mStorageManager.getDatabasePath("session_log.db"), null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(context, mStorageManager.getDatabasePath("v3_session_log.db"), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

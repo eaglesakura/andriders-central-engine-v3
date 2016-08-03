@@ -12,7 +12,7 @@
             android:layout_height="wrap_content">
 
         <com.eaglesakura.andriders.ui.widget.AppHeaderView
-                app:headerIcon="@mipmap/ic_menu_personal_small"
+                app:headerIcon="@drawable/ic_person"
                 app:headerText="フィットネスデータ"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

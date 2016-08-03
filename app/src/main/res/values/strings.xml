@@ -142,6 +142,16 @@
     <string name="UserLog.Import.GPX">GPX形式で読込</string>
     <string name="Main.Menu.Gadgets">センサー・周辺機器</string>
 
+    <string name="Command.Timer.Repeat">繰り返し</string>
+    <string-array name="Command_Timer_TypeInfo">
+        <item>時計 : %s</item>
+        <item>セッション時間 : %s</item>
+    </string-array>
+    <string-array name="Command_Timer_TypeSelector">
+        <item>時計が基準</item>
+        <item>セッション時間が基準</item>
+    </string-array>
+
     <string-array name="Command_Speed_TypeInfo">
         <item>%dkm/hより高速</item>
         <item>%dkm/hより低速</item>

@@ -5,9 +5,20 @@
 // 3.0.x  : モジュール細分化バージョン
 def ACES_APP_VERSION = "3.0"
 
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "http://eaglesakura.github.io/maven/" }
+    }
+    dependencies {
+        classpath "com.eaglesakura:plugin-android-dbgenerator:2.1.162"
+    }
+}
 apply plugin: 'com.android.application'
 apply plugin: 'com.eaglesakura.ci-support'
 apply plugin: 'com.eaglesakura.android-mipmap'
+apply plugin: 'com.eaglesakura.android-props'
 apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
@@ -15,8 +26,18 @@ configurations {
     all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
 }
 
+/**
+ * アプリのプロパティ管理
+ */
+props {
+    property file("config/properties.json")
+}
+
+/**
+ * mipmap生成管理
+ */
 mipmap {
-    sources = file("images/");
+    sources = file("image/");
     output = file("src/main/res");
     toolsPath.identify = System.getenv("IMGMAGICK_IDENTIFY");
     toolsPath.convert = System.getenv("IMGMAGICK_CONVERT");
@@ -89,13 +110,23 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${ANDROID_SUPPORT_LIB_VERSION}"
     compile "com.android.support:palette-v7:${ANDROID_SUPPORT_LIB_VERSION}"
     compile "com.android.support:design:${ANDROID_SUPPORT_LIB_VERSION}"
-
+    compile "com.android.support:support-vector-drawable:${ANDROID_SUPPORT_LIB_VERSION}"
     /**
      * Play Service
      */
     compile "com.google.android.gms:play-services-fitness:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile "com.google.android.gms:play-services-location:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile "com.google.android.gms:play-services-maps:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.android.gms:play-services-auth:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+
+    /**
+     * Firebase
+     */
+    compile "com.google.firebase:firebase-core:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.firebase:firebase-crash:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.firebase:firebase-auth:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.firebase:firebase-config:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    compile "com.google.firebase:firebase-database:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile 'com.android.support:support-annotations:+'
 
     // UI Library
@@ -114,7 +145,7 @@ dependencies {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24"
+    buildToolsVersion "24.0.1"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -133,6 +164,7 @@ android {
 //        versionCode 99999;
         versionCode eglibrary.ci.buildVersionCode as int
         versionName "${ACES_APP_VERSION}${getArtifactVersionSuffix()}"
+        vectorDrawables.useSupportLibrary = true        // using vector drawable
 
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
@@ -144,27 +176,29 @@ android {
 
     sourceSets {
         main {
-            java.srcDirs = [
-                    'src/main/java', 'src/main/generated/dao', 'src/main/generated/props',
+            java.srcDirs += [
+                    'src/main/gen/java',
                     // 内蔵プラグイン
-                    'src/main/java-plugin-basicui', 'src/main/java-plugin-ble', 'src/main/java-plugin-location',
+                    'src/main/java-plugin-basicui',
+                    'src/main/java-plugin-ble',
+                    'src/main/java-plugin-location',
             ]
-            res.srcDirs = [
-                    "src/main/res", "private/main/res"
+            res.srcDirs += [
+                    "private/main/res"
             ];
         }
     }
 
     dexOptions {
         // memo: http://developer.covelline.com/2015/06/circle-ci/
-        javaMaxHeapSize eglibrary.ci.ciRunning ? "1g" : "4g"
+        javaMaxHeapSize eglibrary.ci.ciRunning ? "2g" : "4g"
         preDexLibraries !eglibrary.ci.ciRunning
     }
 
     testOptions {
         unitTests.all {
             if (eglibrary.ci.ciRunning) {
-                jvmArgs '-Xms256m', '-Xmx1024m', '-XX:MaxPermSize=128m', '-XX:+HeapDumpOnOutOfMemoryError'
+                jvmArgs '-Xms256m', '-Xmx2048m', '-XX:MaxPermSize=128m', '-XX:+HeapDumpOnOutOfMemoryError'
             }
         }
     }
@@ -187,8 +221,9 @@ android {
 
     buildTypes {
         debug {
-            // デバッグビルド時は"package名+.debug"を入れる
-            applicationIdSuffix ".debug"
+            // Pluginとの連携やデバッグを楽にするため、Package名は共通にする
+//            applicationIdSuffix ".debug"
+            versionNameSuffix ".debug"    // バージョン名にデバッグフラグを付与する
             signingConfig signingConfigs.debug
         }
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable name="item"
+                  type="com.eaglesakura.andriders.ui.navigation.command.timer.TimerCommandFragment.CardBinding"/>
+    </data>
+    <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.eaglesakura.material.widget.TransparentButton
+                android:id="@+id/Command_Item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/EsMaterial.Button.MinHeight">
+                <android.support.v7.widget.AppCompatImageView
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/App.Icon.Large.Margin"
+                        android:src="@{item.icon}"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:text="@{item.title}"
+                        android:gravity="right"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </com.eaglesakura.material.widget.TransparentButton>
+        <include layout="@layout/esm_material_separator"/>
+    </LinearLayout>
+</layout>
