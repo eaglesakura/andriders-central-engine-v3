@@ -12,9 +12,6 @@ import com.eaglesakura.util.LogUtil;
 
 import org.robolectric.annotation.Config;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-
 @Config(constants = BuildConfig.class, application = AceApplication.class, packageName = BuildConfig.DEFAULT_PACKAGE_NAME, sdk = 23)
 public abstract class AppUnitTestCase extends AndroidSupportTestCase {
     /**

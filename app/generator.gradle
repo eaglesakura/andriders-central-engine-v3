@@ -11,85 +11,10 @@ buildscript {
 }
 
 /**
- * 設定クラスを生成する
- */
-task generateProps(type: com.eaglesakura.gradle.task.AndroidPropsGenTask) {
-    outDirectory file('src/main/generated/props')
-
-    /**
-     * アップデート管理
-     */
-    def UpdateCheckProps = newProps("${android.defaultConfig.applicationId}.db.UpdateCheckProps");
-    UpdateCheckProps.intProperty "initializeReleased", 0
-
-    /**
-     * CentralServiceの設定
-     */
-    def CentralServiceSettings = newProps("${android.defaultConfig.applicationId}.db.CentralServiceSettings")
-    // WiFiの強制Offを行う
-    CentralServiceSettings.booleanProperty "wifiDisable", true  // Service起動時に強制的にWiFiを切る
-
-    // CPUをスリープさせない
-    CentralServiceSettings.booleanProperty "cpuNoSleep", true  // CPUを寝かさない
-
-    // 互換性を優先する
-    // SDKから送信する情報に互換性を持たせる場合はtrue
-    CentralServiceSettings.booleanProperty "enableOldSdkCompat", false
-
-    // 撮影ファイルを1時間単位でフォルダ分け
-    // 大量に写真を撮影する場合、1時間単位で画像を分けるようにする
-    CentralServiceSettings.booleanProperty "mediaDirectory1h", false
-
-    // 近接コマンド
-    CentralServiceSettings.booleanProperty "proximityCommandEnable", true
-    // 近接コマンドでスクリーンON／OFF時に同期する
-    CentralServiceSettings.booleanProperty "proximityCommandScreenLink", true
-
-    // アクティビティコマンド
-//    CentralServiceSettings.booleanProperty "activityCommandEnable", true // 近接コマンドON/OFF
-    // タイマーコマンド
-    CentralServiceSettings.booleanProperty "timerCommandEnable", true // タイマーコマンドON/OFF
-    CentralServiceSettings.booleanProperty "speedCommandEnable", true // 速度コマンドON/OFF
-    CentralServiceSettings.booleanProperty "distanceCommandEnable", true //距離コマンドON/OFF
-
-    // 位置情報
-    CentralServiceSettings.booleanProperty "gpsEnable", true // GPS座標による更新を行う場合
-    CentralServiceSettings.floatProperty "gpsAccuracy", 50 // 信頼できるGPS精度（メートル）
-
-    /**
-     * プロファイル設定
-     */
-    def UserProfiles = newProps("${android.defaultConfig.applicationId}.db.UserProfiles");
-    UserProfiles.doubleProperty "userWeight", 65  // ユーザーの体重
-    UserProfiles.intProperty "normalHeartrate", 70 // 通常心拍
-    UserProfiles.intProperty "maxHeartrate", 190 // 最大心拍
-    UserProfiles.intProperty "wheelOuterLength", 2096 // 最大心拍
-    UserProfiles.intProperty "speedZoneCruise", 25 // これより早いと巡航
-    UserProfiles.intProperty "speedZoneSprint", 35 // これより早いとスプリント
-    UserProfiles.intProperty "cadenceZoneIdeal", 80 // これより早いと標準ケイデンス
-    UserProfiles.intProperty "cadenceZoneHigh", 100 // これより早いと高ケイデンス
-    UserProfiles.booleanProperty "gpsEnable", true // GPS有効状態
-    UserProfiles.stringProperty "bleHeartrateMonitorAddress", ""; // 心拍計
-    UserProfiles.stringProperty "bleSpeedCadenceSensorAddress", "";   // スピード＆ケイデンス
-    UserProfiles.stringProperty "btRemoteCentralAddress", ""; // リモートセントラル
-
-    // サイクルコンピューター
-    UserProfiles.booleanProperty "cycleComputerInterfaceEnable", true
-
-    /**
-     * デバッグ設定用
-     */
-    def DebugSettings = newProps("${android.defaultConfig.applicationId}.db.DebugSettings");
-    DebugSettings.booleanProperty "debugEnable", false // デバッグをONにする場合はtrue
-    DebugSettings.booleanProperty "acesRenderDebugInfo", false // ACEsでデバッグ情報をレンダリングする場合true
-    DebugSettings.booleanProperty "renderLocation", false // ACEsで位置情報レンダリングを行う場合true
-}
-
-/**
  * サイクルコンピューター設定用プロファイルを出力する
  */
 task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
+    outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
     def profileSchema = newSchema(1, "display");
@@ -117,7 +42,7 @@ task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
 }
 
 task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
+    outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
     def sessionSchema = newSchema(1, "session");
@@ -164,7 +89,7 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
  * Bluetoothデバイス保存用DAOを出力
  */
 task generateBluetoothDeviceDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
+    outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
     def bledeviceScheme = newSchema(0x01, "bledevice");
@@ -191,7 +116,7 @@ task generateBluetoothDeviceDao(type: com.eaglesakura.gradle.task.AndroidDaoGenT
  * 各種コマンド内容を保存するためのDAOを出力
  */
 task generateCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
+    outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
     def schema = newSchema(1, "command");
@@ -215,7 +140,7 @@ task generateCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
  * 各種コマンド内容を保存するためのDAOを出力
  */
 task generatePluginDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/generated/dao")
+    outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
     def schema = newSchema(1, "plugin");

@@ -29,14 +29,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 public class CentralDataManagerTest extends AppUnitTestCase {
     /**
      * サンプルの距離はAACR開始～折り返しとなっている。

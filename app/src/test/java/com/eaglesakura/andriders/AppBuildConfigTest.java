@@ -4,10 +4,6 @@ import com.eaglesakura.thread.Holder;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 public class AppBuildConfigTest extends AppUnitTestCase {
     @Test
     public void 正しいClassがロードできている() throws Exception {

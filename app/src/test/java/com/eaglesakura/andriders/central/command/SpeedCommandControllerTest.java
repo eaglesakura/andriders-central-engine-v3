@@ -9,9 +9,6 @@ import com.eaglesakura.util.Util;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 public class SpeedCommandControllerTest extends AppUnitTestCase {
 
     CommandData newCommand(double speed, int type) throws Throwable {
@@ -47,7 +44,7 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
     }
 
     final double MAXSPEED = 40.0;
-    
+
     final double MAXSPEED_TODAY = 30.0;
 
     @Test
