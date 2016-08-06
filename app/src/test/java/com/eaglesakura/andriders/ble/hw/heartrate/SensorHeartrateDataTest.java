@@ -6,11 +6,6 @@ import com.eaglesakura.andriders.util.Clock;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 /**
  * 心拍データ管理テスト
  */

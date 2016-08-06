@@ -8,8 +8,6 @@ import com.eaglesakura.thread.IntHolder;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 public class TimerCommandControllerTest extends AppUnitTestCase {
 
     CommandData newCommand(long intervalTimeMs, int type, int flags) throws Throwable {

@@ -5,8 +5,6 @@ import com.eaglesakura.android.framework.FrameworkCentral;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-
 public class BuildConfigTest extends DeviceTestCase<AceApplication> {
 
     @Test

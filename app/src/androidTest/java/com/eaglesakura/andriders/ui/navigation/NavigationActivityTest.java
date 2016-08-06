@@ -6,8 +6,6 @@ import com.eaglesakura.util.Util;
 
 import android.content.Intent;
 
-import static org.junit.Assert.*;
-
 public class NavigationActivityTest extends DeviceActivityTestCase<NavigationActivity, AceApplication> {
     public NavigationActivityTest() {
         super(NavigationActivity.class);
