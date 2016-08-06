@@ -47,9 +47,9 @@ public class MaxSpeedCommandController extends SpeedCommandController {
 
         // チャレンジ前はそのままの速度を返す
         switch (mCommandType) {
-            case CommandData.SPEEDCOMMAND_TYPE_MAX_START:
-            case CommandData.SPEEDCOMMAND_TYPE_MAX_UPDATED:
-            case CommandData.SPEEDCOMMAND_TYPE_MAX_FINISHED:
+            case CommandData.SPEED_TYPE_MAX_START:
+            case CommandData.SPEED_TYPE_MAX_UPDATED:
+            case CommandData.SPEED_TYPE_MAX_FINISHED:
                 return mRecord.maxSpeedKmh;
             default:
                 return mRecord.maxSpeedKmhToday;
@@ -65,8 +65,8 @@ public class MaxSpeedCommandController extends SpeedCommandController {
 
     void onMaxSpeedStarted() {
         switch (mCommandType) {
-            case CommandData.SPEEDCOMMAND_TYPE_MAX_START:
-            case CommandData.SPEEDCOMMAND_TYPE_TODAY_MAX_START:
+            case CommandData.SPEED_TYPE_MAX_START:
+            case CommandData.SPEED_TYPE_TODAY_MAX_START:
                 requestCommandBoot(mCommandData);
                 break;
         }
@@ -74,8 +74,8 @@ public class MaxSpeedCommandController extends SpeedCommandController {
 
     void onMaxSpeedUpdated() {
         switch (mCommandType) {
-            case CommandData.SPEEDCOMMAND_TYPE_MAX_UPDATED:
-            case CommandData.SPEEDCOMMAND_TYPE_TODAY_MAX_UPDATED:
+            case CommandData.SPEED_TYPE_MAX_UPDATED:
+            case CommandData.SPEED_TYPE_TODAY_MAX_UPDATED:
                 requestCommandBoot(mCommandData);
                 break;
         }
@@ -83,8 +83,8 @@ public class MaxSpeedCommandController extends SpeedCommandController {
 
     void onMaxSpeedFinished() {
         switch (mCommandType) {
-            case CommandData.SPEEDCOMMAND_TYPE_MAX_FINISHED:
-            case CommandData.SPEEDCOMMAND_TYPE_TODAY_MAX_FINISHED:
+            case CommandData.SPEED_TYPE_MAX_FINISHED:
+            case CommandData.SPEED_TYPE_TODAY_MAX_FINISHED:
                 requestCommandBoot(mCommandData);
                 break;
         }

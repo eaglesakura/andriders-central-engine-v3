@@ -25,7 +25,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
 
         Clock clock = new Clock(10000);
         TimerCommandController commandController =
-                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMERCOMMAND_TYPE_SESSION, 0x00), clock);
+                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_SESSION, 0x00), clock);
 
         IntHolder holder = new IntHolder();
         commandController.setBootListener((self, data) -> {
@@ -63,7 +63,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
 
         Clock clock = new Clock(10000);
         TimerCommandController commandController =
-                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMERCOMMAND_TYPE_SESSION, CommandData.TIMERCOMMAND_FLAG_REPEAT), clock);
+                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_SESSION, CommandData.TIMER_FLAG_REPEAT), clock);
 
         IntHolder holder = new IntHolder();
         commandController.setBootListener((self, data) -> {
@@ -85,7 +85,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
 
         Clock clock = new Clock(10500);
         TimerCommandController commandController =
-                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMERCOMMAND_TYPE_REALTIME, 0x00), clock);
+                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_REALTIME, 0x00), clock);
 
         IntHolder holder = new IntHolder();
         commandController.setBootListener((self, data) -> {

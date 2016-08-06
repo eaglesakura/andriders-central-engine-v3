@@ -70,7 +70,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
                                 mInfoFormats[item.getInternalExtra().timerType],
                                 AppUtil.formatTimeMilliSecToString(item.getInternalExtra().timerIntervalSec * 1000)
                         );
-                        if ((item.getInternalExtra().flags & CommandData.TIMERCOMMAND_FLAG_REPEAT) != 0) {
+                        if ((item.getInternalExtra().flags & CommandData.TIMER_FLAG_REPEAT) != 0) {
                             text += (" / " + getString(R.string.Command_Timer_Repeat));
                         }
                         return text;
@@ -100,7 +100,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
 
         CommandData.RawExtra extra = new CommandData.RawExtra();
         extra.timerIntervalSec = (60 * 5);
-        extra.timerType = CommandData.TIMERCOMMAND_TYPE_SESSION;
+        extra.timerType = CommandData.TIMER_TYPE_SESSION;
         CommandData commandData = mCommandDataManager.save(data, getCommandCategory(), extra);
         mAdapter.getCollection().insertOrReplace(0, commandData);
     }
@@ -142,7 +142,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
                         .id(R.id.Command_Timer_Text)
                         .text(StringUtil.format("%d", extra.timerIntervalSec))
                         .id(R.id.Command_Timer_Repeat)
-                        .checked((extra.flags & CommandData.TIMERCOMMAND_FLAG_REPEAT) != 0)
+                        .checked((extra.flags & CommandData.TIMER_FLAG_REPEAT) != 0)
                 ;
             }
 
@@ -160,7 +160,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
 
                 extra.timerType = q.id(R.id.Command_Timer_Type).getSelectedItemPosition();
                 extra.timerIntervalSec = interval;
-                extra.flags = MathUtil.setFlag(extra.flags, CommandData.TIMERCOMMAND_FLAG_REPEAT, q.id(R.id.Command_Timer_Repeat).isChecked());
+                extra.flags = MathUtil.setFlag(extra.flags, CommandData.TIMER_FLAG_REPEAT, q.id(R.id.Command_Timer_Repeat).isChecked());
 
                 onCommitData(data);
             }
