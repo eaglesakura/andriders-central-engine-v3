@@ -15,7 +15,9 @@ import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.collection.DataCollection;
+import com.eaglesakura.util.CollectionUtil;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -28,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -66,25 +69,24 @@ public class AppTargetSelectFragment extends AppBaseFragment {
     }
 
     /**
-     * アプリ選択UIを組み立てる
+     * ロード済みのアプリ一覧を取得する
      */
-    ViewGroup buildAppSelector(BackgroundTask task, BottomSheetDialog dialog) throws Throwable {
+    DataCollection<AppInfoCache> listInstalledApplications() throws Throwable {
         DataLayoutManager layoutManager = new DataLayoutManager(getContext());
         DataCollection<DbDisplayTarget> customizedDisplays = layoutManager.listCustomizedDisplays();
 
-        Set<String> customizedPackageNames = customizedDisplays.asMap(it -> true, it -> it.getTargetPackage()).keySet();
+        Map<String, DbDisplayTarget> displayTargetMap = customizedDisplays.asMap(it -> true, it -> it.getTargetPackage());
+        Set<String> customizedPackageNames = displayTargetMap.keySet();
         PackageManager packageManager = getContext().getPackageManager();
-        DataCollection<ApplicationInfo> installedApplications = new DataCollection<>(PackageUtil.listInstallApplications(getActivity()));
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-
-
-        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.bottomsheet_root, null);
+        DataCollection<AppInfoCache> installedApplications =
+                new DataCollection<>(CollectionUtil.asOtherList(PackageUtil.listInstallApplications(getActivity()), it -> {
+                    return new AppInfoCache(it, customizedPackageNames.contains(it.packageName));
+                }));
 
         // アプリ一覧をソートする
         installedApplications.setComparator((a, b) -> {
-            String aPackageName = a.packageName;
-            String bPackageName = b.packageName;
+            String aPackageName = a.info.packageName;
+            String bPackageName = b.info.packageName;
             if (aPackageName.equals(BuildConfig.APPLICATION_ID)) {
                 // ACEは最優先
                 return -1;
@@ -92,46 +94,60 @@ public class AppTargetSelectFragment extends AppBaseFragment {
                 return 1;
             }
 
+            DbDisplayTarget aDisplayTarget = displayTargetMap.get(aPackageName);
+            DbDisplayTarget bDisplayTarget = displayTargetMap.get(bPackageName);
 
-            if (customizedPackageNames.contains(aPackageName) && customizedPackageNames.contains(bPackageName)) {
-                // 両方インストール済みなので、名前優先
-                return a.loadLabel(packageManager).toString().compareTo(b.loadLabel(packageManager).toString());
-            } else if (!customizedPackageNames.contains(aPackageName) && !customizedPackageNames.contains(bPackageName)) {
-                // 両方未インストール、名前優先
-                return a.loadLabel(packageManager).toString().compareTo(b.loadLabel(packageManager).toString());
-            } else if (customizedPackageNames.contains(aPackageName)) {
-                // 片方インストール済み
+            if (aDisplayTarget != null && bDisplayTarget != null) {
+                // 両方設定済みなので、その中でラベル優先
+                return a.info.loadLabel(packageManager).toString().compareTo(b.info.loadLabel(packageManager).toString());
+            } else if (aDisplayTarget != null) {
                 return -1;
-            } else {
+            } else if (bDisplayTarget != null) {
                 return 1;
+            } else {
+                // 両方未インストール、名前優先
+                return a.info.loadLabel(packageManager).toString().compareTo(b.info.loadLabel(packageManager).toString());
             }
         });
 
+        return installedApplications;
+    }
+
+    /**
+     * アプリ選択UIを組み立てる
+     */
+    ViewGroup buildAppSelector(BackgroundTask task, Dialog dialog) throws Throwable {
+        // アプリ一覧をロードする
+        DataCollection<AppInfoCache> installedApplications = listInstalledApplications();
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.bottomsheet_root, null);
         // 列挙して扱う
         installedApplications.sortEach(it -> {
             task.throwIfCanceled();
 
             // UIスレッドに処理を移譲する
             UIHandler.await(() -> {
-                CardLauncherBinding binding = CardLauncherBinding.inflate(inflater, layout, true);
+                CardLauncherBinding binding = CardLauncherBinding.inflate(inflater, (ViewGroup) layout.findViewById(R.id.Widget_BottomSheet_Root), true);
                 binding.setItem(new LauncherSelectActivity.CardBinding() {
                     @Override
                     public Drawable getIcon() {
-                        return it.loadIcon(getContext().getPackageManager());
+                        return it.info.loadIcon(getContext().getPackageManager());
                     }
 
                     @Override
                     public String getTitle() {
-                        return it.loadLabel(getContext().getPackageManager()).toString();
+                        return it.info.loadLabel(getContext().getPackageManager()).toString();
                     }
                 });
 
                 // ボタンを押されたら、コールバックしてダイアログを閉じる
                 binding.LauncherSelectItem.setOnClickListener(view -> {
+                    PackageManager packageManager = getContext().getPackageManager();
                     AppInfo info = new AppInfo(
-                            ((BitmapDrawable) it.loadIcon(packageManager)).getBitmap(),
-                            it.loadLabel(packageManager).toString(),
-                            it.packageName
+                            ((BitmapDrawable) it.info.loadIcon(packageManager)).getBitmap(),
+                            it.info.loadLabel(packageManager).toString(),
+                            it.info.packageName
                     );
                     onSelectedLauncher(info);
                     dialog.dismiss();
@@ -143,6 +159,9 @@ public class AppTargetSelectFragment extends AppBaseFragment {
         return layout;
     }
 
+    /**
+     * アプリが選択されたら、UIを切り替える
+     */
     @UiThread
     void onSelectedLauncher(AppInfo info) {
         mCallback.onApplicationSelected(this, info);
@@ -159,6 +178,23 @@ public class AppTargetSelectFragment extends AppBaseFragment {
          * 表示対象のアプリが選択された
          */
         void onApplicationSelected(AppTargetSelectFragment fragment, AppInfo selected);
+    }
+
+    static class AppInfoCache {
+        /**
+         * アプリ情報
+         */
+        ApplicationInfo info;
+
+        /**
+         * 設定を作成済みであればtrue
+         */
+        boolean mSettingCreated;
+
+        public AppInfoCache(ApplicationInfo info, boolean settingCreated) {
+            this.info = info;
+            mSettingCreated = settingCreated;
+        }
     }
 
     public static class AppInfo {

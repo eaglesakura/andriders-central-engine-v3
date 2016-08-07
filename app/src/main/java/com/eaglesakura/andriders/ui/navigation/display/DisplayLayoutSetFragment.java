@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
+import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.display.data.LayoutSlot;
@@ -34,7 +35,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
     DataLayoutManager mDisplaySlotManager;
 
-    String mAppPackageName;
+    String mAppPackageName = BuildConfig.DEFAULT_PACKAGE_NAME;
 
     PluginManager mExtensionClientManager;
 
@@ -86,7 +87,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             return clientManager;
         }).completed((manager, task) -> {
             mExtensionClientManager = manager;
-            loadDisplayDatas(mAppPackageName);
+            loadDisplayData(mAppPackageName);
         }).failed((error, task) -> {
             error.printStackTrace();
         }).start();
@@ -95,7 +96,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     /**
      * ディスプレイ表示内容を読み込む
      */
-    private void loadDisplayDatas(final String newPackageName) {
+    public void loadDisplayData(final String newPackageName) {
         asyncUI((BackgroundTask<DataLayoutManager> it) -> {
             DataLayoutManager slotManager = null;
 
@@ -167,7 +168,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                 onSelectedDisplay(manager, slot, null, null);
                 dialog.dismiss();
             });
-            layout.addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ((ViewGroup) layout.findViewById(R.id.Widget_BottomSheet_Root)).addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
         for (final PluginConnector client : displayClients) {
@@ -192,7 +193,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                 });
             }
 
-            layout.addView(extensionView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ((ViewGroup) layout.findViewById(R.id.Widget_BottomSheet_Root)).addView(extensionView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
         dialog.setContentView(layout);
         dialog.show();
