@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.dao.display.DbDisplayTarget;
 import com.eaglesakura.andriders.db.display.DisplayLayoutDatabase;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginInformation;
+import com.eaglesakura.collection.DataCollection;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -59,6 +60,16 @@ public class DataLayoutManager {
                 LayoutSlot slot = new LayoutSlot(x, y);
                 slots.put(Integer.valueOf(slot.getId()), slot);
             }
+        }
+    }
+
+    /**
+     * 既存のカスタマイズ済みレイアウトリストを列挙する
+     */
+    public DataCollection<DbDisplayTarget> listCustomizedDisplays() {
+        try (DisplayLayoutDatabase db = new DisplayLayoutDatabase(context).openReadOnly(DisplayLayoutDatabase.class)) {
+            return new DataCollection<>(db.listTargets())
+                    .setComparator((a, b) -> a.getModifiedDate().compareTo(b.getModifiedDate()));
         }
     }
 

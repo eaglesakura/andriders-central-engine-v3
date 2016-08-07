@@ -13,8 +13,6 @@ import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscribeTarget;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -67,7 +65,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     public void onPause() {
         super.onPause();
         mDisplayValues.clear();
-        async(SubscribeTarget.Pipeline, ObserveTarget.FireAndForget, it -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, it -> {
             if (mExtensionClientManager != null) {
                 mExtensionClientManager.disconnect();
             }
