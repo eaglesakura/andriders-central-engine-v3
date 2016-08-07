@@ -138,9 +138,9 @@ public class MenuController {
             case R.id.Main_Menu_Commands:
                 mCallback.requestChangeContent(new CommandSettingFragmentMain());
                 break;
-            case R.id.Main_Menu_UserLog:
-                mCallback.requestChangeContent(UserLogFragmentMain.newInstance(mContext));
-                break;
+//            case R.id.Main_Menu_UserLog:
+//                mCallback.requestChangeContent(UserLogFragmentMain.newInstance(mContext));
+//                break;
             case R.id.Main_Menu_Plugins:
                 mCallback.requestChangeContent(PluginSettingFragmentMain.newInstance(mContext));
                 break;

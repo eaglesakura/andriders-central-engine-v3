@@ -142,7 +142,17 @@
     <string name="UserLog.Import.GPX">GPX形式で読込</string>
     <string name="Main.Menu.Gadgets">センサー・周辺機器</string>
 
-    <string name="Command.Timer.Repeat">繰り返し</string>
+    <string name="Command.Flag.Repeat">繰り返し</string>
+    <string name="Command.Flag.Distance.ActiveOnly">自走</string>
+    <string-array name="Command_Distance_TypeInfo">
+        <item>今日走行 : %.1f km</item>
+        <item>セッション走行 : %.1f km</item>
+    </string-array>
+    <string-array name="Command_Distance_TypeSelector">
+        <item>今日の走行距離</item>
+        <item>セッションの走行距離</item>
+    </string-array>
+
     <string-array name="Command_Timer_TypeInfo">
         <item>時計 : %s</item>
         <item>セッション時間 : %s</item>

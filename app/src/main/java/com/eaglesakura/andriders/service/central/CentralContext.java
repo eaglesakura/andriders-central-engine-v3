@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.service.central;
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.command.CommandController;
+import com.eaglesakura.andriders.central.command.DistanceCommandController;
 import com.eaglesakura.andriders.central.command.ProximityCommandController;
 import com.eaglesakura.andriders.central.command.SpeedCommandController;
 import com.eaglesakura.andriders.central.command.TimerCommandController;
@@ -267,6 +268,17 @@ public class CentralContext implements Disposable {
                 AppLog.system("Timer SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
                 TimerCommandController controller = new TimerCommandController(mContext, data, mClock);
                 controller.setBootListener(bootListener);
+                mCommandControllers.add(controller);
+            }
+        }
+        // 距離コマンドを列挙し、コントローラを生成する
+        {
+            CommandDataCollection collection = commandDataManager.loadFromCategory(CommandDatabase.CATEGORY_DISTANCE);
+            for (CommandData data : collection.list(it -> true)) {
+                AppLog.system("Distance SpeedCommand key[%s] package[[%s]", data.getKey().getKey(), data.getPackageName());
+                DistanceCommandController controller = new DistanceCommandController(mContext, data);
+                controller.setBootListener(bootListener);
+                controller.bind(mLocalReceiver);
                 mCommandControllers.add(controller);
             }
         }

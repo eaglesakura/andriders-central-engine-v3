@@ -82,7 +82,7 @@
                 android:name="com.eaglesakura.andriders.basicui.BasicExtensionService"
                 android:icon="@mipmap/ic_launcher"
                 android:label="@string/Extension.Inner.Default.Name"
-                android:process=":ace_ext">
+                android:process=":ace">
             <intent-filter>
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>
@@ -92,7 +92,7 @@
                 android:name="com.eaglesakura.andriders.location.LocationExtensionService"
                 android:icon="@drawable/ic_save"
                 android:label="@string/Extension.Inner.Location.Name"
-                android:process=":ace_ext">
+                android:process=":ace">
             <intent-filter>
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>
@@ -102,7 +102,7 @@
                 android:name="com.eaglesakura.andriders.ble.service.BleHeartrateExtensionService"
                 android:icon="@drawable/ic_heart_beats"
                 android:label="@string/Extension.Inner.BleSensor.Name"
-                android:process=":ble">
+                android:process=":ace">
             <intent-filter>
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>
@@ -112,7 +112,7 @@
                 android:name="com.eaglesakura.andriders.ble.service.BleSpeedCadenceExtensionService"
                 android:icon="@drawable/ic_speed"
                 android:label="@string/Extension.Inner.BleSensor.Name"
-                android:process=":ble">
+                android:process=":ace">
             <intent-filter>
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>

@@ -38,7 +38,7 @@ public class TimerCommandController extends CommandController {
 
         if (mNextTriggerTime == 0) {
             // 初回リセット
-            if (extra.timerType == CommandData.TIMERCOMMAND_TYPE_SESSION) {
+            if (extra.timerType == CommandData.TIMER_TYPE_SESSION) {
                 // 初回はclockからの同期にする
                 mNextTriggerTime = mClock.now() + INTERVAL_MS;
             } else {
@@ -47,7 +47,7 @@ public class TimerCommandController extends CommandController {
                 mNextTriggerTime = ((mClock.now() / INTERVAL_MS) + 1) * INTERVAL_MS;
             }
         } else {
-            if ((extra.flags & CommandData.TIMERCOMMAND_FLAG_REPEAT) != 0) {
+            if ((extra.flags & CommandData.TIMER_FLAG_REPEAT) != 0) {
                 // リピートの場合、二度目以降はインターバルを加算するだけでいい
                 mNextTriggerTime += INTERVAL_MS;
             } else {

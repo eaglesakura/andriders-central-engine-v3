@@ -243,8 +243,11 @@ public class PluginConnector extends CommandClient {
     }
 
     /**
-     * 再起動を行う
+     * プロセスの強制再起動を行う
+     *
+     * MEMO: 明示的なProcess Killはステートの混乱を生むので、これを行わないように実装する。
      */
+    @Deprecated
     public void requestReboot() {
         try {
             requestPostToServer(CentralDataCommand.CMD_requestRebootPlugin, null);

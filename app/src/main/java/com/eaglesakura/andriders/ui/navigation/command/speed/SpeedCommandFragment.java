@@ -99,7 +99,7 @@ public class SpeedCommandFragment extends CommandBaseFragment implements IFragme
 
         CommandData.RawExtra extra = new CommandData.RawExtra();
         extra.speedKmh = 25.0f;
-        extra.speedType = CommandData.SPEEDCOMMAND_TYPE_UPPER;
+        extra.speedType = CommandData.SPEED_TYPE_UPPER;
         CommandData commandData = mCommandDataManager.save(data, getCommandCategory(), extra);
         mAdapter.getCollection().insertOrReplace(0, commandData);
     }
@@ -191,8 +191,8 @@ public class SpeedCommandFragment extends CommandBaseFragment implements IFragme
                 double speed = ViewUtil.getDoubleValue(q.id(R.id.Command_Speed_Kmh).getEditText(), -1);
                 if (speed < 0) {
                     switch (mSelectedType) {
-                        case CommandData.SPEEDCOMMAND_TYPE_UPPER:
-                        case CommandData.SPEEDCOMMAND_TYPE_LOWER:
+                        case CommandData.SPEED_TYPE_UPPER:
+                        case CommandData.SPEED_TYPE_LOWER:
                             toast("速度設定に間違いがあります");
                             return;
                     }

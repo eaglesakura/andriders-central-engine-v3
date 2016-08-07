@@ -16,9 +16,6 @@ import android.graphics.Canvas;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class NotificationDisplayManagerTest extends AppUnitTestCase {
 
     NotificationData newDummyNotification() {
