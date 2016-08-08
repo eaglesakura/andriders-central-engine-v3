@@ -14,6 +14,7 @@ import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.android.saver.BundleState;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -35,11 +36,12 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
     DataLayoutManager mDisplaySlotManager;
 
-    String mAppPackageName = BuildConfig.DEFAULT_PACKAGE_NAME;
-
     PluginManager mExtensionClientManager;
 
     List<DisplayKey> mDisplayValues = new ArrayList<>();
+
+    @BundleState
+    String mAppPackageName = BuildConfig.APPLICATION_ID;
 
     public DisplayLayoutSetFragment() {
     }
@@ -97,6 +99,11 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
      * ディスプレイ表示内容を読み込む
      */
     public void loadDisplayData(final String newPackageName) {
+        if (newPackageName.equals(mAppPackageName)) {
+            return;
+        }
+
+        mAppPackageName = newPackageName;
         asyncUI((BackgroundTask<DataLayoutManager> it) -> {
             DataLayoutManager slotManager = null;
 

@@ -1,8 +1,13 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 
 import android.content.Context;
@@ -30,6 +35,20 @@ public class DisplaySettingFragmentMain extends NavigationBaseFragment implement
     public void onApplicationSelected(AppTargetSelectFragment fragment, AppTargetSelectFragment.AppInfo selected) {
         AndroidThreadUtil.assertUIThread();
         mDisplayLayoutSetFragment.get().loadDisplayData(selected.getPackageName());
+    }
+
+    @Override
+    public void onRequestDeleteLayout(AppTargetSelectFragment fragment, String packageName) {
+        AndroidThreadUtil.assertUIThread();
+
+        async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
+            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
+                new DataLayoutManager(getContext()).deleteLayout(packageName);
+            }
+            return this;
+        }).failed((error, task) -> {
+            AppLog.printStackTrace(error);
+        }).start();
     }
 
     @Nullable

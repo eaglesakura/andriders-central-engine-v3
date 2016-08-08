@@ -75,6 +75,15 @@ public class DataLayoutManager {
         }
     }
 
+    /**
+     * 指定したpackageのレイアウトを削除する
+     */
+    public void deleteLayout(String appPackage) {
+        try (DisplayLayoutDatabase db = new DisplayLayoutDatabase(context).openWritable(DisplayLayoutDatabase.class);) {
+            db.remove(appPackage);
+        }
+    }
+
     public DataLayoutManager load(Mode mode, String appPackage) {
         if (StringUtil.isEmpty(appPackage)) {
             appPackage = BuildConfig.APPLICATION_ID;

@@ -12,8 +12,10 @@ import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.PackageUtil;
+import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.util.CollectionUtil;
 
@@ -38,6 +40,9 @@ import java.util.Set;
  */
 public class AppTargetSelectFragment extends AppBaseFragment {
 
+    @BundleState
+    String mCurrentPackageName = BuildConfig.APPLICATION_ID;
+
     Callback mCallback;
 
     public AppTargetSelectFragment() {
@@ -48,6 +53,22 @@ public class AppTargetSelectFragment extends AppBaseFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mCallback = getParentOrThrow(Callback.class);
+    }
+
+    /**
+     * 削除ボタンが押されたら、データを削除してデフォルトに切り替える
+     */
+    @OnClick(R.id.Setting_CycleComputer_TargetApplication_Delete)
+    void clickDeleteButton() {
+        mCallback.onRequestDeleteLayout(this, mCurrentPackageName);
+
+        // デフォルトレイアウトを読み込む
+        AppInfo info = new AppInfo(
+                ((BitmapDrawable) ResourceUtil.drawable(getContext(), R.mipmap.ic_launcher)).getBitmap(),
+                getString(R.string.Setting_CycleComputer_Target_Default),
+                BuildConfig.DEFAULT_PACKAGE_NAME
+        );
+        onSelectedLauncher(info);
     }
 
     /**
@@ -137,6 +158,10 @@ public class AppTargetSelectFragment extends AppBaseFragment {
 
                     @Override
                     public String getTitle() {
+                        if (it.info.packageName.equals(BuildConfig.APPLICATION_ID)) {
+                            return getString(R.string.Setting_CycleComputer_Target_Default);
+                        }
+
                         return it.info.loadLabel(getContext().getPackageManager()).toString();
                     }
                 });
@@ -144,9 +169,16 @@ public class AppTargetSelectFragment extends AppBaseFragment {
                 // ボタンを押されたら、コールバックしてダイアログを閉じる
                 binding.LauncherSelectItem.setOnClickListener(view -> {
                     PackageManager packageManager = getContext().getPackageManager();
+                    String title;
+                    if (it.info.packageName.equals(BuildConfig.APPLICATION_ID)) {
+                        title = getString(R.string.Setting_CycleComputer_Target_Default);
+                    } else {
+                        title = it.info.loadLabel(packageManager).toString();
+                    }
+
                     AppInfo info = new AppInfo(
                             ((BitmapDrawable) it.info.loadIcon(packageManager)).getBitmap(),
-                            it.info.loadLabel(packageManager).toString(),
+                            title,
                             it.info.packageName
                     );
                     onSelectedLauncher(info);
@@ -164,6 +196,7 @@ public class AppTargetSelectFragment extends AppBaseFragment {
      */
     @UiThread
     void onSelectedLauncher(AppInfo info) {
+        mCurrentPackageName = info.getPackageName();
         mCallback.onApplicationSelected(this, info);
 
         new AQuery(getView())
@@ -178,6 +211,13 @@ public class AppTargetSelectFragment extends AppBaseFragment {
          * 表示対象のアプリが選択された
          */
         void onApplicationSelected(AppTargetSelectFragment fragment, AppInfo selected);
+
+        /**
+         * 削除がリクエストされた
+         *
+         * @param packageName 削除対象のパッケージ名
+         */
+        void onRequestDeleteLayout(AppTargetSelectFragment fragment, String packageName);
     }
 
     static class AppInfoCache {
