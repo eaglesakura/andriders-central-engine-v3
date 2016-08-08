@@ -41,8 +41,10 @@ public class DisplaySettingFragmentMainTest extends NavigationActivityTest {
 
         newScenario()
                 .viewWithId(R.id.Setting_CycleComputer_TargetApplication_Root)
-                .click()
-                .doneView()
+                .click();
+
+        newScenario()
+                .sleep(1000)
                 .pressBack();
     }
 }

@@ -1,11 +1,13 @@
 package com.eaglesakura.andriders.display.data;
 
+import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.dao.display.DbDisplayLayout;
 import com.eaglesakura.andriders.dao.display.DbDisplayTarget;
 import com.eaglesakura.andriders.db.display.DisplayLayoutDatabase;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.collection.DataCollection;
+import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.view.ViewGroup;
@@ -74,6 +76,10 @@ public class DataLayoutManager {
     }
 
     public DataLayoutManager load(Mode mode, String appPackage) {
+        if (StringUtil.isEmpty(appPackage)) {
+            appPackage = BuildConfig.APPLICATION_ID;
+        }
+
         DisplayLayoutDatabase db = new DisplayLayoutDatabase(context);
         try {
             db.openWritable();
