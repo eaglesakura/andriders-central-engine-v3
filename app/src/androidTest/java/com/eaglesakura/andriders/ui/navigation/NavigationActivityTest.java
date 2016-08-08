@@ -14,10 +14,12 @@ public class NavigationActivityTest extends DeviceActivityTestCase<NavigationAct
     protected NavigationActivity getNavigationActivity(Class<? extends NavigationBaseFragment> clazz) {
         Intent intent = new Intent();
         intent.putExtra("EXTRA_CONTENT_FRAGMENT_CLASS", clazz.getName());
-        return getActivity(intent);
+        getActivity(intent);
+        Util.sleep(500);
+        return getActivity();
     }
 
-    protected <T extends NavigationBaseFragment> T getNavigationFragment(Class<? extends NavigationBaseFragment> clazz) {
+    protected <T extends NavigationBaseFragment> T getNavigationFragment(Class<T> clazz) {
         Intent intent = new Intent();
         intent.putExtra("EXTRA_CONTENT_FRAGMENT_CLASS", clazz.getName());
         NavigationActivity activity = getActivity(intent);

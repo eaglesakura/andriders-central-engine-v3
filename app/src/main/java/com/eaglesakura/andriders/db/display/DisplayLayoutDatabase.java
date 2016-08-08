@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.db.display;
 
+import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.dao.display.DaoMaster;
 import com.eaglesakura.andriders.dao.display.DaoSession;
 import com.eaglesakura.andriders.dao.display.DbDisplayLayout;
@@ -34,8 +35,11 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
         super(context, DaoMaster.class);
     }
 
-    private static String wrapPackageName(String packageName) {
-        return StringUtil.isEmpty(packageName) ? PACKAGE_NAME_DEFAULT : packageName;
+    private String getDisplayTargetKey(String appPackageName) {
+        if (StringUtil.isEmpty(appPackageName)) {
+            appPackageName = BuildConfig.APPLICATION_ID;
+        }
+        return "target:" + appPackageName;
     }
 
     /**
@@ -45,8 +49,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
      * @param packageName 表示対象のpackage名 / null可
      */
     public DbDisplayTarget loadTargetOrCreate(@Nullable String packageName) {
-        packageName = wrapPackageName(packageName);
-        String uniqueId = "target:" + packageName;
+        String uniqueId = getDisplayTargetKey(packageName);
 
         DbDisplayTarget result = session.getDbDisplayTargetDao().load(uniqueId);
         // DBがなければ作成して返す
@@ -56,7 +59,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
             result.setModifiedDate(new Date());
             result.setLayoutType(0);
             result.setName(GROUP_NAME_DEFAULT);
-            result.setTargetPackage(packageName);
+            result.setTargetPackage(uniqueId);
 
             session.insert(result);
         }
@@ -64,18 +67,16 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
     }
 
     public DbDisplayTarget loadTarget(@Nullable String packageName) {
-        packageName = wrapPackageName(packageName);
-        String uniqueId = "target:" + packageName;
-
+        String uniqueId = getDisplayTargetKey(packageName);
         DbDisplayTarget result = session.getDbDisplayTargetDao().load(uniqueId);
         // DBがなければ作成して返すが、insertは行わない
         if (result == null) {
-            result = new DbDisplayTarget("target:" + PACKAGE_NAME_DEFAULT);
+            result = new DbDisplayTarget(uniqueId);
             result.setCreatedDate(new Date());
             result.setModifiedDate(new Date());
             result.setLayoutType(0);
             result.setName(GROUP_NAME_DEFAULT);
-            result.setTargetPackage(PACKAGE_NAME_DEFAULT);
+            result.setTargetPackage(packageName);
         }
         return result;
     }
@@ -138,22 +139,25 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
     /**
      * 表示対象のグループを削除する。
      */
-    public void remove(final DbDisplayTarget target) {
-        if (StringUtil.isEmpty(target.getTargetPackage())) {
-            throw new IllegalArgumentException();
-        }
-
+    public void remove(final String appPackageName) {
         session.runInTx(() -> {
             // グループレイアウトを削除する
             {
                 QueryBuilder<DbDisplayLayout> builder = session.getDbDisplayLayoutDao().queryBuilder();
-                builder.where(DbDisplayLayoutDao.Properties.TargetPackage.eq(target.getTargetPackage()));
+                builder.where(DbDisplayLayoutDao.Properties.TargetPackage.eq(appPackageName));
                 builder.buildDelete().executeDeleteWithoutDetachingEntities();
             }
 
             // グループ管理を削除する
-            session.getDbDisplayTargetDao().delete(target);
+            session.getDbDisplayTargetDao().deleteByKey(getDisplayTargetKey(appPackageName));
         });
+    }
+
+    /**
+     * 表示対象のグループを削除する。
+     */
+    public void remove(final DbDisplayTarget target) {
+        remove(target.getTargetPackage());
     }
 
     @Override

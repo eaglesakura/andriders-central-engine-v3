@@ -91,6 +91,9 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             if (!PermissionUtil.canDrawOverlays(getContext())) {
                 // 特殊パーミッションを取得する
                 onFailedDrawOverlays();
+            } else if (!PermissionUtil.isUsageStatsAllowed(getContext())) {
+                // アプリ履歴にアクセス出来ない
+                onFailedUsageStatus();
             }
         }
 
@@ -119,8 +122,13 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
 
             task.throwIfCanceled();
 
-            // UsageStatusチェックが行えるか
+            // オーバーレイ描画が行えるか
             while (!PermissionUtil.canDrawOverlays(getContext())) {
+                task.waitTime(100);
+            }
+
+            // アプリ使用履歴チェック
+            while (!PermissionUtil.isUsageStatsAllowed(getContext())) {
                 task.waitTime(100);
             }
 
@@ -188,6 +196,20 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
         builder.setCancelable(false);
         builder.setPositiveButton("設定を開く", (dlg, which) -> {
             startActivity(ContextUtil.getAppOverlaySettingIntent(getActivity()));
+        });
+        builder.show();
+    }
+
+    /**
+     * 最近のアプリアクセスに失敗した
+     */
+    void onFailedUsageStatus() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.Common_Dialog_Title_Error);
+        builder.setMessage("サイコン表示切り替えを有効化するため、「使用履歴へアクセス」を許可してください。");
+        builder.setCancelable(false);
+        builder.setPositiveButton("設定を開く", (dlg, which) -> {
+            startActivity(ContextUtil.getUsageStatusAcesss(getActivity()));
         });
         builder.show();
     }
