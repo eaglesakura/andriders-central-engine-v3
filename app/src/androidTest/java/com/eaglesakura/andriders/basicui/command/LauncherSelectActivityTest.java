@@ -23,10 +23,6 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 public class LauncherSelectActivityTest extends DeviceActivityTestCase<LauncherSelectActivity, AceApplication> {
 
     public LauncherSelectActivityTest() {

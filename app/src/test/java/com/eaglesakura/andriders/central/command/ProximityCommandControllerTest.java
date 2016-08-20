@@ -5,7 +5,6 @@ import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
-import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
 
@@ -14,9 +13,6 @@ import org.junit.Test;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 public class ProximityCommandControllerTest extends AppUnitTestCase {
 

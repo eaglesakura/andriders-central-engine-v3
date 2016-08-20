@@ -38,57 +38,77 @@ public class CommandData {
     /**
      * 規定まで加速したら
      */
-    public static final int SPEEDCOMMAND_TYPE_UPPER = 0;
+    public static final int SPEED_TYPE_UPPER = 0;
 
     /**
      * 規定まで減速したら
      */
-    public static final int SPEEDCOMMAND_TYPE_LOWER = 1;
+    public static final int SPEED_TYPE_LOWER = 1;
 
     /**
      * 最高速度の更新開始
      */
-    public static final int SPEEDCOMMAND_TYPE_MAX_START = 2;
+    public static final int SPEED_TYPE_MAX_START = 2;
 
     /**
      * 最高速度の更新中
      */
-    public static final int SPEEDCOMMAND_TYPE_MAX_UPDATED = 3;
+    public static final int SPEED_TYPE_MAX_UPDATED = 3;
 
     /**
      * 最高速度の更新終了
      */
-    public static final int SPEEDCOMMAND_TYPE_MAX_FINISHED = 4;
+    public static final int SPEED_TYPE_MAX_FINISHED = 4;
 
     /**
      * 今日の最高速度更新開始
      */
-    public static final int SPEEDCOMMAND_TYPE_TODAY_MAX_START = 5;
+    public static final int SPEED_TYPE_TODAY_MAX_START = 5;
 
     /**
      * 今日の最高速度更新中
      */
-    public static final int SPEEDCOMMAND_TYPE_TODAY_MAX_UPDATED = 6;
+    public static final int SPEED_TYPE_TODAY_MAX_UPDATED = 6;
 
     /**
      * 今日の最高速度更新完了
      */
-    public static final int SPEEDCOMMAND_TYPE_TODAY_MAX_FINISHED = 7;
+    public static final int SPEED_TYPE_TODAY_MAX_FINISHED = 7;
 
     /**
      * セッションの時間ごとにタイマー起動
      */
-    public static final int TIMERCOMMAND_TYPE_SESSION = 0;
+    public static final int TIMER_TYPE_SESSION = 0;
 
     /**
      * 現実時間ごとにタイマー起動
      */
-    public static final int TIMERCOMMAND_TYPE_REALTIME = 1;
+    public static final int TIMER_TYPE_REALTIME = 1;
 
     /**
      * タイマーコマンドで繰り返し実行を行う
      */
-    public static final int TIMERCOMMAND_FLAG_REPEAT = 0x1 << 0;
+    public static final int TIMER_FLAG_REPEAT = 0x1 << 0;
+
+    /**
+     * セッションの走行距離ごと
+     */
+    public static final int DISTANCE_TYPE_SESSION = 0;
+
+    /**
+     * 今日の走行距離ごと
+     */
+    public static final int DISTANCE_TYPE_TODAY = 1;
+
+    /**
+     * 繰り返し実行する
+     */
+    public static final int DISTANCE_FLAG_REPEAT = 0x1 << 0;
+
+    /**
+     * アクティブ走行時間を基準にする
+     */
+    public static final int DISTANCE_FLAG_ACTIVE_ONLY = 0x1 << 1;
 
     public CommandData(DbCommand raw) {
         mRaw = raw;
@@ -209,18 +229,30 @@ public class CommandData {
          * 速度コマンドの種別
          */
         @Serialize(id = 12)
-        public int speedType = SPEEDCOMMAND_TYPE_UPPER;
+        public int speedType = SPEED_TYPE_UPPER;
 
         /**
          * タイマーの種類
          */
         @Serialize(id = 21)
-        public int timerType = TIMERCOMMAND_TYPE_SESSION;
+        public int timerType = TIMER_TYPE_SESSION;
 
         /**
          * タイマーの実行間隔（秒単位）
          */
         @Serialize(id = 22)
         public int timerIntervalSec = 30;
+
+        /**
+         * 距離基準
+         */
+        @Serialize(id = 31)
+        public int distanceType = DISTANCE_TYPE_SESSION;
+
+        /**
+         * 距離
+         */
+        @Serialize(id = 32)
+        public float distanceKm = 5.0f;
     }
 }

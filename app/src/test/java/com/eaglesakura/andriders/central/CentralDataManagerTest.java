@@ -19,7 +19,6 @@ import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.IOUtil;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.SerializeUtil;
-import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Timer;
 
 import org.junit.Test;
@@ -28,14 +27,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Date;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class CentralDataManagerTest extends AppUnitTestCase {
     /**
@@ -122,10 +113,9 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         if (data.mFitnessData.valid()) {
             assertNotNull(centralData.sensor.heartrate);
-            assertThat("HR : " + data.mFitnessData.getHeartrate(),
-                    data.mFitnessData.getHeartrate() > 50 && data.mFitnessData.getHeartrate() < 220,
-                    isTrue());
-
+            validate(data.mFitnessData.getHeartrate())
+                    .from(50)
+                    .to(220);
             assertEquals((short) data.mFitnessData.getHeartrate(), centralData.sensor.heartrate.bpm);
             assertEquals(data.mFitnessData.getHeartrateDataTime(), centralData.sensor.heartrate.date);
             assertEquals(data.mFitnessData.getZone(), centralData.sensor.heartrate.zone);
@@ -138,10 +128,9 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         }
 
         if (data.mCadenceData.valid()) {
-            assertThat("cadence : " + data.mCadenceData.getCadenceRpm(),
-                    data.mCadenceData.getCadenceRpm() >= 0 && data.mCadenceData.getCadenceRpm() <= 200,
-                    isTrue());
-
+            validate(data.mCadenceData.getCadenceRpm())
+                    .from(0)
+                    .to(220);
             assertNotNull(centralData.sensor.cadence);
             assertEquals((short) data.mCadenceData.getCadenceRpm(), centralData.sensor.cadence.rpm);
             assertEquals(data.mCadenceData.getCrankRevolution(), centralData.sensor.cadence.crankRevolution);
@@ -154,16 +143,23 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         if (data.mLocationData.valid()) {
             assertNotNull(centralData.sensor.location);
             assertNotNull(data.mLocationData.getInclinationType());
-            assertThat("latitude : " + data.mLocationData.getLatitude(),
-                    Math.abs(data.mLocationData.getLatitude()) <= 90, // 北緯は90度までしか存在しない
-                    isTrue());
-            assertThat("longitude : " + data.mLocationData.getLongitude(),
-                    Math.abs(data.mLocationData.getLongitude()) <= 180, // 東経180度までしか存在しない
-                    isTrue());
-            assertThat("altitude : " + data.mLocationData.getAltitudeMeter(),
-                    Math.abs(data.mLocationData.getAltitudeMeter()) <= 8000, // エベレストよりも高い場所には登れない
-                    isTrue());
 
+            validate(data.mLocationData.getLatitude())
+                    .to(90);
+
+            // latは+-90までしか存在しない
+            validate(data.mLocationData.getLatitude())
+                    .from(-90)
+                    .to(90);
+
+            // lonは+-180までしか存在しない
+            validate(data.mLocationData.getLongitude())
+                    .from(-180)
+                    .to(180);
+
+            // エベレストよりも高い場所には登れない
+            validate(data.mLocationData.getAltitudeMeter())
+                    .to(9000);
 
             assertEquals(data.mLocationData.getLatitude(), centralData.sensor.location.latitude, 0.001);
             assertEquals(data.mLocationData.getLongitude(), centralData.sensor.location.longitude, 0.001);
@@ -192,21 +188,17 @@ public class CentralDataManagerTest extends AppUnitTestCase {
             assertEquals(data.mSpeedData.getSpeedKmh(), centralData.sensor.speed.speedKmPerHour, 0.1);
 
             // 速度チェック
-            assertThat(
-                    StringUtil.format("%.2f >= %.2f", centralData.record.maxSpeedKmh, centralData.sensor.speed.speedKmPerHour),
-                    centralData.record.maxSpeedKmh >= centralData.sensor.speed.speedKmPerHour,
-                    isTrue()
-            );
-            assertThat(
-                    StringUtil.format("%.2f >= %.2f", centralData.record.maxSpeedKmhToday, centralData.sensor.speed.speedKmPerHour),
-                    centralData.record.maxSpeedKmhToday >= centralData.sensor.speed.speedKmPerHour,
-                    isTrue()
-            );
-            assertThat(
-                    StringUtil.format("%.2f >= %.2f", centralData.record.maxSpeedKmhSession, centralData.sensor.speed.speedKmPerHour),
-                    centralData.record.maxSpeedKmhSession >= centralData.sensor.speed.speedKmPerHour,
-                    isTrue()
-            );
+            validate(centralData.record.maxSpeedKmh)                // 最高速度は
+                    .from(centralData.record.maxSpeedKmhToday)      // 今日の最高速度以上
+                    .from(centralData.record.maxSpeedKmhSession)    // セッションの最高速度以上
+                    .from(centralData.sensor.speed.speedKmPerHour); // 現在速度以上
+
+            validate(centralData.record.maxSpeedKmhToday)           // 今日の最高速度は
+                    .from(centralData.record.maxSpeedKmhSession)    // セッションの最高速度以上
+                    .from(centralData.sensor.speed.speedKmPerHour); // 現在速度以上
+
+            validate(centralData.record.maxSpeedKmhSession)         // セッション最高速度は
+                    .from(centralData.sensor.speed.speedKmPerHour); // 現在速度以上
         } else {
             assertNull(centralData.sensor.speed);
         }

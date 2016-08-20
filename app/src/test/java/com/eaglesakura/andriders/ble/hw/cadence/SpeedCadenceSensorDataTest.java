@@ -8,11 +8,6 @@ import org.junit.Test;
 
 import org.hamcrest.CoreMatchers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 public class SpeedCadenceSensorDataTest extends AppUnitTestCase {
 
     @Test

@@ -112,8 +112,8 @@ public abstract class SpeedCommandController extends CommandController {
         final int type = data.getInternalExtra().speedType;
         SpeedCommandController controller;
         switch (type) {
-            case CommandData.SPEEDCOMMAND_TYPE_UPPER:
-            case CommandData.SPEEDCOMMAND_TYPE_LOWER:
+            case CommandData.SPEED_TYPE_UPPER:
+            case CommandData.SPEED_TYPE_LOWER:
                 controller = new BasicSpeedCommandController(context, data);
                 break;
             default:

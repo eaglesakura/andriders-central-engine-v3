@@ -5,8 +5,6 @@ import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class CommandSettingFragmentMainTest extends NavigationActivityTest {
 
     @Test

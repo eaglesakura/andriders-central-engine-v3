@@ -14,7 +14,7 @@ public class BasicSpeedCommandController extends SpeedCommandController {
     @Override
     void onUpdateSpeed(float currentSpeedKmh) {
         super.onUpdateSpeed(currentSpeedKmh);
-        if (mCommandType == CommandData.SPEEDCOMMAND_TYPE_UPPER) {
+        if (mCommandType == CommandData.SPEED_TYPE_UPPER) {
             // 速度上昇でコマンド
             if (nowSpeedUpper(mSpeedKmh)) {
                 requestCommandBoot(mCommandData);
