@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-alpha6'  // for AS 2.2.x
+        classpath 'com.android.tools.build:gradle:2.2.0-beta2'  // for AS 2.2.x
         classpath "com.eaglesakura:plugin-ci-support:1.0.47"
         classpath "com.eaglesakura:plugin-android-mipmap:1.0.114"
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
@@ -39,7 +39,7 @@ task clean(type: Delete) {
 
 // 各グローバル設定
 ext {
-    ANDROID_SUPPORT_LIB_VERSION = "24.1.+"
+    ANDROID_SUPPORT_LIB_VERSION = "24.2.+"
     ANDROID_PLAYSERVICE_LIB_VERSION = "9.4.0"
 }
 
