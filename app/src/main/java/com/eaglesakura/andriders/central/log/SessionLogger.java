@@ -8,9 +8,9 @@ import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.json.JSON;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -153,7 +153,7 @@ public class SessionLogger {
             if (mPointTimer.overTimeMs(POINT_COMMIT_INTERVAL_MS)) {
                 DbSessionPoint pt = new DbSessionPoint();
                 pt.setDate(new Date(latest.centralStatus.date));
-                pt.setCentral(AppUtil.publicFieldSerialize(latest));
+                pt.setCentralJson(JSON.encodeOrNull(latest));
                 mPoints.add(pt);
 
                 mPointTimer.start();
@@ -208,8 +208,8 @@ public class SessionLogger {
             db.update(mSessionLog, points);
             AppLog.db("Session Log Commit :: time[%s] pt[%d]", mSessionLog.getEndTime(), points.size());
         } catch (Exception e) {
-            e.printStackTrace();
             AppLog.db("SessionLog write failed. rollback");
+            AppLog.report(e);
             // 書き込みに失敗したのでロールバックする
             synchronized (lock) {
                 try {

@@ -1,77 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/esmWindowBackgroundColorDark"
-        android:orientation="vertical">
-
-    <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/App.Theme.AppBarOverlay">
-
-        <!-- Toolbar -->
-        <android.support.v7.widget.Toolbar
-                android:id="@+id/EsMaterial_Toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="visible"
-                app:popupTheme="@style/App.Theme.PopupOverlay"/>
-
-    </android.support.design.widget.AppBarLayout>
+        android:background="?attr/esmWindowBackgroundColorDark">
 
     <LinearLayout
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <android.support.v7.widget.CardView
-                style="@style/EsMaterial.Widget.CardView.Light"
+        <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:theme="@style/App.Theme.AppBarOverlay">
 
-            <android.support.v7.widget.SwitchCompat
-                    android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-                    android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-                    android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                    android:layout_marginBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                    android:textSize="@dimen/EsMaterial.Font.Medium"
+            <!-- Toolbar -->
+            <android.support.v7.widget.Toolbar
+                    android:id="@+id/EsMaterial_Toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="サイクルコンピューターを表示"
-                    android:id="@+id/Setting.CycleComputer.Enable"
-                    android:checked="true"/>
+                    android:visibility="visible"
+                    app:popupTheme="@style/App.Theme.PopupOverlay"/>
 
-        </android.support.v7.widget.CardView>
+        </android.support.design.widget.AppBarLayout>
 
-
-        <android.support.v7.widget.CardView
-                style="@style/EsMaterial.Widget.CardView.Light"
+        <LinearLayout
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:layout_width="match_parent"
-                android:layout_weight="1"
                 android:layout_height="match_parent"
-                >
-            <LinearLayout android:layout_width="match_parent"
-                          android:orientation="vertical"
-                          android:layout_height="match_parent">
+                android:orientation="vertical">
 
-                <!-- アプリ選択画面 -->
-                <FrameLayout android:layout_width="match_parent"
-                             android:id="@+id/Setting.Display.AppSelector.Root"
-                             android:minHeight="@dimen/EsMaterial.Button.MinHeight"
-                             android:layout_height="wrap_content"/>
+            <android.support.v7.widget.CardView
+                    android:visibility="gone"
+                    style="@style/EsMaterial.Widget.CardView.Light"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <!-- 表示内容選択画面 -->
-                <FrameLayout android:layout_width="match_parent"
-                             android:id="@+id/Setting.Display.LayoutSet.Root"
-                             android:layout_height="match_parent"/>
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+                <android.support.v7.widget.SwitchCompat
+                        android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+                        android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+                        android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                        android:layout_marginBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+                        android:textSize="@dimen/EsMaterial.Font.Medium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="サイクルコンピューターを表示"
+                        android:id="@+id/Setting.CycleComputer.Enable"
+                        android:checked="true"/>
 
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                    style="@style/EsMaterial.Widget.CardView.Light"
+                    android:layout_width="match_parent"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+            >
+                <LinearLayout android:layout_width="match_parent"
+                              android:orientation="vertical"
+                              android:layout_height="match_parent">
+
+                    <!-- アプリ選択画面 -->
+                    <FrameLayout android:layout_width="match_parent"
+                                 android:id="@+id/Setting.Display.AppSelector.Root"
+                                 android:minHeight="@dimen/EsMaterial.Button.MinHeight"
+                                 android:layout_height="wrap_content"/>
+
+                    <!-- 表示内容選択画面 -->
+                    <FrameLayout android:layout_width="match_parent"
+                                 android:id="@+id/Setting.Display.LayoutSet.Root"
+                                 android:layout_height="match_parent"/>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
     </LinearLayout>
 
-
-</LinearLayout>
+    <com.eaglesakura.material.widget.MaterialProgressView
+            android:id="@+id/App.Progress"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+</FrameLayout>
