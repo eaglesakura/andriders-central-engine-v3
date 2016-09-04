@@ -15,7 +15,7 @@ public class DbSessionPoint {
     private java.util.Date date;
 
     @Index
-    private int uploadState;
+    private Integer flags;
 
     @NotNull
     private String centralJson;
@@ -30,9 +30,9 @@ public class DbSessionPoint {
     }
 
     @Generated
-    public DbSessionPoint(java.util.Date date, int uploadState, String centralJson, byte[] extra) {
+    public DbSessionPoint(java.util.Date date, Integer flags, String centralJson, byte[] extra) {
         this.date = date;
-        this.uploadState = uploadState;
+        this.flags = flags;
         this.centralJson = centralJson;
         this.extra = extra;
     }
@@ -47,12 +47,12 @@ public class DbSessionPoint {
         this.date = date;
     }
 
-    public int getUploadState() {
-        return uploadState;
+    public Integer getFlags() {
+        return flags;
     }
 
-    public void setUploadState(int uploadState) {
-        this.uploadState = uploadState;
+    public void setFlags(Integer flags) {
+        this.flags = flags;
     }
 
     @NotNull

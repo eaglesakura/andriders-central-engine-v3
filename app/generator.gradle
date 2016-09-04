@@ -52,6 +52,7 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
      */
     def DbSessionLog = sessionSchema.addEntity("DbSessionLog");
     DbSessionLog.addStringProperty("sessionId").notNull().unique().primaryKey(); // 打刻時間
+    DbSessionLog.addStringProperty("flags").index();        // セッション状況フラグ
     DbSessionLog.addDateProperty("startTime").notNull();  // その日最初のセッション開始時刻
     DbSessionLog.addDateProperty("endTime").notNull();  // その日最後のセッション終了時刻
     DbSessionLog.addLongProperty("activeTimeMs").notNull(); // セッションがアクティブ（走行）中だった時間
@@ -80,7 +81,7 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
      */
     def DbSessionPoint = sessionSchema.addEntity("DbSessionPoint");
     DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey();  // 打刻時間は常にUniqueになるはず
-    DbSessionPoint.addIntProperty("uploadState").notNull().index();          // サーバー同期フラグ
+    DbSessionPoint.addIntProperty("flags").index();                         // 打刻フラグ
     DbSessionPoint.addStringProperty("centralJson").notNull();               // CentraをJSON化したデータ
     DbSessionPoint.addByteArrayProperty("extra");                            // その他メタ情報用のバッファ
 }

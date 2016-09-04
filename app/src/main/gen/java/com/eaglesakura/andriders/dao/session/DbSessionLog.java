@@ -14,6 +14,9 @@ public class DbSessionLog {
     @Unique
     private String sessionId;
 
+    @Index
+    private String flags;
+
     @NotNull
     private java.util.Date startTime;
 
@@ -42,8 +45,9 @@ public class DbSessionLog {
     }
 
     @Generated
-    public DbSessionLog(String sessionId, java.util.Date startTime, java.util.Date endTime, long activeTimeMs, double activeDistanceKm, double maxSpeedKmh, int maxCadence, int maxHeartrate, double sumAltitude, double sumDistanceKm, double calories, double exercise) {
+    public DbSessionLog(String sessionId, String flags, java.util.Date startTime, java.util.Date endTime, long activeTimeMs, double activeDistanceKm, double maxSpeedKmh, int maxCadence, int maxHeartrate, double sumAltitude, double sumDistanceKm, double calories, double exercise) {
         this.sessionId = sessionId;
+        this.flags = flags;
         this.startTime = startTime;
         this.endTime = endTime;
         this.activeTimeMs = activeTimeMs;
@@ -65,6 +69,14 @@ public class DbSessionLog {
     /** Not-null value; ensure this value is available before it is saved to the database. */
     public void setSessionId(@NotNull String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public String getFlags() {
+        return flags;
+    }
+
+    public void setFlags(String flags) {
+        this.flags = flags;
     }
 
     @NotNull

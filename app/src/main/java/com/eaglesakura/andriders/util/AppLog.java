@@ -29,7 +29,11 @@ public class AppLog {
      */
     public static void report(Throwable e) {
         e.printStackTrace();
-        FirebaseCrash.report(e);
+        try {
+            FirebaseCrash.report(e);
+        } catch (Exception fbc) {
+
+        }
     }
 
     /**
