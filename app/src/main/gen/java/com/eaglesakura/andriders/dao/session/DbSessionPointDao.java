@@ -23,7 +23,9 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
     */
     public static class Properties {
         public final static Property Date = new Property(0, java.util.Date.class, "date", true, "DATE");
-        public final static Property Central = new Property(1, byte[].class, "central", false, "CENTRAL");
+        public final static Property UploadState = new Property(1, int.class, "uploadState", false, "UPLOAD_STATE");
+        public final static Property CentralJson = new Property(2, String.class, "centralJson", false, "CENTRAL_JSON");
+        public final static Property Extra = new Property(3, byte[].class, "extra", false, "EXTRA");
     };
 
 
@@ -40,7 +42,12 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"DB_SESSION_POINT\" (" + //
                 "\"DATE\" INTEGER PRIMARY KEY NOT NULL UNIQUE ," + // 0: date
-                "\"CENTRAL\" BLOB NOT NULL );"); // 1: central
+                "\"UPLOAD_STATE\" INTEGER NOT NULL ," + // 1: uploadState
+                "\"CENTRAL_JSON\" TEXT NOT NULL ," + // 2: centralJson
+                "\"EXTRA\" BLOB);"); // 3: extra
+        // Add Indexes
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_UPLOAD_STATE ON DB_SESSION_POINT" +
+                " (\"UPLOAD_STATE\");");
     }
 
     /** Drops the underlying database table. */
@@ -53,14 +60,26 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
     protected final void bindValues(DatabaseStatement stmt, DbSessionPoint entity) {
         stmt.clearBindings();
         stmt.bindLong(1, entity.getDate().getTime());
-        stmt.bindBlob(2, entity.getCentral());
+        stmt.bindLong(2, entity.getUploadState());
+        stmt.bindString(3, entity.getCentralJson());
+ 
+        byte[] extra = entity.getExtra();
+        if (extra != null) {
+            stmt.bindBlob(4, extra);
+        }
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, DbSessionPoint entity) {
         stmt.clearBindings();
         stmt.bindLong(1, entity.getDate().getTime());
-        stmt.bindBlob(2, entity.getCentral());
+        stmt.bindLong(2, entity.getUploadState());
+        stmt.bindString(3, entity.getCentralJson());
+ 
+        byte[] extra = entity.getExtra();
+        if (extra != null) {
+            stmt.bindBlob(4, extra);
+        }
     }
 
     @Override
@@ -72,7 +91,9 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
     public DbSessionPoint readEntity(Cursor cursor, int offset) {
         DbSessionPoint entity = new DbSessionPoint( //
             new java.util.Date(cursor.getLong(offset + 0)), // date
-            cursor.getBlob(offset + 1) // central
+            cursor.getInt(offset + 1), // uploadState
+            cursor.getString(offset + 2), // centralJson
+            cursor.isNull(offset + 3) ? null : cursor.getBlob(offset + 3) // extra
         );
         return entity;
     }
@@ -80,7 +101,9 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
     @Override
     public void readEntity(Cursor cursor, DbSessionPoint entity, int offset) {
         entity.setDate(new java.util.Date(cursor.getLong(offset + 0)));
-        entity.setCentral(cursor.getBlob(offset + 1));
+        entity.setUploadState(cursor.getInt(offset + 1));
+        entity.setCentralJson(cursor.getString(offset + 2));
+        entity.setExtra(cursor.isNull(offset + 3) ? null : cursor.getBlob(offset + 3));
      }
     
     @Override

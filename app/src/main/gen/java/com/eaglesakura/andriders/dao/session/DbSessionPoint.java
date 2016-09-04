@@ -14,8 +14,12 @@ public class DbSessionPoint {
     @Unique
     private java.util.Date date;
 
+    @Index
+    private int uploadState;
+
     @NotNull
-    private byte[] central;
+    private String centralJson;
+    private byte[] extra;
 
     @Generated
     public DbSessionPoint() {
@@ -26,9 +30,11 @@ public class DbSessionPoint {
     }
 
     @Generated
-    public DbSessionPoint(java.util.Date date, byte[] central) {
+    public DbSessionPoint(java.util.Date date, int uploadState, String centralJson, byte[] extra) {
         this.date = date;
-        this.central = central;
+        this.uploadState = uploadState;
+        this.centralJson = centralJson;
+        this.extra = extra;
     }
 
     @NotNull
@@ -41,14 +47,30 @@ public class DbSessionPoint {
         this.date = date;
     }
 
+    public int getUploadState() {
+        return uploadState;
+    }
+
+    public void setUploadState(int uploadState) {
+        this.uploadState = uploadState;
+    }
+
     @NotNull
-    public byte[] getCentral() {
-        return central;
+    public String getCentralJson() {
+        return centralJson;
     }
 
     /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setCentral(@NotNull byte[] central) {
-        this.central = central;
+    public void setCentralJson(@NotNull String centralJson) {
+        this.centralJson = centralJson;
+    }
+
+    public byte[] getExtra() {
+        return extra;
+    }
+
+    public void setExtra(byte[] extra) {
+        this.extra = extra;
     }
 
 }
