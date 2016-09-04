@@ -32,7 +32,7 @@ public class UserZoneSettingFragment extends AppBaseFragment {
     RangeBar cruiseZoneBar;
 
     public UserZoneSettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_userzone);
+        mFragmentDelegate.setLayoutId(R.layout.profile_userzone);
     }
 
     @Override

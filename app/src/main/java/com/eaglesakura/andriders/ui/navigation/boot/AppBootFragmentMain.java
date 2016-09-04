@@ -71,7 +71,7 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             );
 
     public AppBootFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_app_boot);
+        mFragmentDelegate.setLayoutId(R.layout.system_boot);
     }
 
     @Override

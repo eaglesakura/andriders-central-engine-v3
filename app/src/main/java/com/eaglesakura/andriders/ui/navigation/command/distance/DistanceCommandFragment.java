@@ -37,7 +37,7 @@ public class DistanceCommandFragment extends CommandBaseFragment implements IFra
     protected String[] mInfoFormats;
 
     public DistanceCommandFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_command_list);
+        mFragmentDelegate.setLayoutId(R.layout.command_setup_list);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class DistanceCommandFragment extends CommandBaseFragment implements IFra
     protected MaterialAlertDialog newSettingDialog(CommandData data) {
         return new MaterialAlertDialog(getActivity()) {
             MaterialAlertDialog init() {
-                setDialogContent(R.layout.dialog_distance_command);
+                setDialogContent(R.layout.command_setup_distance_dialog);
 
                 initTimerUi();
 

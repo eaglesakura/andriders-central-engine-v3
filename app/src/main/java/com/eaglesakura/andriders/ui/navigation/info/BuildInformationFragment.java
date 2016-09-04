@@ -37,7 +37,7 @@ public class BuildInformationFragment extends AppBaseFragment {
     CentralServiceSettings mServiceSettings;
 
     public BuildInformationFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_information_build);
+        mFragmentDelegate.setLayoutId(R.layout.system_info_build);
     }
 
     @Override

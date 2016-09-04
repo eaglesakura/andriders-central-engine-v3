@@ -20,7 +20,6 @@ import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.material.widget.MaterialInputDialog;
-import com.eaglesakura.util.LogUtil;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -36,7 +35,7 @@ public class FitnessSettingFragment extends AppBaseFragment {
     UserProfiles mPersonalDataSettings;
 
     public FitnessSettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_fitness);
+        mFragmentDelegate.setLayoutId(R.layout.profile_fitness);
     }
 
     @Override

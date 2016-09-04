@@ -37,7 +37,7 @@ public class UserLogFragmentMain extends NavigationBaseFragment implements UserL
     int mCurrentPage;
 
     public UserLogFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_user_log_main);
+        mFragmentDelegate.setLayoutId(R.layout.user_log);
         mFragmentDelegate.setOptionMenuId(R.menu.fragment_userlog_import);
         mPager.addFragment(SupportFragmentPager.newFragmentCreator(UserLogSynthesisFragment.class));
         mPager.addFragment(SupportFragmentPager.newFragmentCreator(UserLogDailyFragment.class));

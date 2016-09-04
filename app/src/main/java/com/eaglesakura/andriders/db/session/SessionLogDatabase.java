@@ -13,6 +13,7 @@ import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.android.db.GreenDaoUtil;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.sql.QueryFlag;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.Timer;
 
@@ -184,6 +185,12 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         Timer timer = new Timer();
         try {
             runInTx(() -> {
+                DbSessionLog oldLog = session.getDbSessionLogDao().load(currentSession.getSessionId());
+                if (oldLog != null) {
+                    // ログの情報を引き継ぐ
+                    currentSession.setFlags(QueryFlag.or(oldLog.getFlags(), currentSession.getFlags()));
+                }
+
                 session.insertOrReplace(currentSession);
                 for (DbSessionPoint pt : points) {
                     session.insertOrReplace(pt);

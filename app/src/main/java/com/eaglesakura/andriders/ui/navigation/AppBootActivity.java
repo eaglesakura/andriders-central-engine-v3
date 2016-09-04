@@ -10,7 +10,7 @@ import android.support.v4.app.Fragment;
 public class AppBootActivity extends NavigationBaseActivity {
     @Override
     public int getDefaultLayoutId(@NonNull ContentHolderActivityDelegate self) {
-        return R.layout.activity_content;
+        return R.layout.content_activity_simple;
     }
 
     @NonNull

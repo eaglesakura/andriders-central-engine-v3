@@ -16,7 +16,7 @@ public class GadgetSettingFragmentMain extends NavigationBaseFragment {
     FragmentHolder<GadgetSettingFragment> mGadgetSettingFragment = FragmentHolder.newInstance(this, GadgetSettingFragment.class, R.id.Content_List_Root);
 
     public GadgetSettingFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_simiple_main);
+        mFragmentDelegate.setLayoutId(R.layout.content_fragment_simiple);
     }
 
     @Override

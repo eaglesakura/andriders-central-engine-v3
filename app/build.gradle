@@ -51,7 +51,7 @@ dependencies {
         compile project(":eglibrary:simple-utils")
         compile project(':eglibrary:android-thread')
         compile project(':eglibrary:android-text-kvs')
-        compile project(':eglibrary:android-command-service')
+        compile project(':eglibrary:android-command_setup-service')
         compile project(':eglibrary:android-net')
         compile project(':eglibrary:android-framework')
         compile project(":eglibrary:android-gms")
@@ -74,7 +74,7 @@ dependencies {
         compile 'com.eaglesakura:android-thread:+'
         compile 'com.eaglesakura:android-text-kvs:+'
         compile 'com.eaglesakura:android-bluetooth:+'
-        compile 'com.eaglesakura:android-command-service:+'
+        compile 'com.eaglesakura:android-command_setup-service:+'
         compile 'com.eaglesakura:android-canvas-graphics:+'
         compile 'com.eaglesakura:android-net:+'
         compile 'com.eaglesakura:android-framework:+'

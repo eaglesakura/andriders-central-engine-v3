@@ -19,7 +19,7 @@ import android.support.v4.app.FragmentTransaction;
 public class InformationFragmentMain extends NavigationBaseFragment {
 
     public InformationFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_simiple_main);
+        mFragmentDelegate.setLayoutId(R.layout.content_fragment_simiple);
     }
 
     @Override

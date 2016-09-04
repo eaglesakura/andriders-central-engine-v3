@@ -18,7 +18,7 @@ public class GpxTourImportProgressFragment extends AppBaseFragment {
     Listener mListener;
 
     public GpxTourImportProgressFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_gpx_tour_import);
+        mFragmentDelegate.setLayoutId(R.layout.gpx_import_setup);
     }
 
     @Override

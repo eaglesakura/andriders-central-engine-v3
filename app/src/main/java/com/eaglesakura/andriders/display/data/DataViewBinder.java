@@ -138,7 +138,7 @@ public class DataViewBinder {
      */
     private void inflate(ViewGroup slotRoot) {
         // 表示用のViewをInflate
-        View root = View.inflate(mContext, R.layout.service_cycle_slot, null);
+        View root = View.inflate(mContext, R.layout.central_display_slot, null);
 
         ViewGroup lineViewRoot = (ViewGroup) root.findViewById(R.id.Service_Central_Display_Lines_Root);
 
@@ -147,7 +147,7 @@ public class DataViewBinder {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             params.weight = 1.0f;
 
-            View view = View.inflate(mContext, R.layout.service_cycle_keyvalue_row, null);
+            View view = View.inflate(mContext, R.layout.central_display_keyvalue_row, null);
             view.setVisibility(View.GONE);
             lineViewRoot.addView(view, params);
         }
@@ -168,7 +168,7 @@ public class DataViewBinder {
         if (root.getChildCount() == 0) {
             //
             // 表示用のViewをInflate
-            View layout = View.inflate(root.getContext(), R.layout.service_cycle_slot, null);
+            View layout = View.inflate(root.getContext(), R.layout.central_display_slot, null);
             root.addView(layout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         }
 

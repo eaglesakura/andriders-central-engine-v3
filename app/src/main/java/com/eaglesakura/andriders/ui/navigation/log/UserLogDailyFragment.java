@@ -10,8 +10,6 @@ import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.BindingUtil;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
@@ -29,7 +27,7 @@ public class UserLogDailyFragment extends AppBaseFragment {
     UserLogFragmentParent mParent;
 
     public UserLogDailyFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_user_log_daily);
+        mFragmentDelegate.setLayoutId(R.layout.user_log_daily);
     }
 
     @Override

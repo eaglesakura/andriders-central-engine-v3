@@ -17,7 +17,7 @@ task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
-    def profileSchema = newSchema(1, "display");
+    def profileSchema = newSchema(1, "display_setup");
 
     /**
      * 表示グルーピング用DAO
@@ -120,7 +120,7 @@ task generateCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
-    def schema = newSchema(1, "command");
+    def schema = newSchema(1, "command_setup");
     def DbCommand = schema.addEntity("DbCommand");
 
     // 起動するコマンドキー

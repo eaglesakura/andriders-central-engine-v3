@@ -51,7 +51,7 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
     PluginSettingFragmentMain mParent;
 
     public PluginCategorySettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_plugin_modules);
+        mFragmentDelegate.setLayoutId(R.layout.plugin_module);
     }
 
     /**
@@ -123,7 +123,7 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
      */
     @UiThread
     private void addClientSetting(final PluginConnector client) {
-        View card = View.inflate(getActivity(), R.layout.card_extension_module, null);
+        View card = View.inflate(getActivity(), R.layout.plugin_module_row, null);
         AQuery q = new AQuery(card);
         q.id(R.id.Extension_Module_Icon).image(client.loadIcon());
         // チェック有無判定

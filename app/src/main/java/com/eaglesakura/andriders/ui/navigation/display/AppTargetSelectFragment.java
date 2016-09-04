@@ -46,7 +46,7 @@ public class AppTargetSelectFragment extends AppBaseFragment {
     Callback mCallback;
 
     public AppTargetSelectFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_display_appselect);
+        mFragmentDelegate.setLayoutId(R.layout.display_setup_appselect);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class AppTargetSelectFragment extends AppBaseFragment {
         DataCollection<AppInfoCache> installedApplications = listInstalledApplications();
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.bottomsheet_root, null);
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.widget_bottomsheet_root, null);
         // 列挙して扱う
         installedApplications.sortEach(it -> {
             task.throwIfCanceled();

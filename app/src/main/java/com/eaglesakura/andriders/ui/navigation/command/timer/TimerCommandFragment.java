@@ -38,7 +38,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
     protected String[] mInfoFormats;
 
     public TimerCommandFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_command_list);
+        mFragmentDelegate.setLayoutId(R.layout.command_setup_list);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
     protected MaterialAlertDialog newSettingDialog(CommandData data) {
         return new MaterialAlertDialog(getActivity()) {
             MaterialAlertDialog init() {
-                setDialogContent(R.layout.dialog_timer_command);
+                setDialogContent(R.layout.command_setup_timer_dialog);
 
                 initTimerUi();
 

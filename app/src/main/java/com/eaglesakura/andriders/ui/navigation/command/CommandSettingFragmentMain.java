@@ -30,7 +30,7 @@ public class CommandSettingFragmentMain extends NavigationBaseFragment {
     SupportFragmentPager mFragmentPager = new SupportFragmentPager(R.id.Command_Main_Pager);
 
     public CommandSettingFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_command_main);
+        mFragmentDelegate.setLayoutId(R.layout.command_setup);
     }
 
     @Override

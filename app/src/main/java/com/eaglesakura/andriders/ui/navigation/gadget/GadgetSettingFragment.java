@@ -48,7 +48,7 @@ public class GadgetSettingFragment extends AppBaseFragment {
     UserProfiles mPersonalDataSettings;
 
     public GadgetSettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_gadgets);
+        mFragmentDelegate.setLayoutId(R.layout.profile_gadgets);
     }
 
     @Override

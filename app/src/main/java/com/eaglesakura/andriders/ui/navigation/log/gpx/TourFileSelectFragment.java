@@ -19,7 +19,7 @@ public class TourFileSelectFragment extends AppBaseFragment {
     Listener mListener;
 
     public TourFileSelectFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_gpx_tour_filepick);
+        mFragmentDelegate.setLayoutId(R.layout.gpx_import_setup_filepick);
     }
 
     @Override

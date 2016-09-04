@@ -25,7 +25,7 @@ public class DisplaySettingFragmentMain extends NavigationBaseFragment implement
             FragmentHolder.newInstance(this, DisplayLayoutSetFragment.class, R.id.Setting_Display_LayoutSet_Root).bind(mLifecycleDelegate);
 
     public DisplaySettingFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_display_main);
+        mFragmentDelegate.setLayoutId(R.layout.display_setup);
     }
 
     /**

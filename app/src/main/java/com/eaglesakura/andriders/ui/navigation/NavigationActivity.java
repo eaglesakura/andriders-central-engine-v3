@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders.ui.navigation;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ui.navigation.command.CommandSettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.menu.MenuController;
 import com.eaglesakura.android.framework.BuildConfig;
@@ -42,7 +41,7 @@ public class NavigationActivity extends NavigationBaseActivity {
 
     @Override
     public int getDefaultLayoutId(@NonNull ContentHolderActivityDelegate self) {
-        return R.layout.activity_content_with_drawer;
+        return R.layout.content_activity_with_drawer;
     }
 
     @NonNull

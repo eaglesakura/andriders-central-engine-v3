@@ -23,7 +23,7 @@ public class PluginSettingFragmentMain extends NavigationBaseFragment {
     PluginManager mClientManager;
 
     public PluginSettingFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_simiple_main);
+        mFragmentDelegate.setLayoutId(R.layout.content_fragment_simiple);
     }
 
     @Override

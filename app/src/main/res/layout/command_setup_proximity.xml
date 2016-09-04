@@ -30,14 +30,14 @@
 
                 <include
                         android:id="@+id/Command.Proximity.Index0"
-                        layout="@layout/view_proximity_item" android:layout_height="wrap_content"
+                        layout="@layout/command_setup_proximity_item" android:layout_height="wrap_content"
                         android:layout_width="match_parent" android:layout_weight="1"/>
 
                 <include layout="@layout/esm_material_separator_vertical"/>
 
                 <include
                         android:id="@+id/Command.Proximity.Index1"
-                        layout="@layout/view_proximity_item"
+                        layout="@layout/command_setup_proximity_item"
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent" android:layout_weight="1"/>
 
@@ -45,7 +45,7 @@
 
                 <include
                         android:id="@+id/Command.Proximity.Index2"
-                        layout="@layout/view_proximity_item"
+                        layout="@layout/command_setup_proximity_item"
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent" android:layout_weight="1"/>
 
@@ -53,7 +53,7 @@
 
                 <include
                         android:id="@+id/Command.Proximity.Index3"
-                        layout="@layout/view_proximity_item"
+                        layout="@layout/command_setup_proximity_item"
                         android:layout_height="wrap_content"
                         android:layout_width="match_parent" android:layout_weight="1"/>
 

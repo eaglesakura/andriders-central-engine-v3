@@ -20,7 +20,7 @@ public class RoadbikeSettingFragment extends AppBaseFragment {
     TextView mWheelOuterLengthValue;
 
     public RoadbikeSettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_roadbike);
+        mFragmentDelegate.setLayoutId(R.layout.profile_roadbike);
     }
 
     @Override

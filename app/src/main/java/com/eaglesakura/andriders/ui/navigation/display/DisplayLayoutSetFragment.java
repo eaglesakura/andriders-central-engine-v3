@@ -122,7 +122,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                 return slotManager;
             }
         }).completed((slotManager, task) -> {
-            AppLog.system("display load completed :: %s", newPackageName);
+            AppLog.system("display_setup load completed :: %s", newPackageName);
             mDisplaySlotManager = slotManager;
             for (LayoutSlot slot : mDisplaySlotManager.listSlots()) {
                 updateSlotPreview(mDisplaySlotManager, slot);
@@ -166,11 +166,11 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
         final BottomSheetDialog dialog = new BottomSheetDialog(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.bottomsheet_root, null);
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.widget_bottomsheet_root, null);
 
         // 非表示を加える
         {
-            View view = inflater.inflate(R.layout.card_displayinfo_remove, null);
+            View view = inflater.inflate(R.layout.display_setup_selector_remove, null);
             view.setOnClickListener(it -> {
                 onSelectedDisplay(manager, slot, null, null);
                 dialog.dismiss();
@@ -181,7 +181,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         for (final PluginConnector client : displayClients) {
             AppLog.system("Display Extension name(%s)", client.getName());
 
-            View extensionView = inflater.inflate(R.layout.card_displayinfo_root, null);
+            View extensionView = inflater.inflate(R.layout.display_setup_selector, null);
 
             AQuery q = new AQuery(extensionView);
             q.id(R.id.Extension_ItemSelector_ExtensionName).text(client.getName());
@@ -191,7 +191,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
             // Extensionごとの表示内容を並べる
             for (final DisplayKey info : client.getDisplayInformationList()) {
-                View item = inflater.inflate(R.layout.card_displayinfo_item, null);
+                View item = inflater.inflate(R.layout.display_setup_selector_row, null);
                 ((TextView) item.findViewById(R.id.Extension_ItemSelector_Name)).setText(info.getTitle());
                 insertRoot.addView(item, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 item.setOnClickListener(it -> {

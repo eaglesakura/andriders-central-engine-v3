@@ -62,7 +62,7 @@ public class CentralUiManager {
     }
 
     private void initDisplayView() {
-        mDataDisplay = (ViewGroup) View.inflate(mService, R.layout.service_cycle_display, null);
+        mDataDisplay = (ViewGroup) View.inflate(mService, R.layout.central_display, null);
 
         mWindowManager = (WindowManager) mService.getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
@@ -89,7 +89,7 @@ public class CentralUiManager {
     }
 
     private void initNotificationDisplay() {
-        mNotificationDisplay = (ViewGroup) ContextUtil.getInflater(mService).inflate(R.layout.service_cycle_notification, null);
+        mNotificationDisplay = (ViewGroup) ContextUtil.getInflater(mService).inflate(R.layout.central_notification, null);
 
         mWindowManager = (WindowManager) mService.getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(

@@ -36,7 +36,7 @@ public class SpeedCommandFragment extends CommandBaseFragment implements IFragme
     protected String[] mInfoFormats;
 
     public SpeedCommandFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_command_list);
+        mFragmentDelegate.setLayoutId(R.layout.command_setup_list);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class SpeedCommandFragment extends CommandBaseFragment implements IFragme
             int mSelectedType = data.getInternalExtra().speedType;
 
             MaterialAlertDialog init() {
-                setDialogContent(R.layout.dialog_speed_command);
+                setDialogContent(R.layout.command_setup_speed_dialog);
                 mFooters = getResources().getStringArray(R.array.Command_Speed_TypeFooter);
 
                 initTypeSelector();

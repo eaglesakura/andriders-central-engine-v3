@@ -16,7 +16,6 @@ import com.eaglesakura.android.framework.delegate.fragment.IFragmentPagerTitle;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -28,7 +27,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +47,7 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
     CommandDataManager mCommandManager;
 
     public ProximityCommandFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_command_proximity);
+        mFragmentDelegate.setLayoutId(R.layout.command_setup_proximity);
     }
 
     @Override

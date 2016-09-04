@@ -35,7 +35,7 @@ public class LauncherSelectActivity extends SupportActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launcher_select);
+        setContentView(R.layout.command_receiver_launcher);
 
         // Toolbarをバインド
         {
