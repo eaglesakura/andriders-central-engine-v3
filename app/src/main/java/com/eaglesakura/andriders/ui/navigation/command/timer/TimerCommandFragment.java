@@ -71,7 +71,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
                                 AppUtil.formatTimeMilliSecToString(item.getInternalExtra().timerIntervalSec * 1000)
                         );
                         if ((item.getInternalExtra().flags & CommandData.TIMER_FLAG_REPEAT) != 0) {
-                            text += (" / " + getString(R.string.Command_Timer_Repeat));
+                            text += (" / " + getString(R.string.Command_Flag_Repeat));
                         }
                         return text;
                     }

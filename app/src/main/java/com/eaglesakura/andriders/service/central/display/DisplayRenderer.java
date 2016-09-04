@@ -8,15 +8,20 @@ import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginConnector;
 import com.eaglesakura.andriders.plugin.PluginManager;
 import com.eaglesakura.andriders.service.central.CentralContext;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.android.util.PackageUtil;
+import com.eaglesakura.thread.Holder;
+import com.eaglesakura.util.Timer;
 import com.eaglesakura.util.Util;
 
 import android.app.Service;
+import android.support.annotation.UiThread;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,7 +34,7 @@ public class DisplayRenderer {
     /**
      * ディスプレイの表示更新間隔
      */
-    final int DISPLAY_REFRESH_SEC = 1;
+    final int DISPLAY_REFRESH_FPS = 5;
 
     final CentralContext mCentralContext;
 
@@ -72,20 +77,74 @@ public class DisplayRenderer {
     /**
      * スロット情報のリロードを行う
      */
-    public void reloadSlots(final String appPackageName) {
-        AndroidThreadUtil.assertBackgroundThread();
+    @UiThread
+    public void reloadSlots() {
+        AndroidThreadUtil.assertUIThread();
 
-        if (mDisplayLayoutManager != null) {
-            if (Util.equals(appPackageName, mCurrentAppPackageName)) {
+        Holder<String> foregroundApp = new Holder<>();
+        mCentralContext.newTask(ExecuteTarget.LocalQueue, (BackgroundTask<DataLayoutManager> task) -> {
+            Timer timer = new Timer();
+            final String FOREGROUND_PACKAGE_NAME = PackageUtil.getTopApplicationPackage(mService);
+            foregroundApp.set(FOREGROUND_PACKAGE_NAME);
+
+            if (Util.equals(FOREGROUND_PACKAGE_NAME, mCurrentAppPackageName)) {
                 // 同じアプリ名なので何もしなくて良い
-                return;
+                return mDisplayLayoutManager;
             }
-        }
 
-        DataLayoutManager layoutManager = new DataLayoutManager(mService);
-        layoutManager.load(DataLayoutManager.Mode.ReadOnly, appPackageName);
-        mDisplayLayoutManager = layoutManager;
-        mCurrentAppPackageName = appPackageName;
+
+            DataLayoutManager layoutManager = new DataLayoutManager(mService);
+            layoutManager.load(DataLayoutManager.Mode.ReadOnly, FOREGROUND_PACKAGE_NAME);
+            AppLog.system("Foreground App changed old[%s] -> new[%s] reload[%d ms]", mCurrentAppPackageName, FOREGROUND_PACKAGE_NAME, timer.end());
+            return layoutManager;
+        }).completed((result, task) -> {
+            mDisplayLayoutManager = result;
+            mCurrentAppPackageName = foregroundApp.get();
+        }).start();
+    }
+
+    /**
+     * 処理を開始する
+     */
+    public void connect() {
+        mLoopController = new HandlerLoopController(UIHandler.getInstance()) {
+            @Override
+            protected void onUpdate() {
+                onDisplayRefresh();
+                // フォアグラウンドアプリをリフレッシュ
+                reloadSlots();
+            }
+        };
+        mLoopController.setFrameRate(DISPLAY_REFRESH_FPS);
+        mLoopController.connect();
+    }
+
+    /**
+     * メモリを開放する
+     */
+    public void dispose() {
+        mLoopController.disconnect();
+        mLoopController.dispose();
+        mLoopController = null;
+
+        // 子のViewを全て開放する
+        if (mDisplayStub != null) {
+            mDisplayStub.removeAllViews();
+            mDisplayStub = null;
+        }
+    }
+
+    /**
+     * 通知のレンダリングを行う
+     */
+    private void onDisplayRefresh() {
+        PluginManager extensionClientManager = mCentralContext.getPluginManager();
+
+        if (mDisplayLayoutManager == null || !extensionClientManager.isConnected()) {
+            return;
+        }
+        // 毎フレーム更新をかける
+        bindExtensionDisplay();
     }
 
     /**
@@ -118,57 +177,13 @@ public class DisplayRenderer {
                 viewSlot.setVisibility(View.INVISIBLE);
                 continue;
             } else {
-                PluginConnector client = extensionClientManager.findClient(slot.getExtensionId());
                 // ディスプレイに対して表示内容を更新させる
+                viewSlot.setVisibility(View.VISIBLE);
+
+                PluginConnector client = extensionClientManager.findClient(slot.getExtensionId());
                 displayManager.bind(client, information, mDataViewBinder, viewSlot);
             }
         }
     }
 
-    /**
-     * 処理を開始する
-     */
-    public void connect() {
-        mLoopController = new HandlerLoopController(UIHandler.getInstance()) {
-            @Override
-            protected void onUpdate() {
-                onDisplayRefresh();
-            }
-        };
-        mLoopController.setFrameRate(DISPLAY_REFRESH_SEC);
-        mLoopController.connect();
-
-        mCentralContext.newTask(ExecuteTarget.LocalQueue, task -> {
-            reloadSlots(mService.getPackageName());
-            return this;
-        }).start();
-    }
-
-    /**
-     * メモリを開放する
-     */
-    public void dispose() {
-        mLoopController.disconnect();
-        mLoopController.dispose();
-        mLoopController = null;
-
-        // 子のViewを全て開放する
-        if (mDisplayStub != null) {
-            mDisplayStub.removeAllViews();
-            mDisplayStub = null;
-        }
-    }
-
-    /**
-     * 通知のレンダリングを行う
-     */
-    private void onDisplayRefresh() {
-        PluginManager extensionClientManager = mCentralContext.getPluginManager();
-
-        if (mDisplayLayoutManager == null || !extensionClientManager.isConnected()) {
-            return;
-        }
-        // 毎フレーム更新をかける
-        bindExtensionDisplay();
-    }
 }

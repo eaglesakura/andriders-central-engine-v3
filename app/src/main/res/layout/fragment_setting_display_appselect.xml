@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 
@@ -18,9 +19,9 @@
             android:layout_height="wrap_content"
             android:minHeight="@dimen/EsMaterial.Button.MinHeight">
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/Setting.CycleComputer.TargetApplication.Icon"
-                android:src="@mipmap/ic_launcher"
+                app:srcCompat="@mipmap/ic_launcher"
                 android:layout_gravity="bottom"
                 android:layout_margin="@dimen/App.Icon.Large.Margin"
                 android:layout_width="@dimen/App.Icon.Large"
@@ -36,15 +37,14 @@
                 android:gravity="right"
                 android:text="デフォルト"/>
     </LinearLayout>
-
     <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/Setting.CycleComputer.TargetApplication.Delete"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             app:srcCompat="@drawable/ic_delete"
             android:tint="@color/App.Icon.Grey"
             android:visibility="gone"
             android:background="@drawable/esm_button_transparent_fill"
             android:clickable="true"
-            android:id="@+id/Setting.CycleComputer.TargetApplication.Delete"
             android:padding="@dimen/EsMaterial.Button.Margin"
             android:layout_width="@dimen/EsMaterial.Button.MinHeight"
             android:layout_height="@dimen/EsMaterial.Button.MinHeight"/>

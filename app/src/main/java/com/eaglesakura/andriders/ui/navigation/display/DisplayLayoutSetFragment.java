@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
+import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.display.data.LayoutSlot;
@@ -13,8 +14,7 @@ import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscribeTarget;
+import com.eaglesakura.android.saver.BundleState;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -36,11 +36,12 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
 
     DataLayoutManager mDisplaySlotManager;
 
-    String mAppPackageName;
-
     PluginManager mExtensionClientManager;
 
     List<DisplayKey> mDisplayValues = new ArrayList<>();
+
+    @BundleState
+    String mAppPackageName = BuildConfig.APPLICATION_ID;
 
     public DisplayLayoutSetFragment() {
     }
@@ -67,7 +68,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     public void onPause() {
         super.onPause();
         mDisplayValues.clear();
-        async(SubscribeTarget.Pipeline, ObserveTarget.FireAndForget, it -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, it -> {
             if (mExtensionClientManager != null) {
                 mExtensionClientManager.disconnect();
             }
@@ -88,7 +89,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             return clientManager;
         }).completed((manager, task) -> {
             mExtensionClientManager = manager;
-            loadDisplayDatas(mAppPackageName);
+            loadDisplayData(mAppPackageName);
         }).failed((error, task) -> {
             error.printStackTrace();
         }).start();
@@ -97,7 +98,12 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
     /**
      * ディスプレイ表示内容を読み込む
      */
-    private void loadDisplayDatas(final String newPackageName) {
+    public void loadDisplayData(final String newPackageName) {
+        if (newPackageName.equals(mAppPackageName)) {
+            return;
+        }
+
+        mAppPackageName = newPackageName;
         asyncUI((BackgroundTask<DataLayoutManager> it) -> {
             DataLayoutManager slotManager = null;
 
@@ -169,7 +175,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                 onSelectedDisplay(manager, slot, null, null);
                 dialog.dismiss();
             });
-            layout.addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ((ViewGroup) layout.findViewById(R.id.Widget_BottomSheet_Root)).addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
         for (final PluginConnector client : displayClients) {
@@ -194,7 +200,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
                 });
             }
 
-            layout.addView(extensionView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ((ViewGroup) layout.findViewById(R.id.Widget_BottomSheet_Root)).addView(extensionView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
         dialog.setContentView(layout);
         dialog.show();
