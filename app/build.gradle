@@ -51,7 +51,7 @@ dependencies {
         compile project(":eglibrary:simple-utils")
         compile project(':eglibrary:android-thread')
         compile project(':eglibrary:android-text-kvs')
-        compile project(':eglibrary:android-command_setup-service')
+        compile project(':eglibrary:android-command-service')
         compile project(':eglibrary:android-net')
         compile project(':eglibrary:android-framework')
         compile project(":eglibrary:android-gms")

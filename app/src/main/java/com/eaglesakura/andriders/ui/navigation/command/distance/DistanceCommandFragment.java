@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.command.distance;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.databinding.CardCommandDistanceBinding;
+import com.eaglesakura.andriders.databinding.CommandSetupDistanceRowBinding;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
@@ -50,13 +50,13 @@ public class DistanceCommandFragment extends CommandBaseFragment implements IFra
         return new CardAdapter<CommandData>() {
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
-                return CardCommandDistanceBinding.inflate(getActivity().getLayoutInflater(), parent, false).getRoot();
+                return CommandSetupDistanceRowBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
             }
 
             @Override
             protected void onBindCard(CardBind<CommandData> bind, int position) {
                 CommandData item = bind.getItem();
-                CardCommandDistanceBinding binding = DataBindingUtil.getBinding(bind.getCard());
+                CommandSetupDistanceRowBinding binding = DataBindingUtil.getBinding(bind.getCard());
                 binding.setItem(new CardBinding() {
                     @Override
                     public Drawable getIcon() {

@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.basicui.command;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandSetting;
-import com.eaglesakura.andriders.databinding.CardLauncherBinding;
+import com.eaglesakura.andriders.databinding.CommandReceiverLauncherRowBinding;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.ui.support.SupportActivity;
 import com.eaglesakura.android.margarine.Bind;
@@ -62,13 +62,13 @@ public class LauncherSelectActivity extends SupportActivity {
     CardAdapter<ResolveInfo> mAdapter = new CardAdapter<ResolveInfo>() {
         @Override
         protected View onCreateCard(ViewGroup parent, int viewType) {
-            return CardLauncherBinding.inflate(getLayoutInflater(), null, false).getRoot();
+            return CommandReceiverLauncherRowBinding.inflate(getLayoutInflater(), null, false).getRoot();
         }
 
         @Override
         protected void onBindCard(CardBind<ResolveInfo> bind, int position) {
             ResolveInfo item = bind.getItem();
-            CardLauncherBinding binding = DataBindingUtil.getBinding(bind.getCard());
+            CommandReceiverLauncherRowBinding binding = DataBindingUtil.getBinding(bind.getCard());
             binding.LauncherSelectItem.setOnClickListener(it -> {
                 onItemSelected(item);
             });

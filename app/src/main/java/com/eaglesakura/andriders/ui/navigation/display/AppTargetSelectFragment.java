@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.basicui.command.LauncherSelectActivity;
 import com.eaglesakura.andriders.dao.display.DbDisplayTarget;
-import com.eaglesakura.andriders.databinding.CardLauncherBinding;
+import com.eaglesakura.andriders.databinding.CommandReceiverLauncherRowBinding;
 import com.eaglesakura.andriders.display.data.DataLayoutManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
@@ -149,7 +149,7 @@ public class AppTargetSelectFragment extends AppBaseFragment {
 
             // UIスレッドに処理を移譲する
             UIHandler.await(() -> {
-                CardLauncherBinding binding = CardLauncherBinding.inflate(inflater, (ViewGroup) layout.findViewById(R.id.Widget_BottomSheet_Root), true);
+                CommandReceiverLauncherRowBinding binding = CommandReceiverLauncherRowBinding.inflate(inflater, (ViewGroup) layout.findViewById(R.id.Widget_BottomSheet_Root), true);
                 binding.setItem(new LauncherSelectActivity.CardBinding() {
                     @Override
                     public Drawable getIcon() {

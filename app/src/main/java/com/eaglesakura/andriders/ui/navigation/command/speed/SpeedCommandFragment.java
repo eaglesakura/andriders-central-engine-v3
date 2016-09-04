@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.command.speed;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.databinding.CardCommandSpeedBinding;
+import com.eaglesakura.andriders.databinding.CommandSetupSpeedRowBinding;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
@@ -52,13 +52,13 @@ public class SpeedCommandFragment extends CommandBaseFragment implements IFragme
         return new CardAdapter<CommandData>() {
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
-                return CardCommandSpeedBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
+                return CommandSetupSpeedRowBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
             }
 
             @Override
             protected void onBindCard(CardBind<CommandData> bind, int position) {
                 CommandData item = bind.getItem();
-                CardCommandSpeedBinding binding = DataBindingUtil.getBinding(bind.getCard());
+                CommandSetupSpeedRowBinding binding = DataBindingUtil.getBinding(bind.getCard());
 
                 binding.CommandItem.setOnClickListener(it -> {
                     onClickCard(item);

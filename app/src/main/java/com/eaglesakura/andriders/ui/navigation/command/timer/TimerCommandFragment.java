@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.command.timer;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.databinding.CardCommandTimerBinding;
+import com.eaglesakura.andriders.databinding.CommandSetupTimerRowBinding;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.db.command.CommandSetupData;
@@ -51,13 +51,13 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
         return new CardAdapter<CommandData>() {
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
-                return CardCommandTimerBinding.inflate(getActivity().getLayoutInflater(), parent, false).getRoot();
+                return CommandSetupTimerRowBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
             }
 
             @Override
             protected void onBindCard(CardBind<CommandData> bind, int position) {
                 CommandData item = bind.getItem();
-                CardCommandTimerBinding binding = DataBindingUtil.getBinding(bind.getCard());
+                CommandSetupTimerRowBinding binding = DataBindingUtil.getBinding(bind.getCard());
                 binding.setItem(new CardBinding() {
                     @Override
                     public Drawable getIcon() {

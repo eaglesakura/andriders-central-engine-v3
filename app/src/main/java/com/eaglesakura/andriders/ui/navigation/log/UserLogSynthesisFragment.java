@@ -1,14 +1,12 @@
 package com.eaglesakura.andriders.ui.navigation.log;
 
-import com.eaglesakura.andriders.databinding.FragmentUserLogSynthesisBinding;
+import com.eaglesakura.andriders.databinding.UserLogSynthesisBinding;
 import com.eaglesakura.andriders.db.session.SessionTotalCollection;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.ui.binding.UserLogSynthesis;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscribeTarget;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.StringUtil;
@@ -27,7 +25,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class UserLogSynthesisFragment extends AppBaseFragment {
-    FragmentUserLogSynthesisBinding mBinding;
+    UserLogSynthesisBinding mBinding;
 
     UserLogFragmentParent mParent;
 
@@ -40,7 +38,7 @@ public class UserLogSynthesisFragment extends AppBaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mBinding = FragmentUserLogSynthesisBinding.inflate(inflater, container, false);
+        mBinding = UserLogSynthesisBinding.inflate(inflater, container, false);
         return mBinding.getRoot();
     }
 
