@@ -144,7 +144,7 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
                             );
                         } catch (SecurityException e) {
                             // failed connect...
-                            LogUtil.log(e);
+                            e.printStackTrace();
                         }
                     }
 
