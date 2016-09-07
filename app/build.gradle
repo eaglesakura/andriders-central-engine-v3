@@ -74,7 +74,7 @@ dependencies {
         compile 'com.eaglesakura:android-thread:+'
         compile 'com.eaglesakura:android-text-kvs:+'
         compile 'com.eaglesakura:android-bluetooth:+'
-        compile 'com.eaglesakura:android-command_setup-service:+'
+        compile 'com.eaglesakura:android-command-service:+'
         compile 'com.eaglesakura:android-canvas-graphics:+'
         compile 'com.eaglesakura:android-net:+'
         compile 'com.eaglesakura:android-framework:+'
