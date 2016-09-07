@@ -10,12 +10,10 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.util.SerializeUtil;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 
 import java.util.TimeZone;
@@ -75,37 +73,6 @@ public class AppUtil {
 //        return new LatLng(geo.latitude, geo.longitude);
 //    }
 //
-
-    /**
-     * Serialize -> Deserializeを行うことで簡易cloneを行う
-     */
-    public static <T> T publicFieldClone(T origin) {
-        try {
-            return SerializeUtil.deserializePublicFieldObject((Class<T>) origin.getClass(), SerializeUtil.serializePublicFieldObject(origin, false));
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public static byte[] publicFieldSerialize(Object obj) {
-        try {
-            return SerializeUtil.serializePublicFieldObject(obj, true);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public static void startSettingIntent(Context context, Intent intent) {
-        try {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            intent.setData(Uri.parse("package:" + context.getPackageName()));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        }
-    }
 
     /**
      * コマンド設定を行うためのIntentを投げる

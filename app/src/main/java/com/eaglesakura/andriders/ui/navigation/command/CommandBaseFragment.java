@@ -1,23 +1,18 @@
 package com.eaglesakura.andriders.ui.navigation.command;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.db.command.CommandData;
 import com.eaglesakura.andriders.db.command.CommandDataCollection;
-import com.eaglesakura.andriders.db.command.CommandDatabase;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.ui.base.AppBaseFragment;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.UiThread;
 import android.support.v7.app.AlertDialog;
@@ -41,16 +36,20 @@ public abstract class CommandBaseFragment extends AppBaseFragment {
     protected abstract int getCommandCategory();
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mCommandDataManager = new CommandDataManager(context);
-    }
-
-    @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
-        mAdapter = newCardAdapter();
-        mRecyclerView.setAdapter(mAdapter, true);
+
+        if (mCommandDataManager == null) {
+            mCommandDataManager = new CommandDataManager(getContext());
+        }
+
+        if (mAdapter == null) {
+            mAdapter = newCardAdapter();
+            mRecyclerView.setAdapter(mAdapter, true);
+        } else {
+            mRecyclerView.setAdapter(mAdapter, true);
+            mRecyclerView.setProgressVisibly(false, mAdapter.getCollection().size());
+        }
     }
 
     @Override
@@ -74,7 +73,8 @@ public abstract class CommandBaseFragment extends AppBaseFragment {
     protected void onCommandLoaded(CommandDataCollection commands) {
         List<CommandData> list = commands.list(it -> true);
         mRecyclerView.setProgressVisibly(false, list.size());
-        mAdapter.getCollection().addAllAnimated(list);
+        mAdapter.getCollection().insertOrReplaceAll(list);
+        mAdapter.notifyDataSetChanged();
     }
 
     @UiThread

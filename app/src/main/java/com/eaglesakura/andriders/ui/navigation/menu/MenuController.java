@@ -93,17 +93,17 @@ public class MenuController {
      */
     private void updateServiceButton() {
         if (CentralService.isRunning(mContext)) {
-            mServiceButton.setText("セッション記録中");
+            mServiceButton.setText(R.string.Word_Central_SessionNow);
         } else {
-            mServiceButton.setText("セッション開始");
+            mServiceButton.setText(R.string.Word_Central_SessionStart);
         }
     }
 
     private void onServiceShutdownCheck() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("セッション終了");
-        builder.setMessage("走行セッションを終了しますか？");
-        builder.setPositiveButton("セッション終了", (dlg, which) -> {
+        builder.setTitle(R.string.Title_Central_SessionFinish);
+        builder.setMessage(R.string.Message_Central_SessionFinish);
+        builder.setPositiveButton(R.string.Choose_Central_SessionFinish, (dlg, which) -> {
             CentralService.stop(mContext);
             updateServiceButton();
         });
@@ -113,9 +113,9 @@ public class MenuController {
 
     private void onServiceBootCheck() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("セッション開始");
-        builder.setMessage("走行セッションを開始しますか？");
-        builder.setPositiveButton("セッション開始", (dlg, which) -> {
+        builder.setTitle(R.string.Title_Central_SessionStart);
+        builder.setMessage(R.string.Message_Central_SessionStart);
+        builder.setPositiveButton(R.string.Choose_Central_SessionStart, (dlg, which) -> {
             CentralService.start(mContext);
             updateServiceButton();
         });

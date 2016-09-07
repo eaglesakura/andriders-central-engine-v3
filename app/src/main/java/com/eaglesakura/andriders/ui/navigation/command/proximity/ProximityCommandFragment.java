@@ -76,14 +76,20 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
         updateProximityUI();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mCommandViewList.clear();
+    }
+
     /**
      * 近接コマンドのUIを切り替える
+     *
+     * 近接コマンドは最大4つなので、同期的に読み込んでしまう。
      */
     @UiThread
     void updateProximityUI() {
-
         CommandDataCollection collection = mCommandManager.loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY);
-
 
         int index = 0;
         for (ViewGroup cmdView : mCommandViewList) {

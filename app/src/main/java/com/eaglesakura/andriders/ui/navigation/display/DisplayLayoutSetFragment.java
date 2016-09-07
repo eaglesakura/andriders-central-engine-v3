@@ -146,7 +146,7 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
             DisplayKey information = mExtensionClientManager.findDisplayInformation(slot.getExtensionId(), slot.getDisplayValueId());
             if (information == null) {
                 // 情報を見失った
-                button.setText("無効な表示内容");
+                button.setText(R.string.Word_Display_ErrorSlot);
             } else {
                 button.setText(information.getTitle());
             }

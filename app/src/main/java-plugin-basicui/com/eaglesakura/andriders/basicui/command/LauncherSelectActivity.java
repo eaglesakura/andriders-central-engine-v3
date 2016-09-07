@@ -41,7 +41,7 @@ public class LauncherSelectActivity extends SupportActivity {
         {
             Toolbar toolbar = findViewById(Toolbar.class, R.id.EsMaterial_Toolbar);
             setSupportActionBar(toolbar);
-            setTitle("起動するアプリを選択");
+            setTitle(getString(R.string.Title_Launcher_ChooseApp));
         }
 
         loadLaunchers();

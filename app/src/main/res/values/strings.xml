@@ -145,6 +145,16 @@
     <string name="Setting.CycleComputer.Target.Default">デフォルト</string>
     <string name="Command.Flag.Repeat">繰り返し</string>
     <string name="Command.Flag.Distance.ActiveOnly">自走</string>
+    <string name="Word.Display.ErrorSlot">無効な表示内容</string>
+    <string name="Word.Central.SessionNow">セッション記録中</string>
+    <string name="Word.Central.SessionStart">セッション開始</string>
+    <string name="Title.Central.SessionFinish">セッション終了</string>
+    <string name="Message.Central.SessionFinish">走行セッションを終了しますか？</string>
+    <string name="Choose.Central.SessionFinish">セッション終了</string>
+    <string name="Title.Central.SessionStart">セッション開始</string>
+    <string name="Message.Central.SessionStart">走行セッションを開始しますか？</string>
+    <string name="Choose.Central.SessionStart">セッション開始</string>
+    <string name="Title.Launcher.ChooseApp">起動するアプリを選択</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>
