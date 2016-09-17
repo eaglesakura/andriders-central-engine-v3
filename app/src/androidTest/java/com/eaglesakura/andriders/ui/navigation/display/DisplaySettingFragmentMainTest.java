@@ -4,6 +4,8 @@ import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.NavigationActivityTest;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.devicetest.scenario.ScenarioContext;
+import com.eaglesakura.android.devicetest.scenario.UiScenario;
 
 import org.junit.Test;
 
@@ -19,8 +21,9 @@ public class DisplaySettingFragmentMainTest extends NavigationActivityTest {
 
     @Test
     public void インストール済みアプリ一覧を取得する() throws Throwable {
-        validate(getNavigationActivity(DisplaySettingFragmentMain.class), AppTargetSelectFragment.class)
-                .check(AppTargetSelectFragment.class, it -> {
+        validate(ScenarioContext.findFragment(AppTargetSelectFragment.class))
+                .check(it -> {
+                    assertNotNull(it);
                     validate(it.listInstalledApplications().list())
                             .notEmpty()
                             .allNotNull()
@@ -28,7 +31,7 @@ public class DisplaySettingFragmentMainTest extends NavigationActivityTest {
                                 // 最初のオブジェクトはACEである
                                 assertEquals(that.info.packageName, BuildConfig.APPLICATION_ID);
                             })
-                            .eachWithIndex((index, that) -> {
+                            .each((index, that) -> {
                                 // loaded
                                 AppLog.test("installed[%d] package[%s] label[%s]", index, that.info.packageName, that.info.loadLabel(getContext().getPackageManager()));
                             });
@@ -39,12 +42,7 @@ public class DisplaySettingFragmentMainTest extends NavigationActivityTest {
     public void 対象アプリ選択UIを開く() throws Throwable {
         getNavigationActivity(DisplaySettingFragmentMain.class);
 
-        newScenario()
-                .viewWithId(R.id.Setting_CycleComputer_TargetApplication_Root)
-                .click();
-
-        newScenario()
-                .sleep(1000)
-                .pressBack();
+        UiScenario.clickFromId(R.id.Setting_CycleComputer_TargetApplication_Root).step();
+        ScenarioContext.pressBack().step();
     }
 }

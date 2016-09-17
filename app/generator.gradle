@@ -50,27 +50,11 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     /**
      * セッションごとの情報を設定する
      */
-    def DbSessionLog = sessionSchema.addEntity("DbSessionLog");
-    DbSessionLog.addStringProperty("sessionId").notNull().unique().primaryKey(); // 打刻時間
-    DbSessionLog.addStringProperty("flags").index();        // セッション状況フラグ
-    DbSessionLog.addDateProperty("startTime").notNull();  // その日最初のセッション開始時刻
-    DbSessionLog.addDateProperty("endTime").notNull();  // その日最後のセッション終了時刻
-    DbSessionLog.addLongProperty("activeTimeMs").notNull(); // セッションがアクティブ（走行）中だった時間
-    DbSessionLog.addDoubleProperty("activeDistanceKm").notNull(); // アクティブ走行した距離
-
-    // 最高記録
-    DbSessionLog.addDoubleProperty("maxSpeedKmh").notNull().index(); // 最高速
-    DbSessionLog.addIntProperty("maxCadence").notNull();   // 最高ケイデンス
-    DbSessionLog.addIntProperty("maxHeartrate").notNull();   // 最高心拍
-    DbSessionLog.addDoubleProperty("sumAltitude").notNull();
-
-    // 延べ記録
-    DbSessionLog.addDoubleProperty("sumDistanceKm").notNull().index();   // 移動距離合計（キロ単位）
-
-    // 延べ消費Calorie
-    DbSessionLog.addDoubleProperty("calories").notNull();
-    // 延べエクササイズ
-    DbSessionLog.addDoubleProperty("exercise").notNull();
+    def DbSessionInfo = sessionSchema.addEntity("DbSessionInfo");
+    DbSessionInfo.addLongProperty("sessionId").notNull().unique().primaryKey(); // 開始時間がそのままキーになる
+    DbSessionInfo.addStringProperty("flags").index();        // セッション状況フラグ
+    DbSessionInfo.addStringProperty("infoJson");                // セッション元情報
+    DbSessionInfo.addFloatProperty("fitWeight");             // ユーザーの体重, 統計用のため別Column
 
     /**
      * セッショングループは日単位で設定する。
@@ -81,9 +65,27 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
      */
     def DbSessionPoint = sessionSchema.addEntity("DbSessionPoint");
     DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey();  // 打刻時間は常にUniqueになるはず
-    DbSessionPoint.addIntProperty("flags").index();                         // 打刻フラグ
-    DbSessionPoint.addStringProperty("centralJson").notNull();               // CentraをJSON化したデータ
-    DbSessionPoint.addByteArrayProperty("extra");                            // その他メタ情報用のバッファ
+    DbSessionPoint.addLongProperty("sessionId").notNull().index();              // 所属するセッションID内
+    DbSessionPoint.addStringProperty("flags").index();                         // ACE内部管理用フラグ
+    DbSessionPoint.addStringProperty("centralJson").notNull();               // CentralをJSON化したデータ
+
+    // 統計用の値
+    DbSessionPoint.addIntProperty("valueHeartrate").index();        // 心拍
+    DbSessionPoint.addIntProperty("valueCadence").index();          // ケイデンス
+    DbSessionPoint.addFloatProperty("valueSensorSpeed").index();    // センサー由来の速度
+    DbSessionPoint.addFloatProperty("valueGpsSpeed").index();       // GPS由来の速度
+    DbSessionPoint.addDoubleProperty("valueGpsLat").index();       // GPS位置
+    DbSessionPoint.addDoubleProperty("valueGpsLng").index();       // GPS位置
+    DbSessionPoint.addIntProperty("valueGpsAlt").index();       // GPS高度
+    DbSessionPoint.addIntProperty("valueGpsAccuracy").index();       // GPS精度（メートル）
+    DbSessionPoint.addIntProperty("valueLocInclinationPercent").index();       // 道路斜度（％）
+    DbSessionPoint.addStringProperty("valueGeohash10").index();       // 高精度ジオハッシュ
+    DbSessionPoint.addStringProperty("valueGeohash7Peripherals").index();       // 100m単位の隣接情報
+    DbSessionPoint.addFloatProperty("valueFitCalories").index();       // セッション消費カロリー
+    DbSessionPoint.addFloatProperty("valueFitExercise").index();       // セッション獲得エクササイズ
+    DbSessionPoint.addFloatProperty("valueRecordDistance").index();       // 合計移動距離
+    DbSessionPoint.addFloatProperty("valueRecordSumAlt").index();       // 合計獲得標高
+    DbSessionPoint.addStringProperty("valueFlags").index();       // 統計用フラグ
 }
 
 /**
