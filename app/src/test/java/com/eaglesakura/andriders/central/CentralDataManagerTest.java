@@ -59,7 +59,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         assertNotNull(data.getSessionId());
         assertNotEquals(data.getSessionId(), "");
-        assertEquals(data.mSessionData.getStartDate(), START_TIME);
+        assertEquals(data.mSessionTime.getStartDate(), START_TIME);
         assertEquals(data.mFitnessData.getUserWeight(), USER_WEIGHT, 0.1);
 
         // 時間を分割して1分経過させる
@@ -67,7 +67,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
             clock.offset(1000);
             data.onUpdate();
         }
-        assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60); // データも1分経過している
+        assertEquals(data.mSessionTime.getSessionDurationMs(), 1000 * 60); // データも1分経過している
     }
 
     void assertObject(CentralDataManager data, RawCentralData centralData) throws Exception {
@@ -261,7 +261,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         // 最高速度が一致する
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
         // 常に自走であるので、セッション時間と自走時間は一致する
-        assertEquals(data.mSessionData.getSessionDulationMs(), data.mSessionData.getActiveTimeMs());
+        assertEquals(data.mSessionTime.getSessionDurationMs(), data.mSessionTime.getActiveTimeMs());
     }
 
     @Test
@@ -303,7 +303,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         // 最高速度が一致する
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), maxSpeed, 0.1);
         // 自走していない。アクティブ0である。
-        assertEquals(data.mSessionData.getActiveTimeMs(), 0);
+        assertEquals(data.mSessionTime.getActiveTimeMs(), 0);
     }
 
     /**
@@ -359,14 +359,14 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         AppLog.test("1Hour dist(%.3f km) speed(%.1f km/h : %s)", data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), data.mSpeedData.getSpeedZone().name());
 
         // 約1時間経過していることを確認する
-        assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60 * 60);
+        assertEquals(data.mSessionTime.getSessionDurationMs(), 1000 * 60 * 60);
 
         // 最終的な移動距離をチェックする
         // 1時間分の動作分であるため、ほぼ一致するはずである
         assertEquals(data.mDistanceData.getDistanceKm(), data.mSpeedData.getSpeedKmh(), 1.0);
 
         // GPS走行なので、自走時間は0でなければならない
-        assertEquals(data.mSessionData.getActiveTimeMs(), 0);
+        assertEquals(data.mSessionTime.getActiveTimeMs(), 0);
 
         // 獲得標高が目的値とほぼ同等でなければならない
         // MEMO 標高は適当な回数だけ平均を取るので、完全一致はしなくて良い
@@ -434,7 +434,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         assertTrue(data.mSpeedData.getMaxSpeedKmh() < 30.0);
 
         // 常にアクティブ移動である
-        assertEquals(data.mSessionData.getSessionDulationMs(), data.mSessionData.getActiveTimeMs());
+        assertEquals(data.mSessionTime.getSessionDurationMs(), data.mSessionTime.getActiveTimeMs());
     }
 
     @Test
@@ -498,7 +498,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         assertEquals(data.mSpeedData.getMaxSpeedKmh(), SAMPLE_DISTANCE_KM, 1.0);
 
         // アクティブ時間は全体の半分である
-        assertEquals(((double) data.mSessionData.getActiveTimeMs() / (double) data.mSessionData.getSessionDulationMs()), 0.5, 0.05);
+        assertEquals(((double) data.mSessionTime.getActiveTimeMs() / (double) data.mSessionTime.getSessionDurationMs()), 0.5, 0.05);
     }
 
     @Test
@@ -528,7 +528,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         }
 
         // 約1時間経過していることを確認する
-        assertEquals(data.mSessionData.getSessionDulationMs(), 1000 * 60 * 60);
+        assertEquals(data.mSessionTime.getSessionDurationMs(), 1000 * 60 * 60);
 
 
         // 消費カロリー的には、300～400の間が妥当である

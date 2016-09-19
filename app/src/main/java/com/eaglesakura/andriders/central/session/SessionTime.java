@@ -3,24 +3,10 @@ package com.eaglesakura.andriders.central.session;
 import com.eaglesakura.andriders.central.base.BaseCalculator;
 import com.eaglesakura.andriders.util.Clock;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
- * セッション情報を構築する
+ * セッションの時刻情報を管理する
  */
-public class SessionData extends BaseCalculator {
-
-    /**
-     * セッション識別子
-     */
-    private final String mSessionId;
-
-    /**
-     * 開始時刻
-     */
-    private final long mStartDate;
-
+public class SessionTime extends BaseCalculator {
     /**
      * 合計自走時間
      */
@@ -31,18 +17,17 @@ public class SessionData extends BaseCalculator {
      */
     private double mActiveDistanceKm;
 
-    private static final SimpleDateFormat SESSION_KEY_FORMAT = new SimpleDateFormat("yyyyMMdd.HH.mm.ss.SS");
-
+    /**
+     * 開始時刻
+     */
+    private long mStartDate;
 
     /**
      * セッションを生成する
-     *
-     * @param startDate 開始時刻
      */
-    public SessionData(Clock clock, long startDate) {
+    public SessionTime(Clock clock) {
         super(clock);
-        mStartDate = startDate;
-        mSessionId = String.format("ssn.%s", SESSION_KEY_FORMAT.format(new Date(startDate)));
+        mStartDate = clock.now();
     }
 
     /**
@@ -55,7 +40,7 @@ public class SessionData extends BaseCalculator {
     /**
      * セッション期間をミリ秒単位で取得する
      */
-    public long getSessionDulationMs() {
+    public long getSessionDurationMs() {
         return now() - mStartDate;
     }
 
@@ -71,13 +56,6 @@ public class SessionData extends BaseCalculator {
      */
     public double getActiveDistanceKm() {
         return mActiveDistanceKm;
-    }
-
-    /**
-     * セッション情報
-     */
-    public String getSessionId() {
-        return mSessionId;
     }
 
     /**

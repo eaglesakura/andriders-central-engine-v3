@@ -4,13 +4,12 @@ import com.eaglesakura.andriders.BuildConfig;
 import com.eaglesakura.andriders.central.geo.GeoSpeedData;
 import com.eaglesakura.andriders.central.geo.LocationData;
 import com.eaglesakura.andriders.central.hrsensor.FitnessData;
-import com.eaglesakura.andriders.central.log.SessionLogger;
 import com.eaglesakura.andriders.central.scsensor.CadenceData;
 import com.eaglesakura.andriders.central.scsensor.SensorSpeedData;
-import com.eaglesakura.andriders.central.session.SessionData;
+import com.eaglesakura.andriders.central.session.SessionInfo;
+import com.eaglesakura.andriders.central.session.SessionRecord;
+import com.eaglesakura.andriders.central.session.SessionTime;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
-import com.eaglesakura.andriders.db.AppSettings;
-import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawGeoPoint;
@@ -20,10 +19,7 @@ import com.eaglesakura.andriders.serialize.RawSessionData;
 import com.eaglesakura.andriders.serialize.RawSpecs;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
-import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.garnet.Inject;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
@@ -32,17 +28,11 @@ import android.support.annotation.NonNull;
  * 各種Data系クラスへのアクセサはUnitTestのためpackage privateとして扱う
  */
 public class CentralDataManager {
-    /**
-     * app mContext
-     */
-    @NonNull
-    private final Context mContext;
 
     /**
-     * 時刻設定
+     * セッション情報
      */
-    @NonNull
-    private final Clock mClock;
+    private final SessionInfo mSessionInfo;
 
     /**
      * タイマー
@@ -109,16 +99,13 @@ public class CentralDataManager {
      * セッション情報管理
      */
     @NonNull
-    SessionData mSessionData;
-
-    @Inject(AppContextProvider.class)
-    AppSettings mSettings;
+    SessionTime mSessionTime;
 
     /**
-     * ログコントローラはUnitTestでのモジュール切替に対応しておく
+     * セッションに関連した最高記録を保持する
      */
     @NonNull
-    SessionLogger mSessionLogger;
+    SessionRecord mSessionRecord;
 
     /**
      * 最後に生成されたセントラル情報
@@ -129,46 +116,31 @@ public class CentralDataManager {
 
     /**
      * サイコンデータを生成する
-     *
-     * @param clock 同期用時計
      */
-    public CentralDataManager(@NonNull Context context, @NonNull Clock clock) {
-        mContext = context.getApplicationContext();
-        mClock = clock;
-        mClockTimer = new ClockTimer(clock);
+    public CentralDataManager(SessionInfo info) {
+        mSessionInfo = info;
+        mClockTimer = new ClockTimer(info.getSessionClock());
 
-        // 依存性解決
-        Garnet.inject(this);
+        Clock clock = info.getSessionClock();
 
-        mSessionData = new SessionData(mClock, mClock.now());
-        mFitnessData = new FitnessData(mClock, mSettings);
-        mSensorSpeedData = new SensorSpeedData(mClock, mSettings);
-        mCadenceData = new CadenceData(mClock, mSettings);
-        mDistanceData = new DistanceData(mClock);
+        mSessionTime = new SessionTime(clock);
+        mFitnessData = new FitnessData(clock, info.getUserProfiles());
+        mSensorSpeedData = new SensorSpeedData(clock, info.getUserProfiles().getWheelOuterLength());
+        mCadenceData = new CadenceData(clock, info.getUserProfiles());
+        mDistanceData = new DistanceData(clock);
 
-        GeoSpeedData geoSpeedData = new GeoSpeedData(mClock); // 位置センサー由来の速度計
-
-        mLocationData = new LocationData(mClock, geoSpeedData);
-        mSpeedData = new SpeedData(mClock, mSettings, geoSpeedData, mSensorSpeedData);
-
-        mSessionLogger = new SessionLogger(mContext, mSessionData.getSessionId(), mClock);
-    }
-
-    @NonNull
-    public Context getContext() {
-        return mContext;
-    }
-
-    @NonNull
-    public Clock getClock() {
-        return mClock;
+        {
+            GeoSpeedData geoSpeedData = new GeoSpeedData(clock); // 位置センサー由来の速度計
+            mLocationData = new LocationData(clock, geoSpeedData);
+            mSpeedData = new SpeedData(clock, info.getUserProfiles(), geoSpeedData, mSensorSpeedData);
+        }
     }
 
     /**
      * サイコンの時刻を取得する
      */
-    public long now() {
-        return mClock.now();
+    long now() {
+        return mSessionInfo.getSessionClock().now();
     }
 
     /**
@@ -195,8 +167,8 @@ public class CentralDataManager {
      * <p>
      * MEMO: 識別子は普遍なため、sync不要
      */
-    public String getSessionId() {
-        return mSessionData.getSessionId();
+    public long getSessionId() {
+        return mSessionInfo.getSessionId();
     }
 
     /**
@@ -279,16 +251,12 @@ public class CentralDataManager {
 
             // 自走中であれば走行距離を追加する
             if (isActiveMoving()) {
-                mSessionData.addActiveTimeMs(diffTimeMs);
-                mSessionData.addActiveDistanceKm(moveDistanceKm);
+                mSessionTime.addActiveTimeMs(diffTimeMs);
+                mSessionTime.addActiveDistanceKm(moveDistanceKm);
             }
 
             // セントラル情報を生成する
             mLatestCentralData = newCentralData();
-
-            // 毎フレーム更新をかける。結果としてデータが書き換わるので、Latestを更新する
-            mSessionLogger.onUpdate(mLatestCentralData);
-            mSessionLogger.getTotalData(mLatestCentralData.today, mLatestCentralData.record);
         }
         return true;
     }
@@ -300,7 +268,7 @@ public class CentralDataManager {
     }
 
     private void getStatus(RawCentralData.RawCentralStatus dst) {
-        dst.debug = mSettings.isDebuggable();
+        dst.debug = mSessionInfo.isDebugable();
         dst.date = now();
     }
 
@@ -309,11 +277,11 @@ public class CentralDataManager {
      */
     private void getSession(RawSessionData dst) {
         dst.flags |= (isActiveMoving() ? RawSessionData.FLAG_ACTIVE : 0x00);
-        dst.activeTimeMs = (int) mSessionData.getActiveTimeMs();
-        dst.activeDistanceKm = (float) mSessionData.getActiveDistanceKm();
+        dst.activeTimeMs = (int) mSessionTime.getActiveTimeMs();
+        dst.activeDistanceKm = (float) mSessionTime.getActiveDistanceKm();
         dst.distanceKm = (float) mDistanceData.getDistanceKm();
-        dst.sessionId = mSessionData.getSessionId();
-        dst.startTime = mSessionData.getStartDate();
+        dst.sessionId = mSessionInfo.getSessionId();
+        dst.startTime = mSessionTime.getStartDate();
         dst.durationTimeMs = (int) (now() - dst.startTime);
         dst.sumAltitudeMeter = (float) mLocationData.getSumAltitude();
 
@@ -347,7 +315,6 @@ public class CentralDataManager {
             getSpecs(result.specs.application);
             getStatus(result.centralStatus);
             getSession(result.session);
-            mSessionLogger.getTotalData(result.today, result.record);
 
             mFitnessData.getSpec(result.specs.fitness);
 
@@ -357,16 +324,11 @@ public class CentralDataManager {
             mSpeedData.getSensor(result.sensor);
             mLocationData.getSensor(result.sensor);
 
+            // 現在の状態に基づいて記録を更新し、トータル記録を算出する
+            mSessionRecord.update(result);
+            mSessionRecord.getTotalData(result.centralStatus, result.today, result.record);
+
             return result;
         }
-    }
-
-    /**
-     * 必要なデータをデータベースへ書き出す
-     * <p>
-     * TODO 実装する
-     */
-    public void commit() {
-        mSessionLogger.commit();
     }
 }

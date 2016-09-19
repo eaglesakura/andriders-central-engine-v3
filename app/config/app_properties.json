@@ -1,0 +1,32 @@
+{
+  "classesOutputPath": "src/main/gen/java",
+  "configOutputPath": "src/main/res/raw",
+  "packageName": "com.eaglesakura.andriders.gen.prop",
+  "configName": "app_properties.json",
+  "groups": [
+    {
+      "comment": "アップデート管理",
+      "name": "UpdateCheckProps",
+      "properties": [
+        {
+          "comment": "マイグレーション番号",
+          "type": "int",
+          "name": "initializeReleased",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "comment": "デバッグ管理",
+      "name": "DebugSettings",
+      "properties": [
+        {
+          "comment": "デバッグをONにする場合はtrue",
+          "type": "boolean",
+          "name": "debugEnable",
+          "value": "false"
+        }
+      ]
+    }
+  ]
+}

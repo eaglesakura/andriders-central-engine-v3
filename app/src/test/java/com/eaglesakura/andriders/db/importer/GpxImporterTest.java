@@ -3,7 +3,6 @@ package com.eaglesakura.andriders.db.importer;
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.db.session.SessionLogDatabase;
-import com.eaglesakura.andriders.db.session.SessionTotalCollection;
 import com.eaglesakura.util.DateUtil;
 
 import org.junit.Test;
@@ -30,23 +29,25 @@ public class GpxImporterTest extends AppUnitTestCase {
         assertEquals(DateUtil.getHour(importer.getImportEndDate(), TimeZone.getDefault()), 16);
 
         SessionLogDatabase db = new SessionLogDatabase(getContext());
-        try {
-            assertEquals(db.loadMaxSpeedKmh(), 61.0, 1.0);  // AACR最高速度
-            assertEquals(
-                    db.loadMaxSpeedKmh(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()),
-                    db.loadMaxSpeedKmh(),
-                    0.01);  // AACR最高速度
 
-            SessionTotalCollection collection = db.loadTotal(SessionTotalCollection.Order.Asc);
-            assertNotNull(collection);
-            assertEquals(collection.getTotals().size(), 1);
-            assertEquals(collection.getSumDistanceKm(), 160, 10);
-            assertEquals(collection.getMaxSpeedKmh(), 61.0, 1.0);
-            assertEquals(collection.getLongestDateDistanceKm(), 160.0, 10);
-            assertTrue(collection.getRangeCalorie(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()) > 2000);
-            assertTrue(collection.getRangeExercise(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()) > 20);
-        } catch (Exception e) {
-
-        }
+        fail("Test Not Updated");
+//        try {
+//            assertEquals(db.loadMaxSpeedKmh(), 61.0, 1.0);  // AACR最高速度
+//            assertEquals(
+//                    db.loadMaxSpeedKmh(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()),
+//                    db.loadMaxSpeedKmh(),
+//                    0.01);  // AACR最高速度
+//
+//            SessionTotalCollection collection = db.loadTotal(SessionTotalCollection.Order.Asc);
+//            assertNotNull(collection);
+//            assertEquals(collection.getTotals().size(), 1);
+//            assertEquals(collection.getSumDistanceKm(), 160, 10);
+//            assertEquals(collection.getMaxSpeedKmh(), 61.0, 1.0);
+//            assertEquals(collection.getLongestDateDistanceKm(), 160.0, 10);
+//            assertTrue(collection.getRangeCalorie(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()) > 2000);
+//            assertTrue(collection.getRangeExercise(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()) > 20);
+//        } catch (Exception e) {
+//
+//        }
     }
 }

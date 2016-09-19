@@ -30,7 +30,8 @@ configurations {
  * アプリのプロパティ管理
  */
 props {
-    property file("config/properties.json")
+    property file("config/app_properties.json")
+    property file("config/central_properties.json")
 }
 
 /**
@@ -145,7 +146,7 @@ dependencies {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.2"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

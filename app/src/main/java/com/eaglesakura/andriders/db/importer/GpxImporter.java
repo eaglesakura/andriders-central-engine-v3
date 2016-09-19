@@ -1,16 +1,21 @@
 package com.eaglesakura.andriders.db.importer;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
+import com.eaglesakura.andriders.central.session.SessionInfo;
 import com.eaglesakura.andriders.data.gpx.Gpx;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.data.gpx.GpxSegment;
+import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
+import com.eaglesakura.andriders.error.io.AppIOException;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.io.CancelableInputStream;
 import com.eaglesakura.lambda.CallbackUtils;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.util.IOUtil;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -49,6 +54,9 @@ public class GpxImporter {
     @Nullable
     Date mImportEndDate;
 
+    @Inject(AppContextProvider.class)
+    AppSettings mAppSettings;
+
     public GpxImporter(@NonNull Context context, @NonNull Uri gpxFile) {
         mContext = context;
         mGpxUri = gpxFile;
@@ -76,70 +84,76 @@ public class GpxImporter {
         return mImportEndDate;
     }
 
+    private InputStream openStream(CancelCallback cancelCallback) throws IOException {
+        if (mGpxUri != null) {
+            return new CancelableInputStream(mContext.getContentResolver().openInputStream(mGpxUri), cancelCallback);
+        } else if (mGpxFile != null) {
+            return new CancelableInputStream(new FileInputStream(mGpxFile), cancelCallback);
+        } else {
+            throw new IOException();
+        }
+    }
+
     /**
      * インストールを行う
      *
      * @return 読み込んだセグメント数
      */
-    public int install(CancelCallback cancelCallback) throws XmlPullParserException, IOException {
+    public int install(CancelCallback cancelCallback) throws AppIOException {
         Gpx gpx;
-        InputStream is;
-        if (mGpxUri != null) {
-            is = mContext.getContentResolver().openInputStream(mGpxUri);
-        } else if (mGpxFile != null) {
-            is = new FileInputStream(mGpxFile);
-        } else {
-            throw new IllegalStateException();
-        }
 
-        // キャンセルコールバックでラップする
-        is = new CancelableInputStream(is, cancelCallback);
-
-        try {
+        try (InputStream is = openStream(cancelCallback)) {
             gpx = mParser.parse(is);
-        } finally {
-            IOUtil.close(is);
-        }
 
-        if (gpx.getTrackSegments().isEmpty()) {
-            return 0;
-        }
+            if (gpx.getTrackSegments().isEmpty()) {
+                return 0;
+            }
 
-        // GPXからデータをエミュレートする
-        int segmentIndex = 0;
-        for (GpxSegment segment : gpx.getTrackSegments()) {
-            Clock clock = new Clock(segment.getFirstPoint().getTime().getTime());
-            ClockTimer clockTimer = new ClockTimer(clock);
-            CentralDataManager centralDataManager = new CentralDataManager(mContext, clock);
+            // GPXからデータをエミュレートする
+            int segmentIndex = 0;
+            for (GpxSegment segment : gpx.getTrackSegments()) {
+                Clock clock = new Clock(segment.getFirstPoint().getTime().getTime());
+                ClockTimer clockTimer = new ClockTimer(clock);
 
-            for (GpxPoint pt : segment.getPoints()) {
-                clock.set(pt.getTime().getTime());
+                SessionInfo info = new SessionInfo.Builder(mContext, clock)
+                        .profile(mAppSettings.dumpCentralSettings())
+                        .build();
 
-                centralDataManager.setGpxPoint(pt);
+                CentralDataManager centralDataManager = new CentralDataManager(info);
 
-                if (!centralDataManager.onUpdate()) {
-                    continue;
+                for (GpxPoint pt : segment.getPoints()) {
+                    clock.set(pt.getTime().getTime());
+
+                    centralDataManager.setGpxPoint(pt);
+
+                    if (!centralDataManager.onUpdate()) {
+                        continue;
+                    }
+
+                    if (clockTimer.overTimeMs(1000 * 30)) {
+                        centralDataManager.commit();
+                        clockTimer.start();
+                    }
                 }
 
-                if (clockTimer.overTimeMs(1000 * 30)) {
-                    centralDataManager.commit();
-                    clockTimer.start();
+                // 最後のデータを書き込む
+                centralDataManager.commit();
+                ++segmentIndex;
+
+                if (CallbackUtils.isCanceled(cancelCallback)) {
+                    throw new InterruptedIOException("Import Canceled");
                 }
             }
 
-            // 最後のデータを書き込む
-            centralDataManager.commit();
-            ++segmentIndex;
+            // インストール範囲を指定する
+            mImportStartDate = gpx.getFirstSegment().getFirstPoint().getTime();
+            mImportEndDate = gpx.getLastSegment().getLastPoint().getTime();
 
-            if (CallbackUtils.isCanceled(cancelCallback)) {
-                throw new InterruptedIOException("Import Canceled");
-            }
+            return segmentIndex;
+        } catch (IOException e) {
+            throw new AppIOException(e);
+        } catch (XmlPullParserException e) {
+            throw new AppDataNotFoundException(e);
         }
-
-        // インストール範囲を指定する
-        mImportStartDate = gpx.getFirstSegment().getFirstPoint().getTime();
-        mImportEndDate = gpx.getLastSegment().getLastPoint().getTime();
-
-        return segmentIndex;
     }
 }

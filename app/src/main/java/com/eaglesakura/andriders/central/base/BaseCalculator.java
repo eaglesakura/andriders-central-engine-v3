@@ -20,4 +20,8 @@ public abstract class BaseCalculator {
     protected long now() {
         return mClock.now();
     }
+
+    protected Clock getClock() {
+        return mClock;
+    }
 }

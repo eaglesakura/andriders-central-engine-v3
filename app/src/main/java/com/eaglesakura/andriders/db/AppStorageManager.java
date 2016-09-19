@@ -46,10 +46,10 @@ public class AppStorageManager {
     }
 
     /**
-     * データベース領域を取得する
+     * 外部データベース領域を取得する
      */
     @Nullable
-    public String getDatabasePath(@NonNull String name) {
-        return new File(IOUtil.mkdirs(getDatabaseDirectory()), name).getAbsolutePath();
+    public File getExternalDatabasePath(@NonNull String name) {
+        return new File(getDatabaseDirectory(), name).getAbsoluteFile();
     }
 }

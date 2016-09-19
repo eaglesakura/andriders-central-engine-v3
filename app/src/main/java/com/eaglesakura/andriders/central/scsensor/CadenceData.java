@@ -1,13 +1,12 @@
 package com.eaglesakura.andriders.central.scsensor;
 
 import com.eaglesakura.andriders.central.base.BaseCalculator;
-import com.eaglesakura.andriders.db.AppSettings;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.sensor.CadenceZone;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.util.Clock;
 
-import android.support.annotation.NonNull;
+import org.greenrobot.greendao.annotation.NotNull;
 
 /**
  * ケイデンス情報を保持する
@@ -22,12 +21,11 @@ public class CadenceData extends BaseCalculator {
      */
     private long mUpdatedDate;
 
-    @NonNull
-    AppSettings mSettings;
+    private UserProfiles mUserProfiles;
 
-    public CadenceData(Clock clock, @NonNull AppSettings settings) {
+    public CadenceData(Clock clock, @NotNull UserProfiles userProfiles) {
         super(clock);
-        mSettings = settings;
+        mUserProfiles = userProfiles;
     }
 
     public long getUpdatedDate() {
@@ -84,14 +82,13 @@ public class CadenceData extends BaseCalculator {
      */
     public CadenceZone getZone() {
         float rpm = getCadenceRpm();
-        UserProfiles userProfiles = mSettings.getUserProfiles();
         if (rpm < 5) {
             // 停止域
             return CadenceZone.Stop;
-        } else if (rpm < userProfiles.getCadenceZoneIdeal()) {
+        } else if (rpm < mUserProfiles.getCadenceZoneIdeal()) {
             // 遅い
             return CadenceZone.Slow;
-        } else if (rpm < userProfiles.getCadenceZoneHigh()) {
+        } else if (rpm < mUserProfiles.getCadenceZoneHigh()) {
             // 理想値
             return CadenceZone.Ideal;
         } else {
