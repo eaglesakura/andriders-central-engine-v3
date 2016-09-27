@@ -14,11 +14,11 @@ import java.io.File;
  * アプリのストレージ領域管理を行う
  */
 @Singleton
-public class AppStorageManager {
+public class AppStorageController {
     @NonNull
     final Context mContext;
 
-    public AppStorageManager(@NonNull Context context) {
+    public AppStorageController(@NonNull Context context) {
         mContext = context;
     }
 
@@ -29,8 +29,15 @@ public class AppStorageManager {
         return Storage.getExternalDataStorage(mContext).getPath();
     }
 
+    /**
+     * データベースディレクトリを取得する
+     */
     protected File getDatabaseDirectory() {
-        return new File(getExternalDataStorage(), "db");
+        File storage = getExternalDataStorage();
+        if (storage.getName().equals("files")) {
+            storage = storage.getParentFile();
+        }
+        return new File(storage, "db");
     }
 
     /**

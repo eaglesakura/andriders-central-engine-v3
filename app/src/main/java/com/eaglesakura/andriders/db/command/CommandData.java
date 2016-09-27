@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.db.command;
 
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.SerializableIntent;
-import com.eaglesakura.andriders.dao.command.DbCommand;
+import com.eaglesakura.andriders.dao.central.DbCommand;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.android.util.ImageUtil;
 import com.eaglesakura.serialize.Serialize;
@@ -12,6 +12,8 @@ import com.eaglesakura.util.SerializeUtil;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+
+import java.util.Comparator;
 
 /**
  * ユーザーが定義したコマンド情報
@@ -255,4 +257,12 @@ public class CommandData {
         @Serialize(id = 32)
         public float distanceKm = 5.0f;
     }
+
+    static final Comparator<CommandData> COMPARATOR_ASC = (l, r) -> {
+        if (l.getCategory() != r.getCategory()) {
+            return Integer.compare(l.getCategory(), r.getCategory());
+        } else {
+            return r.getKey().getKey().compareTo(l.getKey().getKey());
+        }
+    };
 }

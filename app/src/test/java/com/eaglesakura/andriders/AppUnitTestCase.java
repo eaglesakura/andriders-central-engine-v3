@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders;
 
-import com.eaglesakura.andriders.db.AppStorageManager;
+import com.eaglesakura.andriders.db.AppStorageController;
 import com.eaglesakura.andriders.provider.AppContextProvider;
-import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.provider.AppControllerProvider;
 import com.eaglesakura.andriders.provider.TestAppContextProvider;
 import com.eaglesakura.andriders.provider.TestAppManagerProvider;
 import com.eaglesakura.andriders.provider.TestProviderUtil;
@@ -19,7 +19,7 @@ public abstract class AppUnitTestCase extends AndroidSupportTestCase {
      */
     public static final float USER_WEIGHT = 65;
 
-    private AppStorageManager mStorageManager;
+    private AppStorageController mStorageManager;
 
     @Override
     public void onSetup() {
@@ -33,16 +33,16 @@ public abstract class AppUnitTestCase extends AndroidSupportTestCase {
         // UnitTest用モジュールへ切り替える
         TestAppManagerProvider.onSetup(this);
         Garnet.override(AppContextProvider.class, TestAppContextProvider.class);
-        Garnet.override(AppManagerProvider.class, TestAppManagerProvider.class);
+        Garnet.override(AppControllerProvider.class, TestAppManagerProvider.class);
     }
 
-    public synchronized AppStorageManager getStorageManager() {
+    public synchronized AppStorageController getStorageManager() {
         if (mStorageManager == null) {
             mStorageManager = TestProviderUtil.provideAppStorageManager();
         }
 
         assertNotNull(mStorageManager);
-        assertNotEquals(mStorageManager.getClass(), AppStorageManager.class);
+        assertNotEquals(mStorageManager.getClass(), AppStorageController.class);
         return mStorageManager;
     }
 }

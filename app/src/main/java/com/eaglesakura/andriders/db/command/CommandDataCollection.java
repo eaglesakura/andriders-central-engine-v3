@@ -1,58 +1,25 @@
 package com.eaglesakura.andriders.db.command;
 
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.lambda.Matcher1;
+import com.eaglesakura.collection.DataCollection;
 
 import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class CommandDataCollection {
-    final List<CommandData> mCommands;
-
+public class CommandDataCollection extends DataCollection<CommandData> {
     public CommandDataCollection(List<CommandData> commands) {
-        mCommands = commands;
+        super(commands);
+        setComparator(CommandData.COMPARATOR_ASC);
     }
+
 
     /**
      * 指定したKeyに一致するコマンドを取得するか、nullを返却する
      */
     @Nullable
-    public CommandData getOrNull(CommandKey key) {
-        List<CommandData> list = list(it -> it.getKey().equals(key));
-        if (!list.isEmpty()) {
-            return list.get(0);
-        } else {
-            return null;
-        }
+    public CommandData find(CommandKey key) {
+        return find(it -> it.getKey().equals(key));
     }
 
-    /**
-     * 条件にマッチするコマンドを全て取得する
-     *
-     * @param matcher 条件
-     */
-    public List<CommandData> list(Matcher1<CommandData> matcher) {
-        try {
-            List<CommandData> result = new ArrayList<>();
-            for (CommandData data : mCommands) {
-                if (matcher.match(data)) {
-                    result.add(data);
-                }
-            }
-
-            Collections.sort(result, (l, r) -> {
-                if (l.getCategory() != r.getCategory()) {
-                    return Integer.compare(l.getCategory(), r.getCategory());
-                } else {
-                    return r.getKey().getKey().compareTo(l.getKey().getKey());
-                }
-            });
-            return result;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

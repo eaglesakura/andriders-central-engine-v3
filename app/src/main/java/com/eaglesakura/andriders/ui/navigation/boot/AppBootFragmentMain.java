@@ -169,7 +169,8 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
                 mGoogleAutStep = GOOGLE_AUTH_STEP_API_CONNECT;
                 startActivityForResult(((SignInRequireException) error).getSignInIntent(), AppConstants.REQUEST_GOOGLE_AUTH);
             }
-        }).cancelSignal(this).start();
+        }).cancelSignal(this)
+                .start();
     }
 
     /**

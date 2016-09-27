@@ -1,13 +1,20 @@
-package com.eaglesakura.andriders.db.display;
+package com.eaglesakura.andriders.db;
 
 import com.eaglesakura.andriders.BuildConfig;
-import com.eaglesakura.andriders.dao.display.DaoMaster;
-import com.eaglesakura.andriders.dao.display.DaoSession;
-import com.eaglesakura.andriders.dao.display.DbDisplayLayout;
-import com.eaglesakura.andriders.dao.display.DbDisplayLayoutDao;
-import com.eaglesakura.andriders.dao.display.DbDisplayTarget;
-import com.eaglesakura.andriders.dao.display.DbDisplayTargetDao;
+import com.eaglesakura.andriders.command.CommandKey;
+import com.eaglesakura.andriders.dao.central.DaoMaster;
+import com.eaglesakura.andriders.dao.central.DaoSession;
+import com.eaglesakura.andriders.dao.central.DbCommand;
+import com.eaglesakura.andriders.dao.central.DbCommandDao;
+import com.eaglesakura.andriders.dao.central.DbDisplayLayout;
+import com.eaglesakura.andriders.dao.central.DbDisplayLayoutDao;
+import com.eaglesakura.andriders.dao.central.DbDisplayTarget;
+import com.eaglesakura.andriders.dao.central.DbDisplayTargetDao;
+import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.provider.AppControllerProvider;
 import com.eaglesakura.android.db.DaoDatabase;
+import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.StringUtil;
 
 import org.greenrobot.greendao.database.StandardDatabase;
@@ -16,26 +23,84 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- *
+ * Central Engineの設定データを保持するDB
  */
-public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
-    private static final int SUPPORTED_DATABASE_VERSION = 1;
+public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
+
+    /**
+     * 近接コマンド
+     */
+    public static final int CATEGORY_PROXIMITY = 1;
+
+    /**
+     * 速度コマンド
+     */
+    public static final int CATEGORY_SPEED = 2;
+
+    /**
+     * 距離コマンド
+     */
+    public static final int CATEGORY_DISTANCE = 3;
+
+    /**
+     * タイマーコマンド
+     */
+    public static final int CATEGORY_TIMER = 4;
+
+    static final int SUPPORTED_DATABASE_VERSION = 1;
 
     private static final String PACKAGE_NAME_DEFAULT = "null";
 
     private static final String GROUP_NAME_DEFAULT = "null";
 
-    public DisplayLayoutDatabase(Context context) {
+    @Inject(AppControllerProvider.class)
+    AppStorageController mStorageController;
+
+    public CentralSettingDatabase(Context context) {
         super(context, DaoMaster.class);
     }
 
-    private String getDisplayTargetKey(String appPackageName) {
+    /**
+     * コマンドを保存する
+     */
+    public void update(@NonNull DbCommand cmd) {
+        session.insertOrReplace(cmd);
+    }
+
+    /**
+     * 指定したコマンドを削除する
+     */
+    public void remove(@NonNull CommandKey key) {
+        session.getDbCommandDao().deleteByKey(key.getKey());
+    }
+
+    /**
+     * 指定したカテゴリのコマンドを列挙する
+     *
+     * @param category 列挙するコマンド
+     * @see #CATEGORY_PROXIMITY
+     * @see #CATEGORY_SPEED
+     * @see #CATEGORY_TIMER
+     * @see #CATEGORY_DISTANCE
+     */
+    @NonNull
+    public List<CommandData> list(int category) {
+        List<DbCommand> commands = session.getDbCommandDao().queryBuilder()
+                .where(DbCommandDao.Properties.Category.eq(category))
+                .list();
+
+        return CollectionUtil.asOtherList(commands, it -> new CommandData(it));
+    }
+
+
+    private String getDisplayTargetKey(@Nullable String appPackageName) {
         if (StringUtil.isEmpty(appPackageName)) {
             appPackageName = BuildConfig.APPLICATION_ID;
         }
@@ -48,7 +113,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
      *
      * @param packageName 表示対象のpackage名 / null可
      */
-    public DbDisplayTarget loadTargetOrCreate(@Nullable String packageName) {
+    private DbDisplayTarget loadTargetOrCreate(@Nullable String packageName) {
         String uniqueId = getDisplayTargetKey(packageName);
 
         DbDisplayTarget result = session.getDbDisplayTargetDao().load(uniqueId);
@@ -66,7 +131,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
         return result;
     }
 
-    public DbDisplayTarget loadTarget(@Nullable String packageName) {
+    private DbDisplayTarget loadTarget(@Nullable String packageName) {
         String uniqueId = getDisplayTargetKey(packageName);
         DbDisplayTarget result = session.getDbDisplayTargetDao().load(uniqueId);
         // DBがなければ作成して返すが、insertは行わない
@@ -162,8 +227,7 @@ public class DisplayLayoutDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, context.getDatabasePath("v3_display_layout.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
-
+        return new SQLiteOpenHelper(getContext(), mStorageController.getExternalDatabasePath("v3_commands.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

@@ -5,11 +5,11 @@ import com.eaglesakura.andriders.dao.session.DaoMaster;
 import com.eaglesakura.andriders.dao.session.DaoSession;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.dao.session.DbSessionPointDao;
-import com.eaglesakura.andriders.db.AppStorageManager;
+import com.eaglesakura.andriders.db.AppStorageController;
 import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
 import com.eaglesakura.andriders.error.io.AppDatabaseException;
 import com.eaglesakura.andriders.error.io.AppIOException;
-import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.provider.AppControllerProvider;
 import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawLocation;
@@ -42,8 +42,8 @@ import java.util.List;
 public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     private static final int SUPPORTED_DATABASE_VERSION = 1;
 
-    @Inject(AppManagerProvider.class)
-    AppStorageManager mStorageManager;
+    @Inject(AppControllerProvider.class)
+    AppStorageController mStorageManager;
 
     public SessionLogDatabase(@NonNull Context context) {
         super(context, DaoMaster.class);
