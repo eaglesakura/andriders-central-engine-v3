@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.command;
 
-import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandData;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

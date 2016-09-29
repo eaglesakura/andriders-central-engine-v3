@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.db.AppStorageController;
+import com.eaglesakura.andriders.system.AppStorageController;
 import com.eaglesakura.util.RandomUtil;
 
 import java.io.File;

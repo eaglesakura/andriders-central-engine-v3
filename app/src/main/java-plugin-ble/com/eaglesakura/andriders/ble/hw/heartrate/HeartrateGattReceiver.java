@@ -4,11 +4,10 @@ import com.eaglesakura.andriders.ble.hw.BleDevice;
 import com.eaglesakura.andriders.ble.hw.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.ble.hw.base.BaseBleGattReceiver;
 import com.eaglesakura.andriders.ble.hw.heartrate.BleHeartrateMonitor.BleHeartrateListener;
-import com.eaglesakura.andriders.google.FitnessDeviceType;
+import com.eaglesakura.andriders.model.ble.FitnessDeviceType;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
-import com.eaglesakura.android.rx.SubscriptionController;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;

@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders;
 
-import com.eaglesakura.andriders.db.AppStorageController;
+import com.eaglesakura.andriders.system.AppStorageController;
 import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.AppControllerProvider;
 import com.eaglesakura.andriders.provider.TestAppContextProvider;

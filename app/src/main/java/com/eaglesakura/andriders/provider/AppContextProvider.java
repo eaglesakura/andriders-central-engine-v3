@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.provider;
 
-import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.data.AppSettings;
 import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Provide;
 import com.eaglesakura.android.garnet.Singleton;

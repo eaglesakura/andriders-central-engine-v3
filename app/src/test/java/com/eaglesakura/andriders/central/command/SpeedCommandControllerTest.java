@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.dao.command.DbCommand;
-import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.dao.central.DbCommand;
+import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
@@ -13,7 +13,7 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
 
     CommandData newCommand(double speed, int type) throws Throwable {
         CommandData result = new CommandData(new DbCommand());
-        CommandData.RawExtra extra = result.getInternalExtra();
+        CommandData.Extra extra = result.getInternalExtra();
         extra.speedKmh = (float) speed;
         extra.speedType = type;
         return result;

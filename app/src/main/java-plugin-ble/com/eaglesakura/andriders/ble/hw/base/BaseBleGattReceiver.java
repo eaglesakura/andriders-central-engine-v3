@@ -2,17 +2,12 @@ package com.eaglesakura.andriders.ble.hw.base;
 
 import com.eaglesakura.andriders.ble.hw.BleDevice;
 import com.eaglesakura.andriders.ble.hw.BleDevice.BleDeviceListener;
-import com.eaglesakura.andriders.dao.bledevice.DbBleFitnessDevice;
-import com.eaglesakura.andriders.db.fit.FitnessDeviceCacheDatabase;
-import com.eaglesakura.andriders.google.FitnessDeviceType;
+import com.eaglesakura.andriders.model.ble.FitnessDeviceType;
 import com.eaglesakura.android.rx.BackgroundTaskBuilder;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
-import com.eaglesakura.android.rx.RxTaskBuilder;
-import com.eaglesakura.android.rx.SubscribeTarget;
-import com.eaglesakura.android.rx.SubscriptionController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 
@@ -151,19 +146,20 @@ public abstract class BaseBleGattReceiver {
                 .callbackOn(CallbackTime.Foreground)
                 .executeOn(ExecuteTarget.LocalParallel)
                 .async(task -> {
-                    FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(mContext);
-                    try {
-                        db.openWritable();
-                        DbBleFitnessDevice fitnessDevice = db.load(device.getAddress());
-                        fitnessDevice.setSelectedCount(fitnessDevice.getSelectedCount() + 1);
-
-                        db.update(fitnessDevice);
-                    } catch (Exception e) {
-
-                    } finally {
-                        db.close();
-                    }
-                    return null;
+                    throw new Error("NotImpl");
+//                    FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(mContext);
+//                    try {
+//                        db.openWritable();
+//                        DbBleFitnessDevice fitnessDevice = db.load(device.getAddress());
+//                        fitnessDevice.setSelectedCount(fitnessDevice.getSelectedCount() + 1);
+//
+//                        db.update(fitnessDevice);
+//                    } catch (Exception e) {
+//
+//                    } finally {
+//                        db.close();
+//                    }
+//                    return null;
                 })
                 .start();
     }

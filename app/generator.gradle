@@ -64,10 +64,10 @@ task generateCentralSettingDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTa
     DbCommand.addByteArrayProperty("iconPng").notNull(); // アイコンファイル
 
     // 制御情報
-    DbCommand.addByteArrayProperty("commandData");  // コマンドの付与情報（タイマー間隔、スピード等のメタ情報
+    DbCommand.addStringProperty("commandData");  // コマンドの付与情報（タイマー間隔、スピード等のメタ情報
 
     // Intentで直接起動するオプション
-    DbCommand.addByteArrayProperty("intentData");  // Intent情報
+    DbCommand.addStringProperty("intentData");  // Intent情報
 
     /**
      * プラグイン情報

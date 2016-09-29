@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.andriders.db.command.CommandDataCollection;
+import com.eaglesakura.andriders.model.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
 
@@ -62,7 +62,7 @@ public class ProximityCommandController extends CommandController {
             return null;
         }
 
-        return collection.getOrNull(CommandKey.fromProximity((int) mTimer.endSec()));
+        return collection.find(CommandKey.fromProximity((int) mTimer.endSec()));
     }
 
     /**

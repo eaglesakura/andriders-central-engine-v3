@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.central.CentralDataHandler;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
-import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawSessionData;
 
@@ -45,7 +45,7 @@ public class DistanceCommandController extends CommandController {
      * 次に反応すべき時刻を更新する
      */
     protected void updateNextTriggerDistance() {
-        CommandData.RawExtra extra = mCommandData.getInternalExtra();
+        CommandData.Extra extra = mCommandData.getInternalExtra();
 
         if (mNextTriggerDistance == 0) {
             // 初回リセット
@@ -87,7 +87,7 @@ public class DistanceCommandController extends CommandController {
     CentralDataHandler mDataHandler = new CentralDataHandler() {
         @Override
         public void onReceived(RawCentralData newData) {
-            CommandData.RawExtra internalExtra = mCommandData.getInternalExtra();
+            CommandData.Extra internalExtra = mCommandData.getInternalExtra();
 
             RawSessionData target;
             if (internalExtra.distanceType == CommandData.DISTANCE_TYPE_SESSION) {

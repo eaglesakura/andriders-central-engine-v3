@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.SensorDataReceiver;
-import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
@@ -45,7 +45,7 @@ public abstract class SpeedCommandController extends CommandController {
         super(context);
         mCommandData = commandData;
 
-        CommandData.RawExtra extra = mCommandData.getInternalExtra();
+        CommandData.Extra extra = mCommandData.getInternalExtra();
         mSpeedKmh = extra.speedKmh;
         mCommandType = extra.speedType;
     }

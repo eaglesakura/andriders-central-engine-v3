@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.central.log;
 
 import com.eaglesakura.andriders.central.session.SessionInfo;
-import com.eaglesakura.andriders.db.session.SessionLogDatabase;
+import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.ClockTimer;

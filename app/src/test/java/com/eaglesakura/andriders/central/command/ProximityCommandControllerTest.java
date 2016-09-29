@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.andriders.db.command.CommandDataCollection;
+import com.eaglesakura.andriders.model.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.thread.IntHolder;

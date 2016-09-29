@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.provider;
 
-import com.eaglesakura.andriders.db.AppSettings;
+import com.eaglesakura.andriders.data.AppSettings;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 

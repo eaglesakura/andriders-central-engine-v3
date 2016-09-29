@@ -26,8 +26,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         public final static Property Category = new Property(1, int.class, "category", false, "CATEGORY");
         public final static Property PackageName = new Property(2, String.class, "packageName", false, "PACKAGE_NAME");
         public final static Property IconPng = new Property(3, byte[].class, "iconPng", false, "ICON_PNG");
-        public final static Property CommandData = new Property(4, byte[].class, "commandData", false, "COMMAND_DATA");
-        public final static Property IntentData = new Property(5, byte[].class, "intentData", false, "INTENT_DATA");
+        public final static Property CommandData = new Property(4, String.class, "commandData", false, "COMMAND_DATA");
+        public final static Property IntentData = new Property(5, String.class, "intentData", false, "INTENT_DATA");
     };
 
 
@@ -47,8 +47,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
                 "\"CATEGORY\" INTEGER NOT NULL ," + // 1: category
                 "\"PACKAGE_NAME\" TEXT NOT NULL ," + // 2: packageName
                 "\"ICON_PNG\" BLOB NOT NULL ," + // 3: iconPng
-                "\"COMMAND_DATA\" BLOB," + // 4: commandData
-                "\"INTENT_DATA\" BLOB);"); // 5: intentData
+                "\"COMMAND_DATA\" TEXT," + // 4: commandData
+                "\"INTENT_DATA\" TEXT);"); // 5: intentData
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_COMMAND_CATEGORY ON DB_COMMAND" +
                 " (\"CATEGORY\");");
@@ -68,14 +68,14 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         stmt.bindString(3, entity.getPackageName());
         stmt.bindBlob(4, entity.getIconPng());
  
-        byte[] commandData = entity.getCommandData();
+        String commandData = entity.getCommandData();
         if (commandData != null) {
-            stmt.bindBlob(5, commandData);
+            stmt.bindString(5, commandData);
         }
  
-        byte[] intentData = entity.getIntentData();
+        String intentData = entity.getIntentData();
         if (intentData != null) {
-            stmt.bindBlob(6, intentData);
+            stmt.bindString(6, intentData);
         }
     }
 
@@ -87,14 +87,14 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         stmt.bindString(3, entity.getPackageName());
         stmt.bindBlob(4, entity.getIconPng());
  
-        byte[] commandData = entity.getCommandData();
+        String commandData = entity.getCommandData();
         if (commandData != null) {
-            stmt.bindBlob(5, commandData);
+            stmt.bindString(5, commandData);
         }
  
-        byte[] intentData = entity.getIntentData();
+        String intentData = entity.getIntentData();
         if (intentData != null) {
-            stmt.bindBlob(6, intentData);
+            stmt.bindString(6, intentData);
         }
     }
 
@@ -110,8 +110,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
             cursor.getInt(offset + 1), // category
             cursor.getString(offset + 2), // packageName
             cursor.getBlob(offset + 3), // iconPng
-            cursor.isNull(offset + 4) ? null : cursor.getBlob(offset + 4), // commandData
-            cursor.isNull(offset + 5) ? null : cursor.getBlob(offset + 5) // intentData
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // commandData
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // intentData
         );
         return entity;
     }
@@ -122,8 +122,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         entity.setCategory(cursor.getInt(offset + 1));
         entity.setPackageName(cursor.getString(offset + 2));
         entity.setIconPng(cursor.getBlob(offset + 3));
-        entity.setCommandData(cursor.isNull(offset + 4) ? null : cursor.getBlob(offset + 4));
-        entity.setIntentData(cursor.isNull(offset + 5) ? null : cursor.getBlob(offset + 5));
+        entity.setCommandData(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setIntentData(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override

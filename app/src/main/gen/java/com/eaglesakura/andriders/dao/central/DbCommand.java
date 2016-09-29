@@ -22,8 +22,8 @@ public class DbCommand {
 
     @NotNull
     private byte[] iconPng;
-    private byte[] commandData;
-    private byte[] intentData;
+    private String commandData;
+    private String intentData;
 
     @Generated
     public DbCommand() {
@@ -34,7 +34,7 @@ public class DbCommand {
     }
 
     @Generated
-    public DbCommand(String commandKey, int category, String packageName, byte[] iconPng, byte[] commandData, byte[] intentData) {
+    public DbCommand(String commandKey, int category, String packageName, byte[] iconPng, String commandData, String intentData) {
         this.commandKey = commandKey;
         this.category = category;
         this.packageName = packageName;
@@ -81,19 +81,19 @@ public class DbCommand {
         this.iconPng = iconPng;
     }
 
-    public byte[] getCommandData() {
+    public String getCommandData() {
         return commandData;
     }
 
-    public void setCommandData(byte[] commandData) {
+    public void setCommandData(String commandData) {
         this.commandData = commandData;
     }
 
-    public byte[] getIntentData() {
+    public String getIntentData() {
         return intentData;
     }
 
-    public void setIntentData(byte[] intentData) {
+    public void setIntentData(String intentData) {
         this.intentData = intentData;
     }
 

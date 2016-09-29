@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.central.command;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.dao.command.DbCommand;
-import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.dao.central.DbCommand;
+import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.thread.IntHolder;
 
@@ -14,7 +14,7 @@ public class DistanceCommandControllerTest extends AppUnitTestCase {
 
     CommandData newCommand(float intervalDistance, int type, int flags) throws Throwable {
         CommandData result = new CommandData(new DbCommand());
-        CommandData.RawExtra extra = result.getInternalExtra();
+        CommandData.Extra extra = result.getInternalExtra();
         extra.distanceKm = intervalDistance;
         extra.distanceType = type;
         extra.flags = flags;

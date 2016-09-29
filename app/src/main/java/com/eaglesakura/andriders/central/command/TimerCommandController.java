@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.command;
 
-import com.eaglesakura.andriders.db.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.util.Timer;
 
@@ -32,7 +32,7 @@ public class TimerCommandController extends CommandController {
      * 次に反応すべき時刻を更新する
      */
     protected void updateNextTriggerTime() {
-        CommandData.RawExtra extra = mCommandData.getInternalExtra();
+        CommandData.Extra extra = mCommandData.getInternalExtra();
 
         final long INTERVAL_MS = Timer.toMilliSec(0, 0, 0, Math.max(extra.timerIntervalSec, 1), 0);
 
