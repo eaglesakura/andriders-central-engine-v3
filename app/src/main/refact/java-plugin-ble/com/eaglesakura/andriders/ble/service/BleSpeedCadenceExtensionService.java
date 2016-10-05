@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.ble.service;
 
-import com.eaglesakura.andriders.ble.hw.cadence.BleCadenceSpeedSensor;
-import com.eaglesakura.andriders.ble.hw.cadence.SpeedCadenceGattReceiver;
-import com.eaglesakura.andriders.ble.hw.cadence.SpeedCadenceSensorData;
+import com.eaglesakura.andriders.ble.cadence.BleCadenceSpeedSensor;
+import com.eaglesakura.andriders.ble.cadence.SpeedCadenceGattReceiver;
+import com.eaglesakura.andriders.ble.cadence.SpeedCadenceSensorData;
 import com.eaglesakura.andriders.plugin.AcePluginService;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.CentralEngineConnection;

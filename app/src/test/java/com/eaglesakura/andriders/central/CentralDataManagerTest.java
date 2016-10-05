@@ -31,8 +31,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 //        Clock clock = new Clock(START_TIME);
 //        CentralDataManager data = new CentralDataManager(getContext(), clock);
 //
-//        assertNotNull(data.getSessionId());
-//        assertNotEquals(data.getSessionId(), "");
+//        assertNotNull(data.getConnectionId());
+//        assertNotEquals(data.getConnectionId(), "");
 //        assertEquals(data.mSessionTime.getStartDate(), START_TIME);
 //        assertEquals(data.mFitnessData.getUserWeight(), USER_WEIGHT, 0.1);
 //

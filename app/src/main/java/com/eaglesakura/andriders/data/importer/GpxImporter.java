@@ -1,17 +1,18 @@
 package com.eaglesakura.andriders.data.importer;
 
-import com.eaglesakura.andriders.central.CentralDataManager;
-import com.eaglesakura.andriders.central.session.SessionInfo;
+import com.eaglesakura.andriders.central.data.CentralDataManager;
+import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.data.gpx.Gpx;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.data.gpx.GpxSegment;
-import com.eaglesakura.andriders.data.AppSettings;
+import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
 import com.eaglesakura.andriders.error.io.AppIOException;
 import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.io.CancelableInputStream;
 import com.eaglesakura.lambda.CallbackUtils;
@@ -61,12 +62,20 @@ public class GpxImporter {
         mContext = context;
         mGpxUri = gpxFile;
         mGpxFile = null;
+        initialize();
     }
 
     public GpxImporter(@NonNull Context context, @NonNull File gpxFile) {
         mContext = context;
         mGpxUri = null;
         mGpxFile = gpxFile;
+        initialize();
+    }
+
+    void initialize() {
+        Garnet.create(this)
+                .depend(Context.class, mContext)
+                .inject();
     }
 
     @NonNull
@@ -119,7 +128,7 @@ public class GpxImporter {
                         .profile(mAppSettings.dumpCentralSettings())
                         .build();
 
-                CentralDataManager centralDataManager = new CentralDataManager(info);
+                CentralDataManager centralDataManager = new CentralDataManager(info, null, null);
 
                 for (GpxPoint pt : segment.getPoints()) {
                     clock.set(pt.getTime().getTime());

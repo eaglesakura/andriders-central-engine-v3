@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.service.central;
 
-import com.eaglesakura.andriders.central.command.CommandController;
+import com.eaglesakura.andriders.central.data.command.CommandController;
 import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawIntent;

@@ -1,11 +1,11 @@
 package com.eaglesakura.andriders.data.db;
 
-import com.eaglesakura.andriders.central.log.LogStatistics;
+import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.dao.session.DaoMaster;
 import com.eaglesakura.andriders.dao.session.DaoSession;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
 import com.eaglesakura.andriders.dao.session.DbSessionPointDao;
-import com.eaglesakura.andriders.system.AppStorageController;
+import com.eaglesakura.andriders.storage.AppStorageController;
 import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
 import com.eaglesakura.andriders.error.io.AppDatabaseException;
 import com.eaglesakura.andriders.error.io.AppIOException;
@@ -17,14 +17,18 @@ import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.collection.StringFlag;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.geo.GeohashGroup;
 import com.eaglesakura.json.JSON;
+import com.eaglesakura.util.IOUtil;
 import com.eaglesakura.util.Timer;
+import com.eaglesakura.util.Util;
 
 import org.greenrobot.greendao.database.StandardDatabase;
+import org.greenrobot.greendao.query.CloseableListIterator;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -48,6 +52,11 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     public SessionLogDatabase(@NonNull Context context) {
         super(context, DaoMaster.class);
 
+        Garnet.inject(this);
+    }
+
+    @Initializer
+    public void initialize() {
         Garnet.inject(this);
     }
 
@@ -103,34 +112,69 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     /**
      * startTime～endTimeまでに開始されたセッションの統計情報を返却する
      *
+     * FIXME: まずは実装を優先するため、全てのログデータを巡回している。これはSQLクエリで出せるようにすべきである。
+     *
      * @param startTime 開始時刻
      * @param endTime   終了時刻
      * @return 合計値 / セッションが存在しない場合はnullを返却
      */
     @Nullable
     public LogStatistics loadTotal(long startTime, long endTime) {
-        throw new Error("NotImpl");
-//        Timer timer = new Timer();
-//        CloseableListIterator<DbSessionLog> iterator = null;
-//        try {
-//            QueryBuilder<DbSessionLog> builder = session.getDbSessionLogDao().queryBuilder();
-//
-//            AppLog.db("loadTotal start(%s) end(%s)", new Date(startTime).toString(), new Date(endTime).toString());
-//
-//            iterator = builder
-//                    .where(DbSessionLogDao.Properties.StartTime.ge(startTime), DbSessionLogDao.Properties.StartTime.le(endTime))
-//                    .orderAsc(DbSessionLogDao.Properties.StartTime)
-//                    .listIterator();
-//
-//            if (iterator.hasNext()) {
-//                return new SessionTotal(iterator);
-//            } else {
-//                return null;
-//            }
-//        } finally {
-//            GreenDaoUtil.close(iterator);
-//            AppLog.db("loadTotal readTime[%d ms]", timer.end());
-//        }
+        Date startDate = null;
+        Date endDate = null;
+
+        int activeTimeMs = 0;
+        float activeDistanceKm = 0;
+        float sumAltitudeMeter = 0;
+        float sumDistanceKm = 0;
+        float calories = 0;
+        float exercise = 0;
+        float maxCadence = 0;
+        short maxHeartrate = 0;
+        float maxSpeedKmh = 0;
+
+        CloseableListIterator<DbSessionPoint> iterator = session.getDbSessionPointDao().queryBuilder()
+                .where(DbSessionPointDao.Properties.Date.ge(startTime), DbSessionPointDao.Properties.Date.le(endTime))
+                .orderAsc(DbSessionPointDao.Properties.Date)
+                .listIterator();
+
+
+        try {
+
+            int count = 0;
+            while (iterator.hasNext()) {
+                DbSessionPoint pt = iterator.next();
+                if (startDate == null) {
+                    startDate = pt.getDate();
+                }
+                endDate = pt.getDate();
+                activeTimeMs = Util.getInt(pt.getValueActiveTimeMs(), activeTimeMs);
+                activeDistanceKm = Util.getFloat(pt.getValueActiveDistanceKm(), activeDistanceKm);
+                sumAltitudeMeter = Util.getFloat(pt.getValueRecordSumAltMeter(), sumAltitudeMeter);
+                sumDistanceKm = Util.getFloat(pt.getValueRecordDistanceKm(), sumDistanceKm);
+                calories = Util.getFloat(pt.getValueFitCalories(), calories);
+                exercise = Util.getFloat(pt.getValueFitExercise(), exercise);
+                maxCadence = Math.max(maxCadence, Util.getInt(pt.getValueCadence(), 0));
+                maxHeartrate = (short) Math.max(maxHeartrate, Util.getInt(pt.getValueHeartrate(), 0));
+
+                if (pt.getValueSensorSpeed() != null) {
+                    maxSpeedKmh = Math.max(maxSpeedKmh, pt.getValueSensorSpeed());
+                } else if (pt.getValueGpsSpeed() != null) {
+                    maxSpeedKmh = Math.max(maxSpeedKmh, pt.getValueGpsSpeed());
+                }
+                ++count;
+            }
+
+            // ゼロポイントであれば、null返却
+            if (count == 0) {
+                return null;
+            }
+        } finally {
+            IOUtil.close(iterator);
+        }
+
+        return new LogStatistics(startDate, endDate, activeTimeMs, activeDistanceKm, sumAltitudeMeter, sumDistanceKm, calories, exercise, maxCadence, maxHeartrate, maxSpeedKmh);
+
     }
 
     /**

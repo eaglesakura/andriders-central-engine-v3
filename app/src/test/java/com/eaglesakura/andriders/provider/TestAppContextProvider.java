@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.data.AppSettings;
+import com.eaglesakura.andriders.system.context.AppSettings;
 
 import static junit.framework.Assert.assertEquals;
 

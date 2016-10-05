@@ -119,8 +119,8 @@ task generateCentralLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) 
     // 以下はセッションの最終値を取れば良いため、インデックスを貼る必要はない
     DbSessionPoint.addFloatProperty("valueFitCalories");       // セッション消費カロリー
     DbSessionPoint.addFloatProperty("valueFitExercise");       // セッション獲得エクササイズ
-    DbSessionPoint.addFloatProperty("valueRecordDistanceKm");       // 合計移動距離
-    DbSessionPoint.addFloatProperty("valueRecordSumAltMeter");       // 合計獲得標高
+    DbSessionPoint.addFloatProperty("valueRecordDistanceKm");       // セッション合計移動距離
+    DbSessionPoint.addFloatProperty("valueRecordSumAltMeter");       // セッション合計獲得標高
     DbSessionPoint.addFloatProperty("valueActiveDistanceKm");       // セッション自走距離
     DbSessionPoint.addIntProperty("valueActiveTimeMs");       // セッション自走時間
     // 将来的な機能予約

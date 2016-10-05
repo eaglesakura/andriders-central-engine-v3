@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.ble.service;
 
-import com.eaglesakura.andriders.ble.hw.heartrate.BleHeartrateMonitor;
-import com.eaglesakura.andriders.ble.hw.heartrate.HeartrateGattReceiver;
-import com.eaglesakura.andriders.ble.hw.heartrate.HeartrateSensorData;
+import com.eaglesakura.andriders.ble.heartrate.BleHeartrateMonitor;
+import com.eaglesakura.andriders.ble.heartrate.HeartrateGattReceiver;
+import com.eaglesakura.andriders.ble.heartrate.HeartrateSensorData;
 import com.eaglesakura.andriders.plugin.AcePluginService;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.CentralEngineConnection;

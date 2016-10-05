@@ -180,9 +180,7 @@ android {
             java.srcDirs += [
                     'src/main/gen/java',
                     // 内蔵プラグイン
-                    'src/main/java-plugin-basicui',
-                    'src/main/java-plugin-ble',
-                    'src/main/java-plugin-location',
+                    'src/main/plugin',
             ]
             res.srcDirs += [
                     "private/main/res"

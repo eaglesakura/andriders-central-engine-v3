@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.provider;
 
-import com.eaglesakura.andriders.system.AppStorageController;
+import com.eaglesakura.andriders.storage.AppStorageController;
 import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Provide;
 import com.eaglesakura.android.garnet.Singleton;
@@ -11,7 +11,7 @@ import com.eaglesakura.android.garnet.Singleton;
 @Singleton
 public class AppControllerProvider extends ContextProvider {
     @Provide
-    public AppStorageController provideStorageManager() {
+    public AppStorageController provideStorageController() {
         return new AppStorageController(getApplication());
     }
 }

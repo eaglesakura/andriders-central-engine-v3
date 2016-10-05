@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.display.notification;
 
-import com.eaglesakura.andriders.central.command.ProximityCommandController;
+import com.eaglesakura.andriders.central.data.command.ProximityCommandController;
 import com.eaglesakura.andriders.data.AppSettings;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.plugin.CommandDataManager;

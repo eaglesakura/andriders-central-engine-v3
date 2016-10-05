@@ -17,14 +17,16 @@ import com.eaglesakura.andriders.dao.central.DbDisplayLayoutDao;
 import com.eaglesakura.andriders.dao.central.DbDisplayTarget;
 import com.eaglesakura.andriders.dao.central.DbDisplayTargetDao;
 import com.eaglesakura.andriders.model.plugin.ActivePlugin;
-import com.eaglesakura.andriders.model.plugin.PluginCollection;
+import com.eaglesakura.andriders.model.plugin.ActivePluginCollection;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.ble.FitnessDeviceType;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.provider.AppControllerProvider;
-import com.eaglesakura.andriders.system.AppStorageController;
+import com.eaglesakura.andriders.storage.AppStorageController;
 import com.eaglesakura.android.db.DaoDatabase;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.StringUtil;
@@ -58,6 +60,11 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
 
     public CentralSettingDatabase(Context context) {
         super(context, DaoMaster.class);
+    }
+
+    @Initializer
+    public void initialize() {
+        Garnet.inject(this);
     }
 
     /**
@@ -260,7 +267,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
         return StringUtil.format("%s@%s", packageName, className);
     }
 
-    public void active(PluginInformation pluginInfo, ResolveInfo appInfo) {
+    public void activePlugin(PluginInformation pluginInfo, ResolveInfo appInfo) {
         DbActivePlugin dbActivePlugin = new DbActivePlugin();
         dbActivePlugin.setUniqueId(getPluginClassName(appInfo.serviceInfo.packageName, appInfo.serviceInfo.name));
         dbActivePlugin.setCategory(pluginInfo.getCategory().getName());
@@ -270,10 +277,17 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
         session.getDbActivePluginDao().insertOrReplace(dbActivePlugin);
     }
 
+    public boolean isActivePlugin(String packageName, String className) {
+        String key = getPluginClassName(packageName, className);
+        return session.getDbActivePluginDao().queryBuilder()
+                .where(DbActivePluginDao.Properties.UniqueId.eq(key))
+                .count() > 0;
+    }
+
     /**
      * 指定した内蔵クラスを強制的にアクティブにする
      */
-    public void active(Class clazz, Category category) {
+    public void activePlugin(Class clazz, Category category) {
         DbActivePlugin dbActivePlugin = new DbActivePlugin();
         dbActivePlugin.setUniqueId(getPluginClassName(context.getPackageName(), clazz.getName()));
         dbActivePlugin.setCategory(category.getName());
@@ -287,17 +301,15 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     /**
      * 有効状態から削除する
      */
-    public void remove(ResolveInfo appInfo) {
+    public void disablePlugin(ResolveInfo appInfo) {
         session.getDbActivePluginDao().deleteByKey(getPluginClassName(appInfo.serviceInfo.packageName, appInfo.serviceInfo.name));
     }
 
     /**
-     * 指定されたプラグインがActiveであればtrue
+     * プラグインを無効化する
      */
-    public boolean isActive(ResolveInfo appInfo) {
-        return session.getDbActivePluginDao().queryBuilder()
-                .where(DbActivePluginDao.Properties.PackageName.eq(appInfo.serviceInfo.packageName), DbActivePluginDao.Properties.ClassName.eq(appInfo.serviceInfo.name))
-                .count() == 1;
+    public void disablePlugin(String packageName, String className) {
+        session.getDbActivePluginDao().deleteByKey(getPluginClassName(packageName, className));
     }
 
     /**
@@ -314,8 +326,8 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     /**
      * 全てのプラグインを列挙する
      */
-    public PluginCollection list() {
-        return new PluginCollection(
+    public ActivePluginCollection listPlugins() {
+        return new ActivePluginCollection(
                 CollectionUtil.asOtherList(
                         session.getDbActivePluginDao().loadAll(),
                         it -> new ActivePlugin(it)

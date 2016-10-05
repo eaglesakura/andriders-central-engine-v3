@@ -3,6 +3,8 @@ package com.eaglesakura.andriders.model.plugin;
 import com.eaglesakura.andriders.dao.central.DbActivePlugin;
 import com.eaglesakura.andriders.model.DaoModel;
 
+import org.greenrobot.greendao.annotation.NotNull;
+
 import android.support.annotation.NonNull;
 
 /**
@@ -20,5 +22,15 @@ public class ActivePlugin extends DaoModel<DbActivePlugin> {
 
     public String getCategory() {
         return mRaw.getCategory();
+    }
+
+    @NotNull
+    public String getPackageName() {
+        return mRaw.getPackageName();
+    }
+
+    @NotNull
+    public String getClassName() {
+        return mRaw.getClassName();
     }
 }

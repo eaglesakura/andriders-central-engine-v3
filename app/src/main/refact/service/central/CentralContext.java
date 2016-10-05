@@ -2,11 +2,11 @@ package com.eaglesakura.andriders.service.central;
 
 import com.eaglesakura.andriders.central.CentralDataManager;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
-import com.eaglesakura.andriders.central.command.CommandController;
-import com.eaglesakura.andriders.central.command.DistanceCommandController;
-import com.eaglesakura.andriders.central.command.ProximityCommandController;
-import com.eaglesakura.andriders.central.command.SpeedCommandController;
-import com.eaglesakura.andriders.central.command.TimerCommandController;
+import com.eaglesakura.andriders.central.data.command.CommandController;
+import com.eaglesakura.andriders.central.data.command.DistanceCommandController;
+import com.eaglesakura.andriders.central.data.command.ProximityCommandController;
+import com.eaglesakura.andriders.central.data.command.SpeedCommandController;
+import com.eaglesakura.andriders.central.data.command.TimerCommandController;
 import com.eaglesakura.andriders.data.AppSettings;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
