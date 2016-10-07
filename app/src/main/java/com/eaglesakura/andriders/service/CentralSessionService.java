@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.service.server.SessionServer;
+import com.eaglesakura.andriders.service.ui.SessionNotification;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.util.ContextUtil;
@@ -27,6 +28,11 @@ public class CentralSessionService extends Service {
 
     @NotNull
     final SessionServer mSessionServer;
+
+    /**
+     * セッション通知
+     */
+    SessionNotification mSessionNotification;
 
     public CentralSessionService() {
         mSessionServer = new SessionServer(this, mSessionServerCallback);
@@ -74,6 +80,10 @@ public class CentralSessionService extends Service {
         CentralSession.InitializeOption option = new CentralSession.InitializeOption();
         centralSession.initialize(option);
 
+        // Foreground Serviceとして起動する
+        mSessionNotification = new SessionNotification(this, mNotificationCallback);
+        mSessionNotification.onStartSession(sessionInfo);
+
         return centralSession;
     }
 
@@ -82,13 +92,16 @@ public class CentralSessionService extends Service {
      */
     @UiThread
     protected void stopCurrentSession(@Nullable Intent intent) {
-        if (mSession == null) {
-            return;
+        if (mSession != null) {
+            mSession.unregisterCallback(mCentralSessionListener);
+            mSession.dispose();
+            mSession = null;
         }
 
-        mSession.unregisterCallback(mCentralSessionListener);
-        mSession.dispose();
-        mSession = null;
+        if (mSessionNotification != null) {
+            mSessionNotification.onStopSession();
+            mSessionNotification = null;
+        }
     }
 
     private CentralSession.Listener mCentralSessionListener = new CentralSession.Listener() {
@@ -98,11 +111,24 @@ public class CentralSessionService extends Service {
         }
     };
 
+    /**
+     * セッション制御のコールバック
+     */
     private SessionServer.Callback mSessionServerCallback = new SessionServer.Callback() {
         @Override
         @Nullable
         public CentralSession getCurrentSession(SessionServer self) {
             return mSession;
+        }
+    };
+
+    /**
+     * 通知制御のコールバック
+     */
+    private SessionNotification.Callback mNotificationCallback = new SessionNotification.Callback() {
+        @Override
+        public void onClickNotification(SessionNotification self) {
+            AppLog.system("Click Notification");
         }
     };
 

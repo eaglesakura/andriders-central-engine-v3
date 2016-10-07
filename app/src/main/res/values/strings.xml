@@ -155,6 +155,7 @@
     <string name="Message.Central.SessionStart">走行セッションを開始しますか？</string>
     <string name="Choose.Central.SessionStart">セッション開始</string>
     <string name="Title.Launcher.ChooseApp">起動するアプリを選択</string>
+    <string name="Word.App.AndridersCentralEngine">Andriders Central Engine</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

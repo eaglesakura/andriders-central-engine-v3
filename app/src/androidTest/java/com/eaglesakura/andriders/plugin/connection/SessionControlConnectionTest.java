@@ -77,6 +77,9 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
             assertTrue(CentralSessionService.isRunning(getContext())); // Service起動後
         }
 
+        // 通知等をチェックする
+        Util.sleep(1000 * 10);
+
         // 再度接続して、ちゃんと起動が行えているから確認する
         {
             SessionControlConnection connection = new SessionControlConnection(getContext());
