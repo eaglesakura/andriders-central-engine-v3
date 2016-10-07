@@ -1,34 +1,33 @@
-package com.eaglesakura.andriders.location;
+package com.eaglesakura.andriders.plugin.service;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.AcePluginService;
 import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.CentralEngineConnection;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginInformation;
-import com.eaglesakura.andriders.plugin.data.CentralEngineData;
+import com.eaglesakura.andriders.plugin.connection.PluginConnection;
+import com.eaglesakura.andriders.plugin.data.CentralEngineSessionData;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.display.DisplayDataSender;
 import com.eaglesakura.andriders.plugin.display.LineValue;
-import com.eaglesakura.andriders.service.base.AppBaseService;
-import com.eaglesakura.andriders.ui.auth.PermissionRequestActivity;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.util.CollectionUtil;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.StringUtil;
 
+import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,10 +37,8 @@ import java.util.List;
 /**
  * 現在位置を配信するExtension
  */
-public class LocationExtensionService extends AppBaseService implements AcePluginService {
+public class GpsLocationPluginService extends Service implements AcePluginService {
     GoogleApiClient mLocationApiClient;
-
-    CentralEngineData mCentralDataManager;
 
     DisplayDataSender mDisplayExtension;
 
@@ -54,18 +51,18 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
     @Override
     public IBinder onBind(Intent intent) {
         AppLog.system("onBind(%s)", toString());
-        CentralEngineConnection session = CentralEngineConnection.onBind(this, intent);
-        if (session == null) {
+        PluginConnection connection = PluginConnection.onBind(this, intent);
+        if (connection == null) {
             return null;
         }
 
-        return session.getBinder();
+        return connection.getBinder();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         AppLog.system("onUnbind(%s)", toString());
-        CentralEngineConnection.onUnbind(this, intent);
+        PluginConnection.onUnbind(this, intent);
         return super.onUnbind(intent);
     }
 
@@ -75,7 +72,7 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
     }
 
     @Override
-    public PluginInformation getExtensionInformation(CentralEngineConnection connection) {
+    public PluginInformation getExtensionInformation(PluginConnection connection) {
         PluginInformation info = new PluginInformation(this, "gps_loc");
         info.setSummary("現在位置をサイクルコンピュータに反映します。");
         info.setCategory(Category.CATEGORY_LOCATION);
@@ -84,7 +81,7 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
     }
 
     @Override
-    public List<DisplayKey> getDisplayInformation(CentralEngineConnection connection) {
+    public List<DisplayKey> getDisplayInformation(PluginConnection connection) {
 
         List<DisplayKey> result = new ArrayList<>();
 
@@ -115,9 +112,14 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
     }
 
     @Override
-    public void onAceServiceConnected(CentralEngineConnection connection) {
+    public void onAceServiceConnected(PluginConnection connection) {
         if (!isRuntimePermissionGranted()) {
             // 許可されていないので、このServiceは何もしない
+            NotificationData notification =
+                    new NotificationData.Builder(this)
+                            .message(getString(R.string.Message_LocationPlugin_PermissionError))
+                            .getNotification();
+            connection.getDisplay().queueNotification(notification);
             return;
         }
 
@@ -127,8 +129,7 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
         mDebugLocation = new DisplayData(this, "debug.geohash");
         mDebugLocation.setValue(new LineValue(3)); // lat, lng, time
 
-        mCentralDataManager = connection.getCentralDataExtension();
-        mDisplayExtension = connection.getDisplayExtension();
+        mDisplayExtension = connection.getDisplay();
 
         mLocationApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -140,11 +141,11 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
                             LocationServices.FusedLocationApi.requestLocationUpdates(
                                     mLocationApiClient,
                                     createLocationRequest(),
-                                    mLocationListenerImpl
+                                    new LocationListenerImpl(connection)
                             );
                         } catch (SecurityException e) {
                             // failed connect...
-                            e.printStackTrace();
+                            AppLog.printStackTrace(e);
                         }
                     }
 
@@ -157,33 +158,23 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
     }
 
     @Override
-    public void onAceServiceDisconnected(CentralEngineConnection connection) {
-        if (mLocationApiClient == null) {
-            return;
-        }
-
-        mCentralDataManager = null;
-        mLocationApiClient.disconnect();
-    }
-
-    @Override
-    public void onEnable(CentralEngineConnection connection) {
-        if (!isRuntimePermissionGranted()) {
-            Toast.makeText(this, "Request GPS Permission!!", Toast.LENGTH_SHORT).show();
-            Intent intent = PermissionRequestActivity.createIntent(LocationExtensionService.this,
-                    new PermissionUtil.PermissionType[]{PermissionUtil.PermissionType.SelfLocation});
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+    public void onAceServiceDisconnected(PluginConnection connection) {
+        if (mLocationApiClient != null) {
+            mLocationApiClient.disconnect();
         }
     }
 
     @Override
-    public void onDisable(CentralEngineConnection connection) {
+    public void onEnable(PluginConnection connection) {
+    }
+
+    @Override
+    public void onDisable(PluginConnection connection) {
 
     }
 
     @Override
-    public void startSetting(CentralEngineConnection connection) {
+    public void startSetting(PluginConnection connection) {
 
     }
 
@@ -199,20 +190,24 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
         return request;
     }
 
-    /**
-     * 位置更新チェック
-     */
-    final LocationListener mLocationListenerImpl = new LocationListener() {
+    class LocationListenerImpl implements LocationListener {
+        PluginConnection mPluginConnection;
+
+        public LocationListenerImpl(PluginConnection pluginConnection) {
+            mPluginConnection = pluginConnection;
+        }
+
         @Override
         public void onLocationChanged(Location newLocation) {
-            if (mCentralDataManager == null || newLocation == null) {
+            if (newLocation == null) {
                 return;
             }
 
-            mCentralDataManager.setLocation(newLocation);
+            CentralEngineSessionData centralData = mPluginConnection.getCentralData();
+            centralData.setLocation(newLocation);
 
             // デバッグ情報を与える
-            if (mSettings.isDebuggable()) {
+            if (mPluginConnection.isDebuggable()) {
                 String time = StringUtil.toString(new Date());
                 {
                     int index = 0;
@@ -230,6 +225,6 @@ public class LocationExtensionService extends AppBaseService implements AcePlugi
                 mDisplayExtension.setValue(Arrays.asList(mDebugGeohash, mDebugLocation));
             }
         }
-    };
+    }
 }
 

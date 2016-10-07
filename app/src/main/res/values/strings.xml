@@ -160,6 +160,7 @@
     <string name="Title.Error.DatabaseIO">データベース処理エラー</string>
     <string name="Message.Error.Runtime">処理中に問題が発生しました</string>
     <string name="Title.Plugin">プラグイン設定</string>
+    <string name="Message.LocationPlugin.PermissionError">GPS利用が許可されていません</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

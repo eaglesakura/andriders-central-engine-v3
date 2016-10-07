@@ -82,7 +82,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
 //                            .icon(R.mipmap.ic_speed)
                             .message("GPS速度 / タイムアウト")
                             .getNotification();
-                    mSession.getDisplayExtension().queueNotification(notification);
+                    mSession.getDisplay().queueNotification(notification);
                     mTimeoutMessageSend = true;
                 }
             }
@@ -94,7 +94,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
         value.setZoneText(mZoneTitles[mSpeed.zone.ordinal()]);
 
         data.setValue(value);
-        mSession.getDisplayExtension().setValue(data);
+        mSession.getDisplay().setValue(data);
     }
 
     private SensorDataReceiver.SpeedHandler mSpeedHandler = new SensorDataReceiver.SpeedHandler() {
@@ -121,7 +121,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
             value.setBarColorARGB(0x00);
 
             data.setValue(value);
-            mSession.getDisplayExtension().setValue(data);
+            mSession.getDisplay().setValue(data);
         }
     };
 

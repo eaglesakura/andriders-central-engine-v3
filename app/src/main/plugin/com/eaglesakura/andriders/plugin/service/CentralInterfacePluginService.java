@@ -88,7 +88,7 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
             return;
         }
 
-        AppLog.system("Wheel Length[%.1f]", connection.getCentralDataExtension().getWheelOuterLength());
+        AppLog.system("Wheel Length[%.1f]", connection.getCentralData().getWheelOuterLength());
 
         ZoneColor zoneColor = new ZoneColor(this);
         List<DisplayDataSender> senders = new ArrayList<>();
@@ -111,7 +111,7 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
 
 
         // 通知を送る
-        connection.getDisplayExtension().queueNotification(
+        connection.getDisplay().queueNotification(
                 new NotificationData.Builder(this, NotificationData.ID_CENTRAL_SERVICE_BOOT)
                         .icon(R.mipmap.ic_launcher)
                         .message("Andriders Central Engineを起動しました").getNotification()
@@ -155,6 +155,6 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         value.setZoneText("Zone" + (System.currentTimeMillis() % 10));
         data.setValue(value);
 
-        session.getDisplayExtension().setValue(data);
+        session.getDisplay().setValue(data);
     }
 }

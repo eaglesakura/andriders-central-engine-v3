@@ -56,7 +56,7 @@ public class CadenceDisplaySender extends DisplayDataSender {
             value.setZoneText(mZoneTitles[sensor.zone.ordinal()]);
 
             data.setValue(value);
-            mSession.getDisplayExtension().setValue(data);
+            mSession.getDisplay().setValue(data);
         }
 
         @Override
@@ -72,7 +72,7 @@ public class CadenceDisplaySender extends DisplayDataSender {
             value.setBarColorARGB(0x00);
 
             data.setValue(value);
-            mSession.getDisplayExtension().setValue(data);
+            mSession.getDisplay().setValue(data);
         }
     };
 
