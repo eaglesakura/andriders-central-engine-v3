@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.plugin.service.ui;
 
 import com.eaglesakura.andriders.central.CentralDataReceiver;
-import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,9 +11,9 @@ public abstract class DisplayDataSender {
     protected final CentralDataReceiver mDataReceiver;
 
     @NonNull
-    protected final CentralEngineConnection mSession;
+    protected final PluginConnection mSession;
 
-    public DisplayDataSender(@NonNull CentralEngineConnection connection) {
+    public DisplayDataSender(@NonNull PluginConnection connection) {
         mSession = connection;
         if (mSession.isAcesSession()) {
             mDataReceiver = mSession.getCentralDataReceiver();

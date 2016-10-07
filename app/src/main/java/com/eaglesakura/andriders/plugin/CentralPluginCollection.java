@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.CollectionUtil;
@@ -74,8 +75,9 @@ public class CentralPluginCollection extends DataCollection<CentralPlugin> {
     /**
      * Plugin Serviceへ接続する
      */
-    @WorkerThread
     public void connect(CentralPlugin.ConnectOption option, CancelCallback cancelCallback) throws TaskCanceledException, AppException {
+        AndroidThreadUtil.assertBackgroundThread();
+
         try {
             each(plugin -> {
                 plugin.connect(option, cancelCallback);
@@ -92,8 +94,9 @@ public class CentralPluginCollection extends DataCollection<CentralPlugin> {
     /**
      * Plugin Serviceから切断する
      */
-    @WorkerThread
     public void disconnect() throws AppException {
+        AndroidThreadUtil.assertBackgroundThread();
+
         safeEach(plugin -> {
             plugin.disconnect(() -> false);
         });

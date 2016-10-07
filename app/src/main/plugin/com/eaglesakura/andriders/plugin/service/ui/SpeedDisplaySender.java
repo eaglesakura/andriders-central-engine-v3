@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.central.SensorDataReceiver;
 import com.eaglesakura.andriders.central.data.base.BaseCalculator;
 import com.eaglesakura.andriders.display.ZoneColor;
 import com.eaglesakura.andriders.notification.NotificationData;
-import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.display.*;
 import com.eaglesakura.andriders.serialize.RawCentralData;
@@ -45,7 +45,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
      */
     boolean mTimeoutMessageSend = false;
 
-    public SpeedDisplaySender(@NonNull CentralEngineConnection session, @NonNull ZoneColor zoneColor) {
+    public SpeedDisplaySender(@NonNull PluginConnection session, @NonNull ZoneColor zoneColor) {
         super(session);
         mZoneColor = zoneColor;
 

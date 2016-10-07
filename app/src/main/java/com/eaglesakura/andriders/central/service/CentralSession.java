@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.plugin.CentralPlugin;
 import com.eaglesakura.andriders.plugin.CentralPluginCollection;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
@@ -18,8 +19,10 @@ import com.eaglesakura.android.rx.BackgroundTaskBuilder;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ResultCollection;
+import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.collection.AnonymousBroadcaster;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.util.Timer;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -136,12 +139,20 @@ public class CentralSession {
      * 毎フレーム更新を行う
      */
     public void onUpdate(double deltaSec) {
-        // 内部時間を経過させる
-        Clock sessionClock = mSessionInfo.getSessionClock();
-        sessionClock.offset((long) (deltaSec * 1000));
+        Timer timer = new Timer();
+        try {
+            // 内部時間を経過させる
+            Clock sessionClock = mSessionInfo.getSessionClock();
+            sessionClock.offset((long) (deltaSec * 1000));
 
-        // 更新を行う
-        mCentralDataManager.onUpdate();
+            // 更新を行う
+            mCentralDataManager.onUpdate();
+        } finally {
+            if (timer.end() > (1000 / 60)) {
+                // 1フレームを超えたら警告を出す
+                AppLog.system("Central UpdateTime too long!! [%d ms]", timer.end());
+            }
+        }
     }
 
     /**
@@ -154,7 +165,9 @@ public class CentralSession {
     /**
      * 削除を行う
      */
+    @UiThread
     public void dispose() {
+        AndroidThreadUtil.assertUIThread();
         async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
             if (mPluginCollection != null) {
                 mPluginCollection.disconnect();

@@ -33,6 +33,8 @@
             android:label="@string/Env.AppName"
             android:theme="@style/App.Theme">
 
+        <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
+        </service>
         <!--<activity-->
         <!--android:name=".ui.navigation.AppBootActivity"-->
         <!--android:screenOrientation="portrait">-->

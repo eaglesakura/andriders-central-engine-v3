@@ -40,7 +40,7 @@ public class CentralSessionTest extends AppDeviceTestCase {
 
         try {
             timer.start();
-            centralSession.initialize(new CentralSession.InitializeOption());
+            awaitUiThread(() -> centralSession.initialize(new CentralSession.InitializeOption()));
             while (centralSession.mCentralDataManager == null) {
                 Util.sleep(1);
             }
@@ -48,22 +48,22 @@ public class CentralSessionTest extends AppDeviceTestCase {
             validate(timer.end()).to(1000 * 10); // 10秒以内に処理出来ている
         }
 
+        // セッション内時間で8時間を経過させる
         for (int i = 0; i < (60 * 60 * 8); ++i) {
             // 1秒程度のオフセットを生成する
             double offsetTimeSec = (RandomUtil.randFloat() * 0.2) + 0.9;
 
-            // 更新時間は30fps以内に収まる
             try {
                 timer.start();
-                centralSession.onUpdate(offsetTimeSec);
+                awaitUiThread(() -> centralSession.onUpdate(offsetTimeSec));
             } finally {
-                validate(timer.end()).to(1000 / 30);
+                validate(timer.end()).to(1000);
             }
         }
 
         try {
             timer.start();
-            centralSession.dispose();
+            awaitUiThread(() -> centralSession.dispose());
             while (centralSession.mCentralDataManager != null) {
                 Util.sleep(1);
             }

@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.serialize.PluginProtocol;
+import com.eaglesakura.andriders.service.CentralSessionService;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
@@ -111,11 +112,7 @@ public class CentralPlugin {
         intent.putExtra(PluginServerImpl.EXTRA_CONNECTION_ID, mConnectionId);
         intent.putExtra(PluginServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
         intent.putExtra(PluginServerImpl.EXTRA_DEBUGGABLE, mSettings.isDebuggable());
-
-        if (option.centralConnection) {
-            // FIXME: CentralServiceのComponentNameを設定する
-//            intent.putExtra(PluginServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralService.class));
-        }
+        intent.putExtra(PluginServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralSessionService.class));
 
         CommandClientImpl commandClient = new CommandClientImpl(mContext, mConnectionId);
         commandClient.connect(intent, cancelCallback);

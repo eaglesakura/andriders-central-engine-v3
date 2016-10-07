@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.plugin.service.ui;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.SensorDataReceiver;
 import com.eaglesakura.andriders.display.ZoneColor;
-import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.display.BasicValue;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
@@ -28,7 +28,7 @@ public class CadenceDisplaySender extends DisplayDataSender {
     @NonNull
     String[] mZoneTitles;
 
-    public CadenceDisplaySender(@NonNull CentralEngineConnection connection, @NonNull ZoneColor zoneColor) {
+    public CadenceDisplaySender(@NonNull PluginConnection connection, @NonNull ZoneColor zoneColor) {
         super(connection);
         mZoneColor = zoneColor;
 

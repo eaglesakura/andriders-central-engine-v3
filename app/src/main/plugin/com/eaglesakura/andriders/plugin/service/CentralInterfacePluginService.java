@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.plugin.service;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.plugin.AcePluginService;
 import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.CentralEngineConnection;
+import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.plugin.service.ui.CadenceDisplaySender;
@@ -39,7 +39,7 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
     @Override
     public IBinder onBind(Intent intent) {
         AppLog.system("onBind(%s)", toString());
-        CentralEngineConnection session = CentralEngineConnection.onBind(this, intent);
+        PluginConnection session = PluginConnection.onBind(this, intent);
         if (session == null) {
             return null;
         }
@@ -50,12 +50,12 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
     @Override
     public boolean onUnbind(Intent intent) {
         AppLog.system("onUnbind(%s)", toString());
-        CentralEngineConnection.onUnbind(this, intent);
+        PluginConnection.onUnbind(this, intent);
         return super.onUnbind(intent);
     }
 
     @Override
-    public PluginInformation getExtensionInformation(CentralEngineConnection connection) {
+    public PluginInformation getExtensionInformation(PluginConnection connection) {
         PluginInformation info = new PluginInformation(this, "basic_extension");
         info.setSummary("Andriders Central Engine 標準機能");
         info.setCategory(Category.CATEGORY_OTHERS);
@@ -63,7 +63,7 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
     }
 
     @Override
-    public List<DisplayKey> getDisplayInformation(CentralEngineConnection connection) {
+    public List<DisplayKey> getDisplayInformation(PluginConnection connection) {
         List<DisplayKey> result = new ArrayList<>();
 
         result.add(HeartrateDisplaySender.newInformation(this));
@@ -83,7 +83,7 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
     }
 
     @Override
-    public void onAceServiceConnected(final CentralEngineConnection connection) {
+    public void onAceServiceConnected(final PluginConnection connection) {
         if (mDisplayCommitLoop != null) {
             return;
         }
@@ -119,7 +119,7 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
     }
 
     @Override
-    public void onAceServiceDisconnected(CentralEngineConnection connection) {
+    public void onAceServiceDisconnected(PluginConnection connection) {
         if (mDisplayCommitLoop == null) {
             return;
         }
@@ -128,17 +128,17 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
     }
 
     @Override
-    public void onEnable(CentralEngineConnection connection) {
+    public void onEnable(PluginConnection connection) {
 
     }
 
     @Override
-    public void onDisable(CentralEngineConnection connection) {
+    public void onDisable(PluginConnection connection) {
 
     }
 
     @Override
-    public void startSetting(CentralEngineConnection connection) {
+    public void startSetting(PluginConnection connection) {
 
     }
 
@@ -146,7 +146,7 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
      * ダミーの心拍データを書き込む
      * FIXME 将来的に、DisplayDataではなく心拍そのものをダミー書き込みするようにする
      */
-    private void postDummyHeartrate(CentralEngineConnection session) {
+    private void postDummyHeartrate(PluginConnection session) {
         DisplayData data = new DisplayData(this, DEBUG_RANDOM_HEARTRATE);
         BasicValue value = new BasicValue();
         value.setTitle("DBG: 心拍");
