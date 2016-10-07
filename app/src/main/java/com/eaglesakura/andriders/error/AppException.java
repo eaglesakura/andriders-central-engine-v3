@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * アプリ共通例外
  */
-public class AppException extends Exception {
+public class AppException extends AceException {
     public AppException() {
     }
 

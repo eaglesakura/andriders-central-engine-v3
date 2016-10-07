@@ -2,25 +2,34 @@ package com.eaglesakura.andriders.ui.navigation.plugin;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.PluginManager;
-import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
+import com.eaglesakura.andriders.plugin.CentralPlugin;
+import com.eaglesakura.andriders.plugin.CentralPluginCollection;
+import com.eaglesakura.andriders.plugin.PluginDataManager;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.framework.util.AppSupportUtil;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ObserveTarget;
-import com.eaglesakura.android.rx.SubscribeTarget;
+import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.material.widget.ToolbarBuilder;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 
 /**
  * 拡張機能の設定を行う。
  */
-public class PluginSettingFragmentMain extends NavigationBaseFragment {
+public class PluginSettingFragmentMain extends AppNavigationFragment {
 
-    PluginManager mClientManager;
+    @Inject(AppManagerProvider.class)
+    PluginDataManager mPluginDataManager;
+
+    @Nullable
+    CentralPluginCollection mPlugins;
 
     public PluginSettingFragmentMain() {
         mFragmentDelegate.setLayoutId(R.layout.content_fragment_simiple);
@@ -73,37 +82,43 @@ public class PluginSettingFragmentMain extends NavigationBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<PluginManager> task) -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<CentralPluginCollection> task) -> {
+            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
             try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
-                PluginManager clientManager = new PluginManager(getActivity());
-                clientManager.connect(PluginManager.ConnectMode.All);
 
-                return clientManager;
+                CentralPluginCollection pluginCollection = mPluginDataManager.listPlugins(PluginDataManager.PluginListingMode.All, cancelCallback);
+
+                CentralPlugin.ConnectOption option = new CentralPlugin.ConnectOption();
+                pluginCollection.connect(option, cancelCallback);
+
+                return pluginCollection;
             }
-        }).completed((it, task) -> {
-            mClientManager = it;
+        }).completed((pluginCollection, task) -> {
+            mPlugins = pluginCollection;
         }).start();
+
+        ToolbarBuilder.from(this).title(R.string.Title_Plugin).build();
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        async(SubscribeTarget.Pipeline, ObserveTarget.FireAndForget, it -> {
-            if (mClientManager != null) {
-                mClientManager.disconnect();
-                mClientManager = null;
-            }
-            return this;
-        }).start();
+        if (mPlugins != null) {
+            CentralPluginCollection pluginCollection = mPlugins;
+            mPlugins = null;
+            async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, it -> {
+                pluginCollection.disconnect();
+                return this;
+            }).start();
+        }
     }
 
-    public PluginManager getClientManager() {
-        return mClientManager;
-    }
-
-    public static PluginSettingFragmentMain newInstance(Context context) {
-        return new PluginSettingFragmentMain();
+    /**
+     * 読み込まれたプラグインを保持する
+     */
+    @Nullable
+    public CentralPluginCollection getPlugins() {
+        return mPlugins;
     }
 }

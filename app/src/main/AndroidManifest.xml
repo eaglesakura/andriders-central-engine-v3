@@ -33,6 +33,8 @@
             android:label="@string/Env.AppName"
             android:theme="@style/App.Theme">
 
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.PluginSettingActivity">
+        </activity>
         <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
         </service>
         <!--<activity-->

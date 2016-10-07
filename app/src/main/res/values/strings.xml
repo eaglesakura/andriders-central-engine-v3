@@ -156,6 +156,10 @@
     <string name="Choose.Central.SessionStart">セッション開始</string>
     <string name="Title.Launcher.ChooseApp">起動するアプリを選択</string>
     <string name="Word.App.AndridersCentralEngine">Andriders Central Engine</string>
+    <string name="Title.Error.Runtime">実行時エラー</string>
+    <string name="Title.Error.DatabaseIO">データベース処理エラー</string>
+    <string name="Message.Error.Runtime">処理中に問題が発生しました</string>
+    <string name="Title.Plugin">プラグイン設定</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

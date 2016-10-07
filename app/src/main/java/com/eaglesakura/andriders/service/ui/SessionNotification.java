@@ -69,7 +69,10 @@ public class SessionNotification {
             mNotificationViews.dispose();
         }
         mNotificationViews = views;
-        mNotification.content(views.getRemoteViews()).appy();
+
+        if (views != null) {
+            mNotification.content(views.getRemoteViews()).appy();
+        }
     }
 
     /**

@@ -125,4 +125,14 @@ public class AppUtil {
 //                .addApi(LocationServices.API)
 //                ;
     }
+
+    public static String getErrorTitle(Throwable e) {
+        Context context = FrameworkCentral.getApplication();
+        return context.getString(R.string.Title_Error_Runtime);
+    }
+
+    public static String getErrorMessage(Throwable e) {
+        Context context = FrameworkCentral.getApplication();
+        return context.getString(R.string.Message_Error_Runtime);
+    }
 }
