@@ -8,6 +8,7 @@ import com.eaglesakura.android.service.CommandServer;
 import com.eaglesakura.android.service.data.Payload;
 import com.eaglesakura.android.thread.ui.UIHandler;
 
+import android.app.Application;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -41,6 +42,14 @@ public class SessionServer {
         }
     }
 
+
+    /**
+     * 接続されているクライアントが存在する
+     */
+    public boolean hasClients() {
+        return mImpl.getClientNum() > 0;
+    }
+
     public interface Callback {
         @Nullable
         CentralSession getCurrentSession(SessionServer self);
@@ -49,6 +58,10 @@ public class SessionServer {
     @Nullable
     public CentralSession getCurrentSession() {
         return mCallback.getCurrentSession(this);
+    }
+
+    public Application getContext() {
+        return mImpl.getService().getApplication();
     }
 
     private void buildServerCommand() {
@@ -78,10 +91,30 @@ public class SessionServer {
             intent.setComponent(CentralServiceCommand.COMPONENT_SESSION_SERVICE);
 
             UIHandler.postUI(() -> {
-                mImpl.getService().getApplication().startService(intent);
+                getContext().startService(intent);
             });
 
             // 正常終了
+            return null;
+        });
+
+        mSessionCommandMap.addAction(CentralServiceCommand.CMD_requestSessionStop, (sender, cmd, payload) -> {
+            CentralSession session = getCurrentSession();
+            if (session == null) {
+                throw new IllegalStateException("Session Not Started!!");
+            }
+
+            Intent intent = new Intent(CentralServiceCommand.ACTION_SESSION_STOP);
+            intent.setComponent(CentralServiceCommand.COMPONENT_SESSION_SERVICE);
+
+            // セッション停止コマンドを流し、続いてServiceの起動モードをConnectのみに切り替える
+            UIHandler.postUI(() -> {
+                getContext().startService(intent);
+            });
+            UIHandler.postUI(() -> {
+                getContext().stopService(intent);
+            });
+
             return null;
         });
     }

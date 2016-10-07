@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 
 /**
  *
@@ -25,28 +26,28 @@ public class CentralSessionService extends Service {
     CentralSession mSession;
 
     @NotNull
-    final SessionServer mCentralSessionServer;
+    final SessionServer mSessionServer;
 
     public CentralSessionService() {
-        AppLog.system("NewService");
-        mCentralSessionServer = new SessionServer(this, mSessionServerCallback);
+        mSessionServer = new SessionServer(this, mSessionServerCallback);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        AppLog.system("onBind");
-        return mCentralSessionServer.getBinder(intent);
+        return mSessionServer.getBinder(intent);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        AppLog.system("onStartCommand");
+        AppLog.system("onStartCommand action[%s]", intent.getAction());
         if (CentralServiceCommand.ACTION_SESSION_START.equals(intent.getAction())) {
             // セッションを開始させる
             if (mSession == null) {
                 mSession = startNewSession(intent);
             }
+        } else if (CentralServiceCommand.ACTION_SESSION_STOP.equals(intent.getAction())) {
+            stopCurrentSession(intent);
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -54,17 +55,14 @@ public class CentralSessionService extends Service {
 
     @Override
     public void onDestroy() {
-        if (mSession != null) {
-            mSession.unregisterCallback(mCentralSessionListener);
-            mSession.dispose();
-            mSession = null;
-        }
+        stopCurrentSession(null);
         super.onDestroy();
     }
 
     /**
      * 新規セッションを開始する
      */
+    @UiThread
     protected CentralSession startNewSession(Intent intent) {
         SessionInfo sessionInfo = new SessionInfo.Builder(this, new Clock(System.currentTimeMillis()))
                 .debugable(intent.getBooleanExtra(CentralServiceCommand.EXTRA_BOOT_DEBUG_MODE, false))
@@ -77,6 +75,20 @@ public class CentralSessionService extends Service {
         centralSession.initialize(option);
 
         return centralSession;
+    }
+
+    /**
+     * 現在のセッションを停止する
+     */
+    @UiThread
+    protected void stopCurrentSession(@Nullable Intent intent) {
+        if (mSession == null) {
+            return;
+        }
+
+        mSession.unregisterCallback(mCentralSessionListener);
+        mSession.dispose();
+        mSession = null;
     }
 
     private CentralSession.Listener mCentralSessionListener = new CentralSession.Listener() {
