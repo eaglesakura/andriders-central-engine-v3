@@ -32,19 +32,20 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/Env.AppName"
             android:theme="@style/App.Theme">
-
-        <activity android:name="com.eaglesakura.andriders.ui.navigation.PluginSettingActivity">
+        <activity
+                android:name="com.eaglesakura.andriders.ui.navigation.AppBootActivity"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
+
+        <activity
+                android:name="com.eaglesakura.andriders.ui.navigation.UserSessionActivity"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.PluginSettingActivity"/>
         <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
         </service>
-        <!--<activity-->
-        <!--android:name=".ui.navigation.AppBootActivity"-->
-        <!--android:screenOrientation="portrait">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.MAIN"/>-->
-        <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-        <!--</intent-filter>-->
-        <!--</activity>-->
 
         <!--&lt;!&ndash; 指定アプリ起動 &ndash;&gt;-->
         <!--<activity-->

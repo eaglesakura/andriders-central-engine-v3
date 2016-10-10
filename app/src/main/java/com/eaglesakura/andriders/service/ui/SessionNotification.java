@@ -54,7 +54,7 @@ public class SessionNotification {
                 .icon(R.mipmap.ic_launcher)
                 .showForeground(NOTIFICATION_ID);
 
-        setContent(RemoteViewsBuilder.from(mService, R.layout.service_session_notification_initialize)
+        setContent(RemoteViewsBuilder.from(mService, R.layout.display_notification_initialize)
                 .build()
                 .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
                     mCallback.onClickNotification(SessionNotification.this);
@@ -81,6 +81,7 @@ public class SessionNotification {
     @UiThread
     public void onStopSession() {
         if (mNotification != null) {
+            mService.stopForeground(true);
             mNotification.cancel();
             mNotification = null;
         }

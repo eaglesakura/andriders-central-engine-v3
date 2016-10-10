@@ -161,6 +161,13 @@
     <string name="Message.Error.Runtime">処理中に問題が発生しました</string>
     <string name="Title.Plugin">プラグイン設定</string>
     <string name="Message.LocationPlugin.PermissionError">GPS利用が許可されていません</string>
+    <string name="Message.Boot">アプリ起動中</string>
+    <string name="Word.Progress.ConnectACEs">ACEs接続...</string>
+    <string name="Word.Common.NowSessionStarted">走行セッション中</string>
+    <string name="Word.Session.SessionStop">セッション停止</string>
+    <string name="Word.Session.SessionStart">セッション開始</string>
+    <string name="Message.Session.SessionAbort">セッションを停止しますか？\n走行時間[%1$s]</string>
+    <string name="Message.Session.SessionStart">走行セッションを開始しますか?</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

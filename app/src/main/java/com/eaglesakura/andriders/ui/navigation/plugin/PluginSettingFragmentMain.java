@@ -32,7 +32,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
     CentralPluginCollection mPlugins;
 
     public PluginSettingFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.content_fragment_simiple);
+        mFragmentDelegate.setLayoutId(R.layout.system_fragment_stack);
     }
 
     @Override

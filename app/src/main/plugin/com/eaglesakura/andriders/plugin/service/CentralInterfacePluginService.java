@@ -99,7 +99,6 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override
             protected void onUpdate() {
-                postDummyHeartrate(connection);
                 double delta = mDisplayCommitLoop.getDeltaTime();
                 for (DisplayDataSender sender : senders) {
                     sender.onUpdate(delta);
@@ -140,21 +139,5 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
     @Override
     public void startSetting(PluginConnection connection) {
 
-    }
-
-    /**
-     * ダミーの心拍データを書き込む
-     * FIXME 将来的に、DisplayDataではなく心拍そのものをダミー書き込みするようにする
-     */
-    private void postDummyHeartrate(PluginConnection session) {
-        DisplayData data = new DisplayData(this, DEBUG_RANDOM_HEARTRATE);
-        BasicValue value = new BasicValue();
-        value.setTitle("DBG: 心拍");
-        value.setValue(String.format("%d", 90 + (int) (Math.random() * 10)));
-        value.setBarColorARGB(Math.random() > 0.5 ? Color.RED : Color.TRANSPARENT);
-        value.setZoneText("Zone" + (System.currentTimeMillis() % 10));
-        data.setValue(value);
-
-        session.getDisplay().setValue(data);
     }
 }

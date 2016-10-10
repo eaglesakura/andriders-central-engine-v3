@@ -1,6 +1,8 @@
 package com.eaglesakura.andriders;
 
+import com.eaglesakura.andriders.provider.AppControllerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationActivity;
+import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.util.Util;
 
 import org.junit.Rule;
@@ -27,6 +29,7 @@ public abstract class AppScenarioTest<ActivityClass extends AppNavigationActivit
     }
 
     protected void autoBootActivity() {
+        Garnet.override(AppControllerProvider.class, AppControllerProvider.class);
         mRule.launchActivity(new Intent());
         Util.sleep(1000);
     }

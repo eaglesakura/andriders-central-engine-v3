@@ -30,7 +30,7 @@
                     android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
                     android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
                     android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
-                    android:text="アプリ起動中"/>
+                    android:text="@string/Message.Boot"/>
 
             <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
                     android:layout_width="match_parent"

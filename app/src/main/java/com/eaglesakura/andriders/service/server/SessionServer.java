@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.service.server;
 
+import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.serialize.RawSessionInfo;
@@ -56,12 +57,29 @@ public class SessionServer {
     }
 
     @Nullable
-    public CentralSession getCurrentSession() {
+    CentralSession getCurrentSession() {
         return mCallback.getCurrentSession(this);
     }
 
     public Application getContext() {
         return mImpl.getService().getApplication();
+    }
+
+    public void notifyOnSessionStarted(SessionInfo info) {
+        try {
+            RawSessionInfo raw = new RawSessionInfo(info.getSessionId());
+            mImpl.broadcast(CentralServiceCommand.CMD_onSessionStarted, Payload.fromPublicField(raw));
+        } catch (Exception e) {
+        }
+    }
+
+    public void notifyOnSessionStopped(SessionInfo info) {
+        try {
+            RawSessionInfo raw = new RawSessionInfo(info.getSessionId());
+            mImpl.broadcast(CentralServiceCommand.CMD_onSessionStopped, Payload.fromPublicField(raw));
+        } catch (Exception e) {
+
+        }
     }
 
     private void buildServerCommand() {
@@ -128,6 +146,14 @@ public class SessionServer {
         @Override
         protected Payload onReceivedDataFromClient(String cmd, String clientId, Payload payload) throws RemoteException {
             return mSessionCommandMap.execute(clientId, cmd, payload);
+        }
+
+        public void broadcast(String cmd, Payload payload) {
+            try {
+                super.broadcastToClient(cmd, payload);
+            } catch (Exception e) {
+
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ import com.eaglesakura.andriders.service.server.SessionServer;
 import com.eaglesakura.andriders.service.ui.SessionNotification;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.util.ContextUtil;
 
 import org.greenrobot.greendao.annotation.NotNull;
@@ -34,6 +35,8 @@ public class CentralSessionService extends Service {
      */
     SessionNotification mSessionNotification;
 
+    ServiceLifecycleDelegate mServiceLifecycleDelegate = new ServiceLifecycleDelegate();
+
     public CentralSessionService() {
         mSessionServer = new SessionServer(this, mSessionServerCallback);
     }
@@ -45,15 +48,25 @@ public class CentralSessionService extends Service {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        mServiceLifecycleDelegate.onCreate();
+    }
+
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        AppLog.system("onStartCommand action[%s]", intent.getAction());
-        if (CentralServiceCommand.ACTION_SESSION_START.equals(intent.getAction())) {
-            // セッションを開始させる
-            if (mSession == null) {
-                mSession = startNewSession(intent);
+        if (intent != null) {
+            final String ACTION = intent.getAction();
+            AppLog.system("onStartCommand action[%s]", ACTION);
+            if (CentralServiceCommand.ACTION_SESSION_START.equals(ACTION)) {
+                // セッションを開始させる
+                if (mSession == null) {
+                    mSession = startNewSession(intent);
+                }
+            } else if (CentralServiceCommand.ACTION_SESSION_STOP.equals(ACTION)) {
+                stopCurrentSession(intent);
             }
-        } else if (CentralServiceCommand.ACTION_SESSION_STOP.equals(intent.getAction())) {
-            stopCurrentSession(intent);
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -61,6 +74,7 @@ public class CentralSessionService extends Service {
 
     @Override
     public void onDestroy() {
+        mServiceLifecycleDelegate.onDestroy();
         stopCurrentSession(null);
         super.onDestroy();
     }
@@ -84,6 +98,12 @@ public class CentralSessionService extends Service {
         mSessionNotification = new SessionNotification(this, mNotificationCallback);
         mSessionNotification.onStartSession(sessionInfo);
 
+        mServiceLifecycleDelegate.asyncUI(task -> {
+            // 開始通知を送る
+            mSessionServer.notifyOnSessionStarted(sessionInfo);
+            return this;
+        }).start();
+
         return centralSession;
     }
 
@@ -93,9 +113,17 @@ public class CentralSessionService extends Service {
     @UiThread
     protected void stopCurrentSession(@Nullable Intent intent) {
         if (mSession != null) {
+            SessionInfo info = mSession.getSessionInfo();
+
             mSession.unregisterCallback(mCentralSessionListener);
             mSession.dispose();
             mSession = null;
+
+            mServiceLifecycleDelegate.asyncUI(task -> {
+                // 終了通知を送る
+                mSessionServer.notifyOnSessionStopped(info);
+                return this;
+            }).start();
         }
 
         if (mSessionNotification != null) {

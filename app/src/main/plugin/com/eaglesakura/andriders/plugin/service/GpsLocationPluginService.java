@@ -115,6 +115,7 @@ public class GpsLocationPluginService extends Service implements AcePluginServic
     public void onAceServiceConnected(PluginConnection connection) {
         if (!isRuntimePermissionGranted()) {
             // 許可されていないので、このServiceは何もしない
+            AppLog.system("Not Granted GPS!!");
             NotificationData notification =
                     new NotificationData.Builder(this)
                             .message(getString(R.string.Message_LocationPlugin_PermissionError))

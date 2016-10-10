@@ -169,7 +169,7 @@ android {
 
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
-        buildConfigField "String", "DEFAULT_PACKAGE_NAME", "\"com.eaglesakura.andriders\""
+//        buildConfigField "String", "DEFAULT_PACKAGE_NAME", "\"com.eaglesakura.andriders\""
 
         // Device Test
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"    // JUnit4
@@ -234,6 +234,7 @@ android {
     productFlavors {
         // for googleplay release
         googleplay {
+            applicationId "org.andriders.ace"
         }
     }
 

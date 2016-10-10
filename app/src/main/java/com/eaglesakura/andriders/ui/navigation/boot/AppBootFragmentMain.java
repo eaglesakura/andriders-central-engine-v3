@@ -7,8 +7,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ui.navigation.NavigationActivity;
-import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
+import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
@@ -37,7 +36,7 @@ import java.util.List;
 /**
  * アプリを起動し、必要なハンドリングを行う
  */
-public class AppBootFragmentMain extends NavigationBaseFragment {
+public class AppBootFragmentMain extends AppNavigationFragment {
 
     /**
      * パーミッションをリクエストした回数
@@ -71,7 +70,7 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             );
 
     public AppBootFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.system_boot);
+        mFragmentDelegate.setLayoutId(R.layout.boot);
     }
 
     @Override
@@ -87,13 +86,16 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
                 // 警告ダイアログを出す
                 onFailedUserPermission();
             }
+            return;
         } else {
             if (!PermissionUtil.canDrawOverlays(getContext())) {
                 // 特殊パーミッションを取得する
                 onFailedDrawOverlays();
+                return;
             } else if (!PermissionUtil.isUsageStatsAllowed(getContext())) {
                 // アプリ履歴にアクセス出来ない
                 onFailedUsageStatus();
+                return;
             }
         }
 
@@ -110,26 +112,28 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             return;
         }
 
-        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<Intent> task) -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, task -> {
             task.throwIfCanceled();
 
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
 
             // 所定のパーミッションを得るまで起動させない
             while (!PermissionUtil.isRuntimePermissionGranted(getContext(), REQUIRE_PERMISSIONS)) {
-                task.waitTime(100);
+                task.waitTime(1);
             }
 
             task.throwIfCanceled();
 
             // オーバーレイ描画が行えるか
             while (!PermissionUtil.canDrawOverlays(getContext())) {
-                task.waitTime(100);
+                task.waitTime(1);
             }
 
             // アプリ使用履歴チェック
             while (!PermissionUtil.isUsageStatsAllowed(getContext())) {
-                task.waitTime(100);
+                task.throwIfCanceled();
+
+                task.waitTime(1);
             }
 
             task.throwIfCanceled();
@@ -157,12 +161,12 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             task.throwIfCanceled();
 
             AppLog.system("Boot Success");
-            Intent intent = new Intent(getActivity(), NavigationActivity.class);
-            return intent;
-        }).completed((intent, task) -> {
+            return this;
+        }).completed((result, task) -> {
             // Activityを起動する
-            startActivity(intent);
-            getActivity().finish();
+            for (Listener listener : listInterfaces(Listener.class)) {
+                listener.onBootCompleted(this);
+            }
         }).failed((error, task) -> {
             AppLog.report(error);
             if (error instanceof SignInRequireException && mGoogleAutStep == GOOGLE_AUTH_STEP_NONE) {
@@ -248,9 +252,13 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
         if (signInResult.isSuccess()) {
             mSignInAccount = signInResult.getSignInAccount();
             AppLog.test("mail[%s]", mSignInAccount.getEmail());
-            AppLog.test("idToken[%s]", mSignInAccount.getIdToken());
+            AppLog.test("photo[%s]", mSignInAccount.getPhotoUrl().toString());
         }
         mGoogleAutStep = GOOGLE_AUTH_STEP_NONE;
         startBootCheck();
+    }
+
+    public interface Listener {
+        void onBootCompleted(AppBootFragmentMain self);
     }
 }

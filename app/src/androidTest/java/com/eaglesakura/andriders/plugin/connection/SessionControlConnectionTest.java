@@ -1,11 +1,11 @@
 package com.eaglesakura.andriders.plugin.connection;
 
 import com.eaglesakura.andriders.AppDeviceTestCase;
-import com.eaglesakura.andriders.plugin.data.CentralSessionController;
 import com.eaglesakura.andriders.provider.AppControllerProvider;
 import com.eaglesakura.andriders.serialize.RawSessionInfo;
 import com.eaglesakura.andriders.service.CentralSessionService;
 import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
 
 import org.junit.Test;
@@ -49,13 +49,27 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
     public void セッションを開始できる() throws Throwable {
 
         RawSessionInfo info;
+
         {
+            IntHolder sessionStartCount = new IntHolder();
             final long startTime = System.currentTimeMillis();
 
             SessionControlConnection connection = new SessionControlConnection(getContext());
             assertTrue(connection.connect(() -> false));
+            connection.registerSessionStateChangeListener(new SessionControlConnection.OnSessionStateChangeListener() {
+                @Override
+                public void onSessionStarted(SessionControlConnection connection, RawSessionInfo info) {
+                    sessionStartCount.add(1);
+                }
+
+                @Override
+                public void onSessionStopped(SessionControlConnection connection, RawSessionInfo info) {
+
+                }
+            });
 
             CentralSessionController centralSessionController = connection.getCentralSessionController();
+
             assertFalse(centralSessionController.isSessionStarted());
             centralSessionController.requestSessionStart();
 
@@ -68,6 +82,10 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
             assertNotNull(info);
             // セッションIDは現在時刻範囲内でなければならない
             validate(info.sessionId).from(startTime).to(System.currentTimeMillis());
+
+            // コールバックが送られている
+            Util.sleep(500);
+            assertEquals(sessionStartCount.value, 1);
 
             // セッションを切断する
             assertTrue(connection.disconnect(() -> false));
