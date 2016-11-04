@@ -1,9 +1,5 @@
 package com.eaglesakura.andriders;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.location.LocationServices;
-
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.FrameworkCentral;
 
@@ -35,20 +31,5 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
     @Override
     public void onRequestSaveCentral(@NonNull Object central) {
         mCentral = central;
-    }
-
-    @Deprecated
-    public static GoogleApiClient.Builder newFullPermissionClientBuilder() {
-        return new GoogleApiClient.Builder(FrameworkCentral.getApplication())
-                // Google Fit
-                .addApi(Fitness.HISTORY_API)
-                .addApi(Fitness.BLE_API)
-                .addApi(Fitness.SESSIONS_API)
-                .addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
-                .addScope(Fitness.SCOPE_BODY_READ_WRITE)
-                .addScope(Fitness.SCOPE_LOCATION_READ_WRITE)
-                // GPS
-                .addApi(LocationServices.API)
-                ;
     }
 }

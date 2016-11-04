@@ -90,9 +90,14 @@ public class PluginCategorySettingFragment extends AppFragment {
     public void onResume() {
         super.onResume();
 
-        await(() -> getParent(PluginSettingFragmentMain.class).getPlugins() != null, () -> {
+        asyncUI(task -> {
+            while (getParent(PluginSettingFragmentMain.class).getPlugins() == null) {
+                task.waitTime(1);
+            }
+            return this;
+        }).completed((result, task) -> {
             updateExtensionViews(getParent(PluginSettingFragmentMain.class).getPlugins());
-        });
+        }).start();
     }
 
     @UiThread
@@ -139,6 +144,7 @@ public class PluginCategorySettingFragment extends AppFragment {
      *
      * @param plugin 対象プラグイン
      */
+    @UiThread
     void activate(CentralPlugin plugin, boolean isChecked) {
         asyncUI(task -> {
             Category pluginCategory = Category.fromName(mCategoryName);
@@ -163,25 +169,5 @@ public class PluginCategorySettingFragment extends AppFragment {
                     .show(mLifecycleDelegate);
         }).start();
     }
-
-//    @UiThread
-//    void commitEnableChanged(PluginConnector plugin, boolean enabled) {
-//        asyncUI(task -> {
-//            PluginDatabase db = new PluginDatabase(getActivity());
-//            try {
-//                db.openWritable();
-//
-//                Category category = Category.fromName(mCategoryName);
-//
-//                if (category.hasAttribute(Category.ATTRIBUTE_SINGLE_SELECT)) {
-//                    // 属性を指定する
-//                }
-//            } finally {
-//                db.close();
-//            }
-//
-//            return this;
-//        }).start();
-//    }
 
 }

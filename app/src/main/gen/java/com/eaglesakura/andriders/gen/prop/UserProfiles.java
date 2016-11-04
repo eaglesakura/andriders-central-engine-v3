@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.gen.prop;
 
 public class UserProfiles extends com.eaglesakura.android.property.internal.GeneratedProperties {
     
+    public static final String ID_USERICONURL = "UserProfiles.userIconUrl";
     public static final String ID_USERWEIGHT = "UserProfiles.userWeight";
     public static final String ID_NORMALHEARTRATE = "UserProfiles.normalHeartrate";
     public static final String ID_MAXHEARTRATE = "UserProfiles.maxHeartrate";
@@ -16,6 +17,8 @@ public class UserProfiles extends com.eaglesakura.android.property.internal.Gene
     
     public UserProfiles(){ }
     public UserProfiles(com.eaglesakura.android.property.PropertyStore store) { setPropertyStore(store); }
+    public void setUserIconUrl(String set){ setProperty("UserProfiles.userIconUrl", set); }
+    public String getUserIconUrl(){ return getStringProperty("UserProfiles.userIconUrl"); }
     public void setUserWeight(float set){ setProperty("UserProfiles.userWeight", set); }
     public float getUserWeight(){ return getFloatProperty("UserProfiles.userWeight"); }
     public void setNormalHeartrate(int set){ setProperty("UserProfiles.normalHeartrate", set); }

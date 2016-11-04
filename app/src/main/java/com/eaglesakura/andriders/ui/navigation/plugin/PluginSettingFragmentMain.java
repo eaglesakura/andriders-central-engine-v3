@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.BackgroundTask;
@@ -23,6 +24,7 @@ import android.support.v4.app.FragmentTransaction;
 /**
  * 拡張機能の設定を行う。
  */
+@FragmentLayout(R.layout.system_fragment_stack)
 public class PluginSettingFragmentMain extends AppNavigationFragment {
 
     @Inject(AppManagerProvider.class)
@@ -30,10 +32,6 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
 
     @Nullable
     CentralPluginCollection mPlugins;
-
-    public PluginSettingFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.system_fragment_stack);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

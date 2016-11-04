@@ -10,12 +10,21 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.android.framework.FrameworkCentral;
+import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.android.util.ImageUtil;
+import com.eaglesakura.io.CancelableInputStream;
+import com.eaglesakura.lambda.CancelCallback;
+
+import org.greenrobot.greendao.annotation.NotNull;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.TimeZone;
 
 /**
@@ -134,5 +143,24 @@ public class AppUtil {
     public static String getErrorMessage(Throwable e) {
         Context context = FrameworkCentral.getApplication();
         return context.getString(R.string.Message_Error_Runtime);
+    }
+
+    /**
+     * アイコンをロードする
+     *
+     * @param uri アイコンURI
+     */
+    @NonNull
+    public static Bitmap loadIcon(@NonNull Context context, @NotNull Uri uri, CancelCallback cancelCallback) throws TaskCanceledException {
+        try (InputStream is = new CancelableInputStream(context.getContentResolver().openInputStream(uri), cancelCallback)) {
+            Bitmap image = ImageUtil.decode(is);
+            Bitmap scaled = ImageUtil.toScaledImage(image, 256, 256);
+            if (image != scaled) {
+                image.recycle();
+            }
+            return scaled;
+        } catch (IOException e) {
+            return ImageUtil.decode(context, R.mipmap.ic_user_position);
+        }
     }
 }

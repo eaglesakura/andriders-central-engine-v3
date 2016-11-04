@@ -9,6 +9,12 @@
       "name": "UserProfiles",
       "properties": [
         {
+          "comment": "ユーザーアイコンURL",
+          "type": "String",
+          "name": "userIconUrl",
+          "value": ""
+        },
+        {
           "comment": "ユーザー体重",
           "type": "float",
           "name": "userWeight",

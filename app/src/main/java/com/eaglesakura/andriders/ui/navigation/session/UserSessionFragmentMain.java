@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnClick;
@@ -25,17 +26,16 @@ import android.widget.Button;
 /**
  * ユーザーのセッション情報を表示するActivity
  */
-public class UserSessionFragmentMain extends AppNavigationFragment {
-    SessionControlConnection mSessionControlConnection;
-
-    FragmentHolder<NavigationMapFragment> mNavigationMapFragment = FragmentHolder.newInstance(this, NavigationMapFragment.class, R.id.ViewHolder_Navigation);
+@FragmentLayout(R.layout.session_info)
+public class UserSessionFragmentMain extends AppNavigationFragment implements SessionControlBus.Holder {
+    @SuppressWarnings("unused")
+    FragmentHolder<NavigationMapFragment> mNavigationMapFragment =
+            FragmentHolder.newInstance(this, NavigationMapFragment.class, R.id.ViewHolder_Navigation).bind(mLifecycleDelegate);
 
     @Bind(R.id.Button_SessionChange)
     Button mSessionButton;
 
-    public UserSessionFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.session_info);
-    }
+    final SessionControlBus mSessionControlBus = new SessionControlBus().bind(mLifecycleDelegate, this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,14 @@ public class UserSessionFragmentMain extends AppNavigationFragment {
         connectSessionCentral();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    /**
+     *
+     */
     void connectSessionCentral() {
         asyncUI((BackgroundTask<SessionControlConnection> task) -> {
             try (ProgressToken token = pushProgress(R.string.Word_Progress_ConnectACEs)) {
@@ -53,8 +61,8 @@ public class UserSessionFragmentMain extends AppNavigationFragment {
                 return connection;
             }
         }).completed((result, task) -> {
-            mSessionControlConnection = result;
-            syncSessionButtonState(mSessionControlConnection.getCentralSessionController().isSessionStarted());
+            mSessionControlBus.modified(result);
+            syncSessionButtonState(result.getCentralSessionController().isSessionStarted());
         }).failed((error, task) -> {
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Common_OK, null)
@@ -66,10 +74,8 @@ public class UserSessionFragmentMain extends AppNavigationFragment {
     public void onDestroy() {
         super.onDestroy();
 
-        if (mSessionControlConnection != null) {
-            mSessionControlConnection.disconnectAsync();
-            mSessionControlConnection = null;
-        }
+        mSessionControlBus.ifPresent(connection -> connection.disconnectAsync());
+        mSessionControlBus.modified(null);
     }
 
     /**
@@ -77,16 +83,14 @@ public class UserSessionFragmentMain extends AppNavigationFragment {
      */
     @OnClick(R.id.Button_SessionChange)
     void clickSession() {
-        if (mSessionControlConnection == null) {
-            return;
-        }
-
-        RawSessionInfo sessionInfo = mSessionControlConnection.getCentralSessionController().getSessionInfo();
-        if (sessionInfo != null) {
-            showSessionStopMessage(sessionInfo);
-        } else {
-            showSessionStartMessage();
-        }
+        mSessionControlBus.ifPresent(connection -> {
+            RawSessionInfo sessionInfo = connection.getCentralSessionController().getSessionInfo();
+            if (sessionInfo != null) {
+                showSessionStopMessage(sessionInfo);
+            } else {
+                showSessionStartMessage();
+            }
+        });
     }
 
     /**
@@ -96,7 +100,9 @@ public class UserSessionFragmentMain extends AppNavigationFragment {
     void showSessionStartMessage() {
         AppDialogBuilder.newInformation(getContext(), R.string.Message_Session_SessionStart)
                 .positiveButton(R.string.Word_Session_SessionStart, () -> {
-                    mSessionControlConnection.getCentralSessionController().requestSessionStart();
+                    mSessionControlBus.ifPresent(connection -> {
+                        connection.getCentralSessionController().requestSessionStart();
+                    });
                     syncSessionButtonState(true);
                 })
                 .negativeButton(R.string.Common_Cancel, null)
@@ -112,7 +118,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment {
         String message = getString(R.string.Message_Session_SessionAbort, AppUtil.formatTimeMilliSecToString(sessionTimeMs));
         AppDialogBuilder.newInformation(getContext(), message)
                 .positiveButton(R.string.Word_Session_SessionStop, () -> {
-                    mSessionControlConnection.getCentralSessionController().requestSessionStop();
+                    mSessionControlBus.getData().getCentralSessionController().requestSessionStop();
                     syncSessionButtonState(false);
                 })
                 .negativeButton(R.string.Common_Cancel, null)
@@ -121,7 +127,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment {
 
     @UiThread
     void syncSessionButtonState(boolean sessionStarted) {
-        if (mSessionControlConnection == null) {
+        if (!mSessionControlBus.hasData()) {
             mSessionButton.setVisibility(View.INVISIBLE);
             return;
         }
@@ -143,10 +149,8 @@ public class UserSessionFragmentMain extends AppNavigationFragment {
         toolbarBuilder.build();
     }
 
-    /**
-     * セッション制御用のコネクションを取得する
-     */
-    public SessionControlConnection getSessionControlConnection() {
-        return mSessionControlConnection;
+    @Override
+    public SessionControlBus getSessionControlBus() {
+        return mSessionControlBus;
     }
 }

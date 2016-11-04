@@ -145,8 +145,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -160,7 +160,7 @@ android {
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
         minSdkVersion 19
-        targetSdkVersion 24
+        targetSdkVersion 25
 
 //        versionCode 99999;
         versionCode eglibrary.ci.buildVersionCode as int
@@ -170,6 +170,9 @@ android {
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
 //        buildConfigField "String", "DEFAULT_PACKAGE_NAME", "\"com.eaglesakura.andriders\""
+
+
+        manifestPlaceholders = [google_api_key: "@string/google_api_key"]
 
         // Device Test
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"    // JUnit4
@@ -233,6 +236,11 @@ android {
 
     productFlavors {
         // for googleplay release
+        develop {
+            minSdkVersion 21
+            applicationId "org.andriders.ace"
+        }
+        // for googleplay release
         googleplay {
             applicationId "org.andriders.ace"
         }
@@ -288,7 +296,6 @@ def getArtifactVersionSuffix() {
 }
 
 apply from: "generator.gradle"
-apply plugin: 'com.google.gms.google-services'
 
 /**
  * Notifications
@@ -315,3 +322,6 @@ dexcount {
     orderByMethodCount = true
     verbose = false
 }
+
+// Apply Google Play Service Data
+apply plugin: 'com.google.gms.google-services'

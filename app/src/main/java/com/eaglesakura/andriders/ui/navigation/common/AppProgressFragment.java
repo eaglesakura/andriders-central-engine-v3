@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.ui.progress.ProgressStackManager;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.material.widget.MaterialProgressView;
 
 import android.support.annotation.NonNull;
@@ -13,13 +14,13 @@ import android.view.View;
 /**
  *
  */
+@FragmentLayout(R.layout.widget_progress)
 public class AppProgressFragment extends AppFragment {
 
     @NonNull
     private final ProgressStackManager mProgressStackManager = new ProgressStackManager(mLifecycleDelegate.getCallbackQueue());
 
     public AppProgressFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.widget_progress);
         mProgressStackManager.setListener(mStackManagerListener);
     }
 
