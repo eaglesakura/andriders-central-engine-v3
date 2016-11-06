@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/EsMaterial.Red.500</item>
         <item name="colorAccent">@color/EsMaterial.LightGreen.Button.Normal</item>
         <item name="android:windowAnimationStyle">@style/EsMaterial.Animation.Activity</item>
+        <item name="drawerArrowStyle">@style/EsMaterial.Red.DrawerArrow</item>
     </style>
 
     <style name="App.Theme.Button.Normal" parent="App.Theme">

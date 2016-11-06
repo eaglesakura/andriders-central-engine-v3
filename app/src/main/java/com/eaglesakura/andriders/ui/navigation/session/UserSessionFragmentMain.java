@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.plugin.connection.SessionControlConnection;
 import com.eaglesakura.andriders.serialize.RawSessionInfo;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
@@ -64,6 +65,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
             mSessionControlBus.modified(result);
             syncSessionButtonState(result.getCentralSessionController().isSessionStarted());
         }).failed((error, task) -> {
+            AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Common_OK, null)
                     .show(mLifecycleDelegate);

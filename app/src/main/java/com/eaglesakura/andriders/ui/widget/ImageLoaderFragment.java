@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 
 import android.content.Context;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 
 /**
  * ImageLoaderを保持・管理するFragment
@@ -28,5 +29,9 @@ public class ImageLoaderFragment extends AppFragment implements AppImageLoader.H
     public static FragmentTransaction attach(FragmentTransaction transaction) {
         transaction.add(new ImageLoaderFragment(), ImageLoaderFragment.class.getName());
         return transaction;
+    }
+
+    public static void attach(AppCompatActivity activity) {
+        attach(activity.getSupportFragmentManager().beginTransaction()).commit();
     }
 }
