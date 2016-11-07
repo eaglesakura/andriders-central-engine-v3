@@ -71,10 +71,6 @@ public class NavigationMapFragment extends AppFragment {
     @NonNull
     SessionControlBus mSessionControlBus;
 
-    @NonNull
-    AppImageLoader mImageLoader;
-
-
     private static final float MAP_ZOOM_DEFAULT = 10;
 
     @Override
@@ -85,8 +81,6 @@ public class NavigationMapFragment extends AppFragment {
 
         mSessionControlBus = findInterfaceOrThrow(SessionControlBus.Holder.class).getSessionControlBus();
         mSessionControlBus.bind(mLifecycleDelegate, this);
-
-        mImageLoader = findInterfaceOrThrow(AppImageLoader.Holder.class).getImageLoader();
     }
 
     @Override
@@ -138,7 +132,8 @@ public class NavigationMapFragment extends AppFragment {
         asyncUI((BackgroundTask<Bitmap> task) -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
             FirebaseUser user = FirebaseAuthorizeManager.getInstance().await(cancelCallback);
-            Drawable drawable = mImageLoader.newImage(user.getPhotoUrl(), true).await(cancelCallback);
+            AppImageLoader imageLoader = findInterfaceOrThrow(AppImageLoader.Holder.class).getImageLoader();
+            Drawable drawable = imageLoader.newImage(user.getPhotoUrl(), true).await(cancelCallback);
             return ((BitmapDrawable) drawable).getBitmap();
         }).completed((result, task) -> {
             // アイコンを保持し、必要であれば切り替える

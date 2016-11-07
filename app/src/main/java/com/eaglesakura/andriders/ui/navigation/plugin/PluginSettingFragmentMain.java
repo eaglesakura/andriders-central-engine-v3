@@ -7,6 +7,8 @@ import com.eaglesakura.andriders.plugin.CentralPluginCollection;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
+import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
@@ -83,7 +85,6 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
         async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<CentralPluginCollection> task) -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
             try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
-
                 CentralPluginCollection pluginCollection = mPluginDataManager.listPlugins(PluginDataManager.PluginListingMode.All, cancelCallback);
 
                 CentralPlugin.ConnectOption option = new CentralPlugin.ConnectOption();
@@ -93,6 +94,11 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
             }
         }).completed((pluginCollection, task) -> {
             mPlugins = pluginCollection;
+        }).failed((error, task) -> {
+            AppLog.printStackTrace(error);
+            AppDialogBuilder.newError(getContext(), error)
+                    .positiveButton(R.string.Common_OK, null)
+                    .show(mLifecycleDelegate);
         }).start();
 
         ToolbarBuilder.from(this).title(R.string.Title_Plugin).build();

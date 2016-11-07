@@ -23,27 +23,27 @@
                 android:layout_height="wrap_content">
 
             <com.eaglesakura.andriders.ui.widget.AppKeyValueView
-                    android:id="@+id/Information.App.Version"
+                    android:id="@+id/Item.AppVersion"
                     app:keyText="@string/Information.App.Version"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
             <com.eaglesakura.andriders.ui.widget.AppKeyValueView
-                    android:id="@+id/Information.App.BuildDate"
+                    android:id="@+id/Item.BuildDate"
                     android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                     app:keyText="@string/Information.App.BuildDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
             <com.eaglesakura.andriders.ui.widget.AppKeyValueView
-                    android:id="@+id/Information.App.SDKVersion"
+                    android:id="@+id/Item.AceSDKVersion"
                     android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                     app:keyText="@string/Information.App.SDKVersion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
             <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/Information.Licenses"
+                    android:id="@+id/Button.Licenses"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"

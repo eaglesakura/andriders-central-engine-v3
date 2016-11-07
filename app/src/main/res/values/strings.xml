@@ -168,6 +168,7 @@
     <string name="Word.Session.SessionStart">セッション開始</string>
     <string name="Message.Session.SessionAbort">セッションを停止しますか？\n走行時間[%1$s]</string>
     <string name="Message.Session.SessionStart">走行セッションを開始しますか?</string>
+    <string name="Title.Info">アプリ情報</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

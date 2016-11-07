@@ -44,9 +44,11 @@
             </intent-filter>
         </activity>
 
-        <activity
-                android:name="com.eaglesakura.andriders.ui.navigation.UserSessionActivity"/>
-        <activity android:name="com.eaglesakura.andriders.ui.navigation.PluginSettingActivity"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.UserSessionActivity"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.PluginSettingActivity"
+                  android:label="@string/Title.Plugin"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.InformationActivity"
+                  android:label="@string/Title.Info"/>
         <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
         </service>
 

@@ -1,10 +1,9 @@
 package com.eaglesakura.andriders.ui.navigation.base;
 
-import com.eaglesakura.andriders.ui.navigation.common.AppProgressFragment;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.progress.ProgressStackManager;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.SupportFragment;
+import com.eaglesakura.material.widget.support.SupportProgressFragment;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -28,7 +27,7 @@ public class AppFragment extends SupportFragment {
     public void onAfterInjection(SupportFragmentDelegate self) {
 
     }
-    
+
     @NonNull
     public ProgressToken pushProgress(@StringRes int stringRes) {
         return pushProgress(getString(stringRes));
@@ -36,10 +35,6 @@ public class AppFragment extends SupportFragment {
 
     @NonNull
     public ProgressToken pushProgress(String message) {
-        AppProgressFragment fragment = findInterfaceOrThrow(AppProgressFragment.class);
-        ProgressStackManager progressStackManager = fragment.getProgressStackManager();
-        ProgressToken token = ProgressToken.fromMessage(progressStackManager, message);
-        progressStackManager.push(token);
-        return token;
+        return SupportProgressFragment.pushProgress(this, message);
     }
 }

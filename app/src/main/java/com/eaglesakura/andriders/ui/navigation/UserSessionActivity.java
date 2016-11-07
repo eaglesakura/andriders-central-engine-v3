@@ -13,11 +13,14 @@ import com.eaglesakura.material.widget.ToolbarBuilder;
 import com.eaglesakura.material.widget.support.SupportProgressFragment;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.MenuItem;
 
 /**
  * アプリ起動後のデフォルトActivity
@@ -27,6 +30,8 @@ public class UserSessionActivity extends AppNavigationActivity {
     @Bind(R.id.Content_Drawer)
     DrawerLayout mDrawerLayout;
 
+    ActionBarDrawerToggle mDrawerToggle;
+
     MenuController mMenuController;
 
     @Override
@@ -35,20 +40,39 @@ public class UserSessionActivity extends AppNavigationActivity {
         if (savedInstanceState == null) {
             ImageLoaderFragment.attach(this);
             SupportProgressFragment.attach(this, R.id.Root);
+
+            // Activityの初回起動時のみ、タイミングをずらして開く
+            UIHandler.postDelayedUI(() -> {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                mDrawerToggle.syncState();
+            }, 250);
         }
 
         MargarineKnife.bind(this);
 
         // Toolbarを構築
         ToolbarBuilder toolbarBuilder = ToolbarBuilder.from(this)
-                .drawer(mDrawerLayout)
+                .drawer(mDrawerLayout, R.string.Env_AppName, R.string.Env_AppName)
                 .build();
+
+        mDrawerToggle = toolbarBuilder.getDrawerToggle();
 
         // メニューを構築する
         mMenuController = new MenuController(toolbarBuilder, mMenuCallbackImpl).bind(mLifecycleDelegate);
+    }
 
-        // タイミングをずらしてDrawerを開く
-        UIHandler.postDelayedUI(() -> mDrawerLayout.openDrawer(GravityCompat.START), 250);
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -55,20 +55,20 @@ public class MenuController {
         void requestShowPlugins(MenuController self);
     }
 
-    private final NavigationView.OnNavigationItemSelectedListener miItemSelectedImpl = (menuItem) -> {
+    private final NavigationView.OnNavigationItemSelectedListener miItemSelectedImpl = menuItem -> {
         switch (menuItem.getItemId()) {
-            case R.id.Main_Menu_Profile:
+            case R.id.Menu_Profile:
                 break;
-            case R.id.Main_Menu_CycleComputer:
+            case R.id.Menu_CycleComputer:
                 break;
-            case R.id.Main_Menu_Commands:
+            case R.id.Menu_Commands:
                 break;
-            case R.id.Main_Menu_Plugins:
+            case R.id.Menu_Plugins:
                 mCallback.requestShowPlugins(this);
                 break;
-            case R.id.Main_Menu_Information:
+            case R.id.Menu_Information:
                 break;
-            case R.id.Main_Menu_Gadgets:
+            case R.id.Menu_Gadgets:
                 break;
             default:
                 return false;
