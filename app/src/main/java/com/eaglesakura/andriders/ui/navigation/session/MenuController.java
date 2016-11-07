@@ -53,6 +53,11 @@ public class MenuController {
          * プラグイン詳細メニューを開く
          */
         void requestShowPlugins(MenuController self);
+
+        /**
+         * Info画面を開く
+         */
+        void requestShowInformation(MenuController self);
     }
 
     private final NavigationView.OnNavigationItemSelectedListener miItemSelectedImpl = menuItem -> {

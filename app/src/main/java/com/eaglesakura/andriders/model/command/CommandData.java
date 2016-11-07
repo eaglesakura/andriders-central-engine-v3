@@ -130,7 +130,7 @@ public class CommandData extends DaoModel<DbCommand> {
 
     public CommandData(DbCommand raw) {
         super(raw);
-        mExtra = JSON.decodeOrNull(mRaw.getCommandData(), Extra.class);
+        mExtra = JSON.decodeOrNull(mRaw.getExtraJson(), Extra.class);
 
         if (mExtra == null) {
             mExtra = new Extra();
@@ -153,7 +153,7 @@ public class CommandData extends DaoModel<DbCommand> {
     @Override
     @NonNull
     public DbCommand getRaw() {
-        mRaw.setCommandData(JSON.encodeOrNull(mExtra));
+        mRaw.setExtraJson(JSON.encodeOrNull(mExtra));
         return mRaw;
     }
 
@@ -177,7 +177,7 @@ public class CommandData extends DaoModel<DbCommand> {
      * ACE制御用Intentを保存する
      */
     private void setInternalIntent(SerializableIntent intent) {
-        mRaw.setIntentData(JSON.encodeOrNull(intent.getRawIntent()));
+        mRaw.setIntentJson(JSON.encodeOrNull(intent.getRawIntent()));
     }
 
     /**
@@ -197,7 +197,7 @@ public class CommandData extends DaoModel<DbCommand> {
      */
     @NonNull
     private Intent getInternalIntent() {
-        RawIntent intent = JSON.decodeOrNull(mRaw.getIntentData(), RawIntent.class);
+        RawIntent intent = JSON.decodeOrNull(mRaw.getIntentJson(), RawIntent.class);
         return SerializableIntent.newIntent(intent);
     }
 
@@ -206,9 +206,14 @@ public class CommandData extends DaoModel<DbCommand> {
      */
     @NonNull
     public RawIntent getIntent() {
-        return JSON.decodeOrNull(mRaw.getIntentData(), RawIntent.class);
+        return JSON.decodeOrNull(mRaw.getIntentJson(), RawIntent.class);
     }
 
+    /**
+     * 付与情報
+     *
+     * JSONとして保存する
+     */
     public static class Extra {
         /**
          * 共有 フラグ情報
@@ -218,32 +223,32 @@ public class CommandData extends DaoModel<DbCommand> {
         /**
          * 速度コマンドの基準速度
          */
-        public float speedKmh = 25.0f;
+        public Float speedKmh;
 
         /**
          * 速度コマンドの種別
          */
-        public int speedType = SPEED_TYPE_UPPER;
+        public Integer speedType;
 
         /**
          * タイマーの種類
          */
-        public int timerType = TIMER_TYPE_SESSION;
+        public Integer timerType;
 
         /**
          * タイマーの実行間隔（秒単位）
          */
-        public int timerIntervalSec = 30;
+        public Integer timerIntervalSec;
 
         /**
          * 距離基準
          */
-        public int distanceType = DISTANCE_TYPE_SESSION;
+        public Integer distanceType;
 
         /**
          * 距離
          */
-        public float distanceKm = 5.0f;
+        public Float distanceKm;
     }
 
     static final Comparator<CommandData> COMPARATOR_ASC = (l, r) -> {

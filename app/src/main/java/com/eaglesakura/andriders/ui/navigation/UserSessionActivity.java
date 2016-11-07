@@ -99,5 +99,11 @@ public class UserSessionActivity extends AppNavigationActivity {
             Intent intent = new Intent(self(), PluginSettingActivity.class);
             startActivity(intent);
         }
+
+        @Override
+        public void requestShowInformation(MenuController self) {
+            Intent intent = new Intent(self(), InformationActivity.class);
+            startActivity(intent);
+        }
     };
 }

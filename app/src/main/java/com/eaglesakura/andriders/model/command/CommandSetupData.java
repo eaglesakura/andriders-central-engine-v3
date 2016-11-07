@@ -34,6 +34,10 @@ public class CommandSetupData {
         return mPackageName;
     }
 
+    /**
+     * ACE-SDKを経由してやり取りするデータは容量を軽減するためSerializedする。
+     * ただし、互換性の問題からJSONのほう良いため、DBの内部表現にはJSONを用いる
+     */
     public byte[] getUserIntent() {
         return mUserIntent;
     }

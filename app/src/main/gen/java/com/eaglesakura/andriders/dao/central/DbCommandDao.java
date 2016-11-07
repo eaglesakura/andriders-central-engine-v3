@@ -26,8 +26,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         public final static Property Category = new Property(1, int.class, "category", false, "CATEGORY");
         public final static Property PackageName = new Property(2, String.class, "packageName", false, "PACKAGE_NAME");
         public final static Property IconPng = new Property(3, byte[].class, "iconPng", false, "ICON_PNG");
-        public final static Property CommandData = new Property(4, String.class, "commandData", false, "COMMAND_DATA");
-        public final static Property IntentData = new Property(5, String.class, "intentData", false, "INTENT_DATA");
+        public final static Property ExtraJson = new Property(4, String.class, "extraJson", false, "EXTRA_JSON");
+        public final static Property IntentJson = new Property(5, String.class, "intentJson", false, "INTENT_JSON");
     };
 
 
@@ -47,8 +47,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
                 "\"CATEGORY\" INTEGER NOT NULL ," + // 1: category
                 "\"PACKAGE_NAME\" TEXT NOT NULL ," + // 2: packageName
                 "\"ICON_PNG\" BLOB NOT NULL ," + // 3: iconPng
-                "\"COMMAND_DATA\" TEXT," + // 4: commandData
-                "\"INTENT_DATA\" TEXT);"); // 5: intentData
+                "\"EXTRA_JSON\" TEXT," + // 4: extraJson
+                "\"INTENT_JSON\" TEXT);"); // 5: intentJson
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_COMMAND_CATEGORY ON DB_COMMAND" +
                 " (\"CATEGORY\");");
@@ -68,14 +68,14 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         stmt.bindString(3, entity.getPackageName());
         stmt.bindBlob(4, entity.getIconPng());
  
-        String commandData = entity.getCommandData();
-        if (commandData != null) {
-            stmt.bindString(5, commandData);
+        String extraJson = entity.getExtraJson();
+        if (extraJson != null) {
+            stmt.bindString(5, extraJson);
         }
  
-        String intentData = entity.getIntentData();
-        if (intentData != null) {
-            stmt.bindString(6, intentData);
+        String intentJson = entity.getIntentJson();
+        if (intentJson != null) {
+            stmt.bindString(6, intentJson);
         }
     }
 
@@ -87,14 +87,14 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         stmt.bindString(3, entity.getPackageName());
         stmt.bindBlob(4, entity.getIconPng());
  
-        String commandData = entity.getCommandData();
-        if (commandData != null) {
-            stmt.bindString(5, commandData);
+        String extraJson = entity.getExtraJson();
+        if (extraJson != null) {
+            stmt.bindString(5, extraJson);
         }
  
-        String intentData = entity.getIntentData();
-        if (intentData != null) {
-            stmt.bindString(6, intentData);
+        String intentJson = entity.getIntentJson();
+        if (intentJson != null) {
+            stmt.bindString(6, intentJson);
         }
     }
 
@@ -110,8 +110,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
             cursor.getInt(offset + 1), // category
             cursor.getString(offset + 2), // packageName
             cursor.getBlob(offset + 3), // iconPng
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // commandData
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // intentData
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // extraJson
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // intentJson
         );
         return entity;
     }
@@ -122,8 +122,8 @@ public class DbCommandDao extends AbstractDao<DbCommand, String> {
         entity.setCategory(cursor.getInt(offset + 1));
         entity.setPackageName(cursor.getString(offset + 2));
         entity.setIconPng(cursor.getBlob(offset + 3));
-        entity.setCommandData(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setIntentData(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setExtraJson(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setIntentJson(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override

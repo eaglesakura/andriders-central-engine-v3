@@ -22,8 +22,8 @@ public class DbCommand {
 
     @NotNull
     private byte[] iconPng;
-    private String commandData;
-    private String intentData;
+    private String extraJson;
+    private String intentJson;
 
     @Generated
     public DbCommand() {
@@ -34,13 +34,13 @@ public class DbCommand {
     }
 
     @Generated
-    public DbCommand(String commandKey, int category, String packageName, byte[] iconPng, String commandData, String intentData) {
+    public DbCommand(String commandKey, int category, String packageName, byte[] iconPng, String extraJson, String intentJson) {
         this.commandKey = commandKey;
         this.category = category;
         this.packageName = packageName;
         this.iconPng = iconPng;
-        this.commandData = commandData;
-        this.intentData = intentData;
+        this.extraJson = extraJson;
+        this.intentJson = intentJson;
     }
 
     @NotNull
@@ -81,20 +81,20 @@ public class DbCommand {
         this.iconPng = iconPng;
     }
 
-    public String getCommandData() {
-        return commandData;
+    public String getExtraJson() {
+        return extraJson;
     }
 
-    public void setCommandData(String commandData) {
-        this.commandData = commandData;
+    public void setExtraJson(String extraJson) {
+        this.extraJson = extraJson;
     }
 
-    public String getIntentData() {
-        return intentData;
+    public String getIntentJson() {
+        return intentJson;
     }
 
-    public void setIntentData(String intentData) {
-        this.intentData = intentData;
+    public void setIntentJson(String intentJson) {
+        this.intentJson = intentJson;
     }
 
 }
