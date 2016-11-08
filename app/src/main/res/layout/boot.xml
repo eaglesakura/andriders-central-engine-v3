@@ -11,8 +11,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <ImageView
-                android:src="@mipmap/logo_andriders"
+        <android.support.v7.widget.AppCompatImageView
+                app:srcCompat="@mipmap/logo_andriders"
                 android:layout_width="match_parent" android:layout_height="80dp"/>
         <LinearLayout
                 android:layout_gravity="center"
