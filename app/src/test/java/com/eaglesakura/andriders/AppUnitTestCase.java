@@ -8,6 +8,9 @@ import com.eaglesakura.android.AndroidSupportTestCase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.util.LogUtil;
 
+import org.robolectric.annotation.Config;
+
+@Config(constants = BuildConfig.class, packageName = BuildConfig.APPLICATION_ID, sdk = 23)
 //@Config(constants = BuildConfig.class, application = AceApplication.class, packageName = BuildConfig.DEFAULT_PACKAGE_NAME, sdk = 23)
 public abstract class AppUnitTestCase extends AndroidSupportTestCase {
     /**
