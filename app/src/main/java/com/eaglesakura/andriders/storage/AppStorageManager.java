@@ -14,11 +14,11 @@ import java.io.File;
  * アプリのストレージ領域管理を行う
  */
 @Singleton
-public class AppStorageController {
+public class AppStorageManager {
     @NonNull
     final Context mContext;
 
-    public AppStorageController(@NonNull Context context) {
+    public AppStorageManager(@NonNull Context context) {
         mContext = context;
     }
 

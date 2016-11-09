@@ -21,7 +21,6 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
-        DbDisplayTargetDao.createTable(db, ifNotExists);
         DbDisplayLayoutDao.createTable(db, ifNotExists);
         DbBleFitnessDeviceDao.createTable(db, ifNotExists);
         DbCommandDao.createTable(db, ifNotExists);
@@ -30,7 +29,6 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
-        DbDisplayTargetDao.dropTable(db, ifExists);
         DbDisplayLayoutDao.dropTable(db, ifExists);
         DbBleFitnessDeviceDao.dropTable(db, ifExists);
         DbCommandDao.dropTable(db, ifExists);
@@ -53,7 +51,6 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(DbDisplayTargetDao.class);
         registerDaoClass(DbDisplayLayoutDao.class);
         registerDaoClass(DbBleFitnessDeviceDao.class);
         registerDaoClass(DbCommandDao.class);

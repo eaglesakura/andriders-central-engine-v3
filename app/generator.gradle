@@ -20,24 +20,16 @@ task generateCentralSettingDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTa
     def schema = newSchema(1, "central");
 
     /**
-     * 表示グルーピング用DAO
-     */
-    def DbDisplayTarget = schema.addEntity("DbDisplayTarget");
-    DbDisplayTarget.addStringProperty("uniqueId").notNull().unique().index().primaryKey();
-    DbDisplayTarget.addDateProperty("createdDate").notNull(); // 作成日時
-    DbDisplayTarget.addDateProperty("modifiedDate").notNull();    // 更新日時
-    DbDisplayTarget.addStringProperty("name").notNull();
-    DbDisplayTarget.addIntProperty("layoutType").notNull(); // 後の拡張用
-    DbDisplayTarget.addStringProperty("targetPackage");    // 表示対象のパッケージ名
-
-    /**
-     * 表示アイテム用
+     * 表示スロットと表示内容(対象プラグイン、表示ID)を紐付ける
+     *
+     * packageName + slotIdで一意に識別される
      */
     def DbDisplayLayout = schema.addEntity("DbDisplayLayout");
     DbDisplayLayout.addStringProperty("uniqueId").notNull().unique().index().primaryKey();
-    DbDisplayLayout.addStringProperty("targetPackage").notNull();    // 表示対象のパッケージ名
+    DbDisplayLayout.addDateProperty("updatedDate").notNull();    // 更新日時
+    DbDisplayLayout.addStringProperty("appPackageName").notNull();    // 表示対象のアプリパッケージ名
     DbDisplayLayout.addIntProperty("slotId").notNull();    // 設定対象のスロットID
-    DbDisplayLayout.addStringProperty("extensionId").notNull();    // 表示対象の拡張機能
+    DbDisplayLayout.addStringProperty("pluginId").notNull();    // 表示対象の拡張機能
     DbDisplayLayout.addStringProperty("valueId").notNull();   // 設定される値の識別
 
     /**
@@ -62,10 +54,7 @@ task generateCentralSettingDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTa
     DbCommand.addIntProperty("category").notNull().index();    // コマンドの管理カテゴリ
     DbCommand.addStringProperty("packageName").notNull();  // 起動対象の対応アプリpackage
     DbCommand.addByteArrayProperty("iconPng").notNull(); // アイコンファイル
-
-    // 制御情報
     DbCommand.addStringProperty("extraJson");  // コマンドの付与情報（タイマー間隔、スピード等のメタ情報
-
     // Intentで直接起動するオプション
     DbCommand.addStringProperty("intentJson");  // Intent情報
 

@@ -1,17 +1,17 @@
 package com.eaglesakura.andriders.provider;
 
-import com.eaglesakura.andriders.storage.AppStorageController;
+import com.eaglesakura.andriders.storage.AppStorageManager;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 
 public class TestProviderUtil {
 
     static class AppStorageManagerRef {
-        @Inject(AppControllerProvider.class)
-        AppStorageController mAppStorageManager;
+        @Inject(AppStorageProvider.class)
+        AppStorageManager mAppStorageManager;
     }
 
-    public static AppStorageController provideAppStorageManager() {
+    public static AppStorageManager provideAppStorageManager() {
         return Garnet.inject(new AppStorageManagerRef()).mAppStorageManager;
     }
 }

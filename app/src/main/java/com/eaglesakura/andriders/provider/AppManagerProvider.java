@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.central.data.CentralLogManager;
+import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Provide;
@@ -23,6 +24,11 @@ public class AppManagerProvider extends ContextProvider {
     @Provide
     public CentralLogManager provideCentralLogManager() {
         return new CentralLogManager(getApplication());
+    }
+
+    @Provide
+    public CommandDataManager provideCommandDataManager() {
+        return new CommandDataManager(getApplication());
     }
 
     @Override

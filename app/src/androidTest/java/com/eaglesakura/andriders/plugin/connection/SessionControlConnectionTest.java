@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.plugin.connection;
 
 import com.eaglesakura.andriders.AppDeviceTestCase;
-import com.eaglesakura.andriders.provider.AppControllerProvider;
+import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.serialize.RawSessionInfo;
 import com.eaglesakura.andriders.service.CentralSessionService;
 import com.eaglesakura.android.garnet.Garnet;
@@ -22,7 +22,7 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
         super.onSetup();
 
         // システム関連をもとに戻して、DB接続先を正常にする
-        Garnet.override(AppControllerProvider.class, AppControllerProvider.class);
+        Garnet.override(AppStorageProvider.class, AppStorageProvider.class);
         // Serviceを強制切断
         getApplication().stopService(new Intent(getContext(), CentralSessionService.class));
     }

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 public class SpeedCommandControllerTest extends AppUnitTestCase {
 
-    CommandData newCommand(double speed, int type) throws Throwable {
+    public static CommandData newCommand(double speed, int type) throws Throwable {
         CommandData result = new CommandData(new DbCommand());
         CommandData.Extra extra = result.getInternalExtra();
         extra.speedKmh = (float) speed;

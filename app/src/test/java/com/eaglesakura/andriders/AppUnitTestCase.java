@@ -1,9 +1,11 @@
 package com.eaglesakura.andriders;
 
 import com.eaglesakura.andriders.provider.AppContextProvider;
-import com.eaglesakura.andriders.provider.AppControllerProvider;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.provider.TestAppContextProvider;
 import com.eaglesakura.andriders.provider.TestAppManagerProvider;
+import com.eaglesakura.andriders.provider.TestAppStorageProvider;
 import com.eaglesakura.android.AndroidSupportTestCase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.util.LogUtil;
@@ -30,7 +32,8 @@ public abstract class AppUnitTestCase extends AndroidSupportTestCase {
         // UnitTest用モジュールへ切り替える
         TestAppManagerProvider.onSetup(this);
         Garnet.override(AppContextProvider.class, TestAppContextProvider.class);
-        Garnet.override(AppControllerProvider.class, TestAppManagerProvider.class);
+        Garnet.override(AppManagerProvider.class, TestAppManagerProvider.class);
+        Garnet.override(AppStorageProvider.class, TestAppStorageProvider.class);
     }
 
 }

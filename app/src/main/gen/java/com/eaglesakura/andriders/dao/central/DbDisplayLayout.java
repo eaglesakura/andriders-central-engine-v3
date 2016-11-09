@@ -16,11 +16,14 @@ public class DbDisplayLayout {
     private String uniqueId;
 
     @NotNull
-    private String targetPackage;
+    private java.util.Date updatedDate;
+
+    @NotNull
+    private String appPackageName;
     private int slotId;
 
     @NotNull
-    private String extensionId;
+    private String pluginId;
 
     @NotNull
     private String valueId;
@@ -34,11 +37,12 @@ public class DbDisplayLayout {
     }
 
     @Generated
-    public DbDisplayLayout(String uniqueId, String targetPackage, int slotId, String extensionId, String valueId) {
+    public DbDisplayLayout(String uniqueId, java.util.Date updatedDate, String appPackageName, int slotId, String pluginId, String valueId) {
         this.uniqueId = uniqueId;
-        this.targetPackage = targetPackage;
+        this.updatedDate = updatedDate;
+        this.appPackageName = appPackageName;
         this.slotId = slotId;
-        this.extensionId = extensionId;
+        this.pluginId = pluginId;
         this.valueId = valueId;
     }
 
@@ -53,13 +57,23 @@ public class DbDisplayLayout {
     }
 
     @NotNull
-    public String getTargetPackage() {
-        return targetPackage;
+    public java.util.Date getUpdatedDate() {
+        return updatedDate;
     }
 
     /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setTargetPackage(@NotNull String targetPackage) {
-        this.targetPackage = targetPackage;
+    public void setUpdatedDate(@NotNull java.util.Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    @NotNull
+    public String getAppPackageName() {
+        return appPackageName;
+    }
+
+    /** Not-null value; ensure this value is available before it is saved to the database. */
+    public void setAppPackageName(@NotNull String appPackageName) {
+        this.appPackageName = appPackageName;
     }
 
     public int getSlotId() {
@@ -71,13 +85,13 @@ public class DbDisplayLayout {
     }
 
     @NotNull
-    public String getExtensionId() {
-        return extensionId;
+    public String getPluginId() {
+        return pluginId;
     }
 
     /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setExtensionId(@NotNull String extensionId) {
-        this.extensionId = extensionId;
+    public void setPluginId(@NotNull String pluginId) {
+        this.pluginId = pluginId;
     }
 
     @NotNull

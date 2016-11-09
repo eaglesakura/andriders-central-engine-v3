@@ -68,7 +68,7 @@ public class CommandDataManager extends CentralSettingManager {
     public CommandData save(CommandSetupData data, int category, @Nullable CommandData.Extra extra) {
         try (CentralSettingDatabase db = open()) {
             DbCommand dbCommand = new DbCommand();
-            dbCommand.setCommandKey(data.getKey().getKey());
+            dbCommand.setCommandKey(data.getKey().toString());
             dbCommand.setCategory(category);
             dbCommand.setIconPng(data.getIconFile());
             dbCommand.setPackageName(data.getPackageName());

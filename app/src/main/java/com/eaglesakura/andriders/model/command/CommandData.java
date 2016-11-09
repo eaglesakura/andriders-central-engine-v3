@@ -7,6 +7,7 @@ import com.eaglesakura.andriders.model.DaoModel;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.android.util.ImageUtil;
 import com.eaglesakura.json.JSON;
+import com.eaglesakura.util.StringUtil;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -157,22 +158,6 @@ public class CommandData extends DaoModel<DbCommand> {
         return mRaw;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CommandData that = (CommandData) o;
-
-        return getKey().equals(that.getKey());
-
-    }
-
-    @Override
-    public int hashCode() {
-        return mRaw.hashCode();
-    }
-
     /**
      * ACE制御用Intentを保存する
      */
@@ -255,7 +240,23 @@ public class CommandData extends DaoModel<DbCommand> {
         if (l.getCategory() != r.getCategory()) {
             return Integer.compare(l.getCategory(), r.getCategory());
         } else {
-            return r.getKey().getKey().compareTo(l.getKey().getKey());
+            return StringUtil.compareString(r.getKey().toString(), l.getKey().toString());
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CommandData that = (CommandData) o;
+
+        return that.getKey().equals(that.getKey());
+
+    }
+
+    @Override
+    public int hashCode() {
+        return getKey().hashCode();
+    }
 }

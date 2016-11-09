@@ -23,10 +23,11 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
     */
     public static class Properties {
         public final static Property UniqueId = new Property(0, String.class, "uniqueId", true, "UNIQUE_ID");
-        public final static Property TargetPackage = new Property(1, String.class, "targetPackage", false, "TARGET_PACKAGE");
-        public final static Property SlotId = new Property(2, int.class, "slotId", false, "SLOT_ID");
-        public final static Property ExtensionId = new Property(3, String.class, "extensionId", false, "EXTENSION_ID");
-        public final static Property ValueId = new Property(4, String.class, "valueId", false, "VALUE_ID");
+        public final static Property UpdatedDate = new Property(1, java.util.Date.class, "updatedDate", false, "UPDATED_DATE");
+        public final static Property AppPackageName = new Property(2, String.class, "appPackageName", false, "APP_PACKAGE_NAME");
+        public final static Property SlotId = new Property(3, int.class, "slotId", false, "SLOT_ID");
+        public final static Property PluginId = new Property(4, String.class, "pluginId", false, "PLUGIN_ID");
+        public final static Property ValueId = new Property(5, String.class, "valueId", false, "VALUE_ID");
     };
 
 
@@ -43,10 +44,11 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"DB_DISPLAY_LAYOUT\" (" + //
                 "\"UNIQUE_ID\" TEXT PRIMARY KEY NOT NULL UNIQUE ," + // 0: uniqueId
-                "\"TARGET_PACKAGE\" TEXT NOT NULL ," + // 1: targetPackage
-                "\"SLOT_ID\" INTEGER NOT NULL ," + // 2: slotId
-                "\"EXTENSION_ID\" TEXT NOT NULL ," + // 3: extensionId
-                "\"VALUE_ID\" TEXT NOT NULL );"); // 4: valueId
+                "\"UPDATED_DATE\" INTEGER NOT NULL ," + // 1: updatedDate
+                "\"APP_PACKAGE_NAME\" TEXT NOT NULL ," + // 2: appPackageName
+                "\"SLOT_ID\" INTEGER NOT NULL ," + // 3: slotId
+                "\"PLUGIN_ID\" TEXT NOT NULL ," + // 4: pluginId
+                "\"VALUE_ID\" TEXT NOT NULL );"); // 5: valueId
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_DISPLAY_LAYOUT_UNIQUE_ID ON DB_DISPLAY_LAYOUT" +
                 " (\"UNIQUE_ID\");");
@@ -62,20 +64,22 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
     protected final void bindValues(DatabaseStatement stmt, DbDisplayLayout entity) {
         stmt.clearBindings();
         stmt.bindString(1, entity.getUniqueId());
-        stmt.bindString(2, entity.getTargetPackage());
-        stmt.bindLong(3, entity.getSlotId());
-        stmt.bindString(4, entity.getExtensionId());
-        stmt.bindString(5, entity.getValueId());
+        stmt.bindLong(2, entity.getUpdatedDate().getTime());
+        stmt.bindString(3, entity.getAppPackageName());
+        stmt.bindLong(4, entity.getSlotId());
+        stmt.bindString(5, entity.getPluginId());
+        stmt.bindString(6, entity.getValueId());
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, DbDisplayLayout entity) {
         stmt.clearBindings();
         stmt.bindString(1, entity.getUniqueId());
-        stmt.bindString(2, entity.getTargetPackage());
-        stmt.bindLong(3, entity.getSlotId());
-        stmt.bindString(4, entity.getExtensionId());
-        stmt.bindString(5, entity.getValueId());
+        stmt.bindLong(2, entity.getUpdatedDate().getTime());
+        stmt.bindString(3, entity.getAppPackageName());
+        stmt.bindLong(4, entity.getSlotId());
+        stmt.bindString(5, entity.getPluginId());
+        stmt.bindString(6, entity.getValueId());
     }
 
     @Override
@@ -87,10 +91,11 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
     public DbDisplayLayout readEntity(Cursor cursor, int offset) {
         DbDisplayLayout entity = new DbDisplayLayout( //
             cursor.getString(offset + 0), // uniqueId
-            cursor.getString(offset + 1), // targetPackage
-            cursor.getInt(offset + 2), // slotId
-            cursor.getString(offset + 3), // extensionId
-            cursor.getString(offset + 4) // valueId
+            new java.util.Date(cursor.getLong(offset + 1)), // updatedDate
+            cursor.getString(offset + 2), // appPackageName
+            cursor.getInt(offset + 3), // slotId
+            cursor.getString(offset + 4), // pluginId
+            cursor.getString(offset + 5) // valueId
         );
         return entity;
     }
@@ -98,10 +103,11 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
     @Override
     public void readEntity(Cursor cursor, DbDisplayLayout entity, int offset) {
         entity.setUniqueId(cursor.getString(offset + 0));
-        entity.setTargetPackage(cursor.getString(offset + 1));
-        entity.setSlotId(cursor.getInt(offset + 2));
-        entity.setExtensionId(cursor.getString(offset + 3));
-        entity.setValueId(cursor.getString(offset + 4));
+        entity.setUpdatedDate(new java.util.Date(cursor.getLong(offset + 1)));
+        entity.setAppPackageName(cursor.getString(offset + 2));
+        entity.setSlotId(cursor.getInt(offset + 3));
+        entity.setPluginId(cursor.getString(offset + 4));
+        entity.setValueId(cursor.getString(offset + 5));
      }
     
     @Override
