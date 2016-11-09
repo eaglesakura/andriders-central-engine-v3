@@ -4,26 +4,27 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
-import com.eaglesakura.andriders.model.command.CommandDatabase;
 import com.eaglesakura.andriders.model.command.CommandSetupData;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
-import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.system.context.AppSettings;
+import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
+import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.IFragmentPagerTitle;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.oari.OnActivityResult;
+import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.util.StringUtil;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.UiThread;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -34,7 +35,7 @@ import java.util.List;
 /**
  * 近接コマンド設定クラス
  */
-public class ProximityCommandFragment extends AppBaseFragment implements IFragmentPagerTitle {
+public class ProximityCommandFragment extends AppFragment implements IFragmentPagerTitle {
 
     @Bind(R.id.Command_Proximity_DisplayLink)
     CompoundButton mLinkDisplaySwitch;
@@ -44,16 +45,14 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
      */
     final List<ViewGroup> mCommandViewList = new ArrayList<>();
 
+    @Inject(AppManagerProvider.class)
     CommandDataManager mCommandManager;
+
+    @Inject(AppContextProvider.class)
+    AppSettings mSettings;
 
     public ProximityCommandFragment() {
         mFragmentDelegate.setLayoutId(R.layout.command_setup_proximity);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mCommandManager = new CommandDataManager(context);
     }
 
     @Override
@@ -89,13 +88,13 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
      */
     @UiThread
     void updateProximityUI() {
-        CommandDataCollection collection = mCommandManager.loadFromCategory(CommandDatabase.CATEGORY_PROXIMITY);
+        CommandDataCollection collection = mCommandManager.loadFromCategory(CommandData.CATEGORY_PROXIMITY);
 
         int index = 0;
         for (ViewGroup cmdView : mCommandViewList) {
             final int PROXIMITY_INDEX = index;
             final CommandKey KEY = CommandKey.fromProximity(PROXIMITY_INDEX + 1);
-            CommandData data = collection.getOrNull(KEY);
+            CommandData data = collection.find(KEY);
             new AQuery(cmdView)
                     .clicked(it -> {
                         if (data == null) {
@@ -110,9 +109,7 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
                         if (data != null) {
                             it.setImageBitmap(data.decodeIcon());
                         } else {
-                            VectorDrawableCompat drawableCompat = VectorDrawableCompat.create(getActivity().getResources(), R.drawable.ic_common_none, getActivity().getTheme());
-                            drawableCompat.setTint(ContextCompat.getColor(getActivity(), R.color.App_Icon_Grey));
-                            it.setImageDrawable(drawableCompat);
+                            it.setImageDrawable(ResourceUtil.vectorDrawable(getContext(), R.drawable.ic_common_none, R.color.App_Icon_Grey));
                         }
                     });
             ++index;
@@ -121,17 +118,15 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
 
     @UiThread
     void bootDeleteCheckDialog(CommandData data) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("確認");
-        builder.setTitle("既にコマンドが存在します。\n古いコマンドを削除しますか？");
-        builder.setPositiveButton("削除", (dlg, which) -> {
-            mCommandManager.remove(data);
-            updateProximityUI();
-        });
-        builder.setNeutralButton("上書", (dlg, which) -> {
-            startCommandSetup(data.getKey());
-        });
-        builder.show();
+        AppDialogBuilder.newInformation(getContext(), "既にコマンドが存在します。\n古いコマンドを削除しますか？")
+                .positiveButton("削除", () -> {
+                    mCommandManager.remove(data);
+                    updateProximityUI();
+                })
+                .negativeButton("上書", () -> {
+                    startCommandSetup(data.getKey());
+                })
+                .show(mLifecycleDelegate);
     }
 
     @UiThread
@@ -149,10 +144,10 @@ public class ProximityCommandFragment extends AppBaseFragment implements IFragme
             return;
         }
 
-        AppLog.plugin("key[%s] package[%s]", setupData.getKey().getKey(), setupData.getPackageName());
+        AppLog.plugin("key[%s] package[%s]", setupData.getKey().toString(), setupData.getPackageName());
 
         // DBに保存を行わせ、更新する
-        mCommandManager.save(setupData, CommandDatabase.CATEGORY_PROXIMITY, null);
+        mCommandManager.save(setupData, CommandData.CATEGORY_PROXIMITY, null);
         updateProximityUI();
     }
 

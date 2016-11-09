@@ -105,5 +105,11 @@ public class UserSessionActivity extends AppNavigationActivity {
             Intent intent = new Intent(self(), InformationActivity.class);
             startActivity(intent);
         }
+
+        @Override
+        public void requestShowCommands(MenuController self) {
+            Intent intent = new Intent(self(), CommandSettingActivity.class);
+            startActivity(intent);
+        }
     };
 }

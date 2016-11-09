@@ -121,7 +121,9 @@ public class NavigationMapFragment extends AppFragment {
     @UiThread
     protected void onGoogleMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-        mCentralDataReceiver.connect();
+        if (!mCentralDataReceiver.isConnected()) {
+            mCentralDataReceiver.connect();
+        }
     }
 
     /**

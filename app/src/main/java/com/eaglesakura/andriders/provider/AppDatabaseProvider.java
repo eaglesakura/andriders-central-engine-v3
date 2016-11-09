@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.data.db.CentralSettingDatabase;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
+import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Provide;
 
 import android.content.Context;
@@ -9,7 +10,7 @@ import android.content.Context;
 /**
  * DBの依存管理を行う
  */
-public class AppDatabaseProvider extends AppBaseProvider {
+public class AppDatabaseProvider extends ContextProvider {
     static CentralSettingDatabase sCentralSettingDatabase;
 
     static SessionLogDatabase sSessionLogDatabase;

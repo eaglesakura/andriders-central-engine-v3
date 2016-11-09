@@ -49,6 +49,8 @@
                   android:label="@string/Title.Plugin"/>
         <activity android:name="com.eaglesakura.andriders.ui.navigation.InformationActivity"
                   android:label="@string/Title.Info"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.CommandSettingActivity"
+                  android:label="@string/Title.Command"/>
         <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
         </service>
 

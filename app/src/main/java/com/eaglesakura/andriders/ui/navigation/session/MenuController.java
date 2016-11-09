@@ -58,6 +58,11 @@ public class MenuController {
          * Info画面を開く
          */
         void requestShowInformation(MenuController self);
+
+        /**
+         * コマンド詳細メニューを開く
+         */
+        void requestShowCommands(MenuController self);
     }
 
     private final NavigationView.OnNavigationItemSelectedListener miItemSelectedImpl = menuItem -> {
@@ -67,11 +72,13 @@ public class MenuController {
             case R.id.Menu_CycleComputer:
                 break;
             case R.id.Menu_Commands:
+                mCallback.requestShowCommands(this);
                 break;
             case R.id.Menu_Plugins:
                 mCallback.requestShowPlugins(this);
                 break;
             case R.id.Menu_Information:
+                mCallback.requestShowInformation(this);
                 break;
             case R.id.Menu_Gadgets:
                 break;

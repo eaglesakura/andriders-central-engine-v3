@@ -4,9 +4,11 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
-import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.material.widget.MaterialAlertDialog;
@@ -22,10 +24,11 @@ import java.util.List;
 /**
  * コマンド設定のリスト表記を行う
  */
-public abstract class CommandBaseFragment extends AppBaseFragment {
-    @Bind(R.id.Command_Item_List)
+public abstract class CommandBaseFragment extends AppFragment {
+    @Bind(R.id.Content_List)
     SupportRecyclerView mRecyclerView;
 
+    @Inject(AppManagerProvider.class)
     protected CommandDataManager mCommandDataManager;
 
     protected CardAdapter<CommandData> mAdapter;
@@ -39,10 +42,6 @@ public abstract class CommandBaseFragment extends AppBaseFragment {
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
 
-        if (mCommandDataManager == null) {
-            mCommandDataManager = new CommandDataManager(getContext());
-        }
-
         if (mAdapter == null) {
             mAdapter = newCardAdapter();
             mRecyclerView.setAdapter(mAdapter, true);
@@ -55,11 +54,11 @@ public abstract class CommandBaseFragment extends AppBaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loadDatabases();
+        loadCommands();
     }
 
     @UiThread
-    protected void loadDatabases() {
+    protected void loadCommands() {
         asyncUI((BackgroundTask<CommandDataCollection> task) -> {
             return mCommandDataManager.loadFromCategory(getCommandCategory());
         }).completed((result, task) -> {

@@ -6,7 +6,7 @@
              android:orientation="vertical">
 
     <com.eaglesakura.material.widget.support.SupportRecyclerView
-            android:id="@+id/Command.Item.List"
+            android:id="@+id/Content.List"
             app:esmEmptyText="コマンドが登録されていません"
             app:esmProgressVisible="false"
             android:layout_width="match_parent"
@@ -14,7 +14,7 @@
 
     <android.support.design.widget.FloatingActionButton
             xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/Command.Item.Add"
+            android:id="@+id/Button.Add"
             style="@style/EsMaterial.Widget.RootLayout"
             app:srcCompat="@drawable/ic_create"
             android:tint="@color/App.Icon.White"
