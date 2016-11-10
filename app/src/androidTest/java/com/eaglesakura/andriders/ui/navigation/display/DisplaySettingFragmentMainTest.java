@@ -1,8 +1,6 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
-import com.eaglesakura.andriders.ui.navigation.NavigationActivityTest;
-
-public class DisplaySettingFragmentMainTest extends NavigationActivityTest {
+public class DisplaySettingFragmentMainTest {
 
 //    @Test
 //    public void Fragmentが起動できる() throws Throwable {

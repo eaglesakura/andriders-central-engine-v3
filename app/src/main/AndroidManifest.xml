@@ -44,30 +44,33 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.eaglesakura.andriders.ui.navigation.UserSessionActivity"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.UserSessionActivity"
+                  android:screenOrientation="portrait"/>
         <activity android:name="com.eaglesakura.andriders.ui.navigation.PluginSettingActivity"
+                  android:screenOrientation="portrait"
                   android:label="@string/Title.Plugin"/>
         <activity android:name="com.eaglesakura.andriders.ui.navigation.InformationActivity"
+                  android:screenOrientation="portrait"
                   android:label="@string/Title.Info"/>
         <activity android:name="com.eaglesakura.andriders.ui.navigation.CommandSettingActivity"
+                  android:screenOrientation="portrait"
                   android:label="@string/Title.Command"/>
         <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
         </service>
 
-        <!--&lt;!&ndash; 指定アプリ起動 &ndash;&gt;-->
-        <!--<activity-->
-        <!--android:name=".basicui.command.LauncherSelectActivity"-->
-        <!--android:label="指定アプリを起動"-->
-        <!--android:screenOrientation="portrait">-->
-        <!--<intent-filter>-->
-        <!--&lt;!&ndash; acetrigger://で起動する &ndash;&gt;-->
-        <!--<data android:scheme="acecommand"/>-->
-        <!--<action android:name="android.intent.action.VIEW"/>-->
-        <!--&lt;!&ndash; デフォルト指定 &ndash;&gt;-->
-        <!--<category android:name="android.intent.category.DEFAULT"/>-->
-        <!--</intent-filter>-->
-        <!--</activity>-->
 
+        <!-- 指定のLauncherを起動する -->
+        <activity android:name="com.eaglesakura.andriders.trigger.LauncherSelectActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Word.SelectLauncher">
+            <intent-filter>
+                <!-- acetrigger://で起動する -->
+                <data android:scheme="acecommand"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <!-- デフォルト指定 -->
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <!--<activity-->
         <!--android:name=".ui.navigation.NavigationActivity"-->
         <!--android:screenOrientation="portrait">-->

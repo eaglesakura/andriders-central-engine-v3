@@ -2,25 +2,26 @@
 <layout>
     <data>
         <variable name="item"
-                  type="com.eaglesakura.andriders.basicui.command.LauncherSelectActivity.CardBinding"/>
+                  type="com.eaglesakura.andriders.ui.widget.IconItemAdapter.Item"/>
     </data>
     <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <com.eaglesakura.material.widget.TransparentButton
-                android:id="@+id/LauncherSelect_Item"
+                android:id="@+id/Item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/EsMaterial.Button.MinHeight">
-                <ImageView
+                <android.support.v7.widget.AppCompatImageView
                         android:layout_gravity="center_vertical"
                         android:layout_margin="@dimen/App.Icon.Large.Margin"
-                        android:src="@{item.icon}"
+                        app:srcCompat="@{item.icon}"
                         android:layout_width="28dp"
                         android:layout_height="28dp"/>
 

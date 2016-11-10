@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders;
 
 import com.eaglesakura.andriders.provider.AppStorageProvider;
-import com.eaglesakura.andriders.ui.navigation.base.AppNavigationActivity;
+import com.eaglesakura.android.framework.ui.support.SupportActivity;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.util.Util;
 
@@ -13,7 +13,7 @@ import android.support.test.rule.ActivityTestRule;
 /**
  * シナリオテスト用
  */
-public abstract class AppScenarioTest<ActivityClass extends AppNavigationActivity> extends AppDeviceTestCase {
+public abstract class AppScenarioTest<ActivityClass extends SupportActivity> extends AppDeviceTestCase {
 
     @Rule
     public final ActivityTestRule<ActivityClass> mRule;

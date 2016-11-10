@@ -59,7 +59,7 @@ dependencies {
         compile project(":eglibrary:android-firebase")
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
-        compile project(':eglibrary:android-apptour')
+//        compile project(':eglibrary:android-apptour')
 
         /**
          * UnitTest
@@ -86,7 +86,7 @@ dependencies {
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
         compile 'com.eaglesakura:margarineknife:1.+'
-        compile 'com.eaglesakura:android-apptour:+'
+//        compile 'com.eaglesakura:android-apptour:+'
 
         /**
          * UnitTest
