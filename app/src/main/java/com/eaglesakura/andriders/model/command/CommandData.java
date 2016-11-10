@@ -251,7 +251,7 @@ public class CommandData extends DaoModel<DbCommand> {
 
         CommandData that = (CommandData) o;
 
-        return that.getKey().equals(that.getKey());
+        return getKey().equals(that.getKey());
 
     }
 
