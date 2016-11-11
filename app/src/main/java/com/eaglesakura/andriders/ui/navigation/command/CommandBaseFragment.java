@@ -78,8 +78,12 @@ public abstract class CommandBaseFragment extends AppFragment {
 
     @UiThread
     protected void onClickCard(CommandData data) {
-        MaterialAlertDialog dialog = newSettingDialog(data);
-        addAutoDismiss(dialog).show();
+        CommandEditDialogBuilder.from(getContext(), data)
+                .commit(it -> {
+                })
+                .delete(it -> {
+                })
+                .show(mLifecycleDelegate);
     }
 
     /**

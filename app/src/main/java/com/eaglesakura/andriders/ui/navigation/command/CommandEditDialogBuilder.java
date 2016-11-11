@@ -3,25 +3,42 @@ package com.eaglesakura.andriders.ui.navigation.command;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.framework.delegate.lifecycle.UiLifecycleDelegate;
 import com.eaglesakura.util.StringUtil;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 
 public class CommandEditDialogBuilder {
-    AlertDialog.Builder mDialogBuilder;
+    final AlertDialog.Builder mDialogBuilder;
 
-    CommandData mCommandData;
+    final CommandData mCommandData;
 
     OnCommitListener mCommitListener;
 
     OnDeleteListener mDeleteListener;
 
-    private CommandEditDialogBuilder(AlertDialog.Builder builder, CommandData commandData) {
+    CommandEditDialogBuilder(AlertDialog.Builder builder, CommandData commandData) {
         mCommandData = commandData;
         mDialogBuilder = builder;
+    }
+
+    public CommandEditDialogBuilder commit(OnCommitListener commitListener) {
+        mCommitListener = commitListener;
+        return this;
+    }
+
+    public CommandEditDialogBuilder delete(OnDeleteListener deleteListener) {
+        mDeleteListener = deleteListener;
+        return this;
+    }
+
+
+    public Dialog show(UiLifecycleDelegate lifecycleDelegate) {
+        return lifecycleDelegate.addAutoDismiss(mDialogBuilder.show());
     }
 
     /**
