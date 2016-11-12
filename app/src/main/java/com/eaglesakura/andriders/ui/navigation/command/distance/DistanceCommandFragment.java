@@ -6,16 +6,21 @@ import com.eaglesakura.andriders.databinding.CommandSetupDistanceRowBinding;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandSetupData;
 import com.eaglesakura.andriders.ui.navigation.command.CommandBaseFragment;
+import com.eaglesakura.andriders.ui.navigation.command.CommandEditDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppUtil;
-import com.eaglesakura.android.framework.delegate.fragment.IFragmentPagerTitle;
+import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.framework.delegate.fragment.FragmentPagerTitle;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.material.widget.MaterialAlertDialog;
+import com.eaglesakura.android.util.ViewUtil;
+import com.eaglesakura.material.widget.SnackbarBuilder;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
+import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.StringUtil;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.BitmapDrawable;
@@ -26,11 +31,11 @@ import android.view.ViewGroup;
 /**
  * タイマーコマンドのセットアップ
  */
-public class DistanceCommandFragment extends CommandBaseFragment implements IFragmentPagerTitle {
+public class DistanceCommandFragment extends CommandBaseFragment implements FragmentPagerTitle {
     final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_DISTANCE;
 
     @BindStringArray(R.array.Command_Distance_TypeInfo)
-    protected String[] mInfoFormats;
+    private String[] mInfoFormats;
 
     public DistanceCommandFragment() {
         mFragmentDelegate.setLayoutId(R.layout.command_setup_list);
@@ -75,12 +80,34 @@ public class DistanceCommandFragment extends CommandBaseFragment implements IFra
                         return text;
                     }
                 });
-                binding.CommandItem.setOnClickListener(it -> {
-                    addAutoDismiss(newSettingDialog(item)).show();
+                binding.Item.setOnClickListener(it -> {
+                    CommandEditDialogBuilder.from(getContext(), item)
+                            .commit(mCommandCommitListener)
+                            .delete(mCommandDeleteListener)
+                            .show(mLifecycleDelegate);
                 });
             }
         };
     }
+
+    final CommandEditDialogBuilder.OnCommitListener mCommandCommitListener = (view, data) -> {
+        AQuery q = new AQuery(view);
+        CommandData.Extra extra = data.getInternalExtra();
+        float interval = (float) ViewUtil.getDoubleValue(q.id(R.id.Item_Value).getEditText(), -1);
+        if (interval <= 0) {
+            SnackbarBuilder.from(this)
+                    .message(getString(R.string.Message_Command_InvalidValue))
+                    .show();
+            return;
+        }
+
+        extra.distanceType = q.id(R.id.Selector_Type).getSelectedItemPosition();
+        extra.distanceKm = interval;
+        extra.flags = MathUtil.setFlag(extra.flags, CommandData.DISTANCE_FLAG_REPEAT, q.id(R.id.Button_Repeat).isChecked());
+        extra.flags = MathUtil.setFlag(extra.flags, CommandData.DISTANCE_FLAG_ACTIVE_ONLY, q.id(R.id.Button_ActiveOnly).isChecked());
+
+        onCommitData(data);
+    };
 
     @OnClick(R.id.Button_Add)
     protected void clickAddButton() {
@@ -104,61 +131,6 @@ public class DistanceCommandFragment extends CommandBaseFragment implements IFra
         mAdapter.getCollection().insertOrReplace(0, commandData);
     }
 
-    @Override
-    protected MaterialAlertDialog newSettingDialog(CommandData data) {
-        return null;
-//        return new MaterialAlertDialog(getActivity()) {
-//            MaterialAlertDialog init() {
-//                setDialogContent(R.layout.command_setup_distance_dialog);
-//
-//                initTimerUi();
-//
-//                setTitle("条件変更");
-//                setPositiveButton("保存", (dlg, which) -> {
-//                    onCommit();
-//                });
-//
-//                setNeutralButton("削除", (dlg, which) -> {
-//                    showDeleteDialog(data);
-//                });
-//                return this;
-//            }
-//
-//            /**
-//             * type設定のUIを構築する
-//             */
-//            void initTimerUi() {
-//                CommandData.Extra extra = data.getInternalExtra();
-//                new AQuery(root)
-//                        .id(R.id.Command_Distance_Type).setSelection(data.getInternalExtra().distanceType)
-//                        .id(R.id.Command_Distance_Text).text(StringUtil.format("%f", extra.distanceKm))
-//                        .id(R.id.Command_Distance_Repeat).checked((extra.flags & CommandData.DISTANCE_FLAG_REPEAT) != 0)
-//                        .id(R.id.Command_Distance_ActiveOnly).checked((extra.flags & CommandData.DISTANCE_FLAG_ACTIVE_ONLY) != 0)
-//                ;
-//            }
-//
-//            /**
-//             * 変更を確定する
-//             */
-//            void onCommit() {
-//                AQuery q = new AQuery(root);
-//                CommandData.Extra extra = data.getInternalExtra();
-//                float interval = (float) ViewUtil.getDoubleValue(q.id(R.id.Command_Distance_Text).getEditText(), -1);
-//                if (interval <= 0) {
-//                    toast("距離設定に間違いがあります");
-//                    return;
-//                }
-//
-//                extra.distanceType = q.id(R.id.Command_Distance_Type).getSelectedItemPosition();
-//                extra.distanceKm = interval;
-//                extra.flags = MathUtil.setFlag(extra.flags, CommandData.DISTANCE_FLAG_REPEAT, q.id(R.id.Command_Distance_Repeat).isChecked());
-//                extra.flags = MathUtil.setFlag(extra.flags, CommandData.DISTANCE_FLAG_ACTIVE_ONLY, q.id(R.id.Command_Distance_ActiveOnly).isChecked());
-//
-//                onCommitData(data);
-//            }
-//        }.init();
-    }
-
     public interface CardBinding {
         Drawable getIcon();
 
@@ -166,7 +138,7 @@ public class DistanceCommandFragment extends CommandBaseFragment implements IFra
     }
 
     @Override
-    public CharSequence getTitle() {
-        return "距離コマンド";
+    public CharSequence getTitle(Context context) {
+        return getString(R.string.Title_Command_Distance);
     }
 }

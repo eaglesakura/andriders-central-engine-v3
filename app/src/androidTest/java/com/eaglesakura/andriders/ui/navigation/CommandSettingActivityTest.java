@@ -17,6 +17,19 @@ public class CommandSettingActivityTest extends AppScenarioTest<CommandSettingAc
         sleep(1000);
 
         UiScenario.fromId(R.id.Content_Holder_Root)
-                .swipeRightToLeft().sleep(1000);
+                .swipeRightToLeft().sleep(500)
+                .swipeRightToLeft().sleep(500)
+                .swipeRightToLeft().sleep(500)
+                .swipeRightToLeft().sleep(500)
+        ;
+    }
+
+    @Test
+    public void タブをランダムで切り替える() throws Throwable {
+        sleep(1000);
+
+        for (int i = 0; i < 5; ++i) {
+            UiScenario.fromId(R.id.Content_PagerTab).monkeyClick(10, 100, 300);
+        }
     }
 }

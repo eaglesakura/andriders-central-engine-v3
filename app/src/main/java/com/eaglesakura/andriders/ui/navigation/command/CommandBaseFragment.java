@@ -11,13 +11,11 @@ import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelega
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.material.widget.MaterialAlertDialog;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
 
 import android.os.Bundle;
 import android.support.annotation.UiThread;
-import android.support.v7.app.AlertDialog;
 
 import java.util.List;
 
@@ -76,15 +74,13 @@ public abstract class CommandBaseFragment extends AppFragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    @UiThread
-    protected void onClickCard(CommandData data) {
-        CommandEditDialogBuilder.from(getContext(), data)
-                .commit(it -> {
-                })
-                .delete(it -> {
-                })
-                .show(mLifecycleDelegate);
-    }
+    /**
+     * 削除用の標準Listener
+     */
+    protected final CommandEditDialogBuilder.OnDeleteListener mCommandDeleteListener = data -> {
+        mCommandDataManager.remove(data);
+        mAdapter.getCollection().remove(data);
+    };
 
     /**
      * データを保存し、UI反映する
@@ -96,28 +92,7 @@ public abstract class CommandBaseFragment extends AppFragment {
     }
 
     /**
-     * 削除ダイアログを表示する
-     */
-    @UiThread
-    protected void showDeleteDialog(CommandData data) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("コマンド削除");
-        builder.setMessage("選択したコマンドを削除しますか?");
-        builder.setPositiveButton("削除", (dlg, which) -> {
-            mCommandDataManager.remove(data);
-            mAdapter.getCollection().remove(data);
-        });
-        builder.setNegativeButton("キャンセル", null);
-        builder.show();
-    }
-
-    /**
      * 表示用のAdapterを生成する
      */
     protected abstract CardAdapter<CommandData> newCardAdapter();
-
-    /**
-     * 設定Dialogを表示する
-     */
-    protected abstract MaterialAlertDialog newSettingDialog(CommandData data);
 }

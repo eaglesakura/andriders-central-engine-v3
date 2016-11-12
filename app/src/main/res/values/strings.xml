@@ -171,6 +171,11 @@
     <string name="Title.Info">アプリ情報</string>
     <string name="Title.Command">コマンド設定</string>
     <string name="Word.SelectLauncher">アプリ選択</string>
+    <string name="Title.Command.Edit">条件設定</string>
+    <string name="Word.Common.Save">保存</string>
+    <string name="Word.Common.Delete">削除</string>
+    <string name="Title.Command.Distance">距離コマンド</string>
+    <string name="Message.Command.InvalidValue">無効な設定値です</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

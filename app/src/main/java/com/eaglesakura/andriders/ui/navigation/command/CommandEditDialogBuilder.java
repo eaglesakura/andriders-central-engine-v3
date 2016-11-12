@@ -17,13 +17,18 @@ public class CommandEditDialogBuilder {
 
     final CommandData mCommandData;
 
-    OnCommitListener mCommitListener;
+    final View mContent;
 
-    OnDeleteListener mDeleteListener;
+    OnCommitListener mCommitListener = (view, data) -> {
+    };
 
-    CommandEditDialogBuilder(AlertDialog.Builder builder, CommandData commandData) {
+    OnDeleteListener mDeleteListener = data -> {
+    };
+
+    CommandEditDialogBuilder(AlertDialog.Builder builder, View content, CommandData commandData) {
         mCommandData = commandData;
         mDialogBuilder = builder;
+        mContent = content;
     }
 
     public CommandEditDialogBuilder commit(OnCommitListener commitListener) {
@@ -38,7 +43,8 @@ public class CommandEditDialogBuilder {
 
 
     public Dialog show(UiLifecycleDelegate lifecycleDelegate) {
-        return lifecycleDelegate.addAutoDismiss(mDialogBuilder.show());
+        AlertDialog dialog = mDialogBuilder.show();
+        return lifecycleDelegate.addAutoDismiss(dialog);
     }
 
     /**
@@ -50,13 +56,13 @@ public class CommandEditDialogBuilder {
         View content = LayoutInflater.from(context).inflate(R.layout.command_setup_distance_dialog, null, false);
         CommandData.Extra extra = data.getInternalExtra();
         new AQuery(content)
-                .id(R.id.Command_Distance_Type).setSelection(data.getInternalExtra().distanceType)
-                .id(R.id.Command_Distance_Text).text(StringUtil.format("%f", extra.distanceKm))
-                .id(R.id.Command_Distance_Repeat).checked((extra.flags & CommandData.DISTANCE_FLAG_REPEAT) != 0)
-                .id(R.id.Command_Distance_ActiveOnly).checked((extra.flags & CommandData.DISTANCE_FLAG_ACTIVE_ONLY) != 0)
+                .id(R.id.Selector_Type).setSelection(data.getInternalExtra().distanceType)
+                .id(R.id.Item_Value).text(StringUtil.format("%f", extra.distanceKm))
+                .id(R.id.Button_Repeat).checked((extra.flags & CommandData.DISTANCE_FLAG_REPEAT) != 0)
+                .id(R.id.Button_ActiveOnly).checked((extra.flags & CommandData.DISTANCE_FLAG_ACTIVE_ONLY) != 0)
         ;
 
-        return new CommandEditDialogBuilder(builder, data);
+        return new CommandEditDialogBuilder(builder.setView(content), content, data);
     }
 
     public static CommandEditDialogBuilder from(Context context, CommandData commandData) {
@@ -68,25 +74,17 @@ public class CommandEditDialogBuilder {
             default:
                 throw new IllegalArgumentException("Unsupported Category :: " + commandData.getCategory());
         }
-        result.mDialogBuilder.setTitle("条件設定");
-        result.mDialogBuilder.setPositiveButton("保存", (dialog, which) -> {
-            if (result.mCommitListener != null) {
-                result.mCommitListener.onCommit(commandData);
-            }
-        });
-        result.mDialogBuilder.setNeutralButton("削除", (dlg, which) -> {
-            if (result.mDeleteListener != null) {
-                result.mDeleteListener.onDelege(commandData);
-            }
-        });
+        result.mDialogBuilder.setTitle(R.string.Title_Command_Edit);
+        result.mDialogBuilder.setPositiveButton(R.string.Word_Common_Save, (dialog, which) -> result.mCommitListener.onCommit(result.mContent, commandData));
+        result.mDialogBuilder.setNeutralButton(R.string.Word_Common_Delete, (dlg, which) -> result.mDeleteListener.onDelete(commandData));
         return result;
     }
 
     public interface OnCommitListener {
-        void onCommit(CommandData data);
+        void onCommit(View view, CommandData data);
     }
 
     public interface OnDeleteListener {
-        void onDelege(CommandData data);
+        void onDelete(CommandData data);
     }
 }
