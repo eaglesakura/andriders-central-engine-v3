@@ -4,7 +4,6 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.lifecycle.UiLifecycleDelegate;
-import com.eaglesakura.util.StringUtil;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -57,7 +56,7 @@ public class CommandEditDialogBuilder {
         CommandData.Extra extra = data.getInternalExtra();
         new AQuery(content)
                 .id(R.id.Selector_Type).setSelection(data.getInternalExtra().distanceType)
-                .id(R.id.Item_Value).text(StringUtil.format("%f", extra.distanceKm))
+                .id(R.id.Item_Value).text(String.valueOf(extra.distanceKm))
                 .id(R.id.Button_Repeat).checked((extra.flags & CommandData.DISTANCE_FLAG_REPEAT) != 0)
                 .id(R.id.Button_ActiveOnly).checked((extra.flags & CommandData.DISTANCE_FLAG_ACTIVE_ONLY) != 0)
         ;

@@ -21,6 +21,8 @@ public class CommandSettingActivity extends AppNavigationActivity {
         if (savedInstanceState == null) {
             SupportProgressFragment.attach(this, R.id.Root);
         }
+
+        getSupportActionBar().setElevation(0);
     }
 
     @Override
