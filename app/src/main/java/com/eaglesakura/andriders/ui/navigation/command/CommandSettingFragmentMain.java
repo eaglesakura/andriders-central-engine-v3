@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.navigation.command.distance.DistanceCommandFragment;
 import com.eaglesakura.andriders.ui.navigation.command.proximity.ProximityCommandFragment;
 import com.eaglesakura.andriders.ui.navigation.command.speed.SpeedCommandFragment;
-import com.eaglesakura.andriders.util.AppConstants;
+import com.eaglesakura.andriders.ui.navigation.command.timer.TimerCommandFragment;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentPager;
 import com.eaglesakura.android.margarine.Bind;
@@ -17,9 +17,6 @@ import android.support.v4.view.ViewPager;
  * 各種コマンドを設定する
  */
 public class CommandSettingFragmentMain extends AppFragment {
-
-    final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_TIMER;
-
     @Bind(R.id.Content_PagerTab)
     TabLayout mPagerTab;
 
@@ -36,9 +33,9 @@ public class CommandSettingFragmentMain extends AppFragment {
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
 
+        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(TimerCommandFragment.class));
         mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(SpeedCommandFragment.class));
         mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(DistanceCommandFragment.class));
-//        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(TimerCommandFragment.class));
         mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(ProximityCommandFragment.class));
 
         // タブのセットアップ

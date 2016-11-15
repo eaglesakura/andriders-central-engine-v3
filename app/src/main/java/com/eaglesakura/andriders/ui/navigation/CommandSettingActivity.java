@@ -27,7 +27,7 @@ public class CommandSettingActivity extends AppNavigationActivity {
 
     @Override
     public int getDefaultLayoutId(@NonNull ContentHolderActivityDelegate self) {
-        return R.layout.system_activity_with_toolbar;
+        return R.layout.command_setup_activity;
     }
 
     @NonNull

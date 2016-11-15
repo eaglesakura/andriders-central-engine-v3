@@ -4,7 +4,6 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.databinding.CommandSetupTimerRowBinding;
 import com.eaglesakura.andriders.model.command.CommandData;
-import com.eaglesakura.andriders.model.command.CommandDatabase;
 import com.eaglesakura.andriders.model.command.CommandSetupData;
 import com.eaglesakura.andriders.ui.navigation.command.CommandBaseFragment;
 import com.eaglesakura.andriders.ui.navigation.command.CommandEditDialogBuilder;
@@ -16,7 +15,7 @@ import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.material.widget.MaterialAlertDialog;
+import com.eaglesakura.material.widget.SnackbarBuilder;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.StringUtil;
@@ -44,7 +43,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements Fragmen
 
     @Override
     protected int getCommandCategory() {
-        return CommandDatabase.CATEGORY_TIMER;
+        return CommandData.CATEGORY_TIMER;
     }
 
     @Override
@@ -78,13 +77,16 @@ public class TimerCommandFragment extends CommandBaseFragment implements Fragmen
                     }
                 });
                 binding.CommandItem.setOnClickListener(it -> {
-                    addAutoDismiss(newSettingDialog(item)).show();
+                    CommandEditDialogBuilder.from(getContext(), item)
+                            .commit(mCommandCommitListener)
+                            .delete(mCommandDeleteListener)
+                            .show(mLifecycleDelegate);
                 });
             }
         };
     }
 
-    @OnClick(R.id.Command_Item_Add)
+    @OnClick(R.id.Button_Add)
     protected void clickAddButton() {
         startActivityForResult(
                 AppUtil.newCommandSettingIntent(getActivity(), CommandKey.fromTimer(System.currentTimeMillis())),
@@ -107,54 +109,20 @@ public class TimerCommandFragment extends CommandBaseFragment implements Fragmen
     }
 
     CommandEditDialogBuilder.OnCommitListener mCommandCommitListener = (view, data) -> {
+        AQuery q = new AQuery(view);
+        CommandData.Extra extra = data.getInternalExtra();
+        int interval = (int) ViewUtil.getLongValue(q.id(R.id.Item_Value).getEditText(), -1);
+        if (interval < 0) {
+            SnackbarBuilder.from(this).message(R.string.Message_Command_InvalidValue).show();
+            return;
+        }
 
+        extra.timerType = q.id(R.id.Selector_Type).getSelectedItemPosition();
+        extra.timerIntervalSec = interval;
+        extra.flags = MathUtil.setFlag(extra.flags, CommandData.TIMER_FLAG_REPEAT, q.id(R.id.Button_Repeat).isChecked());
+
+        onCommitData(data);
     };
-
-    @Override
-    protected MaterialAlertDialog newSettingDialog(CommandData data) {
-        return new MaterialAlertDialog(getActivity()) {
-            MaterialAlertDialog init() {
-                setDialogContent();
-
-                initTimerUi();
-
-                setTitle("条件変更");
-                setPositiveButton("保存", (dlg, which) -> {
-                    onCommit();
-                });
-
-                setNeutralButton("削除", (dlg, which) -> {
-                    showDeleteDialog(data);
-                });
-                return this;
-            }
-
-            /**
-             * type設定のUIを構築する
-             */
-            void initTimerUi() {
-            }
-
-            /**
-             * 変更を確定する
-             */
-            void onCommit() {
-                AQuery q = new AQuery(root);
-                CommandData.Extra extra = data.getInternalExtra();
-                int interval = (int) ViewUtil.getLongValue(q.id(R.id.Item_Value).getEditText(), -1);
-                if (interval < 0) {
-                    toast("速度設定に間違いがあります");
-                    return;
-                }
-
-                extra.timerType = q.id(R.id.Selector_Type).getSelectedItemPosition();
-                extra.timerIntervalSec = interval;
-                extra.flags = MathUtil.setFlag(extra.flags, CommandData.TIMER_FLAG_REPEAT, q.id(R.id.Button_Repeat).isChecked());
-
-                onCommitData(data);
-            }
-        }.init();
-    }
 
     public interface CardBinding {
         Drawable getIcon();
