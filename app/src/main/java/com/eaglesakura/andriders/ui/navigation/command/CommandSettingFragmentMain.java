@@ -33,10 +33,10 @@ public class CommandSettingFragmentMain extends AppFragment {
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
 
-        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(TimerCommandFragment.class));
+        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(ProximityCommandFragment.class));
         mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(SpeedCommandFragment.class));
         mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(DistanceCommandFragment.class));
-        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(ProximityCommandFragment.class));
+        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(TimerCommandFragment.class));
 
         // タブのセットアップ
         mViewPager.setAdapter(mFragmentPager.newAdapter(getChildFragmentManager()));
