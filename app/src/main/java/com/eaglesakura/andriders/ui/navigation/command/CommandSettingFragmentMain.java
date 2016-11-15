@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.navigation.command.distance.DistanceCommandFragment;
 import com.eaglesakura.andriders.ui.navigation.command.proximity.ProximityCommandFragment;
+import com.eaglesakura.andriders.ui.navigation.command.speed.SpeedCommandFragment;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentPager;
@@ -35,9 +36,9 @@ public class CommandSettingFragmentMain extends AppFragment {
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
 
+        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(SpeedCommandFragment.class));
         mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(DistanceCommandFragment.class));
 //        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(TimerCommandFragment.class));
-//        mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(SpeedCommandFragment.class));
         mFragmentPager.addFragment(SupportFragmentPager.newFragmentCreator(ProximityCommandFragment.class));
 
         // タブのセットアップ

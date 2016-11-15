@@ -6,36 +6,39 @@
 
 
     <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/Command.Speed.Type"
+            android:id="@+id/Selector.Type"
+            android:layout_marginBottom="@dimen/EsMaterial.Button.Margin"
             android:minHeight="@dimen/EsMaterial.Button.MinHeight"
+            android:layout_gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
-
+            android:layout_height="wrap_content"/>
     <LinearLayout
-            android:id="@+id/Setting.SpeedCommand.EditRoot"
+            android:id="@+id/Content.TimerEditRoot"
             android:minHeight="@dimen/EsMaterial.Button.MinHeight"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
         <android.support.v7.widget.AppCompatEditText
-                android:id="@+id/Command.Speed.Kmh"
+                android:id="@+id/Item.Value"
                 android:maxLines="1"
                 android:inputType="numberDecimal|numberSigned"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-
         <android.support.v7.widget.AppCompatTextView
-                android:layout_marginRight="6dp"
-                android:id="@+id/Command.Speed.Info"
-                android:text="km/hを超えたら"
-                android:minWidth="120dp"
+                android:text=" 秒間隔"
                 android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
     </LinearLayout>
 
+    <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/Button.Repeat"
+            android:minHeight="@dimen/EsMaterial.Button.MinHeight"
+            android:text="繰り返し"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

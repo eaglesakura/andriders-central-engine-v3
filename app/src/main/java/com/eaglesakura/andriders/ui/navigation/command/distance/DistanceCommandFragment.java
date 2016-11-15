@@ -139,6 +139,6 @@ public class DistanceCommandFragment extends CommandBaseFragment implements Frag
 
     @Override
     public CharSequence getTitle(Context context) {
-        return getString(R.string.Title_Command_Distance);
+        return context.getString(R.string.Title_Command_Distance);
     }
 }
