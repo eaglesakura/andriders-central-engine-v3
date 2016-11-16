@@ -14,7 +14,7 @@ import com.eaglesakura.andriders.dao.central.DbCommandDao;
 import com.eaglesakura.andriders.dao.central.DbDisplayLayout;
 import com.eaglesakura.andriders.dao.central.DbDisplayLayoutDao;
 import com.eaglesakura.andriders.dao.central.DbDisplayTarget;
-import com.eaglesakura.andriders.model.ble.FitnessDeviceType;
+import com.eaglesakura.andriders.model.ble.BleDeviceType;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.plugin.ActivePlugin;
 import com.eaglesakura.andriders.model.plugin.ActivePluginCollection;
@@ -133,7 +133,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     /**
      * スキャン済みのデバイスを取得する
      */
-    public List<DbBleFitnessDevice> listScanDevices(FitnessDeviceType device) {
+    public List<DbBleFitnessDevice> listScanDevices(BleDeviceType device) {
         QueryBuilder<DbBleFitnessDevice> queryBuilder = session.getDbBleFitnessDeviceDao().queryBuilder();
         return queryBuilder
                 .where(DbBleFitnessDeviceDao.Properties.DeviceType.eq(device.getDeviceTypeId()))
@@ -158,7 +158,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     /**
      * デバイスを検出した
      */
-    public void foundDevice(FitnessDeviceType type, BleDevice device) {
+    public void foundDevice(BleDeviceType type, BleDevice device) {
         DbBleFitnessDevice dbDevice = load(device.getAddress());
         if (dbDevice == null) {
             dbDevice = new DbBleFitnessDevice();

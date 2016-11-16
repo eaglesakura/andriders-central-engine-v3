@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ble.base;
 
 import com.eaglesakura.andriders.ble.BleDevice;
 import com.eaglesakura.andriders.ble.BleDevice.BleDeviceListener;
-import com.eaglesakura.andriders.model.ble.FitnessDeviceType;
+import com.eaglesakura.andriders.model.ble.BleDeviceType;
 import com.eaglesakura.android.rx.BackgroundTaskBuilder;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
@@ -39,7 +39,7 @@ public abstract class BaseBleGattReceiver {
 
     protected String mTargetFitnessDeviceAddress;
 
-    protected final FitnessDeviceType mFitnessDeviceType;
+    protected final BleDeviceType mFitnessDeviceType;
 
 
     /**
@@ -53,7 +53,7 @@ public abstract class BaseBleGattReceiver {
     @NonNull
     protected final PendingCallbackQueue mCallbackQueue;
 
-    public BaseBleGattReceiver(Context context, PendingCallbackQueue pendingCallbackQueue, FitnessDeviceType type) {
+    public BaseBleGattReceiver(Context context, PendingCallbackQueue pendingCallbackQueue, BleDeviceType type) {
         mContext = context.getApplicationContext();
         mCallbackQueue = pendingCallbackQueue;
         mFitnessDeviceType = type;

@@ -28,7 +28,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                 <Spinner
-                        android:id="@+id/Setting.RoadBikeProfile.HeartrateMonitor.Selector"
+                        android:id="@+id/Selector.HeartrateMonitor"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
             </LinearLayout>
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                 <Spinner
-                        android:id="@+id/Setting.RoadBikeProfile.SpeedAndCadence.Selector"
+                        android:id="@+id/Selector.SpeedCadence"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
             </LinearLayout>
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content">
 
             <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/Setting.RoadBikeProfile.BleDevice.ScanRequest"
+                    android:id="@+id/Button.ScanRequest"
                     android:layout_gravity="right"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

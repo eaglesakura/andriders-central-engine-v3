@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Google Fit用デバイス検索を管理する
  */
-public class FitnessDeviceScanner {
+public class BleDeviceScanner {
 
     /**
      * フィットネスデバイスのスキャン時間（秒）
@@ -26,7 +26,7 @@ public class FitnessDeviceScanner {
 
     final Context mContext;
 
-    final FitnessDeviceType mType;
+    final BleDeviceType mType;
 
     GoogleApiClient mBleClient;
 
@@ -47,7 +47,7 @@ public class FitnessDeviceScanner {
      */
     boolean mAutoRescan = true;
 
-    FitnessDeviceScanner(Context context, FitnessDeviceType device) {
+    BleDeviceScanner(Context context, BleDeviceType device) {
         this.mContext = context;
         this.mType = device;
     }

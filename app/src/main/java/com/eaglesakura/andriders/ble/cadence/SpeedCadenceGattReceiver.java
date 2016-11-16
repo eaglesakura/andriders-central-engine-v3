@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.ble.base.BaseBleGattReceiver;
 import com.eaglesakura.andriders.ble.BleDevice;
 import com.eaglesakura.andriders.ble.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.ble.cadence.BleCadenceSpeedSensor.BleSpeedCadenceListener;
-import com.eaglesakura.andriders.model.ble.FitnessDeviceType;
+import com.eaglesakura.andriders.model.ble.BleDeviceType;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
 
@@ -20,7 +20,7 @@ public class SpeedCadenceGattReceiver extends BaseBleGattReceiver {
     final Clock mClock;
 
     public SpeedCadenceGattReceiver(Context context, PendingCallbackQueue callbackQueue, Clock clock) {
-        super(context, callbackQueue, FitnessDeviceType.SPEED_CADENCE_SENSOR);
+        super(context, callbackQueue, BleDeviceType.SPEED_CADENCE_SENSOR);
         mClock = clock;
     }
 

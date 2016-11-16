@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.ble.base.BaseBleGattReceiver;
 import com.eaglesakura.andriders.ble.BleDevice;
 import com.eaglesakura.andriders.ble.BleDevice.BleDeviceListener;
 import com.eaglesakura.andriders.ble.heartrate.BleHeartrateMonitor.BleHeartrateListener;
-import com.eaglesakura.andriders.model.ble.FitnessDeviceType;
+import com.eaglesakura.andriders.model.ble.BleDeviceType;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
@@ -25,7 +25,7 @@ public class HeartrateGattReceiver extends BaseBleGattReceiver {
     private final Clock mClock;
 
     public HeartrateGattReceiver(Context context, PendingCallbackQueue callbackQueue, Clock clock) {
-        super(context, callbackQueue, FitnessDeviceType.HEARTRATE_MONITOR);
+        super(context, callbackQueue, BleDeviceType.HEARTRATE_MONITOR);
         this.mClock = clock;
     }
 

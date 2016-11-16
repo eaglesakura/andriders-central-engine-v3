@@ -7,22 +7,22 @@ import android.content.Context;
 /**
  * Google Fitで管理されるデバイス
  */
-public class FitnessDeviceType {
+public class BleDeviceType {
 
-    public static final FitnessDeviceType HEARTRATE_MONITOR;
+    public static final BleDeviceType HEARTRATE_MONITOR;
 
-    public static final FitnessDeviceType SPEED_CADENCE_SENSOR;
+    public static final BleDeviceType SPEED_CADENCE_SENSOR;
 
     static {
-        HEARTRATE_MONITOR = new FitnessDeviceType(DataType.TYPE_HEART_RATE_BPM, 0x01);
-        SPEED_CADENCE_SENSOR = new FitnessDeviceType(DataType.TYPE_CYCLING_PEDALING_CADENCE, 0x02);
+        HEARTRATE_MONITOR = new BleDeviceType(DataType.TYPE_HEART_RATE_BPM, 0x01);
+        SPEED_CADENCE_SENSOR = new BleDeviceType(DataType.TYPE_CYCLING_PEDALING_CADENCE, 0x02);
     }
 
     final DataType mDataType;
 
     final int mDeviceTypeId;
 
-    private FitnessDeviceType(DataType dataType, int id) {
+    private BleDeviceType(DataType dataType, int id) {
         this.mDataType = dataType;
         this.mDeviceTypeId = id;
     }
@@ -35,8 +35,8 @@ public class FitnessDeviceType {
         return mDataType;
     }
 
-    public FitnessDeviceScanner createScanner(Context context) {
-        FitnessDeviceScanner result = new FitnessDeviceScanner(context, this);
+    public BleDeviceScanner createScanner(Context context) {
+        BleDeviceScanner result = new BleDeviceScanner(context, this);
         return result;
     }
 
@@ -45,7 +45,7 @@ public class FitnessDeviceType {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        FitnessDeviceType that = (FitnessDeviceType) o;
+        BleDeviceType that = (BleDeviceType) o;
 
         if (mDeviceTypeId != that.mDeviceTypeId) return false;
         return mDataType != null ? mDataType.equals(that.mDataType) : that.mDataType == null;
