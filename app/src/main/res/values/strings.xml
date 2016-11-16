@@ -178,6 +178,8 @@
     <string name="Message.Command.InvalidValue">無効な設定値です</string>
     <string name="Title.Command.Speed">スピード</string>
     <string name="Title.Command.Timer">タイマー</string>
+    <string name="Title.Sensor">センサー・周辺機器</string>
+    <string name="Message.Sensor.Found">登録可能センサー[%s]</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

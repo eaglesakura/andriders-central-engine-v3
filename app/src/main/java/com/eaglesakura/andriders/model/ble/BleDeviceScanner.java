@@ -47,7 +47,7 @@ public class BleDeviceScanner {
      */
     boolean mAutoRescan = true;
 
-    BleDeviceScanner(Context context, BleDeviceType device) {
+    public BleDeviceScanner(Context context, BleDeviceType device) {
         this.mContext = context;
         this.mType = device;
     }

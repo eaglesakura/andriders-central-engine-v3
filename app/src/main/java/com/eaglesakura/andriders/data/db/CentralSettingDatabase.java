@@ -1,20 +1,19 @@
 package com.eaglesakura.andriders.data.db;
 
-import com.google.android.gms.fitness.data.BleDevice;
-
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.dao.central.DaoMaster;
 import com.eaglesakura.andriders.dao.central.DaoSession;
 import com.eaglesakura.andriders.dao.central.DbActivePlugin;
 import com.eaglesakura.andriders.dao.central.DbActivePluginDao;
-import com.eaglesakura.andriders.dao.central.DbBleFitnessDevice;
-import com.eaglesakura.andriders.dao.central.DbBleFitnessDeviceDao;
+import com.eaglesakura.andriders.dao.central.DbBleSensor;
+import com.eaglesakura.andriders.dao.central.DbBleSensorDao;
 import com.eaglesakura.andriders.dao.central.DbCommand;
 import com.eaglesakura.andriders.dao.central.DbCommandDao;
 import com.eaglesakura.andriders.dao.central.DbDisplayLayout;
 import com.eaglesakura.andriders.dao.central.DbDisplayLayoutDao;
 import com.eaglesakura.andriders.dao.central.DbDisplayTarget;
-import com.eaglesakura.andriders.model.ble.BleDeviceType;
+import com.eaglesakura.andriders.model.ble.BleDeviceCache;
+import com.eaglesakura.andriders.model.ble.BleDeviceCacheCollection;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.plugin.ActivePlugin;
 import com.eaglesakura.andriders.model.plugin.ActivePluginCollection;
@@ -26,6 +25,7 @@ import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.collection.StringFlag;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.StringUtil;
 
@@ -131,41 +131,27 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     }
 
     /**
-     * スキャン済みのデバイスを取得する
+     * スキャン済みのBLEデバイスを保存する
      */
-    public List<DbBleFitnessDevice> listScanDevices(BleDeviceType device) {
-        QueryBuilder<DbBleFitnessDevice> queryBuilder = session.getDbBleFitnessDeviceDao().queryBuilder();
-        return queryBuilder
-                .where(DbBleFitnessDeviceDao.Properties.DeviceType.eq(device.getDeviceTypeId()))
-                .orderAsc(DbBleFitnessDeviceDao.Properties.Address) // アドレス順に並べる
+    public void save(BleDeviceCache device) {
+        DbBleSensor sensor = new DbBleSensor();
+        sensor.setAddress(device.getAddress());
+        sensor.setName(device.getName());
+        sensor.setTypeFlags(device.getFlags().toString());
+        session.getDbBleSensorDao().insertOrReplace(sensor);
+    }
+
+    /**
+     * スキャン済みのすべてのデバイスを列挙する
+     */
+    @NonNull
+    public BleDeviceCacheCollection listBleDevices(int sensorType) {
+        List<DbBleSensor> list = session.getDbBleSensorDao().queryBuilder()
+                .where(DbBleSensorDao.Properties.TypeFlags.like(new StringFlag(sensorType).toLikeQuery()))
+                .build()
                 .list();
-    }
 
-    /**
-     * アドレスを指定して取得する
-     */
-    public DbBleFitnessDevice load(String address) {
-        return session.getDbBleFitnessDeviceDao().load(address);
-    }
-
-    /**
-     * 情報を更新する
-     */
-    public void update(DbBleFitnessDevice device) {
-        session.getDbBleFitnessDeviceDao().update(device);
-    }
-
-    /**
-     * デバイスを検出した
-     */
-    public void foundDevice(BleDeviceType type, BleDevice device) {
-        DbBleFitnessDevice dbDevice = load(device.getAddress());
-        if (dbDevice == null) {
-            dbDevice = new DbBleFitnessDevice();
-            dbDevice.setDeviceType(type.getDeviceTypeId());
-            dbDevice.setAddress(device.getAddress());
-            session.getDbBleFitnessDeviceDao().insert(dbDevice);
-        }
+        return new BleDeviceCacheCollection(CollectionUtil.asOtherList(list, it -> new BleDeviceCache(it)));
     }
 
     static String getPluginClassName(String packageName, String className) {

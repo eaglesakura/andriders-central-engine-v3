@@ -9,12 +9,12 @@ import org.greenrobot.greendao.identityscope.IdentityScopeType;
 import org.greenrobot.greendao.internal.DaoConfig;
 
 import com.eaglesakura.andriders.dao.central.DbDisplayLayout;
-import com.eaglesakura.andriders.dao.central.DbBleFitnessDevice;
+import com.eaglesakura.andriders.dao.central.DbBleSensor;
 import com.eaglesakura.andriders.dao.central.DbCommand;
 import com.eaglesakura.andriders.dao.central.DbActivePlugin;
 
 import com.eaglesakura.andriders.dao.central.DbDisplayLayoutDao;
-import com.eaglesakura.andriders.dao.central.DbBleFitnessDeviceDao;
+import com.eaglesakura.andriders.dao.central.DbBleSensorDao;
 import com.eaglesakura.andriders.dao.central.DbCommandDao;
 import com.eaglesakura.andriders.dao.central.DbActivePluginDao;
 
@@ -28,12 +28,12 @@ import com.eaglesakura.andriders.dao.central.DbActivePluginDao;
 public class DaoSession extends AbstractDaoSession {
 
     private final DaoConfig dbDisplayLayoutDaoConfig;
-    private final DaoConfig dbBleFitnessDeviceDaoConfig;
+    private final DaoConfig dbBleSensorDaoConfig;
     private final DaoConfig dbCommandDaoConfig;
     private final DaoConfig dbActivePluginDaoConfig;
 
     private final DbDisplayLayoutDao dbDisplayLayoutDao;
-    private final DbBleFitnessDeviceDao dbBleFitnessDeviceDao;
+    private final DbBleSensorDao dbBleSensorDao;
     private final DbCommandDao dbCommandDao;
     private final DbActivePluginDao dbActivePluginDao;
 
@@ -44,8 +44,8 @@ public class DaoSession extends AbstractDaoSession {
         dbDisplayLayoutDaoConfig = daoConfigMap.get(DbDisplayLayoutDao.class).clone();
         dbDisplayLayoutDaoConfig.initIdentityScope(type);
 
-        dbBleFitnessDeviceDaoConfig = daoConfigMap.get(DbBleFitnessDeviceDao.class).clone();
-        dbBleFitnessDeviceDaoConfig.initIdentityScope(type);
+        dbBleSensorDaoConfig = daoConfigMap.get(DbBleSensorDao.class).clone();
+        dbBleSensorDaoConfig.initIdentityScope(type);
 
         dbCommandDaoConfig = daoConfigMap.get(DbCommandDao.class).clone();
         dbCommandDaoConfig.initIdentityScope(type);
@@ -54,19 +54,19 @@ public class DaoSession extends AbstractDaoSession {
         dbActivePluginDaoConfig.initIdentityScope(type);
 
         dbDisplayLayoutDao = new DbDisplayLayoutDao(dbDisplayLayoutDaoConfig, this);
-        dbBleFitnessDeviceDao = new DbBleFitnessDeviceDao(dbBleFitnessDeviceDaoConfig, this);
+        dbBleSensorDao = new DbBleSensorDao(dbBleSensorDaoConfig, this);
         dbCommandDao = new DbCommandDao(dbCommandDaoConfig, this);
         dbActivePluginDao = new DbActivePluginDao(dbActivePluginDaoConfig, this);
 
         registerDao(DbDisplayLayout.class, dbDisplayLayoutDao);
-        registerDao(DbBleFitnessDevice.class, dbBleFitnessDeviceDao);
+        registerDao(DbBleSensor.class, dbBleSensorDao);
         registerDao(DbCommand.class, dbCommandDao);
         registerDao(DbActivePlugin.class, dbActivePluginDao);
     }
     
     public void clear() {
         dbDisplayLayoutDaoConfig.getIdentityScope().clear();
-        dbBleFitnessDeviceDaoConfig.getIdentityScope().clear();
+        dbBleSensorDaoConfig.getIdentityScope().clear();
         dbCommandDaoConfig.getIdentityScope().clear();
         dbActivePluginDaoConfig.getIdentityScope().clear();
     }
@@ -75,8 +75,8 @@ public class DaoSession extends AbstractDaoSession {
         return dbDisplayLayoutDao;
     }
 
-    public DbBleFitnessDeviceDao getDbBleFitnessDeviceDao() {
-        return dbBleFitnessDeviceDao;
+    public DbBleSensorDao getDbBleSensorDao() {
+        return dbBleSensorDao;
     }
 
     public DbCommandDao getDbCommandDao() {

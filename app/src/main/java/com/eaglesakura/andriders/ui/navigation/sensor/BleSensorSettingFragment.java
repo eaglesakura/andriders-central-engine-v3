@@ -1,42 +1,31 @@
 package com.eaglesakura.andriders.ui.navigation.sensor;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.dao.central.DbBleFitnessDevice;
-import com.eaglesakura.andriders.gen.prop.UserProfiles;
-import com.eaglesakura.andriders.model.ble.BleDeviceScanner;
-import com.eaglesakura.andriders.provider.AppContextProvider;
-import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.saver.BundleState;
-import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @FragmentLayout(R.layout.sensor_gadgets_ble)
 public class BleSensorSettingFragment extends AppFragment {
-
-    @Inject(AppContextProvider.class)
-    AppSettings mAppSettings;
-
-    @BundleState
-    boolean mScanBleDevice = false;
-
-    final List<DbBleFitnessDevice> mHeartrateDevices = new ArrayList<>();
-
-    BleDeviceScanner mHeartrateController;
-
-    BasicSpinnerAdapter mHeartrateAdapter;
-
-    final List<DbBleFitnessDevice> mCadenceDevices = new ArrayList<>();
-
-    BleDeviceScanner mCadenceSpeedController;
-
-    BasicSpinnerAdapter mCadenceAdapter;
-
-    UserProfiles mPersonalDataSettings;
+//
+//    @Inject(AppContextProvider.class)
+//    AppSettings mAppSettings;
+//
+//    @BundleState
+//    boolean mScanBleDevice = false;
+//
+//    final List<DbBleFitnessDevice> mHeartrateDevices = new ArrayList<>();
+//
+//    BleDeviceScanner mHeartrateController;
+//
+//    BasicSpinnerAdapter mHeartrateAdapter;
+//
+//    final List<DbBleFitnessDevice> mCadenceDevices = new ArrayList<>();
+//
+//    BleDeviceScanner mCadenceSpeedController;
+//
+//    BasicSpinnerAdapter mCadenceAdapter;
+//
+//    UserProfiles mPersonalDataSettings;
 
 //    @Override
 //    public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +42,7 @@ public class BleSensorSettingFragment extends AppFragment {
 //        {
 //            FitnessDeviceCallbackImpl callback = new FitnessDeviceCallbackImpl(FitnessDeviceType.HEARTRATE_MONITOR, mHeartrateDevices);
 //
-//            mHeartrateController = FitnessDeviceType.HEARTRATE_MONITOR.createScanner(getActivity());
+//            mHeartrateController = FitnessDeviceType.HEARTRATE_MONITOR.newScanner(getActivity());
 //            mHeartrateController.setBleScanCallback(callback);
 //            mHeartrateAdapter = new BasicSpinnerAdapter(getActivity());
 //            q.id(R.id.Selector_HeartrateMonitor)
@@ -65,7 +54,7 @@ public class BleSensorSettingFragment extends AppFragment {
 //        {
 //            FitnessDeviceCallbackImpl callback = new FitnessDeviceCallbackImpl(FitnessDeviceType.SPEED_CADENCE_SENSOR, mCadenceDevices);
 //
-//            mCadenceSpeedController = FitnessDeviceType.SPEED_CADENCE_SENSOR.createScanner(getActivity());
+//            mCadenceSpeedController = FitnessDeviceType.SPEED_CADENCE_SENSOR.newScanner(getActivity());
 //            mCadenceSpeedController.setBleScanCallback(callback);
 //            mCadenceAdapter = new BasicSpinnerAdapter(getActivity());
 //            q.id(R.id.Selector_SpeedCadence)

@@ -55,6 +55,9 @@
         <activity android:name="com.eaglesakura.andriders.ui.navigation.CommandSettingActivity"
                   android:screenOrientation="portrait"
                   android:label="@string/Title.Command"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.SensorDeviceSettingActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Title.Sensor"/>
         <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
         </service>
 

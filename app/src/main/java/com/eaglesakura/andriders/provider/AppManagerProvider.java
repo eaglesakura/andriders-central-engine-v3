@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.central.data.CentralLogManager;
+import com.eaglesakura.andriders.data.sensor.SensorDataManager;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.android.framework.provider.ContextProvider;
@@ -29,6 +30,11 @@ public class AppManagerProvider extends ContextProvider {
     @Provide
     public CommandDataManager provideCommandDataManager() {
         return new CommandDataManager(getApplication());
+    }
+
+    @Provide
+    public SensorDataManager provideSensorDataManager() {
+        return new SensorDataManager(getApplication());
     }
 
     @Override

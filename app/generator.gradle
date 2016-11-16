@@ -33,15 +33,12 @@ task generateCentralSettingDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTa
     DbDisplayLayout.addStringProperty("valueId").notNull();   // 設定される値の識別
 
     /**
-     * スキャンしたデバイス一覧
+     * スキャンしたデバイスキャッシュ一覧
      */
-    def DbBleFitnessDevice = schema.addEntity("DbBleFitnessDevice");
-    // addressは重複しない
-    DbBleFitnessDevice.addStringProperty("address").notNull().unique().primaryKey();
-    // 接続数
-    DbBleFitnessDevice.addIntProperty("selectedCount").notNull();
-    // デバイスの種類
-    DbBleFitnessDevice.addIntProperty("deviceType").notNull();
+    def DbBleSensor = schema.addEntity("DbBleSensor");
+    DbBleSensor.addStringProperty("address").notNull().unique().primaryKey();
+    DbBleSensor.addStringProperty("name").notNull();
+    DbBleSensor.addStringProperty("typeFlags").notNull();
 
     /**
      * セットアップされたコマンド
