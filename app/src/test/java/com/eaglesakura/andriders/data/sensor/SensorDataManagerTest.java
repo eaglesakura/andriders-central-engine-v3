@@ -22,7 +22,10 @@ public class SensorDataManagerTest extends AppUnitTestCase {
         BleDeviceCache scCache = instance.save(new BleDeviceCache("FF:EE:DD:CC:BB:DD", "SCCache", new StringFlag(BleDeviceType.ID_SPEED_AND_CADENCE)));
         assertNotNull(scCache);
 
-        validate(instance.load(BleDeviceType.HEARTRATE_MONITOR).list()).sizeIs(1).contains(hrCache);
+        validate(instance.load(BleDeviceType.HEARTRATE_MONITOR).list()).sizeIs(1).contains(hrCache).each(it ->{
+            assertEquals(it.getName(), "HRCache");
+            assertEquals(it.getAddress(), "AA:BB:CC:DD:EE:FF");
+        });
         validate(instance.load(BleDeviceType.SPEED_CADENCE_SENSOR).list()).sizeIs(1).contains(scCache);
     }
 
