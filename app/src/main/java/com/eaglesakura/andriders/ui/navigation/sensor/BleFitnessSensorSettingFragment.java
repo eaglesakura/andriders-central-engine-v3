@@ -4,9 +4,12 @@ import com.google.android.gms.fitness.data.BleDevice;
 import com.google.android.gms.fitness.request.BleScanCallback;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.data.sensor.SensorDataManager;
+import com.eaglesakura.andriders.model.ble.BleDeviceCache;
 import com.eaglesakura.andriders.model.ble.BleDeviceScanner;
 import com.eaglesakura.andriders.model.ble.BleDeviceType;
 import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.android.aquery.AQuery;
@@ -18,14 +21,19 @@ import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.material.widget.SnackbarBuilder;
 import com.eaglesakura.material.widget.SpinnerAdapterBuilder;
+import com.eaglesakura.material.widget.SupportArrayAdapter;
 import com.eaglesakura.util.StringUtil;
 
+import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Google Fitによるスキャン可能なデバイスをスキャン・選択するUI
@@ -45,10 +53,39 @@ public class BleFitnessSensorSettingFragment extends AppFragment {
     @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
 
-    ArrayAdapter<BleDevice> mSpinnerAdapter;
+    @NonNull
+    SupportArrayAdapter<BleDeviceCache> mSpinnerAdapter;
 
-    public void setDeviceType(@NonNull BleDeviceType deviceType) {
+    @Inject(AppManagerProvider.class)
+    SensorDataManager mSensorDataManager;
+
+    @BundleState
+    @DrawableRes
+    int mHeaderIconRes;
+
+    @BundleState
+    @StringRes
+    int mHeaderTextRes;
+
+    /**
+     * Propに保存するときのKey指定
+     */
+    @BundleState
+    String mDeviceAddressPropertyKey;
+
+    /**
+     * 初期化を行う
+     *
+     * @param deviceType               スキャン対象デバイス
+     * @param headerIconRes            ヘッダアイコン
+     * @param headerTextRes            ヘッダテキスト
+     * @param deviceAddressPropertyKey 保存時のKey
+     */
+    public void initialize(@NonNull BleDeviceType deviceType, @DrawableRes int headerIconRes, @StringRes int headerTextRes, @NonNull String deviceAddressPropertyKey) {
         mDeviceType = deviceType;
+        mHeaderIconRes = headerIconRes;
+        mHeaderTextRes = headerTextRes;
+        mDeviceAddressPropertyKey = deviceAddressPropertyKey;
         mDeviceTypeId = mDeviceType.getDeviceTypeId();
     }
 
@@ -57,37 +94,55 @@ public class BleFitnessSensorSettingFragment extends AppFragment {
         super.onAfterViews(self, flags);
         AQuery q = new AQuery(self.getView());
 
-        List<BleDevice> devices = new ArrayList<>();
+        List<BleDeviceCache> devices = new ArrayList<>();
         devices.add(null);
-        SpinnerAdapterBuilder.from(q.id(R.id.Selector_Device).getSpinner(), BleDevice.class)
-                .items(devices, it -> {
+        devices.addAll(mSensorDataManager.load(mDeviceType).list());
+        SpinnerAdapterBuilder.from(q.id(R.id.Selector_Device).getSpinner(), BleDeviceCache.class)
+                .items(devices)
+                .title((index, it) -> {
                     if (it == null) {
                         return getString(R.string.Setting_Gadgets_BleDevice_NotConnected);
                     } else {
-                        String address = StringUtil.replaceAllSimple(it.getAddress(), ":", "").substring(0, 6).toUpperCase();
-                        return it.getName() + " [" + address + "]";
+                        return it.getDisplayName(getContext());
                     }
                 })
+                .selection(it -> {
+                    if (it == null) {
+                        return false;
+                    }
+
+                    Set<String> selected = new HashSet<>();
+                    selected.add(mAppSettings.getUserProfiles().getBleHeartrateMonitorAddress());
+                    selected.add(mAppSettings.getUserProfiles().getBleSpeedCadenceSensorAddress());
+
+                    for (String address : selected) {
+                        if (!StringUtil.isEmpty(address) && address.equals(it.getAddress())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .selected(it -> onDeviceSelected(it))
                 .build();
-        mSpinnerAdapter = (ArrayAdapter<BleDevice>) q.getSpinner().getAdapter();
+        mSpinnerAdapter = (SupportArrayAdapter<BleDeviceCache>) q.getSpinner().getAdapter();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (mDeviceType == null) {
+            mDeviceType = BleDeviceType.fromId(mDeviceTypeId);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mDeviceType == null) {
-            mDeviceType = BleDeviceType.fromId(mDeviceTypeId);
-        }
 
-        if (mDeviceType == BleDeviceType.HEARTRATE_MONITOR) {
-            new AQuery(getView())
-                    .id(R.id.App_HeaderView_Icon).image(ResourceUtil.vectorDrawable(getContext(), R.drawable.ic_heart_beats, R.color.App_Icon_Grey))
-                    .id(R.id.App_HeaderView_Title).text(R.string.Setting_Gadgets_Heartrate);
-        } else {
-            new AQuery(getView())
-                    .id(R.id.App_HeaderView_Icon).image(ResourceUtil.vectorDrawable(getContext(), R.drawable.ic_speed, R.color.App_Icon_Grey))
-                    .id(R.id.App_HeaderView_Title).text(R.string.Setting_Gadgets_SpeedAndCadence);
-        }
+        // ヘッダ表記を変更する
+        new AQuery(getView())
+                .id(R.id.App_HeaderView_Icon).image(ResourceUtil.vectorDrawable(getContext(), mHeaderIconRes, R.color.App_Icon_Grey))
+                .id(R.id.App_HeaderView_Title).text(mHeaderTextRes);
 
         mScanner = new BleDeviceScanner(getContext(), mDeviceType);
         mScanner.setBleScanCallback(mBleScanCallback);
@@ -101,29 +156,41 @@ public class BleFitnessSensorSettingFragment extends AppFragment {
         mScanner = null;
     }
 
+    @UiThread
+    void onDeviceSelected(BleDeviceCache device) {
+        String address = (device != null ? device.getAddress() : "");
+
+        mAppSettings.getUserProfiles().setProperty(mDeviceAddressPropertyKey, address);
+        mAppSettings.commit();
+    }
+
     /**
      * 発見したデバイスをSpinnerに登録する
      */
     @UiThread
-    void onDeviceFound(BleDevice device) {
-        int position = mSpinnerAdapter.getPosition(device);
-        if (position >= 0) {
-            // すでに追加済み
-            return;
+    void onDeviceFound(BleDeviceCache device) {
+        // 最新のキャッシュに交換する
+        mSensorDataManager.save(device);
+
+        for (int i = 0; i < mSpinnerAdapter.getCount(); ++i) {
+            if (device.equals(mSpinnerAdapter.getItem(i))) {
+                // すでに登録されていた
+                return;
+            }
         }
 
         mSpinnerAdapter.add(device);
         mSpinnerAdapter.notifyDataSetChanged();
 
         SnackbarBuilder.from(this)
-                .message(getString(R.string.Message_Sensor_Found, device.getName()))
+                .message(R.string.Message_Sensor_Found, device.getName())
                 .show();
     }
 
     final BleScanCallback mBleScanCallback = new BleScanCallback() {
         @Override
         public void onDeviceFound(BleDevice bleDevice) {
-            UIHandler.postUI(() -> BleFitnessSensorSettingFragment.this.onDeviceFound(bleDevice));
+            UIHandler.postUI(() -> BleFitnessSensorSettingFragment.this.onDeviceFound(new BleDeviceCache(bleDevice)));
         }
 
         @Override

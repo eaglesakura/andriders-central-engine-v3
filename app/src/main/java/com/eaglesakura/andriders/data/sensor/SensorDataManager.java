@@ -24,7 +24,7 @@ public class SensorDataManager extends CentralSettingManager {
         super(context);
     }
 
-    BleDeviceCache save(@NonNull BleDeviceCache cache) {
+    public BleDeviceCache save(@NonNull BleDeviceCache cache) {
         try (CentralSettingDatabase db = open()) {
             db.save(cache);
         }
@@ -49,7 +49,7 @@ public class SensorDataManager extends CentralSettingManager {
      * @return デバイス一覧, 見つからない場合は空リスト
      */
     @NonNull
-    public BleDeviceCacheCollection load(@NonNull BleDeviceType type) throws AppException {
+    public BleDeviceCacheCollection load(@NonNull BleDeviceType type) {
         try (CentralSettingDatabase db = open()) {
             return db.listBleDevices(type.getDeviceTypeId());
         }
