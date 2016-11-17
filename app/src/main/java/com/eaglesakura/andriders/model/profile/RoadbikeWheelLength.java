@@ -1,17 +1,28 @@
 package com.eaglesakura.andriders.model.profile;
 
+import com.eaglesakura.andriders.system.context.config.FbProfile;
+
 /**
  * ロードバイクのホイール周長を示す
  */
 public class RoadbikeWheelLength {
+    FbProfile.WheelConfig mRaw;
 
-    public class Model {
-        /**
-         * 表示名
-         * 700x23c等
-         */
-        public String name;
+    public RoadbikeWheelLength(FbProfile.WheelConfig raw) {
+        mRaw = raw;
+    }
 
-        public int length;
+    /**
+     * 表示タイトルを取得する
+     */
+    public String getTitle() {
+        return mRaw.title;
+    }
+
+    /**
+     * 外周長を取得する
+     */
+    public int getOuterLength() {
+        return mRaw.length;
     }
 }

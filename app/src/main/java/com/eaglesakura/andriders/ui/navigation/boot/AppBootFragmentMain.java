@@ -7,12 +7,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.firebase.auth.FirebaseAuthorizeManager;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.gms.error.SignInRequireException;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
@@ -21,7 +24,6 @@ import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.saver.BundleState;
-import com.eaglesakura.android.util.AndroidNetworkUtil;
 import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.lambda.CancelCallback;
@@ -59,7 +61,11 @@ public class AppBootFragmentMain extends AppNavigationFragment {
     /**
      * サインインを行えた場合
      */
+    @BundleState
     GoogleSignInAccount mSignInAccount;
+
+    @Inject(AppContextProvider.class)
+    AppSettings mAppSettings;
 
     FirebaseAuthorizeManager mFirebaseAuthorizeManager = FirebaseAuthorizeManager.getInstance();
 
@@ -138,27 +144,38 @@ public class AppBootFragmentMain extends AppNavigationFragment {
 
             task.throwIfCanceled();
 
-            // ネットワーク接続されているならば、アカウントログインチェック
-            if (AndroidNetworkUtil.isNetworkConnected(getContext())) {
-                try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, cancelCallback)) {
-                    if (!connection.isConnectionSuccess(Auth.GOOGLE_SIGN_IN_API, Fitness.SESSIONS_API, Fitness.HISTORY_API)) {
-                        task.throwIfCanceled();
-                        // 必要なAPIを満たしていない場合、ログインを行わせる
-                        PlayServiceUtil.await(Auth.GoogleSignInApi.revokeAccess(connection.getClient()), cancelCallback);
-                        throw new SignInRequireException(connection.newSignInIntent());
-                    }
+            // アカウントログインチェック
+            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, cancelCallback)) {
+                if (!connection.isConnectionSuccess(Auth.GOOGLE_SIGN_IN_API, Fitness.SESSIONS_API, Fitness.HISTORY_API)) {
+                    task.throwIfCanceled();
+                    // 必要なAPIを満たしていない場合、ログインを行わせる
+                    PlayServiceUtil.await(Auth.GoogleSignInApi.revokeAccess(connection.getClient()), cancelCallback);
+                    throw new SignInRequireException(connection.newSignInIntent());
+                }
 
-                    // Firebaseログイン
-                    if (mSignInAccount != null) {
-                        mFirebaseAuthorizeManager.signIn(mSignInAccount, cancelCallback);
-                    } else if (mFirebaseAuthorizeManager.getCurrentUser() == null) {
-                        // Firebaseログインが必要
-                        throw new SignInRequireException(connection.newSignInIntent());
-                    }
+                // Firebaseログイン
+                if (mSignInAccount != null) {
+                    mFirebaseAuthorizeManager.signIn(mSignInAccount, cancelCallback);
+                    mSignInAccount = null;
+                }
+
+                if (mFirebaseAuthorizeManager.await(cancelCallback) == null) {
+                    // Firebaseログインが必要
+                    throw new SignInRequireException(connection.newSignInIntent());
                 }
             }
-
             task.throwIfCanceled();
+
+            // Configを取得する
+            try {
+                mAppSettings.getConfig().fetch(cancelCallback);
+            } catch (Throwable e) {
+                if (mAppSettings.getConfig().requireFetch()) {
+                    // Fetchに失敗し、かつコンフィグの同期も行われていない初回は起動に失敗しなければならない
+                    // もしFetchに失敗し、古いコンフィグさえある状態であれば動作の継続は行えるため例外を握りつぶす
+                    throw e;
+                }
+            }
 
             AppLog.system("Boot Success");
             return this;
