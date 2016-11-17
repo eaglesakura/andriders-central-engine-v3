@@ -7,7 +7,17 @@ buildscript {
     }
     dependencies {
         classpath "com.eaglesakura:plugin-android-dbgenerator:2.0.146"
+        classpath "com.eaglesakura:plugin-firebase-remoteconfig:1.0.36"
     }
+}
+
+/**
+ * Firebaseで管理されるConfigを生成する
+ */
+task generateFirebaseConfig(type: com.eaglesakura.gradle.task.FirebaseRemoteConfigGenTask) {
+    outDirectory = file("src/main/gen/java")
+    def AppStatusConfig = newConfig("${android.defaultConfig.applicationId}.gen.config.AppStatusConfig");
+    AppStatusConfig.stringConfig("database_path_config", "nil");      // Databaseのコンフィグリンク
 }
 
 /**
