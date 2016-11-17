@@ -6,7 +6,6 @@ import com.eaglesakura.andriders.model.ble.BleDeviceType;
 import com.eaglesakura.android.rx.BackgroundTaskBuilder;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.android.util.AndroidThreadUtil;
@@ -126,7 +125,7 @@ public abstract class BaseBleGattReceiver {
     private final BleDeviceListener mBaseDeviceListener = new BleDeviceListener() {
         @Override
         public void onDeviceConnected(BleDevice self, BluetoothDevice device) {
-            mCallbackQueue.run(ObserveTarget.Alive, () -> {
+            mCallbackQueue.run(CallbackTime.Alive, () -> {
                 incrementConnectCount(device);
             });
         }
@@ -134,7 +133,7 @@ public abstract class BaseBleGattReceiver {
         @Override
         public void onDeviceDisconnected(BleDevice self) {
             // 再度検出を行わせる
-            mCallbackQueue.run(ObserveTarget.Alive, () -> {
+            mCallbackQueue.run(CallbackTime.Alive, () -> {
                 disconnect();
                 requestReScan(DEFAULT_RECONNECT_DELAY_MS);
             });

@@ -63,6 +63,11 @@ public class MenuController {
          * コマンド詳細メニューを開く
          */
         void requestShowCommands(MenuController self);
+
+        /**
+         * センサーメニューを開く
+         */
+        void requestShowSensorDevices(MenuController self);
     }
 
     private final NavigationView.OnNavigationItemSelectedListener miItemSelectedImpl = menuItem -> {
@@ -81,6 +86,7 @@ public class MenuController {
                 mCallback.requestShowInformation(this);
                 break;
             case R.id.Menu_Gadgets:
+                mCallback.requestShowSensorDevices(this);
                 break;
             default:
                 return false;

@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.ble.BleDevice;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.bluetooth.BluetoothLeUtil;
-import com.eaglesakura.android.rx.ObserveTarget;
+import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
 
 import android.bluetooth.BluetoothDevice;
@@ -70,13 +70,13 @@ public class BleHeartrateMonitor extends BleDevice {
                 if (notificationEnable(BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT)) {
                     mHeartrateGatt = gatt;
                     AppLog.ble("enable cadence notification");
-                    mCallbackQueue.run(ObserveTarget.Alive, () -> {
+                    mCallbackQueue.run(CallbackTime.Alive, () -> {
                         for (BleHeartrateListener listener : mListeners) {
                             listener.onDeviceSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
                         }
                     });
                 } else {
-                    mCallbackQueue.run(ObserveTarget.Alive, () -> {
+                    mCallbackQueue.run(CallbackTime.Alive, () -> {
                         for (BleHeartrateListener listener : mListeners) {
                             listener.onDeviceNotSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
                         }
