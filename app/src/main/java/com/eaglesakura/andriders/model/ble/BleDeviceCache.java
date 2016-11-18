@@ -63,7 +63,7 @@ public class BleDeviceCache {
     @NonNull
     public String getDisplayName(Context context) {
         String address = StringUtil.replaceAllSimple(getAddress(), ":", "").substring(0, 6).toUpperCase();
-        return getName() + " [" + address + "]";
+        return getName() + " ID:" + address;
     }
 
     @NonNull

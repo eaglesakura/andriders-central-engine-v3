@@ -169,7 +169,7 @@
     <string name="Message.Session.SessionAbort">セッションを停止しますか？\n走行時間[%1$s]</string>
     <string name="Message.Session.SessionStart">走行セッションを開始しますか?</string>
     <string name="Title.Info">アプリ情報</string>
-    <string name="Title.Command">コマンド設定</string>
+    <string name="Title.Command">コマンド</string>
     <string name="Word.SelectLauncher">アプリ選択</string>
     <string name="Title.Command.Edit">条件設定</string>
     <string name="Word.Common.Save">保存</string>
@@ -179,7 +179,11 @@
     <string name="Title.Command.Speed">スピード</string>
     <string name="Title.Command.Timer">タイマー</string>
     <string name="Title.Sensor">センサー・周辺機器</string>
-    <string name="Message.Sensor.Found">登録可能センサー[%1$s]</string>
+    <string name="Message.Sensor.Found">センサーを検出 [%1$s]</string>
+    <string name="Word.Common.Roadbike">ロードバイク</string>
+    <string name="Word.Profile.WheelOuterLengthFormat">%2$d mm / %1$s</string>
+    <string name="Title.Profile">プロファイル</string>
+    <string name="Word.Profile.TireSetting">タイヤ規格</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

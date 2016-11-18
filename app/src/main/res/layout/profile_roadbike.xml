@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                app:headerIcon="@drawable/ic_bicycle"
+                app:headerText="@string/Word.Common.Roadbike"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <LinearLayout
+                style="@style/App.Theme.BasicSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical">
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/Word.Profile.TireSetting"/>
+
+                <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/Selector.WheelOuterLength"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/EsMaterial.Button.MinHeight"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

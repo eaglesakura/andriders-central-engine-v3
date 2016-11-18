@@ -7,6 +7,7 @@
         android:layout_height="wrap_content">
 
     <LinearLayout
+            android:layout_marginTop="@dimen/EsMaterial.Widget.Margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -17,8 +18,6 @@
                 android:orientation="vertical">
 
             <com.eaglesakura.andriders.ui.widget.AppHeaderView
-                    app:headerText="@string/Setting.Gadgets.Heartrate"
-                    app:headerIcon="@drawable/ic_heart_beats"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 

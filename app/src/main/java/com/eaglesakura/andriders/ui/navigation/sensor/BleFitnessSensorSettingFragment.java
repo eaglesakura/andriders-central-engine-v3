@@ -172,6 +172,11 @@ public class BleFitnessSensorSettingFragment extends AppFragment {
         // 最新のキャッシュに交換する
         mSensorDataManager.save(device);
 
+        // 検出通知は行う
+        SnackbarBuilder.from(this)
+                .message(R.string.Message_Sensor_Found, device.getName())
+                .show();
+
         for (int i = 0; i < mSpinnerAdapter.getCount(); ++i) {
             if (device.equals(mSpinnerAdapter.getItem(i))) {
                 // すでに登録されていた
@@ -181,10 +186,6 @@ public class BleFitnessSensorSettingFragment extends AppFragment {
 
         mSpinnerAdapter.add(device);
         mSpinnerAdapter.notifyDataSetChanged();
-
-        SnackbarBuilder.from(this)
-                .message(R.string.Message_Sensor_Found, device.getName())
-                .show();
     }
 
     final BleScanCallback mBleScanCallback = new BleScanCallback() {

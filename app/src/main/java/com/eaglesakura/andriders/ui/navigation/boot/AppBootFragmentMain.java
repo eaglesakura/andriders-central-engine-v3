@@ -27,6 +27,7 @@ import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.util.Timer;
 
 import android.content.Intent;
 import android.support.annotation.UiThread;
@@ -34,6 +35,7 @@ import android.support.v7.app.AlertDialog;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * アプリを起動し、必要なハンドリングを行う
@@ -167,14 +169,18 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             task.throwIfCanceled();
 
             // Configを取得する
+            Timer timer = new Timer();
             try {
-                mAppSettings.getConfig().fetch(cancelCallback);
+                CancelCallback callback = AppSupportUtil.asCancelCallback(task, 1000 * 10, TimeUnit.MILLISECONDS);
+                mAppSettings.getConfig().fetch(callback);
             } catch (Throwable e) {
                 if (mAppSettings.getConfig().requireFetch()) {
                     // Fetchに失敗し、かつコンフィグの同期も行われていない初回は起動に失敗しなければならない
                     // もしFetchに失敗し、古いコンフィグさえある状態であれば動作の継続は行えるため例外を握りつぶす
                     throw e;
                 }
+            } finally {
+                AppLog.system("Config SyncTime[%d ms]", timer.end());
             }
 
             AppLog.system("Boot Success");
