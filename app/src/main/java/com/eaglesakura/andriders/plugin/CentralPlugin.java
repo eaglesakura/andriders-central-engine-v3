@@ -281,9 +281,9 @@ public class CentralPlugin {
 //         * ディスプレイ情報を更新する
 //         */
 //        mCmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
-//            List<DisplayData> list = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
+//            List<DisplayData> listCommands = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
 //            // 表示内容を更新する
-//            mDataDisplayManagerWorker.request(it -> it.putValue(PluginConnector.this, list));
+//            mDataDisplayManagerWorker.request(it -> it.putValue(PluginConnector.this, listCommands));
 //            return null;
 //        });
 //

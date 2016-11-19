@@ -11,10 +11,11 @@ import com.eaglesakura.andriders.dao.central.DbCommand;
 import com.eaglesakura.andriders.dao.central.DbCommandDao;
 import com.eaglesakura.andriders.dao.central.DbDisplayLayout;
 import com.eaglesakura.andriders.dao.central.DbDisplayLayoutDao;
-import com.eaglesakura.andriders.dao.central.DbDisplayTarget;
 import com.eaglesakura.andriders.model.ble.BleDeviceCache;
 import com.eaglesakura.andriders.model.ble.BleDeviceCacheCollection;
 import com.eaglesakura.andriders.model.command.CommandData;
+import com.eaglesakura.andriders.model.display.DisplayLayout;
+import com.eaglesakura.andriders.model.display.DisplayLayoutCollection;
 import com.eaglesakura.andriders.model.plugin.ActivePlugin;
 import com.eaglesakura.andriders.model.plugin.ActivePluginCollection;
 import com.eaglesakura.andriders.plugin.Category;
@@ -46,8 +47,6 @@ import java.util.List;
 public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
 
     static final int SUPPORTED_DATABASE_VERSION = 1;
-
-    private static final String GROUP_NAME_DEFAULT = "null";
 
     @Inject(AppStorageProvider.class)
     AppStorageManager mStorageController;
@@ -85,7 +84,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      * @see CommandData#CATEGORY_DISTANCE
      */
     @NonNull
-    public List<CommandData> list(int category) {
+    public List<CommandData> listCommands(int category) {
         List<DbCommand> commands = session.getDbCommandDao().queryBuilder()
                 .where(DbCommandDao.Properties.Category.eq(category))
                 .list();
@@ -94,13 +93,28 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     }
 
     /**
-     * 表示対象に関連付けられたレイアウト設定を列挙する
+     * すべてのレイアウト情報を列挙する
      */
-    public List<DbDisplayLayout> listLayouts(DbDisplayTarget target) {
-        return session.getDbDisplayLayoutDao().queryBuilder()
-                .where(DbDisplayLayoutDao.Properties.AppPackageName.eq(target.getTargetPackage()))
-                .orderAsc(DbDisplayLayoutDao.Properties.SlotId)
+    @NonNull
+    public DisplayLayoutCollection listAllLayouts() {
+        return new DisplayLayoutCollection(CollectionUtil.asOtherList(session.getDbDisplayLayoutDao().loadAll(), it -> new DisplayLayout(it)));
+    }
+
+    /**
+     * 指定したpackageに所属するレイアウト情報を取得する
+     *
+     * 0件の場合は空リストを返す
+     *
+     * @param packageName アプリpackage名
+     */
+    @NonNull
+    public DisplayLayoutCollection listLayouts(String packageName) {
+        List<DbDisplayLayout> list = session.getDbDisplayLayoutDao().queryBuilder()
+                .where(DbDisplayLayoutDao.Properties.AppPackageName.eq(packageName))
                 .list();
+        return new DisplayLayoutCollection(
+                CollectionUtil.asOtherList(list, it -> new DisplayLayout(it))
+        );
     }
 
     /**
@@ -121,7 +135,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     /**
      * 表示対象のグループを削除する。
      */
-    public void remove(final String appPackageName) {
+    public void removeLayouts(final String appPackageName) {
         session.runInTx(() -> {
             // グループレイアウトを削除する
             QueryBuilder<DbDisplayLayout> builder = session.getDbDisplayLayoutDao().queryBuilder();
@@ -228,7 +242,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(getContext(), mStorageController.getExternalDatabasePath("v3_commands.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(getContext(), mStorageController.getExternalDatabasePath("v3_settings.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

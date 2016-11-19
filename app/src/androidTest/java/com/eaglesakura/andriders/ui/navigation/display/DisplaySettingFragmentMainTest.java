@@ -15,7 +15,7 @@ public class DisplaySettingFragmentMainTest {
 //        validate(ScenarioContext.findFragment(AppTargetSelectFragment.class))
 //                .check(it -> {
 //                    assertNotNull(it);
-//                    validate(it.listInstalledApplications().list())
+//                    validate(it.listInstalledApplications().listCommands())
 //                            .notEmpty()
 //                            .allNotNull()
 //                            .checkFirst(that -> {

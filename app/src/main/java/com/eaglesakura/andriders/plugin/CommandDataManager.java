@@ -36,7 +36,7 @@ public class CommandDataManager extends CentralSettingManager {
      */
     public CommandDataCollection loadFromCategory(int category) {
         try (CentralSettingDatabase db = open()) {
-            return new CommandDataCollection(db.list(category));
+            return new CommandDataCollection(db.listCommands(category));
         }
     }
 
