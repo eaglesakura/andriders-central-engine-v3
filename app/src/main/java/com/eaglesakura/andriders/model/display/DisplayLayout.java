@@ -93,6 +93,20 @@ public class DisplayLayout extends DaoModel<DbDisplayLayout> {
         return getSlotX() == (DisplayLayoutManager.MAX_HORIZONTAL_SLOTS - 1);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        return ((DisplayLayout) obj).getUniqueId().equals(getUniqueId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getUniqueId().hashCode();
+    }
+
     /**
      * X位置を取得する
      *

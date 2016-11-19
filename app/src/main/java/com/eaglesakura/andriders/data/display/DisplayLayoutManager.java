@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.data.db.CentralSettingDatabase;
 import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.model.display.DisplayLayoutCollection;
 import com.eaglesakura.andriders.system.manager.CentralSettingManager;
+import com.eaglesakura.android.garnet.Singleton;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 /**
  * サイコン表示窓のスロットを管理する
  */
+@Singleton
 public class DisplayLayoutManager extends CentralSettingManager {
     /**
      * 横方向の最大スロット数
