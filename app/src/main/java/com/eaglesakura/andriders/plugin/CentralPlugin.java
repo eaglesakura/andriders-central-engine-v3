@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.central.CentralDataHolder;
 import com.eaglesakura.andriders.central.CentralDataUtil;
+import com.eaglesakura.andriders.data.display.DisplayKeyCollection;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
@@ -56,7 +57,7 @@ public class CentralPlugin {
     /**
      * ディスプレイキャッシュ
      */
-    private List<DisplayKey> mDisplayInformationList;
+    private DisplayKeyCollection mDisplayKeyList;
 
     /**
      * コネクションごとの一意に識別するID
@@ -177,7 +178,7 @@ public class CentralPlugin {
      * 表示IDから情報を取得する
      */
     public DisplayKey findDisplayInformation(String id) {
-        for (DisplayKey info : getDisplayInformationList()) {
+        for (DisplayKey info : listDisplayKeys().getSource()) {
             if (info.getId().equals(id)) {
                 return info;
             }
@@ -189,18 +190,18 @@ public class CentralPlugin {
     /**
      * サイコン表示内容を取得する
      */
-    public synchronized List<DisplayKey> getDisplayInformationList() {
-        if (mDisplayInformationList == null) {
+    public synchronized DisplayKeyCollection listDisplayKeys() {
+        if (mDisplayKeyList == null) {
             try {
                 Payload payload = mClientImpl.requestPostToServer(CentralDataCommand.CMD_getDisplayInformations, null);
-                mDisplayInformationList = DisplayKey.deserialize(payload.getBuffer());
+                mDisplayKeyList = new DisplayKeyCollection(DisplayKey.deserialize(payload.getBuffer()));
             } catch (Exception e) {
                 AppLog.report(e);
-                return null;
+                return new DisplayKeyCollection();
             }
         }
 
-        return mDisplayInformationList;
+        return mDisplayKeyList;
     }
 
     /**

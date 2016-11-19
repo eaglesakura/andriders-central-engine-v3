@@ -64,7 +64,7 @@ public class PluginDataManagerTest extends AppDeviceTestCase {
                         assertNotEmpty(info.getId());
                     });
             assertNotNull(plugin.loadIcon());
-            validate(plugin.getDisplayInformationList()).allNotNull();
+            validate(plugin.listDisplayKeys().list()).allNotNull();
         });
 
         plugins.disconnect();
@@ -88,5 +88,24 @@ public class PluginDataManagerTest extends AppDeviceTestCase {
         });
 
         plugins.disconnect();
+    }
+
+    @Test
+    public void すべての表示情報を列挙できる() throws Throwable {
+        CentralPluginCollection plugins = mDataManager.listPlugins(PluginDataManager.PluginListingMode.All, () -> false);
+
+        CentralPlugin.ConnectOption option = new CentralPlugin.ConnectOption();
+        plugins.connect(option, () -> false);
+        try {
+            validate(plugins.listDisplayPlugins()).notEmpty().each(plugin -> {
+                validate(plugin.listDisplayKeys().list()).notEmpty().each(key -> {
+                    assertNotEmpty(key.getId());
+                    assertNotEmpty(key.getTitle());
+                });
+            });
+        } finally {
+            plugins.disconnect();
+        }
+
     }
 }

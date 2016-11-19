@@ -5,9 +5,6 @@ import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.util.CollectionUtil;
-
-import android.support.annotation.WorkerThread;
 
 import java.util.List;
 
@@ -20,13 +17,15 @@ public class CentralPluginCollection extends DataCollection<CentralPlugin> {
 
     /**
      * 表示設定を持つクライアントのみを列挙する
+     *
+     * connect()が完了している必要がある。
      */
     public List<CentralPlugin> listDisplayPlugins() {
-        return list(plugin -> !CollectionUtil.isEmpty(plugin.getDisplayInformationList()));
+        return list(plugin -> !plugin.listDisplayKeys().isEmpty());
     }
 
     /**
-     * 指定したIDのプラグインを検索素r
+     * 指定したIDのプラグインを検索する
      */
     public CentralPlugin findFromId(String id) {
         return find(client -> client.getInformation().getId().equals(id));
@@ -47,12 +46,7 @@ public class CentralPluginCollection extends DataCollection<CentralPlugin> {
      */
     public CentralPlugin find(DisplayKey key) {
         return find(plugin -> {
-            List<DisplayKey> informations = plugin.getDisplayInformationList();
-            if (CollectionUtil.isEmpty(informations)) {
-                return false;
-            }
-
-            for (DisplayKey info : informations) {
+            for (DisplayKey info : plugin.listDisplayKeys().getSource()) {
                 if (info.equals(key)) {
                     return true;
                 }
