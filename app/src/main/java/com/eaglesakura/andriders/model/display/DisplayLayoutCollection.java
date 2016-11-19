@@ -22,5 +22,4 @@ public class DisplayLayoutCollection extends DataCollection<DisplayLayout> {
         return find(it -> it.getSlotId() == slotId);
     }
 
-
 }

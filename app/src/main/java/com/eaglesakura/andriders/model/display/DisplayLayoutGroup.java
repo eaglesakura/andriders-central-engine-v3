@@ -30,6 +30,18 @@ public class DisplayLayoutGroup extends DataCollection<DisplayLayout> {
     }
 
     /**
+     * データの挿入か更新を行う
+     */
+    public void insertOrReplace(DisplayLayout layout) {
+        int index = getSource().indexOf(layout);
+        if (index < 0) {
+            getSource().add(layout);
+        } else {
+            getSource().set(index, layout);
+        }
+    }
+
+    /**
      * 最終更新日を取得する
      *
      * データが0件の場合、nullを返却する
