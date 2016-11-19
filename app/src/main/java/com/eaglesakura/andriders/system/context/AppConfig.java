@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.system.context;
 import com.eaglesakura.andriders.model.profile.RoadbikeWheelLength;
 import com.eaglesakura.andriders.system.context.config.AppConfigManager;
 import com.eaglesakura.andriders.system.context.config.FbConfigRoot;
+import com.eaglesakura.andriders.system.context.config.FbPackageInfo;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.v3.gen.config.AppStatusConfig;
 import com.eaglesakura.android.error.NetworkNotConnectException;
@@ -11,6 +12,7 @@ import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.CollectionUtil;
 
+import android.content.ComponentName;
 import android.content.Context;
 
 import java.util.List;
@@ -48,6 +50,14 @@ public class AppConfig {
     public DataCollection<RoadbikeWheelLength> listWheelLength() {
         List<RoadbikeWheelLength> roadbikeWheelLengthList = CollectionUtil.asOtherList(getRaw().profile.wheel, it -> new RoadbikeWheelLength(it));
         return new DataCollection<>(roadbikeWheelLengthList);
+    }
+
+    /**
+     * GoogleFitの画面を開くComponentを取得する
+     */
+    public ComponentName getGoogleFitAppComponent() {
+        FbPackageInfo googleFitPackage = getRaw().profile.googleFitPackage;
+        return new ComponentName(googleFitPackage.packageName, googleFitPackage.className);
     }
 
     /**

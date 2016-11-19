@@ -1,5 +1,10 @@
 {
   "profile": {
+    "googleFitPackage": {
+      "title": "Google Fit",
+      "packageName": "com.google.android.apps.fitness",
+      "className": "com.google.android.apps.fitness.welcome.WelcomeActivity"
+    },
     "wheel": [
       {
         "title": "700x18C",

@@ -20,6 +20,11 @@ public class FbConfigRootTest extends AppUnitTestCase {
                 assertNotEmpty(item.title);
                 validate(item.length).from(1000).to(3000);
             });
+            validate(root.profile.googleFitPackage).notNull().check(item -> {
+                assertNotEmpty(item.title);
+                assertNotEmpty(item.packageName);
+                assertNotEmpty(item.className);
+            });
         }
     }
 }

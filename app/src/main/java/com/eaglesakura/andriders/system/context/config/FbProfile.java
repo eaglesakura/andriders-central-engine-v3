@@ -15,6 +15,12 @@ public class FbProfile {
     public List<WheelConfig> wheel;
 
     /**
+     * 連携のためのGoogle FitアプリPackage
+     */
+    @NonNull
+    public FbPackageInfo googleFitPackage;
+
+    /**
      * ホイール設定
      */
     public static class WheelConfig {

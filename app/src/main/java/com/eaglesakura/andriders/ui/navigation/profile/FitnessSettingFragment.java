@@ -18,6 +18,7 @@ import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
+import com.eaglesakura.android.gms.util.PlayServiceUtil;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
@@ -31,6 +32,7 @@ import com.edmodo.rangebar.RangeBar;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
 import java.util.concurrent.TimeUnit;
@@ -43,10 +45,17 @@ public class FitnessSettingFragment extends AppFragment {
     @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
 
+    @NonNull
     UserProfiles mUserProfile;
 
     @Bind(R.id.Range_Heartrate)
     RangeBar mHeartrateZone;
+
+    /**
+     * 既にGoogle Fitのメッセージを表示していたらtrue
+     */
+    @BundleState
+    boolean mWeightSyncMessageBooted = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,8 +95,10 @@ public class FitnessSettingFragment extends AppFragment {
      */
     @OnClick(R.id.CycleComputer_Personal_Weight)
     void clickPersonalWeigth() {
+
+        ComponentName componentName = mAppSettings.getConfig().getGoogleFitAppComponent();
+
         try {
-            ComponentName componentName = new ComponentName("com.google.android.apps.fitness", "com.google.android.apps.fitness.preferences.settings.SettingsActivity");
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setComponent(componentName);
             startActivityForResult(intent, AppConstants.REQUEST_GOOGLE_FIT_SETTING);
@@ -100,6 +111,8 @@ public class FitnessSettingFragment extends AppFragment {
 
         AppDialogBuilder.newAlert(getContext(), R.string.Word_Profile_GoogleFitNotInstalled)
                 .positiveButton(R.string.Word_Common_Install, () -> {
+                    Intent installIntent = PlayServiceUtil.newGooglePlayInstallIntent(getContext(), componentName.getPackageName());
+                    startActivity(installIntent);
                 })
                 .neutralButton(R.string.Common_OK, null)
                 .show(mLifecycleDelegate);
@@ -113,12 +126,6 @@ public class FitnessSettingFragment extends AppFragment {
     void resultGoogleFitSettings(int result, Intent data) {
         syncFitnessData();
     }
-
-    /**
-     * 既にGoogle Fitのメッセージを表示していたらtrue
-     */
-    @BundleState
-    boolean mGoogleFitFailedMessageBooted = false;
 
     /**
      * Google Fitのデータと同期を行う
@@ -139,14 +146,20 @@ public class FitnessSettingFragment extends AppFragment {
             }
         }).completed((weight, task) -> {
             updateUI();
+            if (!mWeightSyncMessageBooted) {
+                SnackbarBuilder.from(this)
+                        .message(R.string.Message_Profile_WeightSyncCompleted)
+                        .show();
+                mWeightSyncMessageBooted = true;
+            }
         }).failed((err, task) -> {
             AppLog.printStackTrace(err);
 
-            if (!mGoogleFitFailedMessageBooted) {
+            if (!mWeightSyncMessageBooted) {
                 SnackbarBuilder.from(this)
-                        .message(R.string.Setting_Fitness_Weight_SyncFailed)
+                        .message(R.string.Message_Profile_WeightSyncFailed)
                         .show();
-                mGoogleFitFailedMessageBooted = true;
+                mWeightSyncMessageBooted = true;
             }
         }).start();
     }

@@ -23,43 +23,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <com.eaglesakura.material.widget.TransparentButton
+            <LinearLayout
                     android:id="@+id/CycleComputer.Personal.Weight"
+                    android:background="@drawable/esm_button_transparent_fill"
+                    android:clickable="true"
+                    android:layout_gravity="center"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/EsMaterial.Button.MinHeight">
-                <LinearLayout
-                        android:layout_gravity="center"
+                    android:layout_height="@dimen/EsMaterial.Button.MinHeight"
+                    android:orientation="horizontal">
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="体重"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/Setting.Personal.WeightValue"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:text="60"/>
 
-                    <android.support.v7.widget.AppCompatTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:text="体重"/>
-
-                    <android.support.v7.widget.AppCompatTextView
-                            android:id="@+id/Setting.Personal.WeightValue"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1"
-                            android:gravity="right"
-                            android:text="60"/>
-
-                    <android.support.v7.widget.AppCompatTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:text=" kg"/>
-                </LinearLayout>
-            </com.eaglesakura.material.widget.TransparentButton>
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text=" kg"/>
+            </LinearLayout>
 
             <include layout="@layout/esm_material_separator"/>
 
             <LinearLayout
-                    android:id="@+id/Setting.RoadBikeProfile.BikeName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">

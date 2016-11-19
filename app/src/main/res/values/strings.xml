@@ -67,17 +67,10 @@
     </string-array>
 
     <!-- フィットネス -->
-    <string name="Setting.Fitness.Weight.SyncCompleted">体重データを同期しました</string>
-    <string name="Setting.Fitness.Weight.SyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>
-    <string name="Setting.Fitness.Weight">体重</string>
-    <string name="Setting.Fitness.Weight.Unit">kg</string>
-    <string name="Setting.Fitness.Weight.DialogHiht"></string>
-    <string name="Setting.Fitness.Weight.DialogTitle">体重入力</string>
-    <string name="Setting.Fitness.MaxHeartrate">最大心拍数</string>
-    <string name="Setting.Fitness.MaxHeartrate.Unit">bpm</string>
-    <string name="Setting.Fitness.MaxHeartrate.DialogHiht"></string>
-    <string name="Setting.Fitness.MaxHeartrate.DialogTitle">最大心拍数入力</string>
-    <string name="Setting.Fitness.NormalHeartrate.DialogTitle">安静心拍数入力</string>
+    <string name="Message.Profile.WeightSyncCompleted">体重データを同期しました</string>
+    <string name="Message.Profile.WeightSyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>
+    <string name="Word.Common.Weight">体重</string>
+    <string name="Word.Profile.WeightUnit">kg</string>
 
     <!-- 拡張モジュール -->
     <string name="Extension.Empty">拡張モジュールがありません。</string>

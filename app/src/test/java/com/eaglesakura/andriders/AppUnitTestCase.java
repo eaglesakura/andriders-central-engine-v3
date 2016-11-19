@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.provider.TestAppContextProvider;
 import com.eaglesakura.andriders.provider.TestAppManagerProvider;
 import com.eaglesakura.andriders.provider.TestAppStorageProvider;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.AndroidSupportTestCase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.util.LogUtil;
@@ -34,6 +35,8 @@ public abstract class AppUnitTestCase extends AndroidSupportTestCase {
         Garnet.override(AppContextProvider.class, TestAppContextProvider.class);
         Garnet.override(AppManagerProvider.class, TestAppManagerProvider.class);
         Garnet.override(AppStorageProvider.class, TestAppStorageProvider.class);
+
+        AppLog.test("UnitTest Database[%s]", getApplication().getFilesDir().getAbsolutePath());
     }
 
 }
