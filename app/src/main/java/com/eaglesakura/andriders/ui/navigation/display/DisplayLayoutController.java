@@ -96,4 +96,8 @@ public class DisplayLayoutController {
             plugins.disconnect();
         }
     }
+
+    public interface Holder {
+        DisplayLayoutController getDisplayLayoutController();
+    }
 }

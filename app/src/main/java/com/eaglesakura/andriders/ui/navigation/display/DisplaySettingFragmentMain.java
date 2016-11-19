@@ -2,11 +2,55 @@ package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
+import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
+import com.eaglesakura.android.framework.util.AppSupportUtil;
+import com.eaglesakura.lambda.CancelCallback;
+
+import android.content.Context;
+import android.support.annotation.UiThread;
 
 /**
  * 表示値のレイアウト用Fragment
  */
 @FragmentLayout(R.layout.display_setup)
-public class DisplaySettingFragmentMain extends AppNavigationFragment {
+public class DisplaySettingFragmentMain extends AppNavigationFragment implements DisplayLayoutController.Holder {
+
+    @BindInterface
+    Callback mCallback;
+
+    DisplayLayoutController mDisplayLayoutController;
+
+    @Override
+    public void onAttach(Context context) {
+        mDisplayLayoutController = new DisplayLayoutController(context);
+        super.onAttach(context);
+        loadDisplayContrller();
+    }
+
+    @UiThread
+    void loadDisplayContrller() {
+        asyncUI(task -> {
+            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
+            try (ProgressToken token = pushProgress(R.string.Widget_Common_Load)) {
+                mDisplayLayoutController.load(cancelCallback);
+            }
+            return this;
+        }).completed((result, task) -> {
+
+        }).failed((error, task) -> {
+            mCallback.onInitializeFailed(this, error);
+        }).start();
+    }
+
+    @Override
+    public DisplayLayoutController getDisplayLayoutController() {
+        return mDisplayLayoutController;
+    }
+
+    public interface Callback {
+        void onInitializeFailed(DisplaySettingFragmentMain self, Throwable error);
+    }
 }
