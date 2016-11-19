@@ -39,8 +39,8 @@ task generateCentralSettingDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTa
     DbDisplayLayout.addDateProperty("updatedDate").notNull();    // 更新日時
     DbDisplayLayout.addStringProperty("appPackageName").notNull();    // 表示対象のアプリパッケージ名
     DbDisplayLayout.addIntProperty("slotId").notNull();    // 設定対象のスロットID
-    DbDisplayLayout.addStringProperty("pluginId").notNull();    // 表示対象の拡張機能
-    DbDisplayLayout.addStringProperty("valueId").notNull();   // 設定される値の識別
+    DbDisplayLayout.addStringProperty("pluginId");    // 表示対象のプラグインID,
+    DbDisplayLayout.addStringProperty("valueId");   // 設定される値の識別
 
     /**
      * スキャンしたデバイスキャッシュ一覧
