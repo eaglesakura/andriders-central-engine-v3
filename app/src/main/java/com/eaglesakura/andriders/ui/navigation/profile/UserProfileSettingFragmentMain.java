@@ -14,5 +14,10 @@ public class UserProfileSettingFragmentMain extends AppNavigationFragment {
     /**
      * ロードバイク基本設定
      */
-    FragmentHolder<RoadbikeSettingFragment> mRoadbileSetting = FragmentHolder.newInstance(this, RoadbikeSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+    FragmentHolder<RoadbikeSettingFragment> mRoadbileSettingFragment = FragmentHolder.newInstance(this, RoadbikeSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+
+    /**
+     * ゾーン設定
+     */
+    FragmentHolder<UserZoneSettingFragment> mZoneSettingFragment = FragmentHolder.newInstance(this, UserZoneSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
 }

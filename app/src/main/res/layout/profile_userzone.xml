@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                                    style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content">
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <LinearLayout
             android:orientation="vertical"
@@ -62,6 +63,12 @@
             </LinearLayout>
 
             <com.edmodo.rangebar.RangeBar
+                    app:tickCount="30"
+                    app:tickHeight="0dp"
+                    app:thumbColorPressed="@color/EsMaterial.LightGreen.Button.Pressed"
+                    app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
+                    app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
+                    app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
                     android:id="@+id/Setting.RoadBikeProfile.CruiseZone.ZoneBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -108,6 +115,12 @@
             </LinearLayout>
 
             <com.edmodo.rangebar.RangeBar
+                    app:tickHeight="0dp"
+                    app:tickCount="60"
+                    app:thumbColorPressed="@color/EsMaterial.LightGreen.Button.Pressed"
+                    app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
+                    app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
+                    app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
                     android:id="@+id/Setting.RoadBikeProfile.CadenceZone.ZoneBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>

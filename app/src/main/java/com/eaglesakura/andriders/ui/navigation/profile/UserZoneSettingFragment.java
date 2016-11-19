@@ -3,12 +3,15 @@ package com.eaglesakura.andriders.ui.navigation.profile;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
-import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.system.context.AppSettings;
+import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.util.ResourceUtil;
 import com.edmodo.rangebar.RangeBar;
 
 import android.support.annotation.UiThread;
@@ -19,7 +22,8 @@ import android.support.annotation.UiThread;
  * ・巡航速度ゾーン
  * ・ケイデンスゾーン
  */
-public class UserZoneSettingFragment extends AppBaseFragment {
+@FragmentLayout(R.layout.profile_userzone)
+public class UserZoneSettingFragment extends AppFragment {
 
     final int MIN_CADENCE = 70;
 
@@ -31,33 +35,14 @@ public class UserZoneSettingFragment extends AppBaseFragment {
     @Bind(R.id.Setting_RoadBikeProfile_CruiseZone_ZoneBar)
     RangeBar cruiseZoneBar;
 
-    public UserZoneSettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.profile_userzone);
-    }
+    @Inject(AppContextProvider.class)
+    AppSettings mAppSettings;
 
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
 
-        // 巡航速度設定
-        {
-            cruiseZoneBar.setBarColor(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Normal));
-            cruiseZoneBar.setConnectingLineColor(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Focused));
-            cruiseZoneBar.setThumbColorNormal(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Normal));
-            cruiseZoneBar.setThumbColorPressed(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Pressed));
-            cruiseZoneBar.setTickHeight(0);
-            cruiseZoneBar.setTickCount(30);
-        }
-        {
-            cadenceZoneBar.setBarColor(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Normal));
-            cadenceZoneBar.setConnectingLineColor(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Focused));
-            cadenceZoneBar.setThumbColorNormal(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Normal));
-            cadenceZoneBar.setThumbColorPressed(ResourceUtil.argb(getContext(), R.color.EsMaterial_LightGreen_Button_Pressed));
-            cadenceZoneBar.setTickHeight(0);
-            cadenceZoneBar.setTickCount(60);
-        }
-
-        UserProfiles profile = getSettings().getUserProfiles();
+        UserProfiles profile = mAppSettings.getUserProfiles();
         cruiseZoneBar.setThumbIndices(profile.getSpeedZoneCruise() - MIN_CRUISE_SPEED, profile.getSpeedZoneSprint() - MIN_CRUISE_SPEED);
         cadenceZoneBar.setThumbIndices(profile.getCadenceZoneIdeal() - MIN_CADENCE, profile.getCadenceZoneHigh() - MIN_CADENCE);
 
@@ -74,7 +59,7 @@ public class UserZoneSettingFragment extends AppBaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        asyncCommitSettings();
+        mAppSettings.commit();
     }
 
     /**
@@ -85,7 +70,7 @@ public class UserZoneSettingFragment extends AppBaseFragment {
         minValue = Math.max(minValue, 1);
         maxValue = Math.max(maxValue, minValue + 1);
 
-        UserProfiles profile = getSettings().getUserProfiles();
+        UserProfiles profile = mAppSettings.getUserProfiles();
 
         profile.setSpeedZoneCruise(MIN_CRUISE_SPEED + minValue);
         profile.setSpeedZoneSprint(MIN_CRUISE_SPEED + maxValue);
@@ -101,7 +86,7 @@ public class UserZoneSettingFragment extends AppBaseFragment {
         minValue = Math.max(minValue, 1);
         maxValue = Math.max(maxValue, minValue + 1);
 
-        UserProfiles profile = getSettings().getUserProfiles();
+        UserProfiles profile = mAppSettings.getUserProfiles();
 
         profile.setCadenceZoneIdeal(MIN_CADENCE + minValue);
         profile.setCadenceZoneHigh(MIN_CADENCE + maxValue);
@@ -114,7 +99,7 @@ public class UserZoneSettingFragment extends AppBaseFragment {
      */
     @UiThread
     void updateUI() {
-        UserProfiles profile = getSettings().getUserProfiles();
+        UserProfiles profile = mAppSettings.getUserProfiles();
 
         AQuery q = new AQuery(getView());
         q.id(R.id.Setting_RoadBikeProfile_CruiseZone_MinValue).text(String.format("%d km/h", profile.getSpeedZoneCruise()));
