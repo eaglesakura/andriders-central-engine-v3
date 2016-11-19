@@ -10,7 +10,7 @@ import android.support.v4.app.Fragment;
 /**
  * ユーザー設定を行う
  */
-public class UserProfileSettingActivity extends AppNavigationActivity {
+public class ProfileSettingActivity extends AppNavigationActivity {
 
     @NonNull
     @Override

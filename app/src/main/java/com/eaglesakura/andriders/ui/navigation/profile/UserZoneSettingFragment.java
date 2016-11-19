@@ -29,10 +29,10 @@ public class UserZoneSettingFragment extends AppFragment {
 
     final int MIN_CRUISE_SPEED = 20;
 
-    @Bind(R.id.Setting_RoadBikeProfile_CadenceZone_ZoneBar)
+    @Bind(R.id.Range_Cadence)
     RangeBar cadenceZoneBar;
 
-    @Bind(R.id.Setting_RoadBikeProfile_CruiseZone_ZoneBar)
+    @Bind(R.id.Range_CruiseSpeed)
     RangeBar cruiseZoneBar;
 
     @Inject(AppContextProvider.class)
@@ -102,10 +102,10 @@ public class UserZoneSettingFragment extends AppFragment {
         UserProfiles profile = mAppSettings.getUserProfiles();
 
         AQuery q = new AQuery(getView());
-        q.id(R.id.Setting_RoadBikeProfile_CruiseZone_MinValue).text(String.format("%d km/h", profile.getSpeedZoneCruise()));
-        q.id(R.id.Setting_RoadBikeProfile_CruiseZone_MaxValue).text(String.format("%d km/h", profile.getSpeedZoneSprint()));
+        q.id(R.id.Item_SpeedMin).text(String.format("%d km/h", profile.getSpeedZoneCruise()));
+        q.id(R.id.Item_SpeedMax).text(String.format("%d km/h", profile.getSpeedZoneSprint()));
 
-        q.id(R.id.Setting_RoadBikeProfile_CadenceZone_MinValue).text(String.format("%d rpm", profile.getCadenceZoneIdeal()));
-        q.id(R.id.Setting_RoadBikeProfile_CadenceZone_MaxValue).text(String.format("%d rpm", profile.getCadenceZoneHigh()));
+        q.id(R.id.Item_CadenceMin).text(String.format("%d rpm", profile.getCadenceZoneIdeal()));
+        q.id(R.id.Item_CadenceMax).text(String.format("%d rpm", profile.getCadenceZoneHigh()));
     }
 }

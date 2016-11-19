@@ -50,6 +50,11 @@ public class MenuController {
 
     public interface Callback {
         /**
+         * プロファイルメニューを開く
+         */
+        void requestShowProfile(MenuController self);
+
+        /**
          * プラグイン詳細メニューを開く
          */
         void requestShowPlugins(MenuController self);
@@ -73,6 +78,7 @@ public class MenuController {
     private final NavigationView.OnNavigationItemSelectedListener miItemSelectedImpl = menuItem -> {
         switch (menuItem.getItemId()) {
             case R.id.Menu_Profile:
+                mCallback.requestShowProfile(this);
                 break;
             case R.id.Menu_CycleComputer:
                 break;

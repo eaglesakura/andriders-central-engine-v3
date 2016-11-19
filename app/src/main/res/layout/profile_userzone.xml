@@ -40,7 +40,7 @@
                         android:layout_weight="1"/>
 
                 <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Setting.RoadBikeProfile.CruiseZone.MinValue"
+                        android:id="@+id/Item.SpeedMin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -54,7 +54,7 @@
                         android:text=" - "/>
 
                 <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Setting.RoadBikeProfile.CruiseZone.MaxValue"
+                        android:id="@+id/Item.SpeedMax"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -69,7 +69,7 @@
                     app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
                     app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
                     app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
-                    android:id="@+id/Setting.RoadBikeProfile.CruiseZone.ZoneBar"
+                    android:id="@+id/Range.CruiseSpeed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -92,7 +92,7 @@
                         android:layout_weight="1"/>
 
                 <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Setting.RoadBikeProfile.CadenceZone.MinValue"
+                        android:id="@+id/Item.CadenceMin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -106,7 +106,7 @@
                         android:text=" - "/>
 
                 <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Setting.RoadBikeProfile.CadenceZone.MaxValue"
+                        android:id="@+id/Item.CadenceMax"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -121,7 +121,7 @@
                     app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
                     app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
                     app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
-                    android:id="@+id/Setting.RoadBikeProfile.CadenceZone.ZoneBar"
+                    android:id="@+id/Range.Cadence"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
         </LinearLayout>

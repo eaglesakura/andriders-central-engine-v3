@@ -94,6 +94,13 @@ public class UserSessionActivity extends AppNavigationActivity {
      * メニューハンドリング
      */
     final MenuController.Callback mMenuCallbackImpl = new MenuController.Callback() {
+
+        @Override
+        public void requestShowProfile(MenuController self) {
+            Intent intent = new Intent(self(), ProfileSettingActivity.class);
+            startActivity(intent);
+        }
+
         @Override
         public void requestShowPlugins(MenuController self) {
             Intent intent = new Intent(self(), PluginSettingActivity.class);
