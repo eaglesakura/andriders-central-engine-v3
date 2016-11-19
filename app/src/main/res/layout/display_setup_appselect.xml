@@ -38,8 +38,8 @@
                 android:text="デフォルト"/>
     </LinearLayout>
     <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/Setting.CycleComputer.TargetApplication.Delete"
             xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/Setting.CycleComputer.TargetApplication.Delete"
             app:srcCompat="@drawable/ic_delete"
             android:tint="@color/App.Icon.Grey"
             android:visibility="gone"

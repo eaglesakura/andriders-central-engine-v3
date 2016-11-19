@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.data.db.CentralSettingDatabase;
 import com.eaglesakura.andriders.error.AppException;
+import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.model.plugin.ActivePluginCollection;
 import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
 import com.eaglesakura.andriders.system.manager.CentralSettingManager;
@@ -23,8 +24,14 @@ import java.util.List;
  * プラグイン情報のコントロールを行う
  */
 public class PluginDataManager extends CentralSettingManager {
-    public PluginDataManager(Context context) {
+    UserProfiles mUserProfiles;
+
+    public PluginDataManager(Context context, UserProfiles userProfiles) {
         super(context);
+        mUserProfiles = userProfiles;
+        if (mUserProfiles == null) {
+            throw new NullPointerException("userProfiles == null");
+        }
     }
 
     /**
@@ -102,7 +109,7 @@ public class PluginDataManager extends CentralSettingManager {
         List<CentralPlugin> plugins = new ArrayList<>();
 
         for (ResolveInfo info : resolveInfoList) {
-            CentralPlugin plugin = new CentralPlugin(mContext, info);
+            CentralPlugin plugin = new CentralPlugin(mContext, info, mUserProfiles);
             plugins.add(plugin);
         }
 

@@ -7,15 +7,11 @@ import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
 import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
-import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.serialize.PluginProtocol;
 import com.eaglesakura.andriders.service.CentralSessionService;
-import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.service.CommandClient;
 import com.eaglesakura.android.service.CommandMap;
@@ -71,20 +67,20 @@ public class CentralPlugin {
 
     private CentralDataHolder mCentralDataHolder;
 
-    @Inject(AppContextProvider.class)
-    private AppSettings mSettings;
+    @NonNull
+    private final UserProfiles mUserProfiles;
 
     /**
      * Plugin本体との通信を行う
      */
     private CommandClientImpl mClientImpl;
 
-    CentralPlugin(Context context, ResolveInfo info) {
+    CentralPlugin(Context context, ResolveInfo info, UserProfiles profiles) {
         mConnectionId = newConnectionId();
         mContext = context;
         mPackageInfo = info;
+        mUserProfiles = profiles;
 
-        Garnet.inject(this);
         buildCentralCommands();
         buildDisplayCommands();
     }
@@ -112,7 +108,7 @@ public class CentralPlugin {
         intent.setComponent(getComponentName());
         intent.putExtra(PluginServerImpl.EXTRA_CONNECTION_ID, mConnectionId);
         intent.putExtra(PluginServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
-        intent.putExtra(PluginServerImpl.EXTRA_DEBUGGABLE, mSettings.isDebuggable());
+        intent.putExtra(PluginServerImpl.EXTRA_DEBUGGABLE, BuildConfig.DEBUG);
         intent.putExtra(PluginServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralSessionService.class));
 
         CommandClientImpl commandClient = new CommandClientImpl(mContext, mConnectionId);
@@ -308,12 +304,11 @@ public class CentralPlugin {
         mCmdMap.addAction(CentralDataCommand.CMD_setBleGadgetAddress, (sender, cmd, payload) -> {
             SensorType sensorType = SensorType.valueOf(Payload.deserializeStringOrNull(payload));
 
-            UserProfiles userProfiles = mSettings.getUserProfiles();
             String sensorAddress;
             if (sensorType == SensorType.HeartrateMonitor) {
-                sensorAddress = userProfiles.getBleHeartrateMonitorAddress();
+                sensorAddress = mUserProfiles.getBleHeartrateMonitorAddress();
             } else if (sensorType == SensorType.CadenceSensor || sensorType == SensorType.SpeedSensor) {
-                sensorAddress = userProfiles.getBleSpeedCadenceSensorAddress();
+                sensorAddress = mUserProfiles.getBleSpeedCadenceSensorAddress();
             } else {
                 return null;
             }
@@ -326,8 +321,7 @@ public class CentralPlugin {
          * ホイールの外周サイズを問い合わせる
          */
         mCmdMap.addAction(CentralDataCommand.CMD_getWheelOuterLength, (sender, cmd, payload) -> {
-            UserProfiles userProfiles = mSettings.getUserProfiles();
-            return Payload.fromString(String.valueOf(userProfiles.getWheelOuterLength()));
+            return Payload.fromString(String.valueOf(mUserProfiles.getWheelOuterLength()));
 
         });
 

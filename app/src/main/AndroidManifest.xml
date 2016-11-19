@@ -61,6 +61,10 @@
         <activity android:name="com.eaglesakura.andriders.ui.navigation.ProfileSettingActivity"
                   android:screenOrientation="portrait"
                   android:label="@string/Title.Profile"/>
+        <activity
+                android:name="com.eaglesakura.andriders.ui.navigation.DisplayLayoutSettingActivity"
+                android:screenOrientation="portrait"
+                android:label="@string/Title.Display"/>
         <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
         </service>
 
