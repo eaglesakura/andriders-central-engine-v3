@@ -1,9 +1,12 @@
 package com.eaglesakura.andriders.ui.navigation.profile;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
+import com.eaglesakura.android.garnet.Inject;
 
 /**
  * BLEデバイス等の設定を行う
@@ -19,5 +22,20 @@ public class UserProfileSettingFragmentMain extends AppNavigationFragment {
     /**
      * ゾーン設定
      */
-    FragmentHolder<UserZoneSettingFragment> mZoneSettingFragment = FragmentHolder.newInstance(this, UserZoneSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+    FragmentHolder<ZoneSettingFragment> mZoneSettingFragment = FragmentHolder.newInstance(this, ZoneSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+
+    /**
+     * 身体能力設定
+     */
+    FragmentHolder<FitnessSettingFragment> mFitnessSettingFragment = FragmentHolder.newInstance(this, FitnessSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+
+    @Inject(AppContextProvider.class)
+    AppSettings mAppSettings;
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mAppSettings.commit();
+    }
 }

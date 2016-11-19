@@ -184,6 +184,10 @@
     <string name="Word.Profile.WheelOuterLengthFormat">%2$d mm / %1$s</string>
     <string name="Title.Profile">プロファイル</string>
     <string name="Word.Profile.TireSetting">タイヤ規格</string>
+    <string name="Word.Common.Install">インストール</string>
+    <string name="Word.Profile.GoogleFitNotInstalled">Google Fitアプリがインストールされていません。\n体重設定を行う場合、Google
+        Fitアプリをインストールしてください。
+    </string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

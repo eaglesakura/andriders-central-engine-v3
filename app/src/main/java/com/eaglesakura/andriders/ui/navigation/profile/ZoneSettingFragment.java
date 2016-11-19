@@ -23,17 +23,17 @@ import android.support.annotation.UiThread;
  * ・ケイデンスゾーン
  */
 @FragmentLayout(R.layout.profile_userzone)
-public class UserZoneSettingFragment extends AppFragment {
+public class ZoneSettingFragment extends AppFragment {
 
     final int MIN_CADENCE = 70;
 
     final int MIN_CRUISE_SPEED = 20;
 
     @Bind(R.id.Range_Cadence)
-    RangeBar cadenceZoneBar;
+    RangeBar mCadenceZoneBar;
 
     @Bind(R.id.Range_CruiseSpeed)
-    RangeBar cruiseZoneBar;
+    RangeBar mCruiseZoneBar;
 
     @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
@@ -43,11 +43,11 @@ public class UserZoneSettingFragment extends AppFragment {
         super.onAfterViews(self, flags);
 
         UserProfiles profile = mAppSettings.getUserProfiles();
-        cruiseZoneBar.setThumbIndices(profile.getSpeedZoneCruise() - MIN_CRUISE_SPEED, profile.getSpeedZoneSprint() - MIN_CRUISE_SPEED);
-        cadenceZoneBar.setThumbIndices(profile.getCadenceZoneIdeal() - MIN_CADENCE, profile.getCadenceZoneHigh() - MIN_CADENCE);
+        mCruiseZoneBar.setThumbIndices(profile.getSpeedZoneCruise() - MIN_CRUISE_SPEED, profile.getSpeedZoneSprint() - MIN_CRUISE_SPEED);
+        mCruiseZoneBar.setOnRangeBarChangeListener(mCruiseZoneListenerImpl);
 
-        cruiseZoneBar.setOnRangeBarChangeListener(mCruiseZoneListenerImpl);
-        cadenceZoneBar.setOnRangeBarChangeListener(mCadenceZoneListenerImpl);
+        mCadenceZoneBar.setThumbIndices(profile.getCadenceZoneIdeal() - MIN_CADENCE, profile.getCadenceZoneHigh() - MIN_CADENCE);
+        mCadenceZoneBar.setOnRangeBarChangeListener(mCadenceZoneListenerImpl);
     }
 
     @Override

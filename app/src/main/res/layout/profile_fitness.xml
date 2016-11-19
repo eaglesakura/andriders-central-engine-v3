@@ -11,9 +11,10 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
         <com.eaglesakura.andriders.ui.widget.AppHeaderView
-                app:headerIcon="@drawable/ic_zone"
-                app:headerText="ゾーン設定"
+                app:headerIcon="@drawable/ic_person"
+                app:headerText="フィットネスデータ"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         <LinearLayout
@@ -22,6 +23,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+            <com.eaglesakura.material.widget.TransparentButton
+                    android:id="@+id/CycleComputer.Personal.Weight"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/EsMaterial.Button.MinHeight">
+                <LinearLayout
+                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="体重"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:id="@+id/Setting.Personal.WeightValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:gravity="right"
+                            android:text="60"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text=" kg"/>
+                </LinearLayout>
+            </com.eaglesakura.material.widget.TransparentButton>
+
+            <include layout="@layout/esm_material_separator"/>
 
             <LinearLayout
                     android:id="@+id/Setting.RoadBikeProfile.BikeName"
@@ -33,7 +68,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="巡航速度"/>
+                        android:text="心拍"/>
 
                 <View
                         android:layout_width="match_parent"
@@ -41,12 +76,12 @@
                         android:layout_weight="1"/>
 
                 <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Item.SpeedMin"
+                        android:id="@+id/Item.HeartrateMin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:gravity="right"
-                        android:text="25 km/h"/>
+                        android:text="70 bpm"/>
 
                 <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -55,77 +90,27 @@
                         android:text=" - "/>
 
                 <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Item.SpeedMax"
+                        android:id="@+id/Item.HeartrateMax"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:gravity="right"
-                        android:text="35 km/h"/>
+                        android:text="190 bpm"/>
             </LinearLayout>
 
             <com.edmodo.rangebar.RangeBar
-                    app:tickCount="30"
+                    app:tickCount="150"
                     app:tickHeight="0dp"
                     app:thumbColorPressed="@color/EsMaterial.LightGreen.Button.Pressed"
                     app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
                     app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
                     app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
-                    android:id="@+id/Range.CruiseSpeed"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-            <include layout="@layout/esm_material_separator"/>
-
-            <LinearLayout
-                    android:id="@+id/Setting.RoadBikeProfile.WheelSetting"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="目標ケイデンス"/>
-
-                <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Item.CadenceMin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="right"
-                        android:text="80rpm"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text=" - "/>
-
-                <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/Item.CadenceMax"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="right"
-                        android:text="110rpm"/>
-            </LinearLayout>
-
-            <com.edmodo.rangebar.RangeBar
-                    app:tickHeight="0dp"
-                    app:tickCount="60"
-                    app:thumbColorPressed="@color/EsMaterial.LightGreen.Button.Pressed"
-                    app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
-                    app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
-                    app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
-                    android:id="@+id/Range.Cadence"
+                    android:id="@+id/Range.Heartrate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
         </LinearLayout>
+
     </LinearLayout>
+
+
 </android.support.v7.widget.CardView>
