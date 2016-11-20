@@ -11,6 +11,7 @@ import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.delegate.task.DataBus;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
@@ -22,6 +23,7 @@ import com.eaglesakura.util.StringUtil;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +54,12 @@ public class DisplayLayoutController {
      */
     @NonNull
     DataCollection<DisplayLayoutApplication> mApplications;
+
+    /**
+     * 選択されているアプリ
+     */
+    @NonNull
+    DisplayLayoutApplication mSelectedApp;
 
     public DisplayLayoutController(Context context) {
         mContext = context;
@@ -119,7 +127,8 @@ public class DisplayLayoutController {
         // アプリ一覧をロードする
         {
             List<DisplayLayoutApplication> result = new ArrayList<>();
-            result.add(new DisplayLayoutApplication(mContext, null));   // デフォルト構成用
+            mSelectedApp = new DisplayLayoutApplication(mContext, null);
+            result.add(mSelectedApp);   // デフォルト構成用
             for (ApplicationInfo info : PackageUtil.listInstallApplications(mContext)) {
                 AppLog.system("Load TargetLauncher package[%s]", info.packageName);
                 result.add(new DisplayLayoutApplication(mContext, info));
@@ -158,15 +167,19 @@ public class DisplayLayoutController {
         }
     }
 
-    public interface Holder {
-        DisplayLayoutController getDisplayLayoutController();
-    }
-
     /**
      * 設定されていない場合のグローバル設定を取得する
      */
     public DisplayLayoutApplication getDefaultApplication() {
         return listSortedApplications().get(0);
+    }
+
+    /**
+     * 現在選択されているアプリを取得する
+     */
+    @NonNull
+    public DisplayLayoutApplication getSelectedApp() {
+        return mSelectedApp;
     }
 
     /**
@@ -182,5 +195,17 @@ public class DisplayLayoutController {
         }
 
         return mApplications.list();
+    }
+
+    public static class Bus extends DataBus<DisplayLayoutController> {
+
+        public Bus(@Nullable DisplayLayoutController data) {
+            super(data);
+        }
+
+        public void onSelected(DisplayLayoutApplication app) {
+            getData().mSelectedApp = app;
+            modified();
+        }
     }
 }

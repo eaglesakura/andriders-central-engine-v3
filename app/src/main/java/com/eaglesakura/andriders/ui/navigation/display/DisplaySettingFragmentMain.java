@@ -19,7 +19,7 @@ import android.support.annotation.UiThread;
  * 表示値のレイアウト用Fragment
  */
 @FragmentLayout(R.layout.display_setup)
-public class DisplaySettingFragmentMain extends AppNavigationFragment implements DisplayLayoutController.Holder, LayoutAppSelectFragment.Callback {
+public class DisplaySettingFragmentMain extends AppNavigationFragment implements LayoutAppSelectFragment.Callback {
 
     @BindInterface
     Callback mCallback;
@@ -31,18 +31,19 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
 
     DisplayLayoutController mDisplayLayoutController;
 
-    DisplayLayoutApplication.Bus mSelectedAppBus = new DisplayLayoutApplication.Bus();
+    DisplayLayoutController.Bus mDisplayLayoutControllerBus;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mDisplayLayoutController = new DisplayLayoutController(context);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSelectedAppBus.bind(mLifecycleDelegate, mLayoutAppSelectFragment.get());
+        mDisplayLayoutController = new DisplayLayoutController(getContext());
+        mDisplayLayoutControllerBus = new DisplayLayoutController.Bus(mDisplayLayoutController);
+        mDisplayLayoutControllerBus.bind(mLifecycleDelegate, mLayoutAppSelectFragment.get());
         loadDisplayContrller();
     }
 
@@ -57,15 +58,10 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
         }).completed((result, task) -> {
             // デフォルトアプリを選択済みにする
             DisplayLayoutApplication defaultApp = mDisplayLayoutController.getDefaultApplication();
-            mSelectedAppBus.modified(defaultApp);
+            mDisplayLayoutControllerBus.onSelected(defaultApp);
         }).failed((error, task) -> {
             mCallback.onInitializeFailed(this, error);
         }).start();
-    }
-
-    @Override
-    public DisplayLayoutController getDisplayLayoutController() {
-        return mDisplayLayoutController;
     }
 
     @Override
@@ -79,7 +75,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             }
         }).completed((result, task) -> {
             // 切り替えを許可する
-            mSelectedAppBus.modified(selected);
+            mDisplayLayoutControllerBus.onSelected(selected);
         }).failed((error, task) -> {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
@@ -98,7 +94,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             }
         }).completed((result, task) -> {
             // 切り替えを許可する
-            mSelectedAppBus.modified(mDisplayLayoutController.getDefaultApplication());
+            mDisplayLayoutControllerBus.onSelected(mDisplayLayoutController.getDefaultApplication());
         }).failed((error, task) -> {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)

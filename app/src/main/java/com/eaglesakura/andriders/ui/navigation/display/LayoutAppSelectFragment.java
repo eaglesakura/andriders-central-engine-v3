@@ -29,12 +29,6 @@ public class LayoutAppSelectFragment extends AppFragment {
 
     DisplayLayoutController mDisplayLayoutController;
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mDisplayLayoutController = findInterfaceOrThrow(DisplayLayoutController.Holder.class).getDisplayLayoutController();
-    }
-
     @OnClick(R.id.Button_AppSelect)
     void clickAppSelect() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_appselect_dialog, null, false);
@@ -65,8 +59,10 @@ public class LayoutAppSelectFragment extends AppFragment {
      * アプリが切り替えられた
      */
     @Subscribe
-    void onSelectedApp(DisplayLayoutApplication.Bus bus) {
-        DisplayLayoutApplication data = bus.getData();
+    void onSelectedApp(DisplayLayoutController.Bus bus) {
+        mDisplayLayoutController = bus.getData();
+
+        DisplayLayoutApplication data = mDisplayLayoutController.getSelectedApp();
         new AQuery(getView())
                 .id(R.id.Item_Title).text(data.getTitle())  // タイトル設定
                 .id(R.id.Item_Icon).image(data.getIcon())   // アイコン設定

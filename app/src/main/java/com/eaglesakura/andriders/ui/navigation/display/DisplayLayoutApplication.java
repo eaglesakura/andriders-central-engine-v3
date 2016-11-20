@@ -3,7 +3,6 @@ package com.eaglesakura.andriders.ui.navigation.display;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.ui.widget.IconItemAdapter;
-import com.eaglesakura.android.framework.delegate.task.DataBus;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -95,8 +94,4 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
             return StringUtil.compareString(a.mAppInfo.packageName, b.mAppInfo.packageName);
         }
     };
-
-    public static class Bus extends DataBus<DisplayLayoutApplication> {
-
-    }
 }
