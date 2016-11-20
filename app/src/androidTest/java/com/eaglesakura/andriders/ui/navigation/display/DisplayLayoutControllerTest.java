@@ -7,6 +7,7 @@ import com.eaglesakura.andriders.plugin.CentralPluginCollection;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.util.Util;
 
 import org.junit.Test;
 
@@ -42,6 +43,16 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
             assertNotNull(plugin.getCategory());
             validate(plugin.listDisplayKeys().list()).notEmpty().allNotNull();
         });
+        validate(controller.mApplications.list()).notEmpty().allNotNull().each(app -> {
+            assertNotEmpty(app.loadLabel());
+            assertNotNull(app.loadIcon());
+            assertNotNull(app.getPackageName());
+        });
+        // デフォルト構成のアプリは1つだけである
+        validate(controller.mApplications.list(it -> it.isDefaultApp())).sizeIs(1);
+
+        // 常にデフォルトアプリが最初に来ている
+        assertTrue(controller.listSortedApplications().get(0).isDefaultApp());
     }
 
     @Test
@@ -61,6 +72,23 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
             controller.load(() -> false);
             validate(controller.mLayouts.size()).from(1);
         }
+    }
+
+    @Test
+    public void アプリ一覧取得の順番制御が行える() throws Throwable {
+        DisplayLayoutController controller = new DisplayLayoutController(getContext());
+        controller.load(() -> false);
+        Util.sleep(100);
+        controller.getLayoutGroup("com.google.android.apps.maps");
+        Util.sleep(100);
+        controller.getLayoutGroup("com.google.android.apps.plus");
+        Util.sleep(100);
+
+        validate(controller.listSortedApplications())
+                .checkAt(0, app -> assertTrue(app.isDefaultApp()))  // トップはデフォルトアプリ固定
+                // 新しい取得順に更新される
+                .checkAt(1, app -> assertEquals(app.getPackageName(), "com.google.android.apps.plus"))
+                .checkAt(2, app -> assertEquals(app.getPackageName(), "com.google.android.apps.maps"));
     }
 
     @Test

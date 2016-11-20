@@ -182,6 +182,7 @@
         Fitアプリをインストールしてください。
     </string>
     <string name="Title.Display">サイコン表示</string>
+    <string name="Word.Common.Default">デフォルト</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

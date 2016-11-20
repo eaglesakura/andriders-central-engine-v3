@@ -14,11 +14,13 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -44,6 +46,12 @@ public class DisplayLayoutController {
 
     @Inject(AppManagerProvider.class)
     DisplayLayoutManager mDisplayLayoutManager;
+
+    /**
+     * ソート対象のアプリ
+     */
+    @NonNull
+    DataCollection<DisplayLayoutApplication> mApplications;
 
     public DisplayLayoutController(Context context) {
         mContext = context;
@@ -107,6 +115,19 @@ public class DisplayLayoutController {
             DisplayLayoutGroup group = getLayoutGroup(layout.getAppPackageName());
             group.insertOrReplace(layout);
         }
+
+        // アプリ一覧をロードする
+        {
+            List<DisplayLayoutApplication> result = new ArrayList<>();
+            result.add(new DisplayLayoutApplication(mContext, null));   // デフォルト構成用
+            for (ApplicationInfo info : PackageUtil.listInstallApplications(mContext)) {
+                AppLog.system("Load TargetLauncher package[%s]", info.packageName);
+                result.add(new DisplayLayoutApplication(mContext, info));
+            }
+
+            mApplications = new DataCollection<>(result);
+            mApplications.setComparator(DisplayLayoutApplication.COMPARATOR_ASC);
+        }
     }
 
     /**
@@ -139,5 +160,20 @@ public class DisplayLayoutController {
 
     public interface Holder {
         DisplayLayoutController getDisplayLayoutController();
+    }
+
+    /**
+     * 現在の状況に応じてソートされたアプリ一覧を取得する
+     */
+    public List<DisplayLayoutApplication> listSortedApplications() {
+        for (DisplayLayoutApplication app : mApplications.getSource()) {
+            app.mUpdatedDate = null;
+            DisplayLayoutGroup group = mLayouts.get(app.getPackageName());
+            if (group != null) {
+                app.mUpdatedDate = group.getUpdateDate();
+            }
+        }
+
+        return mApplications.list();
     }
 }
