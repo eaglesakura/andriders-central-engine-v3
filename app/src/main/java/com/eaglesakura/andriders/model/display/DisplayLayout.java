@@ -43,6 +43,14 @@ public class DisplayLayout extends DaoModel<DbDisplayLayout> {
     }
 
     /**
+     * 表示すべき値を持っている場合はtrue
+     * ただし、プラグインのロード失敗可否は問わない
+     */
+    public boolean hasValue() {
+        return StringUtil.allNotEmpty(getPluginId(), getValueId());
+    }
+
+    /**
      * スロット位置を一意に識別可能なIDを取得する
      */
     public int getSlotId() {

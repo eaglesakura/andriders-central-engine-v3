@@ -8,7 +8,6 @@ import com.eaglesakura.material.widget.ToolbarBuilder;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 
 /**
@@ -97,7 +96,7 @@ public class MenuController {
             default:
                 return false;
         }
-        mDrawerLayout.closeDrawer(GravityCompat.START);
+//        mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     };
 }

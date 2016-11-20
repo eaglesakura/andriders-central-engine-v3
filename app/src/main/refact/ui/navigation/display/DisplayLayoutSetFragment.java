@@ -51,13 +51,6 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         super.onAttach(context);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = DataLayoutManager.newStubLayout(inflater.getContext());
-        return view;
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -154,7 +147,6 @@ public class DisplayLayoutSetFragment extends AppBaseFragment {
         }
 
         button.setOnClickListener(view -> showDisplaySelector(slotManager, slot));
-
         stub.addView(button, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 

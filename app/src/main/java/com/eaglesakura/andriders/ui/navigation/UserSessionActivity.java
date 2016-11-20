@@ -9,6 +9,7 @@ import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivity
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.MargarineKnife;
 import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.material.widget.ToolbarBuilder;
 import com.eaglesakura.material.widget.support.SupportProgressFragment;
 
@@ -20,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 
 /**
@@ -84,6 +86,19 @@ public class UserSessionActivity extends AppNavigationActivity {
     @Override
     public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
         return new UserSessionFragmentMain();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (ContextUtil.isBackKeyEvent(event)) {
+            // ドロワーが開いていたらまずは閉じる動作を優先する
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        }
+
+        return super.dispatchKeyEvent(event);
     }
 
     UserSessionActivity self() {

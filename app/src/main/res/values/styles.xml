@@ -49,4 +49,5 @@
     </style>
     <style name="App.Theme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <item name="Tag.SlotId" type="id"/>
 </resources>

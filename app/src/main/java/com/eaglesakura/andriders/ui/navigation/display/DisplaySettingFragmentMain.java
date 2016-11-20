@@ -29,6 +29,11 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
      */
     FragmentHolder<LayoutAppSelectFragment> mLayoutAppSelectFragment = FragmentHolder.newInstance(this, LayoutAppSelectFragment.class, R.id.Content_Holder_AppSelector).bind(mLifecycleDelegate);
 
+    /**
+     * レイアウト編集
+     */
+    FragmentHolder<LayoutEditFragment> mLayoutEditFragment = FragmentHolder.newInstance(this, LayoutEditFragment.class, R.id.Content_Holder_DisplayLayout).bind(mLifecycleDelegate);
+
     DisplayLayoutController mDisplayLayoutController;
 
     DisplayLayoutController.Bus mDisplayLayoutControllerBus;
@@ -44,11 +49,12 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
         mDisplayLayoutController = new DisplayLayoutController(getContext());
         mDisplayLayoutControllerBus = new DisplayLayoutController.Bus(mDisplayLayoutController);
         mDisplayLayoutControllerBus.bind(mLifecycleDelegate, mLayoutAppSelectFragment.get());
-        loadDisplayContrller();
+        mDisplayLayoutControllerBus.bind(mLifecycleDelegate, mLayoutEditFragment.get());
+        loadDisplayController();
     }
 
     @UiThread
-    void loadDisplayContrller() {
+    void loadDisplayController() {
         asyncUI(task -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
             try (ProgressToken token = pushProgress(R.string.Widget_Common_Load)) {

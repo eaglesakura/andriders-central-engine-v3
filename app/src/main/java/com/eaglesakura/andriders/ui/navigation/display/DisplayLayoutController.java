@@ -7,6 +7,7 @@ import com.eaglesakura.andriders.model.display.DisplayLayoutCollection;
 import com.eaglesakura.andriders.model.display.DisplayLayoutGroup;
 import com.eaglesakura.andriders.plugin.CentralPlugin;
 import com.eaglesakura.andriders.plugin.CentralPluginCollection;
+import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
@@ -69,6 +70,18 @@ public class DisplayLayoutController {
                 .inject();
     }
 
+    @Nullable
+    public DisplayKey getDisplayKey(DisplayLayout layout) {
+        // 一致するプラグインを検索する
+        CentralPlugin find = mDisplayPlugins.find(plugin -> plugin.getInformation().getId().equals(layout.getUniqueId()));
+        if (find == null) {
+            return null;
+        }
+
+        // 一致する値のキーを検索する
+        return find.listDisplayKeys().find(key -> key.getId().equals(layout.getValueId()));
+    }
+
     /**
      * 管理グループを取得する
      *
@@ -84,8 +97,8 @@ public class DisplayLayoutController {
             if (result == null) {
                 result = new DisplayLayoutGroup(new ArrayList<>(), packageName);
                 // デフォルト構成を生成する
-                for (int h = 0; h < DisplayLayoutManager.MAX_VERTICAL_SLOTS; ++h) {
-                    for (int v = 0; v < DisplayLayoutManager.MAX_HORIZONTAL_SLOTS; ++v) {
+                for (int h = 0; h < DisplayLayoutManager.MAX_HORIZONTAL_SLOTS; ++h) {
+                    for (int v = 0; v < DisplayLayoutManager.MAX_VERTICAL_SLOTS; ++v) {
                         DisplayLayout layout = new DisplayLayout.Builder(DisplayLayout.getSlotId(h, v))
                                 .application(packageName)
                                 .build();

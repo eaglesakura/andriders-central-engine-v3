@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.data.display;
 
+import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.data.db.CentralSettingDatabase;
 import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.model.display.DisplayLayoutCollection;
@@ -109,110 +110,6 @@ public class DisplayLayoutManager extends CentralSettingManager {
         }
     }
 
-//    /**
-//     * 既存のカスタマイズ済みレイアウトリストを列挙する
-//     */
-//    public DataCollection<DbDisplayTarget> listCustomizedDisplays() {
-//        try (DisplayLayoutDatabase db = new DisplayLayoutDatabase(mContext).openReadOnly(DisplayLayoutDatabase.class)) {
-//            return new DataCollection<>(db.listTargets())
-//                    .setComparator((a, b) -> a.getModifiedDate().compareTo(b.getModifiedDate()));
-//        }
-//    }
-//
-//    /**
-//     * 指定したpackageのレイアウトを削除する
-//     */
-//    public void deleteLayout(String appPackage) {
-//        try (DisplayLayoutDatabase db = new DisplayLayoutDatabase(mContext).openWritable(DisplayLayoutDatabase.class);) {
-//            db.remove(appPackage);
-//        }
-//    }
-//
-//    public DisplayLayoutManager load(Mode mode, String appPackage) {
-//        if (StringUtil.isEmpty(appPackage)) {
-//            appPackage = BuildConfig.APPLICATION_ID;
-//        }
-//
-//        DisplayLayoutDatabase db = new DisplayLayoutDatabase(mContext);
-//        try {
-//            db.openWritable();
-//            if (mode == Mode.ReadOnly) {
-//                displayTarget = db.loadTarget(appPackage);
-//            } else {
-//                displayTarget = db.loadTargetOrCreate(appPackage);
-//            }
-//            List<DbDisplayLayout> layouts = db.listLayouts(displayTarget);
-//
-//            for (DbDisplayLayout layout : layouts) {
-//                LayoutSlot slot = slots.get(layout.getSlotId());
-//                if (slot == null) {
-//                    // スロットが欠けたので互換性のためデータを削除する
-//                    db.remove(layout);
-//                } else {
-//                    // スロットに表示内容をバインドする
-//                    slot.setValueLink(layout);
-//                }
-//            }
-//        } finally {
-//            db.close();
-//        }
-//        return this;
-//    }
-//
-//    /**
-//     * 表示内容を指定する
-//     *
-//     * @param slot      設定対象のスロット
-//     * @param extension 拡張機能
-//     * @param display   拡張内容
-//     */
-//    public void setLayout(LayoutSlot slot, PluginInformation extension, DisplayKey display) {
-//        slot.setValueLink(displayTarget, extension, display);
-//    }
-//
-//    /**
-//     * 表示内容を削除する
-//     */
-//    public void removeLayout(LayoutSlot slot) {
-//        slot.setValueLink(null);
-//    }
-//
-//    /**
-//     * データを上書き保存する
-//     */
-//    public void commit() {
-//        DisplayLayoutDatabase db = new DisplayLayoutDatabase(mContext);
-//        try {
-//            db.openWritable();
-//            for (LayoutSlot slot : listSlots()) {
-//                DbDisplayLayout displayLayout = slot.getLink();
-//                if (displayLayout == null) {
-//                    // 表示内容が削除されたのでDBからも削除する
-//                    db.remove(displayTarget, slot.getId());
-//                } else {
-//                    // 表示内容を更新する
-//                    db.update(displayLayout);
-//                }
-//            }
-//        } finally {
-//            db.close();
-//        }
-//    }
-//
-//    /**
-//     * 表示のXY位置からスロットを取得する
-//     */
-//    public LayoutSlot getSlot(int x, int y) {
-//        return slots.get(Integer.valueOf(LayoutSlot.getSlotId(x, y)));
-//    }
-//
-//    /**
-//     * スロット一覧を取得する。
-//     */
-//    public List<LayoutSlot> listSlots() {
-//        return new ArrayList<>(slots.values());
-//    }
-
     /**
      * 表示用の仮組みレイアウトを作成する
      *
@@ -230,6 +127,7 @@ public class DisplayLayoutManager extends CentralSettingManager {
 
                 FrameLayout stub = new FrameLayout(context);
                 stub.setId(DisplayLayout.getSlotId(x, y));
+                stub.setTag(R.id.Tag_SlotId, DisplayLayout.getSlotId(x, y));
 //                stub.setBackgroundColor(Color.rgb(new Random().nextInt(255), new Random().nextInt(255), new Random().nextInt(255)));
                 row.addView(stub, params);
             }
