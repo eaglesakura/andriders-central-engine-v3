@@ -7,7 +7,7 @@
 
 
     <LinearLayout
-            android:id="@+id/Setting.CycleComputer.TargetApplication.Root"
+            android:id="@+id/Button.AppSelect"
             android:paddingLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
             android:paddingRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
             android:paddingTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
@@ -20,7 +20,7 @@
             android:minHeight="@dimen/EsMaterial.Button.MinHeight">
 
         <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/Setting.CycleComputer.TargetApplication.Icon"
+                android:id="@+id/Item.Icon"
                 app:srcCompat="@mipmap/ic_launcher"
                 android:layout_gravity="bottom"
                 android:layout_margin="@dimen/App.Icon.Large.Margin"
@@ -28,18 +28,17 @@
                 android:layout_height="@dimen/App.Icon.Large"/>
 
         <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/Setting.CycleComputer.TargetApplication.Title"
+                android:id="@+id/Item.Title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:gravity="right"
-                android:text="デフォルト"/>
+                android:text="@string/Word.Common.Default"/>
     </LinearLayout>
     <android.support.v7.widget.AppCompatImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/Setting.CycleComputer.TargetApplication.Delete"
+            android:id="@+id/Item.Delete"
             app:srcCompat="@drawable/ic_delete"
             android:tint="@color/App.Icon.Grey"
             android:visibility="gone"

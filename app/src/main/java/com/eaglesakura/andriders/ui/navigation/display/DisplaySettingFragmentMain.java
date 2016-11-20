@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
-import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
@@ -16,10 +16,15 @@ import android.support.annotation.UiThread;
  * 表示値のレイアウト用Fragment
  */
 @FragmentLayout(R.layout.display_setup)
-public class DisplaySettingFragmentMain extends AppNavigationFragment implements DisplayLayoutController.Holder {
+public class DisplaySettingFragmentMain extends AppNavigationFragment implements DisplayLayoutController.Holder, LayoutAppSelectFragment.Callback {
 
     @BindInterface
     Callback mCallback;
+
+    /**
+     * アプリ選択Fragment
+     */
+    FragmentHolder<LayoutAppSelectFragment> mLayoutAppSelectFragment = FragmentHolder.newInstance(this, LayoutAppSelectFragment.class, R.id.Content_Holder_AppSelector).bind(mLifecycleDelegate);
 
     DisplayLayoutController mDisplayLayoutController;
 
@@ -48,6 +53,16 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
     @Override
     public DisplayLayoutController getDisplayLayoutController() {
         return mDisplayLayoutController;
+    }
+
+    @Override
+    public void onApplicationSelected(LayoutAppSelectFragment fragment, DisplayLayoutApplication selected) {
+        // TODO アプリ切り替え
+    }
+
+    @Override
+    public void onRequestDeleteLayout(LayoutAppSelectFragment fragment, DisplayLayoutApplication packageName) {
+        // TODO アプリ削除
     }
 
     public interface Callback {

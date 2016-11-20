@@ -1,6 +1,10 @@
 package com.eaglesakura.andriders.ui.widget;
 
 import com.eaglesakura.andriders.databinding.WidgetIconitemRowBinding;
+import com.eaglesakura.android.framework.delegate.lifecycle.LifecycleDelegate;
+import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 
 import android.content.Context;
@@ -16,7 +20,10 @@ import android.view.ViewGroup;
  * アイコンを持つアイテムのセレクタ
  */
 public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends CardAdapter<T> {
-    public IconItemAdapter() {
+    final LifecycleDelegate mLifecycleDelegate;
+
+    public IconItemAdapter(LifecycleDelegate delegate) {
+        mLifecycleDelegate = delegate;
     }
 
     protected abstract Context getContext();
@@ -33,6 +40,16 @@ public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends Ca
         binding.Item.setOnClickListener(view -> {
             onItemSelected(position, (T) binding.getItem());
         });
+        binding.Icon.setVisibility(View.INVISIBLE);
+
+        // 非同期でいアコンを処理する
+        mLifecycleDelegate.async(ExecuteTarget.LocalParallel, CallbackTime.Foreground,  (BackgroundTask<Drawable> task) -> bind.getItem().getIcon())
+                .completed((result, task) -> {
+                    binding.Icon.setImageDrawable(result);
+                    binding.Icon.setVisibility(View.VISIBLE);
+                })
+                .cancelSignal(task -> !bind.isBinded())
+                .start();
     }
 
     /**

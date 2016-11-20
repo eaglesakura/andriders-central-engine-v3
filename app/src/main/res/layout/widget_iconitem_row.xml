@@ -15,27 +15,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <LinearLayout
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/EsMaterial.Button.MinHeight">
+                    android:layout_height="wrap_content">
                 <android.support.v7.widget.AppCompatImageView
-                        android:layout_gravity="center_vertical"
+                        android:id="@+id/Icon"
+                        android:layout_gravity="center"
                         android:layout_margin="@dimen/App.Icon.Large.Margin"
-                        app:srcCompat="@{item.icon}"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"/>
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"/>
 
                 <android.support.v7.widget.AppCompatTextView
                         android:text="@{item.title}"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        android:layout_gravity="center_vertical"
-                        android:layout_width="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
             </LinearLayout>
-
         </com.eaglesakura.material.widget.TransparentButton>
-        <include layout="@layout/esm_material_separator"/>
     </LinearLayout>
 </layout>

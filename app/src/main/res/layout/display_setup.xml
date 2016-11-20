@@ -5,6 +5,8 @@
         android:layout_height="match_parent"
         android:background="?attr/esmWindowBackgroundColorDark">
     <android.support.v7.widget.CardView
+            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+            android:layout_marginBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
             style="@style/EsMaterial.Widget.CardView.Light"
             android:layout_width="match_parent"
             android:layout_weight="1"

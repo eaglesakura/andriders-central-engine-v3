@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.IconItemAdapter;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.BackgroundTask;
@@ -19,6 +20,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.UiThread;
+import android.support.v7.widget.GridLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,12 @@ public class LauncherSelectFragmentMain extends AppFragment {
 
     @Bind(R.id.Content_List)
     SupportRecyclerView mItems;
+
+    @Override
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
+        mItems.getRecyclerView().setLayoutManager(new GridLayoutManager(getContext(), 3));
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +57,7 @@ public class LauncherSelectFragmentMain extends AppFragment {
         }).start();
     }
 
-    IconItemAdapter<IconItemAdapter.LauncherItem> mAdapter = new IconItemAdapter<IconItemAdapter.LauncherItem>() {
+    IconItemAdapter<IconItemAdapter.LauncherItem> mAdapter = new IconItemAdapter<IconItemAdapter.LauncherItem>(mLifecycleDelegate ) {
         @Override
         protected Context getContext() {
             return getActivity();
