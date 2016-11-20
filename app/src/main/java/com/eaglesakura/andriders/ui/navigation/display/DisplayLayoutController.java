@@ -163,6 +163,13 @@ public class DisplayLayoutController {
     }
 
     /**
+     * 設定されていない場合のグローバル設定を取得する
+     */
+    public DisplayLayoutApplication getDefaultApplication() {
+        return listSortedApplications().get(0);
+    }
+
+    /**
      * 現在の状況に応じてソートされたアプリ一覧を取得する
      */
     public List<DisplayLayoutApplication> listSortedApplications() {

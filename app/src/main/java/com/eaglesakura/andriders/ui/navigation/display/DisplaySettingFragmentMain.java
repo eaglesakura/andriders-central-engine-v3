@@ -2,6 +2,8 @@ package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
+import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
@@ -54,7 +56,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             return this;
         }).completed((result, task) -> {
             // デフォルトアプリを選択済みにする
-            DisplayLayoutApplication defaultApp = mDisplayLayoutController.listSortedApplications().get(0);
+            DisplayLayoutApplication defaultApp = mDisplayLayoutController.getDefaultApplication();
             mSelectedAppBus.modified(defaultApp);
         }).failed((error, task) -> {
             mCallback.onInitializeFailed(this, error);
@@ -69,12 +71,40 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
     @Override
     public void onApplicationSelected(LayoutAppSelectFragment fragment, DisplayLayoutApplication selected) {
         // アプリ切り替えの送信を行う
-        mSelectedAppBus.modified(selected);
+        asyncUI(task -> {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_Working)) {
+                mDisplayLayoutController.getLayoutGroup(selected.getPackageName());
+                mDisplayLayoutController.commit();
+                return this;
+            }
+        }).completed((result, task) -> {
+            // 切り替えを許可する
+            mSelectedAppBus.modified(selected);
+        }).failed((error, task) -> {
+            AppLog.report(error);
+            AppDialogBuilder.newError(getContext(), error)
+                    .positiveButton(R.string.Common_OK, null)
+                    .show(mLifecycleDelegate);
+        }).start();
     }
 
     @Override
-    public void onRequestDeleteLayout(LayoutAppSelectFragment fragment, DisplayLayoutApplication packageName) {
-        // TODO アプリ削除
+    public void onRequestDeleteLayout(LayoutAppSelectFragment fragment, DisplayLayoutApplication app) {
+        // アプリ削除
+        asyncUI(task -> {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_Working)) {
+                mDisplayLayoutController.remove(app.getPackageName());
+                return this;
+            }
+        }).completed((result, task) -> {
+            // 切り替えを許可する
+            mSelectedAppBus.modified(mDisplayLayoutController.getDefaultApplication());
+        }).failed((error, task) -> {
+            AppLog.report(error);
+            AppDialogBuilder.newError(getContext(), error)
+                    .positiveButton(R.string.Common_OK, null)
+                    .show(mLifecycleDelegate);
+        }).start();
     }
 
     public interface Callback {
