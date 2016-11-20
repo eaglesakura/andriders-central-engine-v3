@@ -24,7 +24,7 @@ public class DisplaySettingFragmentMainTest {
 //                            })
 //                            .each((index, that) -> {
 //                                // loaded
-//                                AppLog.test("installed[%d] package[%s] label[%s]", index, that.info.packageName, that.info.loadLabel(getContext().getPackageManager()));
+//                                AppLog.test("installed[%d] package[%s] label[%s]", index, that.info.packageName, that.info.getTitle(getContext().getPackageManager()));
 //                            });
 //                });
 //    }

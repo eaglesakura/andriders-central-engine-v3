@@ -38,7 +38,7 @@
                 android:text="@string/Word.Common.Default"/>
     </LinearLayout>
     <android.support.v7.widget.AppCompatImageView
-            android:id="@+id/Item.Delete"
+            android:id="@+id/Button.Delete"
             app:srcCompat="@drawable/ic_delete"
             android:tint="@color/App.Icon.Grey"
             android:visibility="gone"

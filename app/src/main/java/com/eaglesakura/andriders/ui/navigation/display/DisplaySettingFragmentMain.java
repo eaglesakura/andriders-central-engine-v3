@@ -10,6 +10,7 @@ import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.lambda.CancelCallback;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.UiThread;
 
 /**
@@ -28,10 +29,18 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
 
     DisplayLayoutController mDisplayLayoutController;
 
+    DisplayLayoutApplication.Bus mSelectedAppBus = new DisplayLayoutApplication.Bus();
+
     @Override
     public void onAttach(Context context) {
-        mDisplayLayoutController = new DisplayLayoutController(context);
         super.onAttach(context);
+        mDisplayLayoutController = new DisplayLayoutController(context);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mSelectedAppBus.bind(mLifecycleDelegate, mLayoutAppSelectFragment.get());
         loadDisplayContrller();
     }
 
@@ -44,7 +53,9 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             }
             return this;
         }).completed((result, task) -> {
-
+            // デフォルトアプリを選択済みにする
+            DisplayLayoutApplication defaultApp = mDisplayLayoutController.listSortedApplications().get(0);
+            mSelectedAppBus.modified(defaultApp);
         }).failed((error, task) -> {
             mCallback.onInitializeFailed(this, error);
         }).start();
@@ -57,7 +68,8 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
 
     @Override
     public void onApplicationSelected(LayoutAppSelectFragment fragment, DisplayLayoutApplication selected) {
-        // TODO アプリ切り替え
+        // アプリ切り替えの送信を行う
+        mSelectedAppBus.modified(selected);
     }
 
     @Override

@@ -14,5 +14,6 @@ public class DisplayLayoutSettingActivityTest extends AppScenarioTest<DisplayLay
     @Test
     public void アプリ切り替えが行える() throws Throwable {
         UiScenario.clickFromId(R.id.Content_Holder_AppSelector).step();
+        UiScenario.clickFromId(R.id.Content_Holder_Root).step();
     }
 }

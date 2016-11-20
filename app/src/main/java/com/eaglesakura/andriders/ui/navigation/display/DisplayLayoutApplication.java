@@ -2,6 +2,8 @@ package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.model.display.DisplayLayout;
+import com.eaglesakura.andriders.ui.widget.IconItemAdapter;
+import com.eaglesakura.android.framework.delegate.task.DataBus;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -15,7 +17,7 @@ import java.util.Date;
 /**
  * レイアウト用のアプリケーション情報
  */
-public class DisplayLayoutApplication {
+public class DisplayLayoutApplication implements IconItemAdapter.Item {
     private Context mContext;
 
     @Nullable
@@ -48,7 +50,7 @@ public class DisplayLayoutApplication {
     /**
      * アイコンを取得する
      */
-    public Drawable loadIcon() {
+    public Drawable getIcon() {
         if (mIcon == null) {
             if (mAppInfo == null) {
                 mIcon = mContext.getDrawable(R.mipmap.ic_launcher);
@@ -62,7 +64,9 @@ public class DisplayLayoutApplication {
     /**
      * 表示名を取得する
      */
-    public String loadLabel() {
+
+    @Override
+    public String getTitle() {
         if (mAppInfo == null) {
             return mContext.getString(R.string.Word_Common_Default);
         } else {
@@ -91,4 +95,8 @@ public class DisplayLayoutApplication {
             return StringUtil.compareString(a.mAppInfo.packageName, b.mAppInfo.packageName);
         }
     };
+
+    public static class Bus extends DataBus<DisplayLayoutApplication> {
+
+    }
 }

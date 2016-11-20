@@ -44,8 +44,8 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
             validate(plugin.listDisplayKeys().list()).notEmpty().allNotNull();
         });
         validate(controller.mApplications.list()).notEmpty().allNotNull().each(app -> {
-            assertNotEmpty(app.loadLabel());
-            assertNotNull(app.loadIcon());
+            assertNotEmpty(app.getTitle());
+            assertNotNull(app.getIcon());
             assertNotNull(app.getPackageName());
         });
         // デフォルト構成のアプリは1つだけである
