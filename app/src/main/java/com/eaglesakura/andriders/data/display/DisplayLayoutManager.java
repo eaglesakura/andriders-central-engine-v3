@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import java.util.List;
+
 /**
  * サイコン表示窓のスロットを管理する
  */
@@ -70,6 +72,22 @@ public class DisplayLayoutManager extends CentralSettingManager {
     public void update(@NonNull DisplayLayout layout) {
         try (CentralSettingDatabase db = open()) {
             db.update(layout.getRaw());
+        }
+    }
+
+    /**
+     * バッチ処理を行う
+     *
+     * @param layouts 保存するレイアウト一覧
+     */
+    public void update(@NonNull List<DisplayLayout> layouts) {
+        try (CentralSettingDatabase db = open()) {
+            db.runInTx(() -> {
+                for (DisplayLayout it : layouts) {
+                    db.update(it.getRaw());
+                }
+                return 0;
+            });
         }
     }
 

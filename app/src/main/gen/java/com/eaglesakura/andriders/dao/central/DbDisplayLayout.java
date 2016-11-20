@@ -21,11 +21,7 @@ public class DbDisplayLayout {
     @NotNull
     private String appPackageName;
     private int slotId;
-
-    @NotNull
     private String pluginId;
-
-    @NotNull
     private String valueId;
 
     @Generated
@@ -84,23 +80,19 @@ public class DbDisplayLayout {
         this.slotId = slotId;
     }
 
-    @NotNull
     public String getPluginId() {
         return pluginId;
     }
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setPluginId(@NotNull String pluginId) {
+    public void setPluginId(String pluginId) {
         this.pluginId = pluginId;
     }
 
-    @NotNull
     public String getValueId() {
         return valueId;
     }
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setValueId(@NotNull String valueId) {
+    public void setValueId(String valueId) {
         this.valueId = valueId;
     }
 

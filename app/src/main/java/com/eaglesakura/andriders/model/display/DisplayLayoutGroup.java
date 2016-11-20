@@ -30,6 +30,14 @@ public class DisplayLayoutGroup extends DataCollection<DisplayLayout> {
     }
 
     /**
+     * 指定スロットのレイアウトを検索する
+     */
+    @Nullable
+    public DisplayLayout find(int slotId) {
+        return find(it -> it.getSlotId() == slotId);
+    }
+
+    /**
      * データの挿入か更新を行う
      */
     public void insertOrReplace(DisplayLayout layout) {

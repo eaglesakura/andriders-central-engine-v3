@@ -47,8 +47,8 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
                 "\"UPDATED_DATE\" INTEGER NOT NULL ," + // 1: updatedDate
                 "\"APP_PACKAGE_NAME\" TEXT NOT NULL ," + // 2: appPackageName
                 "\"SLOT_ID\" INTEGER NOT NULL ," + // 3: slotId
-                "\"PLUGIN_ID\" TEXT NOT NULL ," + // 4: pluginId
-                "\"VALUE_ID\" TEXT NOT NULL );"); // 5: valueId
+                "\"PLUGIN_ID\" TEXT," + // 4: pluginId
+                "\"VALUE_ID\" TEXT);"); // 5: valueId
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_DISPLAY_LAYOUT_UNIQUE_ID ON DB_DISPLAY_LAYOUT" +
                 " (\"UNIQUE_ID\");");
@@ -67,8 +67,16 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
         stmt.bindLong(2, entity.getUpdatedDate().getTime());
         stmt.bindString(3, entity.getAppPackageName());
         stmt.bindLong(4, entity.getSlotId());
-        stmt.bindString(5, entity.getPluginId());
-        stmt.bindString(6, entity.getValueId());
+ 
+        String pluginId = entity.getPluginId();
+        if (pluginId != null) {
+            stmt.bindString(5, pluginId);
+        }
+ 
+        String valueId = entity.getValueId();
+        if (valueId != null) {
+            stmt.bindString(6, valueId);
+        }
     }
 
     @Override
@@ -78,8 +86,16 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
         stmt.bindLong(2, entity.getUpdatedDate().getTime());
         stmt.bindString(3, entity.getAppPackageName());
         stmt.bindLong(4, entity.getSlotId());
-        stmt.bindString(5, entity.getPluginId());
-        stmt.bindString(6, entity.getValueId());
+ 
+        String pluginId = entity.getPluginId();
+        if (pluginId != null) {
+            stmt.bindString(5, pluginId);
+        }
+ 
+        String valueId = entity.getValueId();
+        if (valueId != null) {
+            stmt.bindString(6, valueId);
+        }
     }
 
     @Override
@@ -94,8 +110,8 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
             new java.util.Date(cursor.getLong(offset + 1)), // updatedDate
             cursor.getString(offset + 2), // appPackageName
             cursor.getInt(offset + 3), // slotId
-            cursor.getString(offset + 4), // pluginId
-            cursor.getString(offset + 5) // valueId
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // pluginId
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // valueId
         );
         return entity;
     }
@@ -106,8 +122,8 @@ public class DbDisplayLayoutDao extends AbstractDao<DbDisplayLayout, String> {
         entity.setUpdatedDate(new java.util.Date(cursor.getLong(offset + 1)));
         entity.setAppPackageName(cursor.getString(offset + 2));
         entity.setSlotId(cursor.getInt(offset + 3));
-        entity.setPluginId(cursor.getString(offset + 4));
-        entity.setValueId(cursor.getString(offset + 5));
+        entity.setPluginId(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setValueId(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override

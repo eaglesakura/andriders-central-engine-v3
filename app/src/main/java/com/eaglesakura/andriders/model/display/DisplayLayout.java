@@ -191,7 +191,10 @@ public class DisplayLayout extends DaoModel<DbDisplayLayout> {
         }
 
         public DisplayLayout build() {
-            mRaw.setUniqueId(StringUtil.format("%s@%x", mRaw.getAppPackageName(), mRaw.getSlotId()));
+            mRaw.setUniqueId(StringUtil.format("%s@%02d%02d", mRaw.getAppPackageName(),
+                    getSlotY(mRaw.getSlotId()),
+                    getSlotX(mRaw.getSlotId())
+            ));
             mRaw.setUpdatedDate(new Date());
             return new DisplayLayout(mRaw);
         }
