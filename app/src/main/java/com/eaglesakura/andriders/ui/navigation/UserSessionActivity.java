@@ -117,6 +117,12 @@ public class UserSessionActivity extends AppNavigationActivity {
         }
 
         @Override
+        public void requestShowDisplayLayout(MenuController self) {
+            Intent intent = new Intent(self(), DisplayLayoutSettingActivity.class);
+            startActivity(intent);
+        }
+
+        @Override
         public void requestShowPlugins(MenuController self) {
             Intent intent = new Intent(self(), PluginSettingActivity.class);
             startActivity(intent);

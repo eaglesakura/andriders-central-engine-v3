@@ -95,12 +95,32 @@ public class LayoutEditFragment extends AppFragment {
                 .show(mLifecycleDelegate);
 
         SupportRecyclerView supportRecyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof SupportRecyclerView));
-        CardAdapter<CentralPlugin> adapter = newSelectorAdapter(selectedKey -> {
+        CardAdapter<CentralPlugin> adapter = newSelectorAdapter((plugin, displayKey) -> {
             dialog.dismiss();
-            // TODO Callbackに伝える
+            setDisplayLayout(layout, plugin, displayKey);
         });
         adapter.getCollection().addAll(mDisplayLayoutController.listPlugins().list());
         supportRecyclerView.setAdapter(adapter, false);
+    }
+
+
+    /**
+     * 表示する値が選択された
+     *
+     * @param slot   保存対象スロット
+     * @param plugin プラグイン
+     * @param value  表示対象値
+     */
+    @UiThread
+    private void setDisplayLayout(DisplayLayout slot, CentralPlugin plugin, DisplayKey value) {
+        // 新しいレイアウト設定を構築する
+        DisplayLayout layout = new DisplayLayout.Builder(slot)
+                .application(mDisplayLayoutController.getSelectedApp().getPackageName())
+                .bind(plugin.getInformation().getId(), value.getId())
+                .build();
+
+        // レイアウト構成を反映
+        updateLayout(layout);
     }
 
     /**
@@ -130,7 +150,7 @@ public class LayoutEditFragment extends AppFragment {
                 });
 
                 for (DisplayKey key : item.listDisplayKeys().list()) {
-                    attachKeySelectorView(rootBinding.Content, key);
+                    attachKeySelectorView(rootBinding.Content, item, key);
                 }
             }
 
@@ -140,7 +160,7 @@ public class LayoutEditFragment extends AppFragment {
              * @param key
              * @return
              */
-            void attachKeySelectorView(ViewGroup attach, DisplayKey key) {
+            void attachKeySelectorView(ViewGroup attach, CentralPlugin plugin, DisplayKey key) {
                 DisplaySetupSelectorRowBinding inflate = DisplaySetupSelectorRowBinding.inflate(LayoutInflater.from(getContext()), attach, true);
                 inflate.setItem(new DisplayKeyBind() {
                     @Override
@@ -154,14 +174,14 @@ public class LayoutEditFragment extends AppFragment {
                     }
                 });
                 inflate.Button.setOnClickListener(view -> {
-                    listener.onSelected(key);
+                    listener.onSelected(plugin, key);
                 });
             }
         };
     }
 
     private interface OnDisplayKeyClickListener {
-        void onSelected(DisplayKey selectedKey);
+        void onSelected(CentralPlugin plugin, DisplayKey selectedKey);
     }
 
     public interface PluginBind {

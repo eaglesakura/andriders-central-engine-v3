@@ -19,6 +19,7 @@ import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * レイアウトデータ管理
@@ -81,7 +83,7 @@ public class DisplayLayoutController {
     @Nullable
     public DisplayKey getDisplayKey(DisplayLayout layout) {
         // 一致するプラグインを検索する
-        CentralPlugin find = mDisplayPlugins.find(plugin -> plugin.getInformation().getId().equals(layout.getUniqueId()));
+        CentralPlugin find = mDisplayPlugins.find(plugin -> plugin.getId().equals(layout.getPluginId()));
         if (find == null) {
             return null;
         }
@@ -146,13 +148,19 @@ public class DisplayLayoutController {
         }
 
         // アプリ一覧をロードする
+        // ロード対象はLauncherが存在するActivityのみである
         {
             List<DisplayLayoutApplication> result = new ArrayList<>();
             mSelectedApp = new DisplayLayoutApplication(mContext, null);
             result.add(mSelectedApp);   // デフォルト構成用
+
+            Set<String> existPackageNames = CollectionUtil.asOtherSet(PackageUtil.listLauncherApplications(mContext), it -> it.activityInfo.packageName);
+
             for (ApplicationInfo info : PackageUtil.listInstallApplications(mContext)) {
-                AppLog.system("Load TargetLauncher package[%s]", info.packageName);
-                result.add(new DisplayLayoutApplication(mContext, info));
+                if (existPackageNames.contains(info.packageName)) {
+                    AppLog.system("Load TargetLauncher package[%s]", info.packageName);
+                    result.add(new DisplayLayoutApplication(mContext, info));
+                }
             }
 
             mApplications = new DataCollection<>(result);

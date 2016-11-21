@@ -54,6 +54,11 @@ public class MenuController {
         void requestShowProfile(MenuController self);
 
         /**
+         * レイアウト編集画面を開く
+         */
+        void requestShowDisplayLayout(MenuController self);
+
+        /**
          * プラグイン詳細メニューを開く
          */
         void requestShowPlugins(MenuController self);
@@ -80,6 +85,7 @@ public class MenuController {
                 mCallback.requestShowProfile(this);
                 break;
             case R.id.Menu_CycleComputer:
+                mCallback.requestShowDisplayLayout(this);
                 break;
             case R.id.Menu_Commands:
                 mCallback.requestShowCommands(this);

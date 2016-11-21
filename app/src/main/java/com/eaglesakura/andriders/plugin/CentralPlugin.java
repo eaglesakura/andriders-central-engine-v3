@@ -143,6 +143,13 @@ public class CentralPlugin {
     }
 
     /**
+     * プラグイン識別IDを取得する
+     */
+    public String getId() {
+        return getInformation().getId();
+    }
+
+    /**
      * 拡張Serviceの情報を取得する
      */
     public synchronized PluginInformation getInformation() {
