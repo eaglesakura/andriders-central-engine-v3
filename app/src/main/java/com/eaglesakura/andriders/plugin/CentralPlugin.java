@@ -131,11 +131,16 @@ public class CentralPlugin {
         public boolean centralConnection = false;
     }
 
+    private Drawable mIcon;
+
     /**
      * 表示用アイコンを取得する
      */
     public Drawable loadIcon() {
-        return mPackageInfo.loadIcon(mContext.getPackageManager());
+        if (mIcon == null) {
+            mIcon = mPackageInfo.loadIcon(mContext.getPackageManager());
+        }
+        return mIcon;
     }
 
     public String getName() {

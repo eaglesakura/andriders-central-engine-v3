@@ -2,7 +2,6 @@ package com.eaglesakura.andriders.ui.navigation.display;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.data.display.DisplayLayoutManager;
-import com.eaglesakura.andriders.databinding.DisplaySetupSelectorBinding;
 import com.eaglesakura.andriders.databinding.DisplaySetupSelectorRowBinding;
 import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.model.display.DisplayLayoutGroup;
@@ -19,6 +18,7 @@ import com.squareup.otto.Subscribe;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.AppCompatButton;
@@ -100,12 +100,16 @@ public class LayoutEditFragment extends AppFragment {
                 .show(mLifecycleDelegate);
 
         SupportRecyclerView supportRecyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof SupportRecyclerView));
-        CardAdapter<CentralPlugin> adapter = newSelectorAdapter((plugin, displayKey) -> {
+        CardAdapter<DisplayKeyBind> adapter = newSelectorAdapter((plugin, displayKey) -> {
             dialog.dismiss();
             setDisplayLayout(layout, plugin, displayKey);
         });
         adapter.getCollection().add(null);
-        adapter.getCollection().addAll(mDisplayLayoutController.listPlugins().list());
+        for (CentralPlugin plugin : mDisplayLayoutController.listPlugins().list()) {
+            for (DisplayKey key : plugin.listDisplayKeys().list()) {
+                adapter.getCollection().add(new DisplayKeyBindImpl(plugin, key));
+            }
+        }
         supportRecyclerView.setAdapter(adapter, false);
     }
 
@@ -141,8 +145,8 @@ public class LayoutEditFragment extends AppFragment {
     /**
      * DisplayKey選択用のアダプタを生成する
      */
-    CardAdapter<CentralPlugin> newSelectorAdapter(OnDisplayKeyClickListener listener) {
-        return new CardAdapter<CentralPlugin>() {
+    CardAdapter<DisplayKeyBind> newSelectorAdapter(OnDisplayKeyClickListener listener) {
+        return new CardAdapter<DisplayKeyBind>() {
 
             @Override
             public int getItemViewType(int position) {
@@ -156,7 +160,7 @@ public class LayoutEditFragment extends AppFragment {
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
                 if (viewType == DisplaySetupSelectorRowBinding.class.hashCode()) {
-                    return DisplaySetupSelectorBinding.inflate(LayoutInflater.from(getContext()), null, false).getRoot();
+                    return DisplaySetupSelectorRowBinding.inflate(LayoutInflater.from(getContext()), null, false).getRoot();
                 } else {
                     View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_selector_remove, null, false);
                     view.findViewById(R.id.Button_Delete).setOnClickListener(it -> listener.onSelected(null, null));
@@ -165,50 +169,16 @@ public class LayoutEditFragment extends AppFragment {
             }
 
             @Override
-            protected void onBindCard(CardBind<CentralPlugin> bind, int position) {
-                CentralPlugin item = bind.getItem();
+            protected void onBindCard(CardBind<DisplayKeyBind> bind, int position) {
+                DisplayKeyBind item = bind.getItem();
                 if (item != null) {
-                    DisplaySetupSelectorBinding rootBinding = bind.getBinding();
-                    rootBinding.setItem(new PluginBind() {
-                        @Override
-                        public Drawable getIcon() {
-                            return item.loadIcon();
-                        }
-
-                        @Override
-                        public String getTitle() {
-                            return item.getName();
-                        }
+                    DisplaySetupSelectorRowBinding binding = bind.getBinding();
+                    binding.setItem(item);
+                    binding.Button.setOnClickListener(view -> {
+                        DisplayKeyBindImpl impl = (DisplayKeyBindImpl) item;
+                        listener.onSelected(impl.mPlugin, impl.mDisplayKey);
                     });
-
-                    for (DisplayKey key : item.listDisplayKeys().list()) {
-                        attachKeySelectorView(rootBinding.Content, item, key);
-                    }
                 }
-            }
-
-            /**
-             * DisplayKey選択用UIを生成する。
-             * タップができるのはDisplayKey単位であるので、コレがRootとなる
-             * @param key
-             * @return
-             */
-            void attachKeySelectorView(ViewGroup attach, CentralPlugin plugin, DisplayKey key) {
-                DisplaySetupSelectorRowBinding inflate = DisplaySetupSelectorRowBinding.inflate(LayoutInflater.from(getContext()), attach, true);
-                inflate.setItem(new DisplayKeyBind() {
-                    @Override
-                    public String getTitle() {
-                        return key.getTitle();
-                    }
-
-                    @Override
-                    public String getSummary() {
-                        return StringUtil.trimSpacesOrEmpty(key.getSummary());
-                    }
-                });
-                inflate.Button.setOnClickListener(view -> {
-                    listener.onSelected(plugin, key);
-                });
             }
         };
     }
@@ -217,18 +187,49 @@ public class LayoutEditFragment extends AppFragment {
         void onSelected(CentralPlugin plugin, DisplayKey selectedKey);
     }
 
-    public interface PluginBind {
-        Drawable getIcon();
-
-        String getTitle();
-    }
-
     /**
      * 表示するためのDisplayKey選択
      */
     public interface DisplayKeyBind {
-        String getTitle();
+        String getPluginTitle();
 
-        String getSummary();
+        Drawable getPluginIcon();
+
+        String getDisplayTitle();
+
+        String getDisplaySummary();
+    }
+
+    class DisplayKeyBindImpl implements DisplayKeyBind {
+        @NonNull
+        final CentralPlugin mPlugin;
+
+        @NonNull
+        final DisplayKey mDisplayKey;
+
+        DisplayKeyBindImpl(@NonNull CentralPlugin plugin, @NonNull DisplayKey displayKey) {
+            mPlugin = plugin;
+            mDisplayKey = displayKey;
+        }
+
+        @Override
+        public String getPluginTitle() {
+            return mPlugin.getName();
+        }
+
+        @Override
+        public Drawable getPluginIcon() {
+            return mPlugin.loadIcon();
+        }
+
+        @Override
+        public String getDisplayTitle() {
+            return mDisplayKey.getTitle();
+        }
+
+        @Override
+        public String getDisplaySummary() {
+            return StringUtil.trimSpacesOrEmpty(mDisplayKey.getSummary());
+        }
     }
 }
