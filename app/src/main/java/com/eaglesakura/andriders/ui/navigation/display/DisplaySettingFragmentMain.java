@@ -62,9 +62,14 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             }
             return this;
         }).completed((result, task) -> {
-            // デフォルトアプリを選択済みにする
-            DisplayLayoutApplication defaultApp = mDisplayLayoutController.getDefaultApplication();
-            mDisplayLayoutControllerBus.onSelected(defaultApp);
+            if (!mDisplayLayoutController.hasDisplays()) {
+                // 表示すべき内容が1個もない
+                mCallback.onPluginNotEnabled(this);
+            } else {
+                // デフォルトアプリを選択済みにする
+                DisplayLayoutApplication defaultApp = mDisplayLayoutController.getDefaultApplication();
+                mDisplayLayoutControllerBus.onSelected(defaultApp);
+            }
         }).failed((error, task) -> {
             mCallback.onInitializeFailed(this, error);
         }).start();
@@ -110,6 +115,12 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
     }
 
     public interface Callback {
+
+        /**
+         * プラグインが1件も有効化されていない
+         */
+        void onPluginNotEnabled(DisplaySettingFragmentMain self);
+
         void onInitializeFailed(DisplaySettingFragmentMain self, Throwable error);
     }
 }

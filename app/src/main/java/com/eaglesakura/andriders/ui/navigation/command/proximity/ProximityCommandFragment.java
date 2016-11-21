@@ -15,7 +15,7 @@ import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.IFragmentPagerTitle;
+import com.eaglesakura.android.framework.delegate.fragment.FragmentPagerTitle;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
@@ -23,6 +23,7 @@ import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.util.StringUtil;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.AppCompatImageView;
@@ -35,7 +36,7 @@ import java.util.List;
 /**
  * 近接コマンド設定クラス
  */
-public class ProximityCommandFragment extends AppFragment implements IFragmentPagerTitle {
+public class ProximityCommandFragment extends AppFragment implements FragmentPagerTitle {
 
     @Bind(R.id.Command_Proximity_DisplayLink)
     CompoundButton mLinkDisplaySwitch;
@@ -151,9 +152,8 @@ public class ProximityCommandFragment extends AppFragment implements IFragmentPa
         updateProximityUI();
     }
 
-
     @Override
-    public CharSequence getTitle() {
-        return "近接";
+    public CharSequence getTitle(Context context) {
+        return context.getString(R.string.Title_Command_Proximity);
     }
 }

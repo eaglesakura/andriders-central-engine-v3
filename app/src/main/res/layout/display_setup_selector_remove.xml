@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
              android:layout_height="wrap_content">
 
@@ -15,10 +16,12 @@
                       android:orientation="horizontal"
                       android:layout_height="wrap_content">
 
-            <ImageView android:layout_width="@dimen/EsMaterial.Navigation.MinHeight"
-                       android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                       android:id="@+id/Extension.ItemSelector.Icon"
-                       android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
+            <android.support.v7.widget.AppCompatImageView
+                    app:srcCompat="@drawable/ic_delete"
+                    android:tint="@color/App.Icon.Grey"
+                    android:layout_width="@dimen/EsMaterial.Navigation.MinHeight"
+                    android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                    android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
 
             <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/Extension.ItemSelector.ExtensionName"

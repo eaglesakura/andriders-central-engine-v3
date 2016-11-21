@@ -70,6 +70,14 @@ public class DisplayLayoutController {
                 .inject();
     }
 
+    /**
+     * 表示プラグインが1個以上有効化されている場合true
+     */
+    @Nullable
+    public boolean hasDisplays() {
+        return !mDisplayPlugins.isEmpty();
+    }
+
     @Nullable
     public DisplayKey getDisplayKey(DisplayLayout layout) {
         // 一致するプラグインを検索する
@@ -185,6 +193,14 @@ public class DisplayLayoutController {
      */
     public DisplayLayoutApplication getDefaultApplication() {
         return listSortedApplications().get(0);
+    }
+
+    /**
+     * 関連するプラグインを列挙する
+     */
+    @NonNull
+    public DataCollection<CentralPlugin> listPlugins() {
+        return new DataCollection<>(mDisplayPlugins.getSource());
     }
 
     /**

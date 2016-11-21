@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
 import com.eaglesakura.material.widget.support.SupportProgressFragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,17 @@ public class DisplayLayoutSettingActivity extends AppNavigationActivity implemen
     @Override
     public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
         return new DisplaySettingFragmentMain();
+    }
+
+    @Override
+    public void onPluginNotEnabled(DisplaySettingFragmentMain self) {
+        AppDialogBuilder.newAlert(this, R.string.Message_Display_PluginNotEnabled)
+                .positiveButton(R.string.Common_OK, () -> {
+                    Intent intent = new Intent(this, PluginSettingActivity.class);
+                    startActivity(intent);
+                })
+                .dismissed(() -> finish())
+                .show(mLifecycleDelegate);
     }
 
     @Override
