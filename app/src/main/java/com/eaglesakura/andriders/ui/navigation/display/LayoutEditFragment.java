@@ -106,8 +106,8 @@ public class LayoutEditFragment extends AppFragment {
         SupportRecyclerView supportRecyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof SupportRecyclerView));
         CardAdapter<DisplayKeyBind> adapter = newSelectorAdapter((plugin, displayKey) -> {
             setDisplayLayout(layout, plugin, displayKey);
-            dialog.dismiss();
             mCallback.onUpdateLayout(this);
+            dialog.dismiss();
         });
         adapter.getCollection().add(null);
         for (CentralPlugin plugin : mDisplayLayoutController.listPlugins().list()) {
@@ -120,7 +120,7 @@ public class LayoutEditFragment extends AppFragment {
 
 
     /**
-     * 表示する値が選択された
+     * 表示する値を更新する
      *
      * @param slot   保存対象スロット
      * @param plugin プラグイン
@@ -142,10 +142,8 @@ public class LayoutEditFragment extends AppFragment {
                     .application(mDisplayLayoutController.getSelectedApp().getPackageName())
                     .build();
         }
-
+        mDisplayLayoutController.setLayout(layout);
         // レイアウト構成を反映
-        DisplayLayoutGroup layoutGroup = mDisplayLayoutController.getLayoutGroup(mDisplayLayoutController.getSelectedApp().getPackageName());
-        layoutGroup.insertOrReplace(layout);
         updateLayout(layout);
     }
 

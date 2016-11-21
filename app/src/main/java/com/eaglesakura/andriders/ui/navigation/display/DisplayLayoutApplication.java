@@ -26,9 +26,16 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
 
     Drawable mIcon;
 
+    String mTitle;
+
     public DisplayLayoutApplication(Context context, @Nullable ApplicationInfo packageInfo) {
         mContext = context;
         mAppInfo = packageInfo;
+        if (mAppInfo != null) {
+            mTitle = packageInfo.loadLabel(context.getPackageManager()).toString();
+        } else {
+            mTitle = context.getString(R.string.Word_Common_Default);
+        }
     }
 
     /**
@@ -63,14 +70,9 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
     /**
      * 表示名を取得する
      */
-
     @Override
     public String getTitle() {
-        if (mAppInfo == null) {
-            return mContext.getString(R.string.Word_Common_Default);
-        } else {
-            return mAppInfo.loadLabel(mContext.getPackageManager()).toString();
-        }
+        return mTitle;
     }
 
     /**

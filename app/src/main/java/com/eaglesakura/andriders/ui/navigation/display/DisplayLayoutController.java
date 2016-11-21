@@ -133,6 +133,7 @@ public class DisplayLayoutController {
 
             mDisplayPlugins = new DataCollection<>(plugins.listDisplayPlugins());
             for (CentralPlugin plugin : mDisplayPlugins.getSource()) {
+                plugin.getName();   // 名前をロードしておく
                 PluginInformation information = plugin.getInformation();
                 AppLog.plugin("DisplayPlugin id[%s] category[%s]", information.getId(), information.getCategory());
             }
@@ -217,6 +218,14 @@ public class DisplayLayoutController {
     @NonNull
     public DisplayLayoutApplication getSelectedApp() {
         return mSelectedApp;
+    }
+
+    /**
+     * 現在選択されているアプリのレイアウトを更新する
+     */
+    public void setLayout(DisplayLayout layout) {
+        DisplayLayoutGroup layoutGroup = getLayoutGroup(getSelectedApp().getPackageName());
+        layoutGroup.insertOrReplace(layout);
     }
 
     /**

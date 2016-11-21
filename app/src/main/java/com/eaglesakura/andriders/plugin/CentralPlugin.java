@@ -133,6 +133,8 @@ public class CentralPlugin {
 
     private Drawable mIcon;
 
+    private String mName;
+
     /**
      * 表示用アイコンを取得する
      */
@@ -144,7 +146,10 @@ public class CentralPlugin {
     }
 
     public String getName() {
-        return mPackageInfo.loadLabel(mContext.getPackageManager()).toString();
+        if (mName == null) {
+            mName = mPackageInfo.loadLabel(mContext.getPackageManager()).toString();
+        }
+        return mName;
     }
 
     /**

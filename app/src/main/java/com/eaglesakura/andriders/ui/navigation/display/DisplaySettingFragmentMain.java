@@ -11,7 +11,6 @@ import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.lambda.CancelCallback;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.UiThread;
 
@@ -37,11 +36,6 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
     DisplayLayoutController mDisplayLayoutController;
 
     DisplayLayoutController.Bus mDisplayLayoutControllerBus;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
