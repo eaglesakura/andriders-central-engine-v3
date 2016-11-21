@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.plugin.CentralPlugin;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
+import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
@@ -32,6 +33,9 @@ import android.view.ViewGroup;
 public class LayoutEditFragment extends AppFragment {
 
     DisplayLayoutController mDisplayLayoutController;
+
+    @BindInterface
+    Callback mCallback;
 
     @Nullable
     @Override
@@ -101,8 +105,9 @@ public class LayoutEditFragment extends AppFragment {
 
         SupportRecyclerView supportRecyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof SupportRecyclerView));
         CardAdapter<DisplayKeyBind> adapter = newSelectorAdapter((plugin, displayKey) -> {
-            dialog.dismiss();
             setDisplayLayout(layout, plugin, displayKey);
+            dialog.dismiss();
+            mCallback.onUpdateLayout(this);
         });
         adapter.getCollection().add(null);
         for (CentralPlugin plugin : mDisplayLayoutController.listPlugins().list()) {
@@ -145,7 +150,7 @@ public class LayoutEditFragment extends AppFragment {
     /**
      * DisplayKey選択用のアダプタを生成する
      */
-    CardAdapter<DisplayKeyBind> newSelectorAdapter(OnDisplayKeyClickListener listener) {
+    private CardAdapter<DisplayKeyBind> newSelectorAdapter(OnDisplayKeyClickListener listener) {
         return new CardAdapter<DisplayKeyBind>() {
 
             @Override
@@ -185,6 +190,13 @@ public class LayoutEditFragment extends AppFragment {
 
     private interface OnDisplayKeyClickListener {
         void onSelected(CentralPlugin plugin, DisplayKey selectedKey);
+    }
+
+    public interface Callback {
+        /**
+         * レイアウトが更新された
+         */
+        void onUpdateLayout(LayoutEditFragment self);
     }
 
     /**

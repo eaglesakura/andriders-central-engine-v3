@@ -19,7 +19,7 @@ import android.support.annotation.UiThread;
  * 表示値のレイアウト用Fragment
  */
 @FragmentLayout(R.layout.display_setup)
-public class DisplaySettingFragmentMain extends AppNavigationFragment implements LayoutAppSelectFragment.Callback {
+public class DisplaySettingFragmentMain extends AppNavigationFragment implements LayoutAppSelectFragment.Callback, LayoutEditFragment.Callback {
 
     @BindInterface
     Callback mCallback;
@@ -99,13 +99,29 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
     public void onRequestDeleteLayout(LayoutAppSelectFragment fragment, DisplayLayoutApplication app) {
         // アプリ削除
         asyncUI(task -> {
-            try (ProgressToken token = pushProgress(R.string.Word_Common_Working)) {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_Save)) {
                 mDisplayLayoutController.remove(app.getPackageName());
                 return this;
             }
         }).completed((result, task) -> {
             // 切り替えを許可する
             mDisplayLayoutControllerBus.onSelected(mDisplayLayoutController.getDefaultApplication());
+        }).failed((error, task) -> {
+            AppLog.report(error);
+            AppDialogBuilder.newError(getContext(), error)
+                    .positiveButton(R.string.Common_OK, null)
+                    .show(mLifecycleDelegate);
+        }).start();
+    }
+
+    @Override
+    public void onUpdateLayout(LayoutEditFragment self) {
+        // レイアウト情報の保存を行う
+        asyncUI(task -> {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_Save)) {
+                mDisplayLayoutController.commit();
+                return this;
+            }
         }).failed((error, task) -> {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
