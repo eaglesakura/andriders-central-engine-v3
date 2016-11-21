@@ -121,14 +121,14 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      * レイアウト設定を更新する
      */
     public void update(DbDisplayLayout layout) {
-        session.insertOrReplace(layout);
+        session.getDbDisplayLayoutDao().insertOrReplace(layout);
     }
 
     /**
      * レイアウト設定を削除し、スロットを空ける
      */
     public void remove(DbDisplayLayout layout) {
-        session.delete(layout);
+        session.getDbDisplayLayoutDao().delete(layout);
     }
 
 

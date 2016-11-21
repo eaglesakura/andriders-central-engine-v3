@@ -144,6 +144,8 @@ public class LayoutEditFragment extends AppFragment {
         }
 
         // レイアウト構成を反映
+        DisplayLayoutGroup layoutGroup = mDisplayLayoutController.getLayoutGroup(mDisplayLayoutController.getSelectedApp().getPackageName());
+        layoutGroup.insertOrReplace(layout);
         updateLayout(layout);
     }
 
