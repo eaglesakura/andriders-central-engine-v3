@@ -16,4 +16,10 @@ public class DisplayLayoutSettingActivityTest extends AppScenarioTest<DisplayLay
         UiScenario.clickFromId(R.id.Content_Holder_AppSelector).step();
         UiScenario.clickFromId(R.id.Content_Holder_Root).step();
     }
+
+    @Test
+    public void DisplayKey設定が行える() throws Throwable {
+        UiScenario.clickFromId(R.id.Content_Holder_DisplayLayout).monkeyClick(1).longStep();
+        UiScenario.clickFromId(R.id.Content_Holder_Root).monkeyClick(1).longStep();
+    }
 }

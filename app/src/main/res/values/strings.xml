@@ -186,6 +186,12 @@
     <string name="Word.Common.Working">処理中</string>
     <string name="Message.Display.PluginNotEnabled">プラグインが有効化されていません。\n使用するプラグインを選択してください。</string>
     <string name="Title.Command.Proximity">近接</string>
+    <string name="Title.Display.Choose">表示内容選択</string>
+    <string name="Message.Display.HeartrateSummary">心拍を表示します。センサーに接続されていない場合は表示されません。</string>
+    <string name="Message.Display.SpeedSummary">
+        速度を表示します。センサーに接続できた場合はセンサーの値を表示します。それ以外の場合はGPSから速度が計算されます。
+    </string>
+    <string name="Message.Display.CadenceSummary">ケイデンスを表示します。センサーに接続されていない場合は表示されません。</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

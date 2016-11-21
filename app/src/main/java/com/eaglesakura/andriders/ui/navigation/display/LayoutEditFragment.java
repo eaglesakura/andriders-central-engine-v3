@@ -13,6 +13,7 @@ import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
+import com.eaglesakura.util.StringUtil;
 import com.squareup.otto.Subscribe;
 
 import android.app.Dialog;
@@ -75,8 +76,12 @@ public class LayoutEditFragment extends AppFragment {
             if (layout.hasValue()) {
                 // 情報を見失った
                 button.setText(R.string.Word_Display_ErrorSlot);
+            } else {
+                // テキストを空にする
+                button.setText("");
             }
         } else {
+            // タイトルを設定する
             button.setText(information.getTitle());
         }
 
@@ -90,7 +95,7 @@ public class LayoutEditFragment extends AppFragment {
     @UiThread
     void showSelectorDialog(DisplayLayout layout) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_appselect_dialog, null, false);
-        Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Launcher_ChooseApp), view)
+        Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Display_Choose), view)
                 .fullScreen(true)
                 .show(mLifecycleDelegate);
 
@@ -99,6 +104,7 @@ public class LayoutEditFragment extends AppFragment {
             dialog.dismiss();
             setDisplayLayout(layout, plugin, displayKey);
         });
+        adapter.getCollection().add(null);
         adapter.getCollection().addAll(mDisplayLayoutController.listPlugins().list());
         supportRecyclerView.setAdapter(adapter, false);
     }
@@ -114,10 +120,19 @@ public class LayoutEditFragment extends AppFragment {
     @UiThread
     private void setDisplayLayout(DisplayLayout slot, CentralPlugin plugin, DisplayKey value) {
         // 新しいレイアウト設定を構築する
-        DisplayLayout layout = new DisplayLayout.Builder(slot)
-                .application(mDisplayLayoutController.getSelectedApp().getPackageName())
-                .bind(plugin.getInformation().getId(), value.getId())
-                .build();
+        DisplayLayout layout;
+        if (plugin != null && value != null) {
+            // プラグインにバインド
+            layout = new DisplayLayout.Builder(slot)
+                    .application(mDisplayLayoutController.getSelectedApp().getPackageName())
+                    .bind(plugin.getInformation().getId(), value.getId())
+                    .build();
+        } else {
+            // 削除する
+            layout = new DisplayLayout.Builder(slot)
+                    .application(mDisplayLayoutController.getSelectedApp().getPackageName())
+                    .build();
+        }
 
         // レイアウト構成を反映
         updateLayout(layout);
@@ -128,29 +143,47 @@ public class LayoutEditFragment extends AppFragment {
      */
     CardAdapter<CentralPlugin> newSelectorAdapter(OnDisplayKeyClickListener listener) {
         return new CardAdapter<CentralPlugin>() {
+
+            @Override
+            public int getItemViewType(int position) {
+                if (position == 0) {
+                    return 0;
+                } else {
+                    return DisplaySetupSelectorRowBinding.class.hashCode();
+                }
+            }
+
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
-                return DisplaySetupSelectorBinding.inflate(LayoutInflater.from(getContext()), null, false).getRoot();
+                if (viewType == DisplaySetupSelectorRowBinding.class.hashCode()) {
+                    return DisplaySetupSelectorBinding.inflate(LayoutInflater.from(getContext()), null, false).getRoot();
+                } else {
+                    View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_selector_remove, null, false);
+                    view.findViewById(R.id.Button_Delete).setOnClickListener(it -> listener.onSelected(null, null));
+                    return view;
+                }
             }
 
             @Override
             protected void onBindCard(CardBind<CentralPlugin> bind, int position) {
                 CentralPlugin item = bind.getItem();
-                DisplaySetupSelectorBinding rootBinding = bind.getBinding();
-                rootBinding.setItem(new PluginBind() {
-                    @Override
-                    public Drawable getIcon() {
-                        return item.loadIcon();
-                    }
+                if (item != null) {
+                    DisplaySetupSelectorBinding rootBinding = bind.getBinding();
+                    rootBinding.setItem(new PluginBind() {
+                        @Override
+                        public Drawable getIcon() {
+                            return item.loadIcon();
+                        }
 
-                    @Override
-                    public String getTitle() {
-                        return item.getName();
-                    }
-                });
+                        @Override
+                        public String getTitle() {
+                            return item.getName();
+                        }
+                    });
 
-                for (DisplayKey key : item.listDisplayKeys().list()) {
-                    attachKeySelectorView(rootBinding.Content, item, key);
+                    for (DisplayKey key : item.listDisplayKeys().list()) {
+                        attachKeySelectorView(rootBinding.Content, item, key);
+                    }
                 }
             }
 
@@ -170,7 +203,7 @@ public class LayoutEditFragment extends AppFragment {
 
                     @Override
                     public String getSummary() {
-                        return key.getSummary();
+                        return StringUtil.trimSpacesOrEmpty(key.getSummary());
                     }
                 });
                 inflate.Button.setOnClickListener(view -> {

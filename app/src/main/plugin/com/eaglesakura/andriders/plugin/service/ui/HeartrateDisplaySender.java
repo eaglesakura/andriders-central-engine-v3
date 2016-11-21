@@ -80,6 +80,7 @@ public class HeartrateDisplaySender extends DisplayDataSender {
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
         result.setTitle(context.getString(R.string.Display_Common_Heartrate));
+        result.setSummary(context.getString(R.string.Message_Display_HeartrateSummary));
         return result;
     }
 }

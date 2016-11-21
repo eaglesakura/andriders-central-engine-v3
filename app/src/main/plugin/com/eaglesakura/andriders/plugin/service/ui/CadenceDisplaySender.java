@@ -79,6 +79,7 @@ public class CadenceDisplaySender extends DisplayDataSender {
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
         result.setTitle(context.getString(R.string.Display_Common_Cadence));
+        result.setSummary(context.getString(R.string.Message_Display_CadenceSummary));
         return result;
     }
 }

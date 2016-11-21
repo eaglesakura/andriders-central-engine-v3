@@ -5,46 +5,40 @@
                   type="com.eaglesakura.andriders.ui.navigation.display.LayoutEditFragment.PluginBind"/>
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content">
+    <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:orientation="vertical" android:layout_height="wrap_content">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_marginBottom="@dimen/EsMaterial.Button.Margin"
+                      android:orientation="horizontal"
+                      android:layout_height="wrap_content">
 
-        <android.support.v7.widget.CardView android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                                            android:padding="@dimen/EsMaterial.Button.Margin">
+            <android.support.v7.widget.AppCompatImageView
+                    app:srcCompat="@{item.icon}"
+                    android:layout_width="@dimen/EsMaterial.Navigation.MinHeight"
+                    android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                    android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
 
-            <LinearLayout android:layout_width="match_parent"
-                          android:orientation="vertical" android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatTextView
+                    android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                    android:layout_gravity="center_vertical"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="@{item.title}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-                <LinearLayout android:layout_width="match_parent"
-                              android:layout_marginBottom="@dimen/EsMaterial.Button.Margin"
-                              android:orientation="horizontal"
-                              android:layout_height="wrap_content">
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent"
+                      android:id="@+id/Content"
+                      android:orientation="vertical"
+                      android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+                      android:layout_height="wrap_content"/>
 
-                    <android.support.v7.widget.AppCompatImageView
-                            app:srcCompat="@{item.icon}"
-                            android:layout_width="@dimen/EsMaterial.Navigation.MinHeight"
-                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                            android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
 
-                    <android.support.v7.widget.AppCompatTextView
-                            android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                            android:layout_gravity="center_vertical"
-                            android:maxLines="1"
-                            android:ellipsize="end"
-                            android:text="@{item.title}"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+        <include layout="@layout/esm_material_separator"/>
 
-                </LinearLayout>
-                <LinearLayout android:layout_width="match_parent"
-                              android:id="@+id/Content"
-                              android:orientation="vertical"
-                              android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
-                              android:layout_height="wrap_content"/>
-            </LinearLayout>
+    </LinearLayout>
 
-        </android.support.v7.widget.CardView>
-    </FrameLayout>
 </layout>
