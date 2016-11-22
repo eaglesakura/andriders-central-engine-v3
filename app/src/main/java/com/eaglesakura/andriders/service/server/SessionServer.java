@@ -18,7 +18,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * セッション制御のサーバー動作を行う
+ * Central Session制御のサーバー動作を行う
+ *
+ * 別Processのクライアントから接続され、必要な処理を行う。
  */
 public class SessionServer {
 

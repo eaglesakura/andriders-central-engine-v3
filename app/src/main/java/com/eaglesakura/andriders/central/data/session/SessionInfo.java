@@ -25,33 +25,33 @@ public class SessionInfo {
     /**
      * リソースContext
      */
-    Context mContext;
+    final Context mContext;
 
     /**
      * セッションを一意に管理するID
      */
-    long mSessionId;
+    final long mSessionId;
 
 
     /**
      * セッションを管理する大本の時計
      */
-    Clock mSessionClock;
+    final Clock mSessionClock;
 
     /**
      * ユーザーのプロファイル管理
      */
-    UserProfiles mUserProfiles;
+    final UserProfiles mUserProfiles;
 
     /**
      * Central状態管理
      */
-    CentralServiceSettings mCentralServiceSettings;
+    final CentralServiceSettings mCentralServiceSettings;
 
     /**
      * デバッグ状態であればtrue
      */
-    boolean mDebugable;
+    boolean mDebuggable;
 
     protected SessionInfo(Builder builder) {
         mContext = builder.mContext;
@@ -59,7 +59,7 @@ public class SessionInfo {
         mSessionClock = builder.mSessionClock;
         mUserProfiles = builder.mUserProfiles;
         mCentralServiceSettings = builder.mCentralServiceSettings;
-        mDebugable = builder.mDebugable;
+        mDebuggable = builder.mDebugable;
     }
 
     public Context getContext() {
@@ -83,7 +83,7 @@ public class SessionInfo {
     }
 
     public boolean isDebuggable() {
-        return mDebugable;
+        return mDebuggable;
     }
 
     public static class Builder {
@@ -138,7 +138,7 @@ public class SessionInfo {
             return this;
         }
 
-        public Builder debugable(boolean debug) {
+        public Builder debuggable(boolean debug) {
             mDebugable = debug;
             return this;
         }

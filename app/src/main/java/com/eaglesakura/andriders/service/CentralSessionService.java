@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.service;
 
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
+import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.service.server.SessionServer;
 import com.eaglesakura.andriders.service.ui.SessionNotification;
@@ -9,6 +10,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.util.ContextUtil;
+import com.squareup.otto.Subscribe;
 
 import org.greenrobot.greendao.annotation.NotNull;
 
@@ -85,18 +87,18 @@ public class CentralSessionService extends Service {
     @UiThread
     protected CentralSession startNewSession(Intent intent) {
         SessionInfo sessionInfo = new SessionInfo.Builder(this, new Clock(System.currentTimeMillis()))
-                .debugable(intent.getBooleanExtra(CentralServiceCommand.EXTRA_BOOT_DEBUG_MODE, false))
+                .debuggable(intent.getBooleanExtra(CentralServiceCommand.EXTRA_BOOT_DEBUG_MODE, false))
                 .build();
 
-        CentralSession centralSession = CentralSession.newInstance(sessionInfo);
-        centralSession.registerCallback(mCentralSessionListener);
-
         CentralSession.InitializeOption option = new CentralSession.InitializeOption();
+
+        CentralSession centralSession = CentralSession.newInstance(sessionInfo);
+        centralSession.registerStateBus(this);
         centralSession.initialize(option);
 
         // Foreground Serviceとして起動する
         mSessionNotification = new SessionNotification(this, mNotificationCallback);
-        mSessionNotification.onStartSession(sessionInfo);
+        mSessionNotification.onStartSession(centralSession);
 
         mServiceLifecycleDelegate.asyncUI(task -> {
             // 開始通知を送る
@@ -112,10 +114,14 @@ public class CentralSessionService extends Service {
      */
     @UiThread
     protected void stopCurrentSession(@Nullable Intent intent) {
+        if (mSessionNotification != null) {
+            mSessionNotification.onStopSession(mSession);
+            mSessionNotification = null;
+        }
+
         if (mSession != null) {
             SessionInfo info = mSession.getSessionInfo();
 
-            mSession.unregisterCallback(mCentralSessionListener);
             mSession.dispose();
             mSession = null;
 
@@ -125,19 +131,7 @@ public class CentralSessionService extends Service {
                 return this;
             }).start();
         }
-
-        if (mSessionNotification != null) {
-            mSessionNotification.onStopSession();
-            mSessionNotification = null;
-        }
     }
-
-    private CentralSession.Listener mCentralSessionListener = new CentralSession.Listener() {
-        @Override
-        public void onInitializeCompleted(CentralSession self) {
-
-        }
-    };
 
     /**
      * セッション制御のコールバック
@@ -164,4 +158,17 @@ public class CentralSessionService extends Service {
         return ContextUtil.isServiceRunning(context, CentralSessionService.class);
     }
 
+    /**
+     * Sessionのステート変更通知をハンドリングする
+     */
+    @Subscribe
+    void onSessionStateChanged(SessionState.Bus state) {
+        if (state.getSession() != mSession) {
+            // ハンドリング対象のステートなので、これはdropする
+            return;
+        }
+
+        // 必要に応じてハンドリングを追加する
+        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
+    }
 }

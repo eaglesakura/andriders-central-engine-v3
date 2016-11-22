@@ -17,7 +17,7 @@ public class CentralSessionTest extends AppDeviceTestCase {
     @Test(timeout = 1000 * 10)
     public void セッションが生成できる() throws Throwable {
         SessionInfo sessionInfo = new SessionInfo.Builder(getContext(), new Clock(System.currentTimeMillis()))
-                .debugable(true)
+                .debuggable(true)
                 .build();
 
         assertNotNull(sessionInfo);
@@ -36,7 +36,7 @@ public class CentralSessionTest extends AppDeviceTestCase {
     @Test(timeout = 1000 * 30)
     public void セッションのライフサイクルを通過できる() throws Throwable {
         Timer timer = new Timer();
-        CentralSession centralSession = CentralSession.newInstance(new SessionInfo.Builder(getContext(), new Clock(System.currentTimeMillis())).debugable(true).build());
+        CentralSession centralSession = CentralSession.newInstance(new SessionInfo.Builder(getContext(), new Clock(System.currentTimeMillis())).debuggable(true).build());
 
         try {
             timer.start();

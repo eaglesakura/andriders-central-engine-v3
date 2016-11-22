@@ -126,7 +126,7 @@ public class CentralPlugin {
 
     public static class ConnectOption {
         /**
-         * ACE本体との接続を行う場合true
+         * ACE本体との接続として扱う場合はtrue
          */
         public boolean centralConnection = false;
     }

@@ -20,15 +20,12 @@ import com.eaglesakura.android.rx.BackgroundTaskBuilder;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.rx.ResultCollection;
-import com.eaglesakura.android.util.AndroidThreadUtil;
-import com.eaglesakura.collection.AnonymousBroadcaster;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.Timer;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 
 /**
  * 1セッションを管理する。
@@ -39,12 +36,16 @@ public class CentralSession {
     @NonNull
     final SessionInfo mSessionInfo;
 
-    ServiceLifecycleDelegate mServiceLifecycleDelegate;
+    final ServiceLifecycleDelegate mServiceLifecycleDelegate = new ServiceLifecycleDelegate();
 
     /**
      * 現在のセッションデータを管理する
      */
+    @NonNull
     CentralDataManager mCentralDataManager;
+
+    @NonNull
+    CentralPluginCollection mPluginCollection;
 
     @Inject(AppManagerProvider.class)
     PluginDataManager mPluginDataManager;
@@ -52,13 +53,14 @@ public class CentralSession {
     @Inject(AppManagerProvider.class)
     CentralLogManager mCentralLogManager;
 
-    CentralPluginCollection mPluginCollection;
-
-    private AnonymousBroadcaster mBroadcaster = new AnonymousBroadcaster();
+    /**
+     * 現在のステート
+     */
+    @NonNull
+    SessionState.Bus mState = new SessionState.Bus(new SessionState(SessionState.State.Initializing, this));
 
     CentralSession(SessionInfo sessionInfo) {
         mSessionInfo = sessionInfo;
-        mServiceLifecycleDelegate = new ServiceLifecycleDelegate();
         mServiceLifecycleDelegate.onCreate();
     }
 
@@ -71,24 +73,18 @@ public class CentralSession {
     }
 
     /**
-     * コールバックを登録する
+     * StateBusに登録する
      */
-    public void registerCallback(Object obj) {
-        mBroadcaster.register(obj);
+    public void registerStateBus(Object obj) {
+        mState.bind(mServiceLifecycleDelegate, obj);
     }
 
     /**
-     * コールバックを登録する
+     * State通知用のBusを取得する
      */
-    public void weakRegisterCallback(Object obj) {
-        mBroadcaster.weakRegister(obj);
-    }
-
-    /**
-     * コールバックを解除する
-     */
-    public void unregisterCallback(Object obj) {
-        mBroadcaster.unregister(obj);
+    @NonNull
+    public SessionState.Bus getStateBus() {
+        return mState;
     }
 
     public long getSessionId() {
@@ -101,10 +97,13 @@ public class CentralSession {
 
     /**
      * 初期化を開始させる
+     *
+     * @return 初期化タスク, awaitを行うことで同期的に終了を待てる
      */
-    public void initialize(@Nullable InitializeOption option) {
+    @NonNull
+    public BackgroundTask initialize(@Nullable InitializeOption option) {
         // 現在の設定をDumpする
-        async((BackgroundTask<ResultCollection> task) -> {
+        return async((BackgroundTask<ResultCollection> task) -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
             CentralPluginCollection pluginCollection;
 
@@ -130,9 +129,8 @@ public class CentralSession {
             mCentralDataManager = result.as(CentralDataManager.class);
             mPluginCollection = result.as(CentralPluginCollection.class);
 
-            mBroadcaster.safeEach(Listener.class, listener -> {
-                listener.onInitializeCompleted(this);
-            });
+            // State切り替えを通知する
+            mState.modified(new SessionState(SessionState.State.Running, this));
         }).start();
     }
 
@@ -165,11 +163,13 @@ public class CentralSession {
 
     /**
      * 削除を行う
+     *
+     * @return 終了タスク, awaitを行うことで終了待ちを明示できる
      */
-    @UiThread
-    public void dispose() {
-        AndroidThreadUtil.assertUIThread();
-        async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
+    @NonNull
+    public BackgroundTask dispose() {
+        mState.modified(new SessionState(SessionState.State.Stopping, this));
+        return async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
             if (mPluginCollection != null) {
                 mPluginCollection.disconnect();
             }
@@ -177,15 +177,18 @@ public class CentralSession {
         }).finalized(task -> {
             mPluginCollection = null;
             mCentralDataManager = null;
+            mState.modified(new SessionState(SessionState.State.Destroyed, this));
+
+            // 処理はすべて終了
+            mServiceLifecycleDelegate.onDestroy();
         }).start();
-        mServiceLifecycleDelegate.onDestroy();
     }
 
-    public <T> BackgroundTaskBuilder<T> async(BackgroundTask.Async<T> background) {
+    private <T> BackgroundTaskBuilder<T> async(BackgroundTask.Async<T> background) {
         return mServiceLifecycleDelegate.asyncUI(background);
     }
 
-    public <T> BackgroundTaskBuilder<T> async(ExecuteTarget execute, CallbackTime time, BackgroundTask.Async<T> background) {
+    private <T> BackgroundTaskBuilder<T> async(ExecuteTarget execute, CallbackTime time, BackgroundTask.Async<T> background) {
         return mServiceLifecycleDelegate.async(execute, time, background);
     }
 
@@ -201,10 +204,5 @@ public class CentralSession {
     }
 
     public static class InitializeOption {
-    }
-
-    public interface Listener {
-        @UiThread
-        void onInitializeCompleted(CentralSession self);
     }
 }
