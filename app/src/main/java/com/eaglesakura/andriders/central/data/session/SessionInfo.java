@@ -148,7 +148,7 @@ public class SessionInfo {
 
             // Profileが設定されていない場合、現在の設定をDumpする
             if (mUserProfiles == null) {
-                AppSettings settings = Garnet.factory(AppContextProvider.class).instance(AppSettings.class);
+                AppSettings settings = Garnet.instance(AppContextProvider.class, AppSettings.class);
                 profile(settings.dumpCentralSettings());
             }
 

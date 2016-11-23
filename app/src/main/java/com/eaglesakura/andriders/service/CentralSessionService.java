@@ -22,10 +22,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 /**
- *
+ * Session管理Service
  */
 public class CentralSessionService extends Service {
 
+    /**
+     * 現在走行中のセッションデータ
+     */
     @Nullable
     CentralSession mSession;
 
@@ -64,7 +67,7 @@ public class CentralSessionService extends Service {
             if (CentralServiceCommand.ACTION_SESSION_START.equals(ACTION)) {
                 // セッションを開始させる
                 if (mSession == null) {
-                    mSession = startNewSession(intent);
+                    startNewSession(intent);
                 }
             } else if (CentralServiceCommand.ACTION_SESSION_STOP.equals(ACTION)) {
                 stopCurrentSession(intent);
@@ -85,7 +88,7 @@ public class CentralSessionService extends Service {
      * 新規セッションを開始する
      */
     @UiThread
-    protected CentralSession startNewSession(Intent intent) {
+    protected void startNewSession(Intent intent) {
         SessionInfo sessionInfo = new SessionInfo.Builder(this, new Clock(System.currentTimeMillis()))
                 .debuggable(intent.getBooleanExtra(CentralServiceCommand.EXTRA_BOOT_DEBUG_MODE, false))
                 .build();
@@ -106,7 +109,7 @@ public class CentralSessionService extends Service {
             return this;
         }).start();
 
-        return centralSession;
+        mSession = centralSession;
     }
 
     /**
@@ -162,13 +165,13 @@ public class CentralSessionService extends Service {
      * Sessionのステート変更通知をハンドリングする
      */
     @Subscribe
-    void onSessionStateChanged(SessionState.Bus state) {
+    private void onSessionStateChanged(SessionState.Bus state) {
+        // 必要に応じてハンドリングを追加する
+        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
         if (state.getSession() != mSession) {
             // ハンドリング対象のステートなので、これはdropする
             return;
         }
 
-        // 必要に応じてハンドリングを追加する
-        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
     }
 }

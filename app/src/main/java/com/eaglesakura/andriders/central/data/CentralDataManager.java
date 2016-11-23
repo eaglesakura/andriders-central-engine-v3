@@ -12,10 +12,8 @@ import com.eaglesakura.andriders.central.data.sensor.SpeedData;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.data.session.SessionRecord;
 import com.eaglesakura.andriders.central.data.session.SessionTime;
-import com.eaglesakura.andriders.data.gpx.GpxPoint;
 import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.andriders.serialize.RawRecord;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.serialize.RawSessionData;
@@ -151,6 +149,10 @@ public class CentralDataManager {
         }
     }
 
+    public SessionInfo getSessionInfo() {
+        return mSessionInfo;
+    }
+
     /**
      * サイコンの時刻を取得する
      */
@@ -232,16 +234,6 @@ public class CentralDataManager {
             }
 
             return result;
-        }
-    }
-
-    /**
-     * GPXの地点情報から設定する
-     */
-    public void setGpxPoint(GpxPoint point) {
-        RawGeoPoint location = point.getLocation();
-        if (location != null) {
-            setLocation(location.latitude, location.longitude, location.altitude, 10.0);
         }
     }
 

@@ -2,9 +2,12 @@ package com.eaglesakura.andriders.central.data.log;
 
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
+import com.eaglesakura.andriders.provider.AppDatabaseProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.ClockTimer;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.util.Timer;
 
 import android.support.annotation.NonNull;
@@ -27,15 +30,19 @@ public class SessionLogger {
      */
     final List<RawCentralData> mPoints = new LinkedList<>();
 
+    /**
+     * 最終保存時刻からの差分時間を記録するタイマー
+     */
     @NonNull
     final ClockTimer mPointTimer;
 
-    final Object lock = new Object();
-
     /**
-     * コミット成功回数
+     * Database
      */
-    int mCommitCount;
+    @Inject(AppDatabaseProvider.class)
+    SessionLogDatabase mDatabase;
+
+    final Object lock = new Object();
 
     /**
      * どの程度の間隔でコミットするか
@@ -43,8 +50,17 @@ public class SessionLogger {
     static final int POINT_COMMIT_INTERVAL_MS = 1000 * 5;
 
     public SessionLogger(@NonNull SessionInfo info) {
+        this(info, Garnet.instance(AppDatabaseProvider.class, SessionLogDatabase.class));
+    }
+
+    public SessionLogger(@NonNull SessionInfo info, SessionLogDatabase database) {
         mSessionInfo = info;
         mPointTimer = new ClockTimer(info.getSessionClock());
+        mDatabase = database;
+
+        if (mDatabase == null) {
+            throw new NullPointerException("Database == null");
+        }
     }
 
     /**
@@ -57,22 +73,64 @@ public class SessionLogger {
     }
 
     /**
+     * キャッシュ数を取得する
+     */
+    public int getPointCacheCount() {
+        synchronized (lock) {
+            return mPoints.size();
+        }
+    }
+
+    /**
+     * 打刻を行うデータであればtrue
+     */
+    private boolean isKeyPoint(RawCentralData data) {
+        // 規定時間を過ぎたので現時点を打刻する
+        if (mPointTimer.overTimeMs(POINT_COMMIT_INTERVAL_MS)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 強制的に打刻を行う
+     */
+    public void add(RawCentralData latest) {
+        synchronized (lock) {
+            mPoints.add(latest);
+        }
+    }
+
+    /**
      * 毎時更新を行う
      */
     public void onUpdate(RawCentralData latest) {
         synchronized (lock) {
-            // 規定時間を過ぎたので現時点を打刻する
-            if (mPointTimer.overTimeMs(POINT_COMMIT_INTERVAL_MS)) {
-                mPoints.add(latest);
+            if (isKeyPoint(latest)) {
                 mPointTimer.start();
+                mPoints.add(latest);
             }
         }
     }
 
     /**
-     * データをDBに書き込む
+     * 管理用データベースクラスを取得する
      */
-    public void commit() {
+    @NonNull
+    public SessionLogDatabase getDatabase() {
+        return mDatabase;
+    }
+
+    /**
+     * 書き込みを行う。
+     * トランザクションは外部で管理する。
+     *
+     * これはimport等、特殊な環境下でのトランザクションを外部で調整できるようにするためである。
+     *
+     * @param writableDb 書き込みモードでOpenされているDB
+     */
+    public void commit(SessionLogDatabase writableDb) {
         List<RawCentralData> points;
         synchronized (lock) {
             if (mPoints.isEmpty()) {
@@ -91,19 +149,12 @@ public class SessionLogger {
             mPoints.clear();
         }
 
-
         // DBを書き込む
         Timer timer = new Timer();
-        try (SessionLogDatabase db = new SessionLogDatabase(mSessionInfo.getContext()).openWritable(SessionLogDatabase.class)) {
-            db.runInTx(() -> {
-                if (mCommitCount == 0) {
-                    // 初回コミットのみ、インフォメーションを書き込む
-                }
-
-                db.insert(points);
-                return 0;
-            });
+        try {
+            writableDb.insert(points);
             AppLog.db("Session Log Commit :: time[%s] pt[%d]", timer.end(), points.size());
+
         } catch (Exception e) {
             AppLog.db("SessionLog write failed. rollback");
             AppLog.report(e);
@@ -115,6 +166,18 @@ public class SessionLogger {
                     AppLog.db("SessionLog write failed. rollback failed.");
                 }
             }
+        }
+    }
+
+    /**
+     * データをDBに書き込む
+     */
+    public void commit() {
+        try (SessionLogDatabase db = mDatabase.openWritable(SessionLogDatabase.class)) {
+            db.runInTx(() -> {
+                commit(db);
+                return 0;
+            });
         }
     }
 }

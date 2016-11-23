@@ -27,6 +27,13 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
         getApplication().stopService(new Intent(getContext(), CentralSessionService.class));
     }
 
+    @Override
+    public void onShutdown() {
+        super.onShutdown();
+        // Serviceを強制切断
+        getApplication().stopService(new Intent(getContext(), CentralSessionService.class));
+    }
+
     @Test(timeout = 1000 * 5)
     public void Serviceにバインド出来る() throws Throwable {
         assertFalse(CentralSessionService.isRunning(getContext())); // Service起動前

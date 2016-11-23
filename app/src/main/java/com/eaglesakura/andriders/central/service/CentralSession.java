@@ -59,6 +59,12 @@ public class CentralSession {
     @NonNull
     SessionState.Bus mState = new SessionState.Bus(new SessionState(SessionState.State.Initializing, this));
 
+    /**
+     * セッション更新バス
+     */
+    @NonNull
+    SessionData.Bus mDataBus = new SessionData.Bus();
+
     CentralSession(SessionInfo sessionInfo) {
         mSessionInfo = sessionInfo;
         mServiceLifecycleDelegate.onCreate();
@@ -75,8 +81,15 @@ public class CentralSession {
     /**
      * StateBusに登録する
      */
-    public void registerStateBus(Object obj) {
-        mState.bind(mServiceLifecycleDelegate, obj);
+    public void registerStateBus(Object receiver) {
+        mState.bind(mServiceLifecycleDelegate, receiver);
+    }
+
+    /**
+     * DataBusに登録する
+     */
+    public void registerDataBus(Object receiver) {
+        mState.bind(mServiceLifecycleDelegate, receiver);
     }
 
     /**
@@ -85,6 +98,14 @@ public class CentralSession {
     @NonNull
     public SessionState.Bus getStateBus() {
         return mState;
+    }
+
+    /**
+     * セッションのメインデータ通知用のBusを取得する
+     */
+    @NonNull
+    public SessionData.Bus getDataBus() {
+        return mDataBus;
     }
 
     public long getSessionId() {
@@ -138,6 +159,11 @@ public class CentralSession {
      * 毎フレーム更新を行う
      */
     public void onUpdate(double deltaSec) {
+        // 実行中以外のステートは無視する
+        if (getStateBus().getState() == SessionState.State.Running) {
+            return;
+        }
+
         Timer timer = new Timer();
         try {
             // 内部時間を経過させる
@@ -145,7 +171,10 @@ public class CentralSession {
             sessionClock.offset((long) (deltaSec * 1000));
 
             // 更新を行う
-            mCentralDataManager.onUpdate();
+            if (mCentralDataManager.onUpdate()) {
+                // 更新が行えたので、Busに通知を流す
+                mDataBus.modified(new SessionData(mCentralDataManager.getLatestCentralData(), this));
+            }
         } finally {
             if (timer.end() > (1000 / 60)) {
                 // 1フレームを超えたら警告を出す
