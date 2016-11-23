@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.central.data;
 
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
+import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
@@ -46,7 +47,7 @@ public class CentralLogManager {
     /**
      * 指定した日の記録を生成する
      */
-    public LogStatistics loadTodayStatistics(long now) {
+    public LogStatistics loadTodayStatistics(long now) throws AppException {
         try (SessionLogDatabase db = open()) {
             Date dateStart = DateUtil.getDateStart(new Date(now), mTimeZone);
             return db.loadTotal(dateStart.getTime(), dateStart.getTime() + Timer.toMilliSec(1, 0, 0, 0, 0) - 1);
@@ -56,9 +57,9 @@ public class CentralLogManager {
     /**
      * 全ての期間の記録を生成する
      */
-    public LogStatistics loadAllStatistics() {
+    public LogStatistics loadAllStatistics() throws AppException {
         try (SessionLogDatabase db = open()) {
-            return db.loadTotal(0, Long.MAX_VALUE);
+            return db.loadTotal(0, 0);
         }
     }
 }

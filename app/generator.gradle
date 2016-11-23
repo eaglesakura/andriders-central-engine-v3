@@ -85,14 +85,14 @@ task generateCentralLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) 
 
     def sessionSchema = newSchema(1, "session");
 
-    /**
-     * セッションごとの情報を設定する
-     */
-    def DbSessionInfo = sessionSchema.addEntity("DbSessionInfo");
-    DbSessionInfo.addLongProperty("sessionId").notNull().unique().primaryKey(); // 開始時間がそのままキーになる
-    DbSessionInfo.addStringProperty("flags").index();        // セッション状況フラグ
-    DbSessionInfo.addStringProperty("infoJson");                // セッション元情報
-    DbSessionInfo.addFloatProperty("fitWeight");             // ユーザーの体重, 統計用のため別Column
+//    /**
+//     * セッションごとの情報を設定する
+//     */
+//    def DbSessionInfo = sessionSchema.addEntity("DbSessionInfo");
+//    DbSessionInfo.addLongProperty("sessionId").notNull().unique().primaryKey(); // 開始時間がそのままキーになる
+//    DbSessionInfo.addStringProperty("flags").index();        // セッション状況フラグ
+//    DbSessionInfo.addStringProperty("infoJson");                // セッション元情報
+//    DbSessionInfo.addFloatProperty("fitWeight");             // ユーザーの体重, 統計用のため別Column
 
     /**
      * セッショングループは日単位で設定する。
@@ -110,8 +110,8 @@ task generateCentralLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) 
     DbSessionPoint.addStringProperty("valueFlags").notNull().index();       // 統計用フラグ
     DbSessionPoint.addIntProperty("valueHeartrate").index();        // 心拍(Max, Avgを取る)
     DbSessionPoint.addIntProperty("valueCadence").index();          // ケイデンス(Maxを取る)
-    DbSessionPoint.addFloatProperty("valueSensorSpeed").index();    // センサー由来の速度(Max, Avgを取る)
-    DbSessionPoint.addFloatProperty("valueGpsSpeed").index();       // GPS由来の速度(Max, Avgを取る)
+    DbSessionPoint.addFloatProperty("valueSensorSpeed").index();    // センサー由来の速度(Max, Avgを取る) 採用された場合のみ書き込まれる
+    DbSessionPoint.addFloatProperty("valueGpsSpeed").index();       // GPS由来の速度(Max, Avgを取る)    採用された場合のみ書き込まれる
     // 以下はセッションの最終値を取れば良いため、インデックスを貼る必要はない
     DbSessionPoint.addFloatProperty("valueFitCalories");       // セッション消費カロリー
     DbSessionPoint.addFloatProperty("valueFitExercise");       // セッション獲得エクササイズ

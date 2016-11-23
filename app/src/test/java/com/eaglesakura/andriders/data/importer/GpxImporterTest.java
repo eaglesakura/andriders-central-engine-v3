@@ -94,7 +94,21 @@ public class GpxImporterTest extends AppUnitTestCase {
                 .file(new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
                 .build();
 
-        SessionImportCommitter committer = new SessionImportCommitter(getContext());
+        SessionImportCommitter committer = new SessionImportCommitter(getContext()) {
+            @Override
+            public void onPointInsert(SessionImporter self, CentralDataManager dataManager, RawCentralData latest) throws AppException {
+                // 心拍を適当に設定する
+                dataManager.setHeartrate((int) (160.0 + 30.0 * Math.random()));
+
+                // 半分の時間自走する
+                long diffTimeMs = dataManager.getSessionInfo().getSessionClock().absDiff(dataManager.getSessionId());
+                if ((diffTimeMs / (1000 * 60)) % 2 == 0) {
+                    dataManager.setSpeedAndCadence((float) (70.0 + (30 * Math.random())), 0, -1, -1);
+                }
+
+                super.onPointInsert(self, dataManager, latest);
+            }
+        };
         try (SessionLogDatabase db = committer.openDatabase()) {
             db.runInTx(() -> {
                 build.install(committer, () -> false);
@@ -110,30 +124,7 @@ public class GpxImporterTest extends AppUnitTestCase {
 
         validate(allStatistics.getMaxSpeedKmh()).delta(10.0).eq(60.0);   // AACR最高速度
         validate(allStatistics.getSumDistanceKm()).delta(10.0).eq(160.0);   // AACR走行距離
-        validate(allStatistics.getCalories()).from(2000.0); // 2000kcal以上消費している
+        validate(allStatistics.getCalories()).from(2000); // 160bpm以上で動き続けるため、2000kcal以上は最低限動いている
         validate(allStatistics.getExercise()).from(20.0);   // 20EX以上経過している
     }
-
-
-//    @Test
-//    public void AACR2015のテストデータをインストールする() throws Exception {
-////        try {
-////            assertEquals(db.loadMaxSpeedKmh(), 61.0, 1.0);  // AACR最高速度
-////            assertEquals(
-////                    db.loadMaxSpeedKmh(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()),
-////                    db.loadMaxSpeedKmh(),
-////                    0.01);  // AACR最高速度
-////
-////            SessionTotalCollection collection = db.loadTotal(SessionTotalCollection.Order.Asc);
-////            assertNotNull(collection);
-////            assertEquals(collection.getTotals().size(), 1);
-////            assertEquals(collection.getSumDistanceKm(), 160, 10);
-////            assertEquals(collection.getMaxSpeedKmh(), 61.0, 1.0);
-////            assertEquals(collection.getLongestDateDistanceKm(), 160.0, 10);
-////            assertTrue(collection.getRangeCalorie(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()) > 2000);
-////            assertTrue(collection.getRangeExercise(importer.getImportStartDate().getTime(), importer.getImportEndDate().getTime()) > 20);
-////        } catch (Exception e) {
-////
-////        }
-//    }
 }

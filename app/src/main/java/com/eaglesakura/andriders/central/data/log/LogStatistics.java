@@ -27,7 +27,7 @@ public class LogStatistics {
 
     float mExercise;
 
-    float mMaxCadence;
+    short mMaxCadence;
 
     short mMaxHeartrate;
 
@@ -38,7 +38,7 @@ public class LogStatistics {
         mEndDate = new Date(startDate);
     }
 
-    public LogStatistics(Date startDate, Date endDate, int activeTimeMs, float activeDistanceKm, float sumAltitudeMeter, float sumDistanceKm, float calories, float exercise, float maxCadence, short maxHeartrate, float maxSpeedKmh) {
+    public LogStatistics(Date startDate, Date endDate, int activeTimeMs, float activeDistanceKm, float sumAltitudeMeter, float sumDistanceKm, float calories, float exercise, short maxCadence, short maxHeartrate, float maxSpeedKmh) {
         mStartDate = startDate;
         mEndDate = endDate;
         mActiveTimeMs = activeTimeMs;
@@ -84,11 +84,11 @@ public class LogStatistics {
         return mExercise;
     }
 
-    public float getMaxCadence() {
+    public short getMaxCadence() {
         return mMaxCadence;
     }
 
-    public float getMaxHeartrate() {
+    public short getMaxHeartrate() {
         return mMaxHeartrate;
     }
 
@@ -113,7 +113,7 @@ public class LogStatistics {
         mCalories = latest.session.fitness.calorie;
         mExercise = latest.session.fitness.exercise;
         if (latest.sensor.cadence != null) {
-            mMaxCadence = Math.max(mMaxCadence, latest.sensor.cadence.rpm);
+            mMaxCadence = (short) Math.max(mMaxCadence, latest.sensor.cadence.rpm);
         }
 
         if (latest.sensor.heartrate != null) {
