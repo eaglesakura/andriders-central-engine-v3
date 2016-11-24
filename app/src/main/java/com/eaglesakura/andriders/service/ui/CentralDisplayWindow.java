@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
@@ -43,10 +44,10 @@ public class CentralDisplayWindow {
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     }
 
-    public static CentralDisplayWindow attach(@NonNull Context context, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session) {
+    public static CentralDisplayWindow attach(@NonNull Context context, ServiceLifecycleDelegate lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session) {
         CentralDisplayWindow result = new CentralDisplayWindow(context);
-        session.registerStateBus(result);
-        session.registerBus(animationFrameBus, result);
+        session.getDataBus().bind(lifecycleDelegate, result);
+        animationFrameBus.bind(lifecycleDelegate, result);
         return result;
     }
 

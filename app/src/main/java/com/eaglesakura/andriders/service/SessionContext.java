@@ -10,7 +10,11 @@ import com.eaglesakura.andriders.service.ui.CentralStatusBar;
 import com.eaglesakura.andriders.service.ui.ServiceAnimationController;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
+import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 
 import android.app.Service;
 import android.content.Intent;
@@ -23,6 +27,9 @@ import android.support.annotation.Nullable;
 public class SessionContext {
     @NonNull
     private final Service mService;
+
+    @NonNull
+    private final ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
     /**
      * 現在走行中のセッションデータ
@@ -70,6 +77,8 @@ public class SessionContext {
      * セッションを初期化する
      */
     public void initialize(Intent intent) {
+        mLifecycleDelegate.onCreate();
+
         SessionInfo sessionInfo = new SessionInfo.Builder(mService, new Clock(System.currentTimeMillis()))
                 .debuggable(intent.getBooleanExtra(CentralServiceCommand.EXTRA_BOOT_DEBUG_MODE, false))
                 .build();
@@ -77,21 +86,34 @@ public class SessionContext {
         CentralSession.InitializeOption option = new CentralSession.InitializeOption();
 
         CentralSession centralSession = CentralSession.newInstance(sessionInfo);
-        centralSession.registerStateBus(this);
+        centralSession.getStateBus().bind(mLifecycleDelegate, this);
+        centralSession.getStateBus().bind(mLifecycleDelegate, mService);
 
-        mSessionLogController = SessionLogController.attach(centralSession);
-        mSessionNotification = CentralStatusBar.attach(centralSession, mNotificationCallback);
-        mAnimationController = ServiceAnimationController.attach(centralSession, mAnimationCallback);
-        mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mAnimationFrameBus, centralSession);
+        mSessionLogController = SessionLogController.attach(mLifecycleDelegate, centralSession);
+        mSessionNotification = CentralStatusBar.attach(mLifecycleDelegate, centralSession, mNotificationCallback);
+        mAnimationController = ServiceAnimationController.attach(mLifecycleDelegate, centralSession, mAnimationCallback);
+        mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession);
 
-        centralSession.initialize(option);
+        mLifecycleDelegate.asyncUI((BackgroundTask<CentralSession> task) -> {
+            centralSession.initialize(option, AppSupportUtil.asCancelCallback(task));
+            return centralSession;
+        }).completed((result, task) -> {
+            mSession = centralSession;
+        }).failed((error, task) -> {
+            AppLog.printStackTrace(error);
+        }).start();
 
-        mSession = centralSession;
     }
 
     @NonNull
-    public BackgroundTask dispose() {
-        return getSession().dispose();
+    public void dispose() {
+        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
+            if (mSession != null) {
+                mSession.dispose();
+            }
+            return this;
+        }).start();
+        mLifecycleDelegate.onDestroy();
     }
 
     @NonNull

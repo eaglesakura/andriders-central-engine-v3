@@ -40,10 +40,7 @@ public class CentralSessionTest extends AppDeviceTestCase {
 
         try {
             timer.start();
-            awaitUiThread(() -> centralSession.initialize(new CentralSession.InitializeOption()));
-            while (centralSession.mCentralDataManager == null) {
-                Util.sleep(1);
-            }
+            centralSession.initialize(new CentralSession.InitializeOption(), () -> false);
         } finally {
             validate(timer.end()).to(1000 * 10); // 10秒以内に処理出来ている
         }
@@ -63,10 +60,9 @@ public class CentralSessionTest extends AppDeviceTestCase {
 
         try {
             timer.start();
-            awaitUiThread(() -> centralSession.dispose());
-            while (centralSession.mCentralDataManager != null) {
-                Util.sleep(1);
-            }
+            centralSession.dispose();
+            Util.sleep(100);
+            assertEquals(centralSession.getStateBus().getState(), SessionState.State.Destroyed);
         } finally {
             validate(timer.end()).to(1000 * 10); // 10秒以内に処理出来ている
         }

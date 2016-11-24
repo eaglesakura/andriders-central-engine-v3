@@ -59,7 +59,7 @@ public class SessionInfo {
         mSessionClock = builder.mSessionClock;
         mUserProfiles = builder.mUserProfiles;
         mCentralServiceSettings = builder.mCentralServiceSettings;
-        mDebuggable = builder.mDebugable;
+        mDebuggable = builder.mDebuggable;
     }
 
     public Context getContext() {
@@ -117,7 +117,7 @@ public class SessionInfo {
         /**
          * デバッグチェック
          */
-        boolean mDebugable;
+        boolean mDebuggable;
 
         public Builder(@NonNull Context context, @NonNull Clock clock) {
             mContext = context;
@@ -139,7 +139,7 @@ public class SessionInfo {
         }
 
         public Builder debuggable(boolean debug) {
-            mDebugable = debug;
+            mDebuggable = debug;
             return this;
         }
 

@@ -40,10 +40,10 @@ public class SessionLogController {
         mCommitListeners.add(listener);
     }
 
-    public static SessionLogController attach(CentralSession session) {
+    public static SessionLogController attach(ServiceLifecycleDelegate lifecycleDelegate, CentralSession session) {
         SessionLogController result = new SessionLogController(session);
-        session.registerStateBus(result);
-        session.registerDataBus(result);
+        session.getStateBus().bind(lifecycleDelegate, result);
+        session.getDataBus().bind(lifecycleDelegate, result);
 
         Garnet.inject(result);
 
@@ -93,7 +93,7 @@ public class SessionLogController {
             return;
         }
 
-        mLifecycleDelegate.async(ExecuteTarget.NewThread, CallbackTime.FireAndForget, task -> {
+        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
             try (SessionLogDatabase db = mDatabase.openWritable(SessionLogDatabase.class)) {
                 db.runInTx(() -> {
                     mLogger.commit(mDatabase);

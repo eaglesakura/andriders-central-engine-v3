@@ -1,12 +1,13 @@
 package com.eaglesakura.andriders.service;
 
-import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
+import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.service.server.CentralSessionServer;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.util.ContextUtil;
+import com.squareup.otto.Subscribe;
 
 import org.greenrobot.greendao.annotation.NotNull;
 
@@ -85,16 +86,8 @@ public class CentralSessionService extends Service {
     protected void startNewSession(Intent intent) {
         SessionContext sessionContext = new SessionContext(this);
         sessionContext.initialize(intent);
-
-        SessionInfo sessionInfo = sessionContext.getSession().getSessionInfo();
-
-        mServiceLifecycleDelegate.asyncUI(task -> {
-            // 開始通知を送る
-            mSessionServer.notifyOnSessionStarted(sessionInfo);
-            return this;
-        }).start();
-
         mSession = sessionContext;
+
     }
 
     /**
@@ -103,16 +96,23 @@ public class CentralSessionService extends Service {
     @UiThread
     protected void stopCurrentSession(@Nullable Intent intent) {
         if (mSession != null) {
-            SessionInfo info = mSession.getSessionInfo();
-
             mSession.dispose();
             mSession = null;
+        }
+    }
 
-            mServiceLifecycleDelegate.asyncUI(task -> {
-                // 終了通知を送る
-                mSessionServer.notifyOnSessionStopped(info);
-                return this;
-            }).start();
+    /**
+     * Sessionのステート変更通知をハンドリングする
+     */
+    @Subscribe
+    private void onSessionStateChanged(SessionState.Bus state) {
+        // 必要に応じてハンドリングを追加する
+        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
+        if (state.getState() == SessionState.State.Running) {
+            // 実行中にステートが変わったので、走行通知をする
+            mSessionServer.notifyOnSessionStarted(state.getSession().getSessionInfo());
+        } else if (state.getState() == SessionState.State.Destroyed) {
+            mSessionServer.notifyOnSessionStopped(state.getSession().getSessionInfo());
         }
     }
 

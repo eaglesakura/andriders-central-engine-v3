@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.material.widget.NotificationBuilder;
 import com.eaglesakura.material.widget.RemoteViewsBuilder;
 import com.eaglesakura.material.widget.support.SupportNotification;
@@ -41,11 +42,10 @@ public class CentralStatusBar {
         mCallback = callback;
     }
 
-    public static CentralStatusBar attach(CentralSession session, @NonNull Callback callback) {
+    public static CentralStatusBar attach(ServiceLifecycleDelegate lifecycleDelegate, CentralSession session, @NonNull Callback callback) {
         CentralStatusBar result = new CentralStatusBar(callback);
 
-        session.registerStateBus(result);
-        session.registerDataBus(result);
+        session.getStateBus().bind(lifecycleDelegate, result);
 
         return result;
     }
