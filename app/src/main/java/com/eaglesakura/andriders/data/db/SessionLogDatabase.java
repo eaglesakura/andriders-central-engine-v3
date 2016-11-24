@@ -141,10 +141,8 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     /**
      * startTime～endTimeまでに開始されたセッションの統計情報を返却する
      *
-     * FIXME: まずは実装を優先するため、全てのログデータを巡回している。これはSQLクエリで出せるようにすべきである。
-     *
-     * @param startTime 開始時刻, 0の場合はチェックしない
-     * @param endTime   終了時刻, 0の場合はチェックしない
+     * @param startTime 開始時刻, 0の場合はユーザーの全ログ探索
+     * @param endTime   終了時刻, 0の場合はユーザーの全ログ探索
      * @return 合計値 / セッションが存在しない場合はnullを返却
      */
     @Nullable
