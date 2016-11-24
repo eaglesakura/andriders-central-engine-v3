@@ -1,12 +1,12 @@
 package com.eaglesakura.andriders.service.log;
 
+import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.central.data.log.SessionLogger;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
-import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
@@ -59,8 +59,11 @@ public class SessionLogController {
         AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
         if (state.getState() == SessionState.State.Destroyed) {
             // 最後のステートの場合、強制的に更新する
-            RawCentralData latest = state.getSession().getCentralDataManager().getLatestCentralData();
-            if (latest != null) {
+            // 初期化が終わる前にDestroyが行われる可能性があるので注意する
+            CentralDataManager centralDataManager = state.getSession().getCentralDataManager();
+            if (centralDataManager != null && centralDataManager.getLatestCentralData() != null) {
+                mLogger.add(centralDataManager.getLatestCentralData());
+                commitAsync();
             }
         }
     }
@@ -84,6 +87,11 @@ public class SessionLogController {
     }
 
     private void commitAsync() {
+        // コミット対象のキャッシュを持っていない
+        if (!mLogger.hasPointCaches()) {
+            return;
+        }
+
         mLifecycleDelegate.async(ExecuteTarget.NewThread, CallbackTime.FireAndForget, task -> {
             try (SessionLogDatabase db = mDatabase.openWritable(SessionLogDatabase.class)) {
                 db.runInTx(() -> {

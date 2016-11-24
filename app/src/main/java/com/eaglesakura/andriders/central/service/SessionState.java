@@ -23,6 +23,8 @@ public class SessionState {
         Stopping,
 
         Destroyed,
+
+        Error,
     }
 
     SessionState(State state, CentralSession session) {

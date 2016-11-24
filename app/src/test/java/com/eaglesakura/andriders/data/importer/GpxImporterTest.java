@@ -130,12 +130,19 @@ public class GpxImporterTest extends AppUnitTestCase {
         CentralLogManager logManager = Garnet.instance(AppManagerProvider.class, CentralLogManager.class);
         assertNotNull(logManager);
 
-        LogStatistics allStatistics = logManager.loadAllStatistics();
-        assertNotNull(allStatistics);
+        // 今日とトータルを取得する
+        // 1日分のデータしか無いので、両者は合致するはずである
+        LogStatistics[] testStatisticses = {
+                logManager.loadAllStatistics(),
+                logManager.loadTodayStatistics(DateUtil.getTime(TimeZone.getDefault(), 2015, 5, 24).getTime())
+        };
 
-        validate(allStatistics.getMaxSpeedKmh()).delta(10.0).eq(60.0);   // AACR最高速度
-        validate(allStatistics.getSumDistanceKm()).delta(10.0).eq(160.0);   // AACR走行距離
-        validate(allStatistics.getCalories()).from(2000); // 160bpm以上で動き続けるため、2000kcal以上は最低限動いている
-        validate(allStatistics.getExercise()).from(20.0);   // 20EX以上経過している
+        for (LogStatistics log : testStatisticses) {
+            assertNotNull(log);
+            validate(log.getMaxSpeedKmh()).delta(10.0).eq(60.0);   // AACR最高速度
+            validate(log.getSumDistanceKm()).delta(10.0).eq(160.0);   // AACR走行距離
+            validate(log.getCalories()).from(2000); // 160bpm以上で動き続けるため、2000kcal以上は最低限動いている
+            validate(log.getExercise()).from(20.0);   // 20EX以上経過している
+        }
     }
 }

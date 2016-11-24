@@ -89,7 +89,7 @@ public class CentralSession {
      * DataBusに登録する
      */
     public void registerDataBus(Object receiver) {
-        mState.bind(mServiceLifecycleDelegate, receiver);
+        mDataBus.bind(mServiceLifecycleDelegate, receiver);
     }
 
     /**
@@ -153,6 +153,8 @@ public class CentralSession {
 
             // State切り替えを通知する
             mState.modified(new SessionState(SessionState.State.Running, this));
+        }).failed((error, task) -> {
+            AppLog.report(error);
         }).start();
     }
 
@@ -205,8 +207,6 @@ public class CentralSession {
             }
             return this;
         }).finalized(task -> {
-            mPluginCollection = null;
-            mCentralDataManager = null;
             mState.modified(new SessionState(SessionState.State.Destroyed, this));
 
             // 処理はすべて終了

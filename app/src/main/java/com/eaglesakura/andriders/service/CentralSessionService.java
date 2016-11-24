@@ -34,18 +34,21 @@ public class CentralSessionService extends Service {
     CentralSession mSession;
 
     /**
-     * 走行中の保存管理
+     * 走行中のログ保存管理
      */
     @Nullable
     SessionLogController mSessionLogController;
 
+    /**
+     * セッションのNotification通知管理
+     *
+     * CentralSessionと
+     */
+    @Nullable
+    SessionNotification mSessionNotification;
+
     @NotNull
     final SessionServer mSessionServer;
-
-    /**
-     * セッション通知
-     */
-    SessionNotification mSessionNotification;
 
     ServiceLifecycleDelegate mServiceLifecycleDelegate = new ServiceLifecycleDelegate();
 

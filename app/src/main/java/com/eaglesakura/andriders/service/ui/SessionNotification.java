@@ -65,6 +65,7 @@ public class SessionNotification {
             onStartSessionInitialize(service, session);
         } else if (state.getState() == SessionState.State.Running) {
             // 実行中に切り替わった
+            onStartSession(service, session);
         } else if (state.getState() == SessionState.State.Destroyed) {
             // セッション終了とする
             onStopSession(service, session);
@@ -74,9 +75,8 @@ public class SessionNotification {
     /**
      * セッションが開始された
      */
+    @UiThread
     private void onStartSessionInitialize(Service service, CentralSession session) {
-        session.registerStateBus(this);
-
         mNotification = NotificationBuilder.from(service)
                 .ticker(R.string.Word_App_AndridersCentralEngine)
                 .title(R.string.Word_App_AndridersCentralEngine)
@@ -94,15 +94,31 @@ public class SessionNotification {
     /**
      * セッションの初期化が完了した
      */
+    @UiThread
     private void onStartSession(Service service, CentralSession session) {
-
         // 表示内容を切り替える
         setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_running)
                 .build()
                 .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
                     mCallback.onClickNotification(SessionNotification.this);
                 }));
+    }
 
+    /**
+     * セッションが終了した
+     */
+    @UiThread
+    private void onStopSession(Service service, CentralSession session) {
+        if (mNotification != null) {
+            service.stopForeground(true);
+            mNotification.cancel();
+            mNotification = null;
+        }
+
+        if (mNotificationViews != null) {
+            mNotificationViews.dispose();
+            mNotificationViews = null;
+        }
     }
 
     /**
@@ -117,22 +133,6 @@ public class SessionNotification {
 
         if (views != null) {
             mNotification.content(views.getRemoteViews()).appy();
-        }
-    }
-
-    /**
-     * セッションが終了した
-     */
-    private void onStopSession(Service service, CentralSession session) {
-        if (mNotification != null) {
-            service.stopForeground(true);
-            mNotification.cancel();
-            mNotification = null;
-        }
-
-        if (mNotificationViews != null) {
-            mNotificationViews.dispose();
-            mNotificationViews = null;
         }
     }
 

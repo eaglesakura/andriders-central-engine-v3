@@ -84,6 +84,10 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         }
 
         if (endTime > 0) {
+            // 条件を加える
+            if (result.length() > 0) {
+                result.append(" AND ");
+            }
             result.append(" SESSION_ID <= " + endTime);
         }
 
