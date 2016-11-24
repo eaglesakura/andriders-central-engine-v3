@@ -2,12 +2,9 @@ package com.eaglesakura.andriders.central.data.log;
 
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
-import com.eaglesakura.andriders.provider.AppDatabaseProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.ClockTimer;
-import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.util.Timer;
 
 import android.support.annotation.NonNull;
@@ -36,12 +33,6 @@ public class SessionLogger {
     @NonNull
     final ClockTimer mPointTimer;
 
-    /**
-     * Database
-     */
-    @Inject(AppDatabaseProvider.class)
-    SessionLogDatabase mDatabase;
-
     final Object lock = new Object();
 
     /**
@@ -55,17 +46,8 @@ public class SessionLogger {
     static final int POINT_COMMIT_INTERVAL_MS = 1000 * 5;
 
     public SessionLogger(@NonNull SessionInfo info) {
-        this(info, Garnet.instance(AppDatabaseProvider.class, SessionLogDatabase.class));
-    }
-
-    public SessionLogger(@NonNull SessionInfo info, SessionLogDatabase database) {
         mSessionInfo = info;
         mPointTimer = new ClockTimer(info.getSessionClock());
-        mDatabase = database;
-
-        if (mDatabase == null) {
-            throw new NullPointerException("Database == null");
-        }
     }
 
     /**
@@ -131,14 +113,6 @@ public class SessionLogger {
     }
 
     /**
-     * 管理用データベースクラスを取得する
-     */
-    @NonNull
-    public SessionLogDatabase getDatabase() {
-        return mDatabase;
-    }
-
-    /**
      * 書き込みを行う。
      * トランザクションは外部で管理する。
      *
@@ -182,18 +156,6 @@ public class SessionLogger {
                     AppLog.db("SessionLog write failed. rollback failed.");
                 }
             }
-        }
-    }
-
-    /**
-     * データをDBに書き込む
-     */
-    public void commit() {
-        try (SessionLogDatabase db = mDatabase.openWritable(SessionLogDatabase.class)) {
-            db.runInTx(() -> {
-                commit(db);
-                return 0;
-            });
         }
     }
 }

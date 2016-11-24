@@ -62,6 +62,7 @@ public class SessionLogController {
             // 初期化が終わる前にDestroyが行われる可能性があるので注意する
             CentralDataManager centralDataManager = state.getSession().getCentralDataManager();
             if (centralDataManager != null && centralDataManager.getLatestCentralData() != null) {
+                AppLog.db("finalize commit");
                 mLogger.add(centralDataManager.getLatestCentralData());
                 commitAsync();
             }

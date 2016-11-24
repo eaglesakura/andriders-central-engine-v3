@@ -49,7 +49,7 @@ public class SessionImportCommitter implements SessionImporter.Listener {
     @Override
     public void onSessionStart(SessionImporter self, CentralDataManager dataManager) throws AppException {
         mCurrentManager = dataManager;
-        mSessionLogger = new SessionLogger(mCurrentManager.getSessionInfo(), mDatabase);
+        mSessionLogger = new SessionLogger(mCurrentManager.getSessionInfo());
     }
 
     @Override
