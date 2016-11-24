@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.service.log.SessionLogController;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
+import com.eaglesakura.andriders.service.ui.CentralDisplayWindow;
 import com.eaglesakura.andriders.service.ui.CentralNotification;
 import com.eaglesakura.andriders.service.ui.ServiceAnimationController;
 import com.eaglesakura.andriders.util.AppLog;
@@ -26,13 +27,13 @@ public class SessionContext {
     /**
      * 現在走行中のセッションデータ
      */
-    @Nullable
+    @NonNull
     CentralSession mSession;
 
     /**
      * 走行中のログ保存管理
      */
-    @Nullable
+    @NonNull
     SessionLogController mSessionLogController;
 
     /**
@@ -40,20 +41,26 @@ public class SessionContext {
      *
      * CentralSessionと
      */
-    @Nullable
+    @NonNull
     CentralNotification mSessionNotification;
 
     /**
      * アニメーション管理
      */
-    @Nullable
+    @NonNull
     ServiceAnimationController mAnimationController;
 
     /**
      * アニメーション管理バス
      */
-    @Nullable
+    @NonNull
     AnimationFrame.Bus mAnimationFrameBus = new AnimationFrame.Bus(new AnimationFrame());
+
+    /**
+     * 通知レンダリングエリア
+     */
+    @NonNull
+    CentralDisplayWindow mCentralDisplayWindow;
 
     public SessionContext(@NonNull Service service) {
         mService = service;
@@ -75,6 +82,7 @@ public class SessionContext {
         mSessionLogController = SessionLogController.attach(centralSession);
         mSessionNotification = CentralNotification.attach(centralSession, mNotificationCallback);
         mAnimationController = ServiceAnimationController.attach(centralSession, mAnimationCallback);
+        mCentralDisplayWindow = CentralDisplayWindow.attach(mService, centralSession);
 
         centralSession.initialize(option);
 
