@@ -66,7 +66,7 @@ public class SessionNotification {
         } else if (state.getState() == SessionState.State.Running) {
             // 実行中に切り替わった
             onStartSession(service, session);
-        } else if (state.getState() == SessionState.State.Destroyed) {
+        } else if (state.getState() == SessionState.State.Stopping) {
             // セッション終了とする
             onStopSession(service, session);
         }
