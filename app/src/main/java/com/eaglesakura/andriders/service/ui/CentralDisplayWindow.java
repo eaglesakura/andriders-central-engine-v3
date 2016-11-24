@@ -43,9 +43,10 @@ public class CentralDisplayWindow {
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     }
 
-    public static CentralDisplayWindow attach(@NonNull Context context, @NonNull CentralSession session) {
+    public static CentralDisplayWindow attach(@NonNull Context context, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session) {
         CentralDisplayWindow result = new CentralDisplayWindow(context);
         session.registerStateBus(result);
+        session.registerBus(animationFrameBus, result);
         return result;
     }
 
@@ -116,4 +117,11 @@ public class CentralDisplayWindow {
         mWindowManager.addView(mNotificationDisplay, layoutParams);
     }
 
+    @Subscribe
+    private void onAnimationFrame(AnimationFrame.Bus frame) {
+        AppLog.system("onAnimationFrame frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
+        if (mNotificationDisplay != null) {
+            mNotificationDisplay.invalidate();
+        }
+    }
 }

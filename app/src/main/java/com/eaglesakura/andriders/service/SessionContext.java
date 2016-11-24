@@ -82,7 +82,7 @@ public class SessionContext {
         mSessionLogController = SessionLogController.attach(centralSession);
         mSessionNotification = CentralNotification.attach(centralSession, mNotificationCallback);
         mAnimationController = ServiceAnimationController.attach(centralSession, mAnimationCallback);
-        mCentralDisplayWindow = CentralDisplayWindow.attach(mService, centralSession);
+        mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mAnimationFrameBus, centralSession);
 
         centralSession.initialize(option);
 

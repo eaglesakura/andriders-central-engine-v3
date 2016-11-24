@@ -49,6 +49,18 @@ public class AnimationFrame {
             super(data);
         }
 
+        public CentralSession getSession() {
+            return getData().getSession();
+        }
+
+        public int getFrameCount() {
+            return getData().getFrameCount();
+        }
+
+        public double getDeltaSec() {
+            return getData().getDeltaSec();
+        }
+
         public void onUpdate(CentralSession session, double deltaSec) {
             // 更新通知を出す
             AnimationFrame oldData = getData();
