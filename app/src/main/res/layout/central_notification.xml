@@ -3,8 +3,8 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
-    <com.eaglesakura.andriders.service.central.notification.NotificationView
-            android:id="@+id/Service.Central.Notification"
+    <com.eaglesakura.andriders.service.ui.NotificationView
+            android:id="@+id/Service.Notification"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 </FrameLayout>

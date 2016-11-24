@@ -12,6 +12,7 @@ import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
+import com.eaglesakura.android.framework.delegate.task.DataBus;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
@@ -90,6 +91,16 @@ public class CentralSession {
      */
     public void registerDataBus(Object receiver) {
         mDataBus.bind(mServiceLifecycleDelegate, receiver);
+    }
+
+    /**
+     * ハンドリング寿命をセッションに併せてBusに登録する
+     *
+     * @param bus      登録対象のBus
+     * @param receiver レシーバ
+     */
+    public void registerBus(DataBus bus, Object receiver) {
+        bus.bind(mServiceLifecycleDelegate, receiver);
     }
 
     /**
