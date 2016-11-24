@@ -57,7 +57,7 @@ public class CentralSession {
      * 現在のステート
      */
     @NonNull
-    SessionState.Bus mState = new SessionState.Bus(new SessionState(SessionState.State.Initializing, this));
+    SessionState.Bus mState = new SessionState.Bus(new SessionState(SessionState.State.NewObject, this));
 
     /**
      * セッション更新バス
@@ -123,6 +123,7 @@ public class CentralSession {
      */
     @NonNull
     public BackgroundTask initialize(@Nullable InitializeOption option) {
+        mState.modified(new SessionState(SessionState.State.Initializing, this));
         // 現在の設定をDumpする
         return async((BackgroundTask<ResultCollection> task) -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);

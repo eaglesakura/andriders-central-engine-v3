@@ -14,6 +14,8 @@ public class SessionState {
     private final CentralSession mSession;
 
     public enum State {
+        NewObject,
+
         Initializing,
 
         Running,

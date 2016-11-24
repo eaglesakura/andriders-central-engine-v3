@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
+import com.eaglesakura.andriders.service.log.SessionLogController;
 import com.eaglesakura.andriders.service.server.SessionServer;
 import com.eaglesakura.andriders.service.ui.SessionNotification;
 import com.eaglesakura.andriders.util.AppLog;
@@ -31,6 +32,12 @@ public class CentralSessionService extends Service {
      */
     @Nullable
     CentralSession mSession;
+
+    /**
+     * 走行中の保存管理
+     */
+    @Nullable
+    SessionLogController mSessionLogController;
 
     @NotNull
     final SessionServer mSessionServer;
@@ -97,11 +104,11 @@ public class CentralSessionService extends Service {
 
         CentralSession centralSession = CentralSession.newInstance(sessionInfo);
         centralSession.registerStateBus(this);
-        centralSession.initialize(option);
 
-        // Foreground Serviceとして起動する
-        mSessionNotification = new SessionNotification(this, mNotificationCallback);
-        mSessionNotification.onStartSession(centralSession);
+        mSessionLogController = SessionLogController.attach(centralSession);
+        mSessionNotification = SessionNotification.attach(centralSession, mNotificationCallback);
+
+        centralSession.initialize(option);
 
         mServiceLifecycleDelegate.asyncUI(task -> {
             // 開始通知を送る
@@ -117,16 +124,13 @@ public class CentralSessionService extends Service {
      */
     @UiThread
     protected void stopCurrentSession(@Nullable Intent intent) {
-        if (mSessionNotification != null) {
-            mSessionNotification.onStopSession(mSession);
-            mSessionNotification = null;
-        }
-
         if (mSession != null) {
             SessionInfo info = mSession.getSessionInfo();
 
             mSession.dispose();
             mSession = null;
+            mSessionLogController = null;
+            mSessionNotification = null;
 
             mServiceLifecycleDelegate.asyncUI(task -> {
                 // 終了通知を送る
@@ -139,7 +143,7 @@ public class CentralSessionService extends Service {
     /**
      * セッション制御のコールバック
      */
-    private SessionServer.Callback mSessionServerCallback = new SessionServer.Callback() {
+    private final SessionServer.Callback mSessionServerCallback = new SessionServer.Callback() {
         @Override
         @Nullable
         public CentralSession getCurrentSession(SessionServer self) {
@@ -150,7 +154,12 @@ public class CentralSessionService extends Service {
     /**
      * 通知制御のコールバック
      */
-    private SessionNotification.Callback mNotificationCallback = new SessionNotification.Callback() {
+    private final SessionNotification.Callback mNotificationCallback = new SessionNotification.Callback() {
+        @Override
+        public Service getService(SessionNotification self) {
+            return CentralSessionService.this;
+        }
+
         @Override
         public void onClickNotification(SessionNotification self) {
             AppLog.system("Click Notification");

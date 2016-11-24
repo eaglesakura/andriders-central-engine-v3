@@ -4,7 +4,6 @@ import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.dao.session.DaoMaster;
 import com.eaglesakura.andriders.dao.session.DaoSession;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
-import com.eaglesakura.andriders.dao.session.DbSessionPointDao;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
 import com.eaglesakura.andriders.error.io.AppDatabaseException;
@@ -15,7 +14,6 @@ import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawLocation;
 import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.storage.AppStorageManager;
-import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
@@ -26,7 +24,6 @@ import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.geo.GeohashGroup;
 import com.eaglesakura.json.JSON;
 import com.eaglesakura.util.StringUtil;
-import com.eaglesakura.util.Timer;
 import com.eaglesakura.util.Util;
 
 import org.greenrobot.greendao.database.StandardDatabase;
@@ -69,47 +66,6 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
             throw new AppDataNotFoundException();
         }
     }
-
-    /**
-     * 全記録の中から最高速度を取得する
-     *
-     * @return 最高速度[km/h]
-     */
-    public double loadMaxSpeedKmh() {
-        return loadMaxSpeedKmh(0, Long.MAX_VALUE >> 1);
-    }
-
-    /**
-     * 指定範囲内から最高速度を取得する
-     *
-     * @param startTime 開始時刻
-     * @param endTime   終了時刻
-     * @return 最高速度[km/h]
-     */
-    public double loadMaxSpeedKmh(long startTime, long endTime) {
-        Timer timer = new Timer();
-        try {
-            List<DbSessionPoint> gpsSpeedList = session.getDbSessionPointDao().queryBuilder()
-                    .orderDesc(DbSessionPointDao.Properties.ValueGpsSpeed)
-                    .where(DbSessionPointDao.Properties.Date.ge(startTime), DbSessionPointDao.Properties.Date.le(endTime))
-                    .limit(1)
-                    .list();
-
-            List<DbSessionPoint> sensorSpeedList = session.getDbSessionPointDao().queryBuilder()
-                    .orderDesc(DbSessionPointDao.Properties.ValueSensorSpeed)
-                    .where(DbSessionPointDao.Properties.Date.ge(startTime), DbSessionPointDao.Properties.Date.le(endTime))
-                    .limit(1)
-                    .list();
-
-            float gpsSpeed = (gpsSpeedList.isEmpty() ? 0 : gpsSpeedList.get(0).getValueGpsSpeed());
-            float sensorSpeed = (sensorSpeedList.isEmpty() ? 0 : sensorSpeedList.get(0).getValueSensorSpeed());
-
-            return Math.max(gpsSpeed, sensorSpeed);
-        } finally {
-            AppLog.db("loadMaxSpeedKmh:range readTime[%d ms]", timer.end());
-        }
-    }
-
 
     /**
      * 日時を指定するクエリを取得する

@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.service.ui;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.material.widget.NotificationBuilder;
 import com.eaglesakura.material.widget.RemoteViewsBuilder;
 import com.eaglesakura.material.widget.support.SupportNotification;
@@ -20,9 +21,6 @@ public class SessionNotification {
 
     static final int NOTIFICATION_ID = 0x1200;
 
-    @NonNull
-    final Service mService;
-
     /**
      * 通知ID
      */
@@ -39,25 +37,54 @@ public class SessionNotification {
     @NonNull
     final Callback mCallback;
 
-    public SessionNotification(@NonNull Service service, Callback callback) {
-        mService = service;
+    SessionNotification(@NonNull Callback callback) {
         mCallback = callback;
+    }
+
+    public static SessionNotification attach(CentralSession session, @NonNull Callback callback) {
+        SessionNotification result = new SessionNotification(callback);
+
+        session.registerStateBus(result);
+        session.registerDataBus(result);
+
+        return result;
+    }
+
+    /**
+     * Sessionのステート変更通知をハンドリングする
+     */
+    @Subscribe
+    private void onSessionStateChanged(SessionState.Bus state) {
+        // 必要に応じてハンドリングを追加する
+        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
+
+        Service service = mCallback.getService(this);
+        CentralSession session = state.getSession();
+        if (state.getState() == SessionState.State.Initializing) {
+            // 初期化中
+            onStartSessionInitialize(service, session);
+        } else if (state.getState() == SessionState.State.Running) {
+            // 実行中に切り替わった
+        } else if (state.getState() == SessionState.State.Destroyed) {
+            // セッション終了とする
+            onStopSession(service, session);
+        }
     }
 
     /**
      * セッションが開始された
      */
-    @UiThread
-    public void onStartSession(CentralSession session) {
+    private void onStartSessionInitialize(Service service, CentralSession session) {
         session.registerStateBus(this);
 
-        mNotification = NotificationBuilder.from(mService)
+        mNotification = NotificationBuilder.from(service)
                 .ticker(R.string.Word_App_AndridersCentralEngine)
                 .title(R.string.Word_App_AndridersCentralEngine)
                 .icon(R.mipmap.ic_launcher)
                 .showForeground(NOTIFICATION_ID);
 
-        setContent(RemoteViewsBuilder.from(mService, R.layout.display_notification_initialize)
+        // 表示内容を切り替える
+        setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_initialize)
                 .build()
                 .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
                     mCallback.onClickNotification(SessionNotification.this);
@@ -65,8 +92,23 @@ public class SessionNotification {
     }
 
     /**
+     * セッションの初期化が完了した
+     */
+    private void onStartSession(Service service, CentralSession session) {
+
+        // 表示内容を切り替える
+        setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_running)
+                .build()
+                .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
+                    mCallback.onClickNotification(SessionNotification.this);
+                }));
+
+    }
+
+    /**
      * コンテンツを更新する
      */
+    @UiThread
     public void setContent(SupportRemoteViews views) {
         if (mNotificationViews != null) {
             mNotificationViews.dispose();
@@ -81,27 +123,26 @@ public class SessionNotification {
     /**
      * セッションが終了した
      */
-    @UiThread
-    public void onStopSession(CentralSession session) {
+    private void onStopSession(Service service, CentralSession session) {
         if (mNotification != null) {
-            mService.stopForeground(true);
+            service.stopForeground(true);
             mNotification.cancel();
             mNotification = null;
         }
+
         if (mNotificationViews != null) {
             mNotificationViews.dispose();
             mNotificationViews = null;
         }
     }
 
-    @Subscribe
-    private void onSessionStateChanged(SessionState.Bus state) {
-        if (state.getState() == SessionState.State.Running) {
-            // Runningに切り替わったので、通知を変更する
-        }
-    }
-
     public interface Callback {
+
+        /**
+         * 管理対象のServiceを取得する
+         */
+        Service getService(SessionNotification self);
+
         /**
          * 通知をクリックされた
          */

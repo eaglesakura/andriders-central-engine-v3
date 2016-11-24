@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.service;
+package com.eaglesakura.andriders.service.log;
 
 import com.eaglesakura.andriders.central.data.log.SessionLogger;
 import com.eaglesakura.andriders.central.service.CentralSession;
