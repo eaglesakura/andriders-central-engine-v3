@@ -169,7 +169,7 @@ public class SessionLogger {
         Timer timer = new Timer();
         try {
             writableDb.insert(points);
-            AppLog.db("Session Log Commit :: time[%s] pt[%d]", timer.end(), points.size());
+            AppLog.db("Session Log Commit :: time[%s ms] num[%d]", timer.end(), points.size());
 
         } catch (Exception e) {
             AppLog.db("SessionLog write failed. rollback");

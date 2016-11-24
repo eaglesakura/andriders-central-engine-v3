@@ -3,6 +3,8 @@ package com.eaglesakura.andriders.service.ui;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.android.framework.delegate.task.DataBus;
 
+import android.support.annotation.Nullable;
+
 /**
  * アニメーションの1フレームデータ
  */
@@ -43,6 +45,10 @@ public class AnimationFrame {
     }
 
     public static class Bus extends DataBus<AnimationFrame> {
+        public Bus(@Nullable AnimationFrame data) {
+            super(data);
+        }
+
         public void onUpdate(CentralSession session, double deltaSec) {
             // 更新通知を出す
             AnimationFrame oldData = getData();

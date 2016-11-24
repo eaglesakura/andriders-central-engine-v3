@@ -163,7 +163,7 @@ public class CentralSession {
      */
     public void onUpdate(double deltaSec) {
         // 実行中以外のステートは無視する
-        if (mStateBus.getState() == SessionState.State.Running) {
+        if (mStateBus.getState() != SessionState.State.Running) {
             return;
         }
 

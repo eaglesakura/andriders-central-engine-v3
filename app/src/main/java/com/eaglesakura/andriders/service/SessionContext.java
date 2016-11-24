@@ -53,7 +53,7 @@ public class SessionContext {
      * アニメーション管理バス
      */
     @Nullable
-    AnimationFrame.Bus mAnimationFrameBus;
+    AnimationFrame.Bus mAnimationFrameBus = new AnimationFrame.Bus(new AnimationFrame());
 
     public SessionContext(@NonNull Service service) {
         mService = service;
@@ -144,7 +144,6 @@ public class SessionContext {
 
         @Override
         public void onUpdate(ServiceAnimationController self, CentralSession session, double deltaSec) {
-//            mSession.onUpdate(deltaSec);
             mSessionUpdateDeltaSec += deltaSec;
             if (mSessionUpdateDeltaSec > 1.0) {
                 // 1秒以上経過したのでセッション情報を行進
