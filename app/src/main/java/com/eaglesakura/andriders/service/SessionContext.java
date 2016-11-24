@@ -6,7 +6,7 @@ import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.service.log.SessionLogController;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.service.ui.CentralDisplayWindow;
-import com.eaglesakura.andriders.service.ui.CentralNotification;
+import com.eaglesakura.andriders.service.ui.CentralStatusBar;
 import com.eaglesakura.andriders.service.ui.ServiceAnimationController;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
@@ -42,7 +42,7 @@ public class SessionContext {
      * CentralSessionと
      */
     @NonNull
-    CentralNotification mSessionNotification;
+    CentralStatusBar mSessionNotification;
 
     /**
      * アニメーション管理
@@ -80,7 +80,7 @@ public class SessionContext {
         centralSession.registerStateBus(this);
 
         mSessionLogController = SessionLogController.attach(centralSession);
-        mSessionNotification = CentralNotification.attach(centralSession, mNotificationCallback);
+        mSessionNotification = CentralStatusBar.attach(centralSession, mNotificationCallback);
         mAnimationController = ServiceAnimationController.attach(centralSession, mAnimationCallback);
         mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mAnimationFrameBus, centralSession);
 
@@ -115,7 +115,7 @@ public class SessionContext {
     }
 
     @Nullable
-    public CentralNotification getSessionNotification() {
+    public CentralStatusBar getSessionNotification() {
         return mSessionNotification;
     }
 
@@ -132,14 +132,14 @@ public class SessionContext {
     /**
      * 通知制御のコールバック
      */
-    private final CentralNotification.Callback mNotificationCallback = new CentralNotification.Callback() {
+    private final CentralStatusBar.Callback mNotificationCallback = new CentralStatusBar.Callback() {
         @Override
-        public Service getService(CentralNotification self) {
+        public Service getService(CentralStatusBar self) {
             return mService;
         }
 
         @Override
-        public void onClickNotification(CentralNotification self) {
+        public void onClickNotification(CentralStatusBar self) {
             AppLog.system("Click Notification");
         }
     };

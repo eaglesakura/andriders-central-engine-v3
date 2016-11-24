@@ -17,7 +17,7 @@ import android.support.annotation.UiThread;
 /**
  * セッション表示用の通知を管理する
  */
-public class CentralNotification {
+public class CentralStatusBar {
 
     static final int NOTIFICATION_ID = 0x1200;
 
@@ -37,12 +37,12 @@ public class CentralNotification {
     @NonNull
     final Callback mCallback;
 
-    CentralNotification(@NonNull Callback callback) {
+    CentralStatusBar(@NonNull Callback callback) {
         mCallback = callback;
     }
 
-    public static CentralNotification attach(CentralSession session, @NonNull Callback callback) {
-        CentralNotification result = new CentralNotification(callback);
+    public static CentralStatusBar attach(CentralSession session, @NonNull Callback callback) {
+        CentralStatusBar result = new CentralStatusBar(callback);
 
         session.registerStateBus(result);
         session.registerDataBus(result);
@@ -86,7 +86,7 @@ public class CentralNotification {
         setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_initialize)
                 .build()
                 .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
-                    mCallback.onClickNotification(CentralNotification.this);
+                    mCallback.onClickNotification(CentralStatusBar.this);
                 }));
     }
 
@@ -99,7 +99,7 @@ public class CentralNotification {
         setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_running)
                 .build()
                 .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
-                    mCallback.onClickNotification(CentralNotification.this);
+                    mCallback.onClickNotification(CentralStatusBar.this);
                 }));
     }
 
@@ -140,11 +140,11 @@ public class CentralNotification {
         /**
          * 管理対象のServiceを取得する
          */
-        Service getService(CentralNotification self);
+        Service getService(CentralStatusBar self);
 
         /**
          * 通知をクリックされた
          */
-        void onClickNotification(CentralNotification self);
+        void onClickNotification(CentralStatusBar self);
     }
 }
