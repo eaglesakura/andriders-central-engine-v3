@@ -179,20 +179,20 @@ public class CentralDataManagerTest extends AppUnitTestCase {
             }
 
             assertEquals(data.mSpeedData.getSpeedZone(), centralData.sensor.speed.zone);
-            assertEquals(data.mSpeedData.getSpeedKmh(), centralData.sensor.speed.speedKmPerHour, 0.1);
+            assertEquals(data.mSpeedData.getSpeedKmh(), centralData.sensor.speed.speedKmh, 0.1);
 
             // 速度チェック
             validate(centralData.record.maxSpeedKmh)                // 最高速度は
                     .from(centralData.record.maxSpeedKmhToday)      // 今日の最高速度以上
                     .from(centralData.record.maxSpeedKmhSession)    // セッションの最高速度以上
-                    .from(centralData.sensor.speed.speedKmPerHour); // 現在速度以上
+                    .from(centralData.sensor.speed.speedKmh); // 現在速度以上
 
             validate(centralData.record.maxSpeedKmhToday)           // 今日の最高速度は
                     .from(centralData.record.maxSpeedKmhSession)    // セッションの最高速度以上
-                    .from(centralData.sensor.speed.speedKmPerHour); // 現在速度以上
+                    .from(centralData.sensor.speed.speedKmh); // 現在速度以上
 
             validate(centralData.record.maxSpeedKmhSession)         // セッション最高速度は
-                    .from(centralData.sensor.speed.speedKmPerHour); // 現在速度以上
+                    .from(centralData.sensor.speed.speedKmh); // 現在速度以上
         } else {
             assertNull(centralData.sensor.speed);
         }

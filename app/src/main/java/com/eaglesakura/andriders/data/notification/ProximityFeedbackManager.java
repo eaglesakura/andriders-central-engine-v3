@@ -1,22 +1,18 @@
-package com.eaglesakura.andriders.display.notification;
+package com.eaglesakura.andriders.data.notification;
 
 import com.eaglesakura.andriders.central.data.command.ProximityCommandController;
-import com.eaglesakura.andriders.data.AppSettings;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
-import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.device.vibrate.VibrateManager;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.android.rx.BackgroundTaskBuilder;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ObserveTarget;
 import com.eaglesakura.android.rx.PendingCallbackQueue;
 import com.eaglesakura.android.system.ScreenEventReceiver;
 
@@ -42,9 +38,6 @@ public class ProximityFeedbackManager {
 
     @NonNull
     final ClockTimer mTimer;
-
-    @Inject(AppContextProvider.class)
-    AppSettings mAppSettings;
 
     /**
      * 近接状態である場合true
@@ -137,8 +130,11 @@ public class ProximityFeedbackManager {
         }
     }
 
+    /**
+     * ディスプレイON/OFFとフィードバックON/OFFを連動させる
+     */
     private boolean isScreenLink() {
-        return mAppSettings.getCentralSettings().isProximityCommandScreenLink();
+        return true;
     }
 
 
@@ -270,7 +266,7 @@ public class ProximityFeedbackManager {
     ProximityCommandController.ProximityListener mProximityFeedbackListener = new ProximityCommandController.ProximityListener() {
         @Override
         public void onRequestUserFeedback(ProximityCommandController self, int sec, @Nullable CommandData data) {
-            mCallbackQueue.run(ObserveTarget.Alive, () -> {
+            mCallbackQueue.run(CallbackTime.Alive, () -> {
                 if (!mProximityState) {
                     // 近接してないので何もしない
                     mCommandData = null;

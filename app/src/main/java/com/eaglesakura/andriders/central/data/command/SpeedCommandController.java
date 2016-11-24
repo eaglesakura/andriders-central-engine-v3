@@ -96,7 +96,7 @@ public abstract class SpeedCommandController extends CommandController {
         public void onReceived(@NonNull RawCentralData master, @NonNull RawSensorData.RawSpeed sensor) {
             // 最高速度の更新
             mRecord = master.record;
-            onUpdateSpeed(sensor.speedKmPerHour);
+            onUpdateSpeed(sensor.speedKmh);
         }
 
         @Override

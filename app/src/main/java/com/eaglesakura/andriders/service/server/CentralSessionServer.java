@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
  *
  * 別Processのクライアントから接続され、必要な処理を行う。
  */
-public class SessionServer {
+public class CentralSessionServer {
 
     @NonNull
     final Callback mCallback;
@@ -31,7 +31,7 @@ public class SessionServer {
 
     private CommandMap mSessionCommandMap = new CommandMap();
 
-    public SessionServer(@NonNull Service service, @NonNull Callback callback) {
+    public CentralSessionServer(@NonNull Service service, @NonNull Callback callback) {
         mCallback = callback;
         mImpl = new CommandServerImpl(service);
         buildServerCommand();
@@ -55,7 +55,7 @@ public class SessionServer {
 
     public interface Callback {
         @Nullable
-        CentralSession getCurrentSession(SessionServer self);
+        CentralSession getCurrentSession(CentralSessionServer self);
     }
 
     @Nullable

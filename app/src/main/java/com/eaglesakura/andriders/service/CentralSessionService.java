@@ -2,16 +2,11 @@ package com.eaglesakura.andriders.service;
 
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
-import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
-import com.eaglesakura.andriders.service.log.SessionLogController;
-import com.eaglesakura.andriders.service.server.SessionServer;
-import com.eaglesakura.andriders.service.ui.SessionNotification;
+import com.eaglesakura.andriders.service.server.CentralSessionServer;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.util.ContextUtil;
-import com.squareup.otto.Subscribe;
 
 import org.greenrobot.greendao.annotation.NotNull;
 
@@ -28,32 +23,21 @@ import android.support.annotation.UiThread;
 public class CentralSessionService extends Service {
 
     /**
-     * 現在走行中のセッションデータ
+     * 現在実行中のセッション情報
      */
     @Nullable
-    CentralSession mSession;
+    SessionContext mSession;
 
     /**
-     * 走行中のログ保存管理
+     * その他のプロセスと通信するためのコマンドサーバ
      */
-    @Nullable
-    SessionLogController mSessionLogController;
-
-    /**
-     * セッションのNotification通知管理
-     *
-     * CentralSessionと
-     */
-    @Nullable
-    SessionNotification mSessionNotification;
-
     @NotNull
-    final SessionServer mSessionServer;
+    final CentralSessionServer mSessionServer;
 
     ServiceLifecycleDelegate mServiceLifecycleDelegate = new ServiceLifecycleDelegate();
 
     public CentralSessionService() {
-        mSessionServer = new SessionServer(this, mSessionServerCallback);
+        mSessionServer = new CentralSessionServer(this, mSessionServerCallback);
     }
 
     @Nullable
@@ -99,19 +83,10 @@ public class CentralSessionService extends Service {
      */
     @UiThread
     protected void startNewSession(Intent intent) {
-        SessionInfo sessionInfo = new SessionInfo.Builder(this, new Clock(System.currentTimeMillis()))
-                .debuggable(intent.getBooleanExtra(CentralServiceCommand.EXTRA_BOOT_DEBUG_MODE, false))
-                .build();
+        SessionContext sessionContext = new SessionContext(this);
+        sessionContext.initialize(intent);
 
-        CentralSession.InitializeOption option = new CentralSession.InitializeOption();
-
-        CentralSession centralSession = CentralSession.newInstance(sessionInfo);
-        centralSession.registerStateBus(this);
-
-        mSessionLogController = SessionLogController.attach(centralSession);
-        mSessionNotification = SessionNotification.attach(centralSession, mNotificationCallback);
-
-        centralSession.initialize(option);
+        SessionInfo sessionInfo = sessionContext.getSession().getSessionInfo();
 
         mServiceLifecycleDelegate.asyncUI(task -> {
             // 開始通知を送る
@@ -119,7 +94,7 @@ public class CentralSessionService extends Service {
             return this;
         }).start();
 
-        mSession = centralSession;
+        mSession = sessionContext;
     }
 
     /**
@@ -132,8 +107,6 @@ public class CentralSessionService extends Service {
 
             mSession.dispose();
             mSession = null;
-            mSessionLogController = null;
-            mSessionNotification = null;
 
             mServiceLifecycleDelegate.asyncUI(task -> {
                 // 終了通知を送る
@@ -146,44 +119,18 @@ public class CentralSessionService extends Service {
     /**
      * セッション制御のコールバック
      */
-    private final SessionServer.Callback mSessionServerCallback = new SessionServer.Callback() {
+    private final CentralSessionServer.Callback mSessionServerCallback = new CentralSessionServer.Callback() {
         @Override
         @Nullable
-        public CentralSession getCurrentSession(SessionServer self) {
-            return mSession;
-        }
-    };
-
-    /**
-     * 通知制御のコールバック
-     */
-    private final SessionNotification.Callback mNotificationCallback = new SessionNotification.Callback() {
-        @Override
-        public Service getService(SessionNotification self) {
-            return CentralSessionService.this;
-        }
-
-        @Override
-        public void onClickNotification(SessionNotification self) {
-            AppLog.system("Click Notification");
+        public CentralSession getCurrentSession(CentralSessionServer self) {
+            if (mSession != null) {
+                return mSession.getSession();
+            }
+            return null;
         }
     };
 
     public static boolean isRunning(Context context) {
         return ContextUtil.isServiceRunning(context, CentralSessionService.class);
-    }
-
-    /**
-     * Sessionのステート変更通知をハンドリングする
-     */
-    @Subscribe
-    private void onSessionStateChanged(SessionState.Bus state) {
-        // 必要に応じてハンドリングを追加する
-        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
-        if (state.getSession() != mSession) {
-            // ハンドリング対象のステートなので、これはdropする
-            return;
-        }
-
     }
 }

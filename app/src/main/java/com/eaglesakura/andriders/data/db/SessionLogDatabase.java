@@ -94,8 +94,8 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         return result.toString();
     }
 
-    SupportCursor logQuery(String sql, String... args) {
-        return new SupportCursor(query(true, sql, args));
+    SupportCursor logQuery(String sql) {
+        return new SupportCursor(query(true, sql));
     }
 
     /**
@@ -269,10 +269,10 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                     RawSensorData.RawSpeed speed = data.sensor.speed;
                     if ((speed.flags & RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS) != 0) {
                         // GPS速度を設定
-                        pt.setValueGpsSpeed(speed.speedKmPerHour);
+                        pt.setValueGpsSpeed(speed.speedKmh);
                     } else {
                         // センサー速度
-                        pt.setValueSensorSpeed(speed.speedKmPerHour);
+                        pt.setValueSensorSpeed(speed.speedKmh);
                     }
                 }
                 if (data.sensor.location != null) {

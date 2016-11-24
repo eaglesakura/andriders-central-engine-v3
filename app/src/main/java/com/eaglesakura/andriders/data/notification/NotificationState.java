@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.display.notification;
+package com.eaglesakura.andriders.data.notification;
 
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.andriders.util.ClockTimer;
@@ -66,7 +66,7 @@ public class NotificationState {
      */
     float getTargetPositionY() {
         final int CARD_HEIGHT = mCard.getCardImage().getHeight();
-        return (float) CARD_HEIGHT * (mCardNumber + NotificationCard.NOTIFICATION_TOPMARGIN_NUM);
+        return (float) CARD_HEIGHT * (mCardNumber + NotificationCard.NOTIFICATION_TOP_MARGIN_NUM);
     }
 
     /**

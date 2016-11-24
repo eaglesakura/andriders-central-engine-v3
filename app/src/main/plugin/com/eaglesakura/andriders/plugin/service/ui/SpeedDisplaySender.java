@@ -70,7 +70,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
         DisplayData data = new DisplayData(context, DISPLAY_ID);
         BasicValue value = new BasicValue();
 
-        double speed = mSpeed.speedKmPerHour;
+        double speed = mSpeed.speedKmh;
         if ((mSpeed.flags & RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS) != 0) {
             value.setTitle(context.getString(R.string.Display_Common_Speed_GPS));
 

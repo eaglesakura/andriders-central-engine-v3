@@ -57,7 +57,7 @@ public class CentralSession {
      * 現在のステート
      */
     @NonNull
-    SessionState.Bus mState = new SessionState.Bus(new SessionState(SessionState.State.NewObject, this));
+    SessionState.Bus mStateBus = new SessionState.Bus(new SessionState(SessionState.State.NewObject, this));
 
     /**
      * セッション更新バス
@@ -82,7 +82,7 @@ public class CentralSession {
      * StateBusに登録する
      */
     public void registerStateBus(Object receiver) {
-        mState.bind(mServiceLifecycleDelegate, receiver);
+        mStateBus.bind(mServiceLifecycleDelegate, receiver);
     }
 
     /**
@@ -97,7 +97,7 @@ public class CentralSession {
      */
     @NonNull
     public SessionState.Bus getStateBus() {
-        return mState;
+        return mStateBus;
     }
 
     /**
@@ -123,7 +123,7 @@ public class CentralSession {
      */
     @NonNull
     public BackgroundTask initialize(@Nullable InitializeOption option) {
-        mState.modified(new SessionState(SessionState.State.Initializing, this));
+        mStateBus.modified(new SessionState(SessionState.State.Initializing, this));
         // 現在の設定をDumpする
         return async((BackgroundTask<ResultCollection> task) -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
@@ -152,7 +152,7 @@ public class CentralSession {
             mPluginCollection = result.as(CentralPluginCollection.class);
 
             // State切り替えを通知する
-            mState.modified(new SessionState(SessionState.State.Running, this));
+            mStateBus.modified(new SessionState(SessionState.State.Running, this));
         }).failed((error, task) -> {
             AppLog.report(error);
         }).start();
@@ -163,7 +163,7 @@ public class CentralSession {
      */
     public void onUpdate(double deltaSec) {
         // 実行中以外のステートは無視する
-        if (getStateBus().getState() == SessionState.State.Running) {
+        if (mStateBus.getState() == SessionState.State.Running) {
             return;
         }
 
@@ -200,14 +200,14 @@ public class CentralSession {
      */
     @NonNull
     public BackgroundTask dispose() {
-        mState.modified(new SessionState(SessionState.State.Stopping, this));
+        mStateBus.modified(new SessionState(SessionState.State.Stopping, this));
         return async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
             if (mPluginCollection != null) {
                 mPluginCollection.disconnect();
             }
             return this;
         }).finalized(task -> {
-            mState.modified(new SessionState(SessionState.State.Destroyed, this));
+            mStateBus.modified(new SessionState(SessionState.State.Destroyed, this));
 
             // 処理はすべて終了
             mServiceLifecycleDelegate.onDestroy();

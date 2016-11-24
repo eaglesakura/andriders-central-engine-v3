@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.display.notification;
+package com.eaglesakura.andriders.data.notification;
 
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.util.Clock;
@@ -47,7 +47,7 @@ public class NotificationCard {
 
         // 1カードの幅と高さ
         // 比率は必ず16:9になるようにする
-        final int CARD_HEIGHT = displaySize[1] / (MAX_NOTIFICATION_CARDS + NOTIFICATION_BOTTOMMARGIN_NUM + NOTIFICATION_TOPMARGIN_NUM);
+        final int CARD_HEIGHT = displaySize[1] / (MAX_NOTIFICATION_CARDS + NOTIFICATION_BOTTOM_MARGIN_NUM + NOTIFICATION_TOP_MARGIN_NUM);
         final int CARD_WIDTH = (int) (((float) CARD_HEIGHT / 9.0f) * (32.0f + 9.0f));   // アイコン領域＋16:9の通知領域を持たせる
 //        final int CARD_WIDTH = (int) ((float) displaySize[0] * 0.4f);
 
@@ -144,10 +144,10 @@ public class NotificationCard {
     /**
      * マージンとして上に開けておくスロット数
      */
-    public static final int NOTIFICATION_TOPMARGIN_NUM = 2;
+    public static final int NOTIFICATION_TOP_MARGIN_NUM = 2;
 
     /**
      * マージンとして下に開けておくスロット数
      */
-    public static final int NOTIFICATION_BOTTOMMARGIN_NUM = 2;
+    public static final int NOTIFICATION_BOTTOM_MARGIN_NUM = 2;
 }

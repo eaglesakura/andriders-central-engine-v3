@@ -121,7 +121,7 @@ public class LogStatistics {
         }
 
         if (latest.sensor.speed != null) {
-            mMaxSpeedKmh = Math.max(mMaxSpeedKmh, latest.sensor.speed.speedKmPerHour);
+            mMaxSpeedKmh = Math.max(mMaxSpeedKmh, latest.sensor.speed.speedKmh);
         }
     }
 }

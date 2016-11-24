@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.display.notification;
+package com.eaglesakura.andriders.data.notification;
 
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.util.Clock;

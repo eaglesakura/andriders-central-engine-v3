@@ -45,6 +45,11 @@ public class SessionLogger {
     final Object lock = new Object();
 
     /**
+     * 挿入したログの個数
+     */
+    int mInsertLogCount = 0;
+
+    /**
      * どの程度の間隔でコミットするか
      */
     static final int POINT_COMMIT_INTERVAL_MS = 1000 * 5;
@@ -85,6 +90,15 @@ public class SessionLogger {
      * 打刻を行うデータであればtrue
      */
     private boolean isKeyPoint(RawCentralData data) {
+        if (mInsertLogCount == 0) {
+            return true;
+        }
+
+        if (data.sensor.speed != null && data.sensor.speed.speedKmh == data.record.maxSpeedKmh) {
+            // 速度が最高点に達している場合は強制的にコミットする
+            return true;
+        }
+
         // 規定時間を過ぎたので現時点を打刻する
         if (mPointTimer.overTimeMs(POINT_COMMIT_INTERVAL_MS)) {
             return true;
@@ -93,24 +107,26 @@ public class SessionLogger {
         }
     }
 
+
     /**
      * 強制的に打刻を行う
      */
     public void add(RawCentralData latest) {
         synchronized (lock) {
+            ++mInsertLogCount;
             mPoints.add(latest);
         }
     }
 
     /**
      * 毎時更新を行う
+     *
+     * 必要に応じてキーが打刻される
      */
     public void onUpdate(RawCentralData latest) {
-        synchronized (lock) {
-            if (isKeyPoint(latest)) {
-                mPointTimer.start();
-                mPoints.add(latest);
-            }
+        if (isKeyPoint(latest)) {
+            mPointTimer.start();
+            add(latest);
         }
     }
 

@@ -128,7 +128,7 @@ public class SpeedData extends BaseCalculator {
 
         dstSensor.speed = new RawSensorData.RawSpeed();
         dstSensor.speed.flags |= speedSrc.getFlag();
-        dstSensor.speed.speedKmPerHour = (float) getSpeedKmh();
+        dstSensor.speed.speedKmh = (float) getSpeedKmh();
         dstSensor.speed.zone = getSpeedZone();
 
         if (speedSrc == SpeedSource.GPS) {

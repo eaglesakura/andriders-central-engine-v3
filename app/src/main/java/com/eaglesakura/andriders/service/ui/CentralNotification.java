@@ -17,7 +17,7 @@ import android.support.annotation.UiThread;
 /**
  * セッション表示用の通知を管理する
  */
-public class SessionNotification {
+public class CentralNotification {
 
     static final int NOTIFICATION_ID = 0x1200;
 
@@ -37,12 +37,12 @@ public class SessionNotification {
     @NonNull
     final Callback mCallback;
 
-    SessionNotification(@NonNull Callback callback) {
+    CentralNotification(@NonNull Callback callback) {
         mCallback = callback;
     }
 
-    public static SessionNotification attach(CentralSession session, @NonNull Callback callback) {
-        SessionNotification result = new SessionNotification(callback);
+    public static CentralNotification attach(CentralSession session, @NonNull Callback callback) {
+        CentralNotification result = new CentralNotification(callback);
 
         session.registerStateBus(result);
         session.registerDataBus(result);
@@ -55,7 +55,6 @@ public class SessionNotification {
      */
     @Subscribe
     private void onSessionStateChanged(SessionState.Bus state) {
-        // 必要に応じてハンドリングを追加する
         AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
 
         Service service = mCallback.getService(this);
@@ -87,7 +86,7 @@ public class SessionNotification {
         setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_initialize)
                 .build()
                 .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
-                    mCallback.onClickNotification(SessionNotification.this);
+                    mCallback.onClickNotification(CentralNotification.this);
                 }));
     }
 
@@ -100,7 +99,7 @@ public class SessionNotification {
         setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_running)
                 .build()
                 .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
-                    mCallback.onClickNotification(SessionNotification.this);
+                    mCallback.onClickNotification(CentralNotification.this);
                 }));
     }
 
@@ -141,11 +140,11 @@ public class SessionNotification {
         /**
          * 管理対象のServiceを取得する
          */
-        Service getService(SessionNotification self);
+        Service getService(CentralNotification self);
 
         /**
          * 通知をクリックされた
          */
-        void onClickNotification(SessionNotification self);
+        void onClickNotification(CentralNotification self);
     }
 }
