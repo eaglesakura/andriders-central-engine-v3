@@ -112,8 +112,9 @@ public class SessionContext {
                 mSession.dispose();
             }
             return this;
+        }).finalized(task -> {
+            mLifecycleDelegate.onDestroy();
         }).start();
-        mLifecycleDelegate.onDestroy();
     }
 
     @NonNull

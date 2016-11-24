@@ -120,7 +120,7 @@ public class CentralDisplayWindow {
 
     @Subscribe
     private void onAnimationFrame(AnimationFrame.Bus frame) {
-        AppLog.system("onAnimationFrame frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
+//        AppLog.system("onAnimationFrame frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
         if (mNotificationDisplay != null) {
             mNotificationDisplay.invalidate();
         }
