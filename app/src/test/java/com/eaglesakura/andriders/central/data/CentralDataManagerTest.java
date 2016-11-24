@@ -47,7 +47,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
      * セッション開始時刻が正常であることを検証する
      */
     @Test
-    public void セッション開始時刻が正確であることを確認する() throws Exception {
+    public void セッション開始時刻が正確であることを確認する() throws Throwable {
         final long START_TIME = System.currentTimeMillis();
         Clock clock = new Clock(START_TIME);
         CentralDataManager data = newCentralDataManager(clock);
@@ -64,7 +64,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         assertEquals(data.getLatestCentralData().session.durationTimeMs, 1000 * 60);     // データも1分経過している
     }
 
-    void assertObject(CentralDataManager data, RawCentralData centralData) throws Exception {
+    public static void assertCentralData(CentralDataManager data, RawCentralData centralData) throws Throwable {
         assertNotNull(data);
         assertNotNull(data.mSpeedData.getSpeedZone());
         assertNotNull(data.mFitnessData.getZone());
@@ -221,7 +221,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
      * 39T-19Tギアの場合、クランクに対してホイール倍率が2.05となる。
      */
     @Test
-    public void ケイデンスセンサーによる速度を測定する() throws Exception {
+    public void ケイデンスセンサーによる速度を測定する() throws Throwable {
         final long START_TIME = System.currentTimeMillis();
         Clock clock = new Clock(START_TIME);
         CentralDataManager data = newCentralDataManager(clock);
@@ -241,7 +241,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 current += OFFSET_TIME_HOUR;
 
 
-                assertObject(data, data.getLatestCentralData());
+                assertCentralData(data, data.getLatestCentralData());
 
                 assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
 
@@ -267,7 +267,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     }
 
     @Test
-    public void ケイデンス停止で速度が得られている場合はアクティブとして扱わない() throws Exception {
+    public void ケイデンス停止で速度が得られている場合はアクティブとして扱わない() throws Throwable {
         final long START_TIME = System.currentTimeMillis();
         Clock clock = new Clock(START_TIME);
         CentralDataManager data = newCentralDataManager(clock);
@@ -287,7 +287,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 data.onUpdate();
                 current += OFFSET_TIME_HOUR;
 
-                assertObject(data, data.getLatestCentralData());
+                assertCentralData(data, data.getLatestCentralData());
 
                 // 速度をチェックする
                 assertNotEquals(data.mSpeedData.getSpeedZone(), SpeedZone.Stop); // スピードは停止にはならない
@@ -315,7 +315,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
      * 1時間で移動した場合、走行速度は54km/hにならなければならない。
      */
     @Test
-    public void GPS座標移動から距離と速度を測定する() throws Exception {
+    public void GPS座標移動から距離と速度を測定する() throws Throwable {
         final long START_TIME = System.currentTimeMillis();
         Clock clock = new Clock(START_TIME);
         CentralDataManager data = newCentralDataManager(clock);
@@ -340,7 +340,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
 
-                assertObject(data, data.getLatestCentralData());
+                assertCentralData(data, data.getLatestCentralData());
 
                 // 速度をチェックする
                 // 時速1kmの誤差を認める
@@ -379,7 +379,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     }
 
     @Test
-    public void GPS座標とケイデンスセンサーが与えられた場合ケイデンスが優先される() throws Exception {
+    public void GPS座標とケイデンスセンサーが与えられた場合ケイデンスが優先される() throws Throwable {
         final long START_TIME = System.currentTimeMillis();
         Clock clock = new Clock(START_TIME);
         CentralDataManager data = newCentralDataManager(clock);
@@ -407,7 +407,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
 
-                assertObject(data, data.getLatestCentralData());
+                assertCentralData(data, data.getLatestCentralData());
 
                 // 速度をチェックする
                 // 時速1kmの誤差を認める
@@ -437,7 +437,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     }
 
     @Test
-    public void ケイデンスセンサーの値がタイムアウトしたら自動的にGPS速度に切り替わる() throws Exception {
+    public void ケイデンスセンサーの値がタイムアウトしたら自動的にGPS速度に切り替わる() throws Throwable {
         final long START_TIME = System.currentTimeMillis();
         Clock clock = new Clock(START_TIME);
         CentralDataManager data = newCentralDataManager(clock);
@@ -467,7 +467,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;
 
-                assertObject(data, data.getLatestCentralData());
+                assertCentralData(data, data.getLatestCentralData());
 
                 if (current < 0.5) {
                     // 最初の30分はS&Cセンサー由来の速度
@@ -500,7 +500,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
     }
 
     @Test
-    public void 一時間の消費カロリーを計算する() throws Exception {
+    public void 一時間の消費カロリーを計算する() throws Throwable {
         final long START_TIME = System.currentTimeMillis();
         Clock clock = new Clock(START_TIME);
         CentralDataManager data = newCentralDataManager(clock);
@@ -517,7 +517,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 data.onUpdate();
                 current += OFFSET_TIME_HOUR;
 
-                assertObject(data, data.getLatestCentralData());
+                assertCentralData(data, data.getLatestCentralData());
 
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
                 assertNotNull(data.mFitnessData.getZone()); // ゾーンは必ず取得できる

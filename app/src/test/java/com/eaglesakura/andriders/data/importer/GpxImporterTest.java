@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.data.importer;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.central.data.CentralDataManager;
+import com.eaglesakura.andriders.central.data.CentralDataManagerTest;
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
@@ -97,6 +98,16 @@ public class GpxImporterTest extends AppUnitTestCase {
         SessionImportCommitter committer = new SessionImportCommitter(getContext()) {
             @Override
             public void onPointInsert(SessionImporter self, CentralDataManager dataManager, RawCentralData latest) throws AppException {
+                // CentralをValidate
+                try {
+                    CentralDataManagerTest.assertCentralData(dataManager, latest);
+                } catch (Error e) {
+                    throw e;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    fail();
+                }
+
                 // 心拍を適当に設定する
                 dataManager.setHeartrate((int) (160.0 + 30.0 * Math.random()));
 
