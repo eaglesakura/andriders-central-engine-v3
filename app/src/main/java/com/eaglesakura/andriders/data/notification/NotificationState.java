@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.data.notification;
 
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.device.display.DisplayInfo;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.math.Vector2;
@@ -17,9 +17,6 @@ public class NotificationState {
      * カードの挿入速度を指定しておく
      */
     final float INOUT_TIME_SEC = 0.5f;
-
-    @NonNull
-    final ClockTimer mClockTimer;
 
     /**
      * 表示時間（秒）
@@ -52,7 +49,6 @@ public class NotificationState {
 
     public NotificationState(DisplayInfo displayInfo, @NonNull NotificationCard card, @NonNull Clock clock) {
         mCard = card;
-        mClockTimer = new ClockTimer(clock);
         mDisplayInfo = displayInfo;
 
         // カード用画像を構築する
@@ -97,15 +93,15 @@ public class NotificationState {
     /**
      * レンダリングしている時間を取得する
      */
-    public long getShowTime() {
-        return mClockTimer.end();
+    public long getShowTimeMs() {
+        return (long) (mShowTimeSec * 1000.0);
     }
 
     /**
      * 表示が終了していたらtrue
      */
     public boolean isShowFinished() {
-        return (getShowTime() > mCard.getShowTimeMs()) && mInsertWeight <= 0;
+        return (mShowTimeSec > mCard.getShowTimeSec()) && mInsertWeight <= 0;
     }
 
     /**
@@ -125,17 +121,20 @@ public class NotificationState {
      */
     public void update(double deltaTimeSec) {
         // inとoutは早めにする
-        if (getShowTime() < (INOUT_TIME_SEC * 1000)) {
+        if (mShowTimeSec < INOUT_TIME_SEC) {
             // カードの出現
-            mInsertWeight = (float) getShowTime() / (INOUT_TIME_SEC * 1000);
-        } else if (getShowTime() > mCard.getShowTimeMs()) {
+            mInsertWeight = (float) (mShowTimeSec / INOUT_TIME_SEC);
+            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
+        } else if (mShowTimeSec > mCard.getShowTimeSec()) {
             // カードの表示時間を超えている
-            float overTime = getShowTime() - mCard.getShowTimeMs();
+            double overTime = mShowTimeSec - mCard.getShowTimeSec();
 
             // カードを引っ込める
-            mInsertWeight = 1.0f - (overTime / (INOUT_TIME_SEC * 1000));
+            mInsertWeight = 1.0f - (float) (overTime / INOUT_TIME_SEC);
+            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
         } else {
             mInsertWeight = 1.0f;
+            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
         }
 
         // カードを移動する
@@ -144,6 +143,7 @@ public class NotificationState {
             mCardPosition.y = MathUtil.targetMove(mCardPosition.y, getMoveSpeedY(deltaTimeSec), getTargetPositionY());
         }
 
+        mShowTimeSec += deltaTimeSec;
     }
 
     /**

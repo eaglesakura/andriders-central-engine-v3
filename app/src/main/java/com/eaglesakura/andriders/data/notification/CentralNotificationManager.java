@@ -112,6 +112,10 @@ public class CentralNotificationManager {
      * 時間経過はコンストラクタで渡されたClockによって管理される。
      */
     public void onUpdate(double deltaSec) {
+        // 経過時間の最大値を補正する
+        // 10fps以上の場合、フレームスキップの過多を抑制する
+        deltaSec = Math.min(deltaSec, 0.1);
+
         synchronized (lock) {
             int cardNumber = 0;
 

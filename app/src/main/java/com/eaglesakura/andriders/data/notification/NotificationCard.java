@@ -77,7 +77,7 @@ public class NotificationCard {
             int fontColor = ImageUtil.getNegaColor(mNotificationData.getBackgroundColor());
 
             final int FONT_AREA_WIDTH = CARD_WIDTH - (int) ((float) CARD_HEIGHT * 1.1f);
-            final int FONT_HEIGHT = CARD_HEIGHT / MAX_NOTIFICATION_MESSAGE_LINES;
+            final int FONT_HEIGHT = (int) ((CARD_HEIGHT / MAX_NOTIFICATION_MESSAGE_LINES) * 0.95f);
             final int FONT_MARGIN = 2;
 
             Font font = new Font();
@@ -108,6 +108,11 @@ public class NotificationCard {
 
     public int getShowTimeMs() {
         return (int) getNotificationTimeMs(mNotificationData.getDuration());
+    }
+
+
+    public double getShowTimeSec() {
+        return (double) getNotificationTimeMs(mNotificationData.getDuration()) / 1000.0;
     }
 
     /**

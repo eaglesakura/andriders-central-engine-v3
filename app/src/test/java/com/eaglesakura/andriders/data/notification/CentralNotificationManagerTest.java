@@ -50,11 +50,10 @@ public class CentralNotificationManagerTest extends AppUnitTestCase {
         assertEquals(manager.hasNotification(notificationData.getUniqueId()), CentralNotificationManager.NOTIFICATION_PENDING);
         for (int i = 0; i < 60; ++i) {
             clock.offset(1000 / 60);
-            manager.onUpdate(1000.0 / 60.0);
+            manager.onUpdate(1.0 / 60.0);
             if (manager.mNotificationStates.size() != 0) {
                 NotificationState state = manager.mNotificationStates.get(0);
-                assertTrue(state.mInsertWeight >= 0.0);
-                assertTrue(state.mInsertWeight <= 1.0);
+                validate(state.mInsertWeight).from(0.0).to(1.0);
                 Bitmap image = state.mCard.mCardImage;
                 Vector2 position = state.mCardPosition;
                 AppLog.test("Card Pos[%d, %d] Size[%d, %d]", (int) position.x, (int) position.y, image.getWidth(), image.getHeight());
@@ -67,7 +66,7 @@ public class CentralNotificationManagerTest extends AppUnitTestCase {
         // 1秒経過したら、まだ表示されている
         for (int i = 0; i < 60; ++i) {
             clock.offset(1000 / 60);
-            manager.onUpdate(1000.0 / 60.0);
+            manager.onUpdate(1.0 / 60.0);
         }
         assertEquals(manager.hasNotification(notificationData.getUniqueId()), CentralNotificationManager.NOTIFICATION_SHOWING);
         assertEquals(manager.mPendingNotifications.size(), 0);
@@ -76,11 +75,10 @@ public class CentralNotificationManagerTest extends AppUnitTestCase {
         // さらに30秒経過したら、削除されている
         for (int i = 0; i < (60 * 30); ++i) {
             clock.offset(1000 / 60);
-            manager.onUpdate(1000.0 / 60.0);
+            manager.onUpdate(1.0 / 60.0);
             if (manager.mNotificationStates.size() != 0) {
                 NotificationState state = manager.mNotificationStates.get(0);
-                assertTrue(state.mInsertWeight >= 0.0);
-                assertTrue(state.mInsertWeight <= 1.0);
+                validate(state.mInsertWeight).from(0.0).to(1.0);
                 Bitmap image = state.mCard.mCardImage;
                 Vector2 position = state.mCardPosition;
                 AppLog.test("Card Pos[%d, %d] Size[%d, %d]", (int) position.x, (int) position.y, image.getWidth(), image.getHeight());
@@ -107,7 +105,7 @@ public class CentralNotificationManagerTest extends AppUnitTestCase {
         // 1分経過させる
         for (int i = 0; i < (60 * 60); ++i) {
             clock.offset(1000 / 60);
-            manager.onUpdate(1000.0 / 60.0);
+            manager.onUpdate(1.0 / 60.0);
             manager.rendering(dummyGraphics);
         }
 
