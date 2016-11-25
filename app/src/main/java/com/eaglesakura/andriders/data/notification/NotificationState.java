@@ -22,6 +22,11 @@ public class NotificationState {
     final ClockTimer mClockTimer;
 
     /**
+     * 表示時間（秒）
+     */
+    double mShowTimeSec = 0.0;
+
+    /**
      * 表示しているカード番号
      */
     int mCardNumber = NotificationCard.MAX_NOTIFICATION_CARDS;

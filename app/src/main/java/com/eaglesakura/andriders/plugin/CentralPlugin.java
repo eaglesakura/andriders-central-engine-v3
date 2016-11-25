@@ -1,11 +1,14 @@
 package com.eaglesakura.andriders.plugin;
 
-import com.eaglesakura.andriders.central.CentralDataHolder;
 import com.eaglesakura.andriders.central.CentralDataUtil;
+import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.data.display.DisplayKeyCollection;
+import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
+import com.eaglesakura.andriders.plugin.internal.DisplayCommand;
 import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
 import com.eaglesakura.andriders.sdk.BuildConfig;
 import com.eaglesakura.andriders.sensor.SensorType;
@@ -65,7 +68,9 @@ public class CentralPlugin {
      */
     private String mSdkVersion = null;
 
-    private CentralDataHolder mCentralDataHolder;
+    private CentralDataManager.Holder mCentralDataManagerHolder;
+
+    private CentralNotificationManager.Holder mNotificationManagerHolder;
 
     @NonNull
     private final UserProfiles mUserProfiles;
@@ -83,6 +88,14 @@ public class CentralPlugin {
 
         buildCentralCommands();
         buildDisplayCommands();
+    }
+
+    public void setCentralDataManager(CentralDataManager.Holder centralDataManagerHolder) {
+        mCentralDataManagerHolder = centralDataManagerHolder;
+    }
+
+    public void setNotificationManager(CentralNotificationManager.Holder notificationManagerHolder) {
+        mNotificationManagerHolder = notificationManagerHolder;
     }
 
     public ComponentName getComponentName() {
@@ -301,17 +314,15 @@ public class CentralPlugin {
 //            return null;
 //        });
 //
-//        /**
-//         * 通知を行う
-//         */
-//        mCmdMap.addAction(DisplayCommand.CMD_queueNotification, (Object sender, String cmd, Payload payload) -> {
-//
-//            NotificationData notificationData = new NotificationData(mContext, payload.getBuffer());
-//            // 通知を送信する
-//            mNotificationDisplayManagerWorker.request(it -> it.queue(notificationData));
-//
-//            return null;
-//        });
+        /**
+         * 通知を行う
+         */
+        mCmdMap.addAction(DisplayCommand.CMD_queueNotification, (Object sender, String cmd, Payload payload) -> {
+            NotificationData notificationData = new NotificationData(mContext, payload.getBuffer());
+            // 通知を送信する
+            CentralDataUtil.execute(mNotificationManagerHolder, it -> it.queue(notificationData));
+            return null;
+        });
     }
 
     private void buildCentralCommands() {
@@ -347,7 +358,7 @@ public class CentralPlugin {
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setLocation, (Object sender, String cmd, Payload payload) -> {
             PluginProtocol.SrcLocation idl = payload.deserializePublicField(PluginProtocol.SrcLocation.class);
-            CentralDataUtil.execute(mCentralDataHolder, it -> it.setLocation(idl.latitude, idl.longitude, idl.altitude, idl.accuracyMeter));
+            CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setLocation(idl.latitude, idl.longitude, idl.altitude, idl.accuracyMeter));
             return null;
         });
 
@@ -356,7 +367,7 @@ public class CentralPlugin {
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setHeartrate, (Object sender, String cmd, Payload payload) -> {
             PluginProtocol.SrcHeartrate idl = payload.deserializePublicField(PluginProtocol.SrcHeartrate.class);
-            CentralDataUtil.execute(mCentralDataHolder, it -> it.setHeartrate(idl.bpm));
+            CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setHeartrate(idl.bpm));
             return null;
         });
 
@@ -365,7 +376,7 @@ public class CentralPlugin {
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, (Object sender, String cmd, Payload payload) -> {
             PluginProtocol.SrcSpeedAndCadence idl = payload.deserializePublicField(PluginProtocol.SrcSpeedAndCadence.class);
-            CentralDataUtil.execute(mCentralDataHolder, it -> it.setSpeedAndCadence(idl.crankRpm, idl.crankRevolution, idl.wheelRpm, idl.wheelRevolution));
+            CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setSpeedAndCadence(idl.crankRpm, idl.crankRevolution, idl.wheelRpm, idl.wheelRevolution));
             return null;
         });
     }

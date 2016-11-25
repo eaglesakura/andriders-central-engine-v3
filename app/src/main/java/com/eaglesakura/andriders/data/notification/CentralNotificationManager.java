@@ -178,4 +178,8 @@ public class CentralNotificationManager {
          */
         void onNotificationShowing(CentralNotificationManager self, NotificationData data);
     }
+
+    public interface Holder {
+        CentralNotificationManager getCentralNotificationManager();
+    }
 }

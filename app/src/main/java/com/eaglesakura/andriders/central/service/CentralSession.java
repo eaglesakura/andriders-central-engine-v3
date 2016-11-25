@@ -15,7 +15,6 @@ import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
-import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.Timer;
 
@@ -93,6 +92,11 @@ public class CentralSession {
 
     public Clock getSessionClock() {
         return mSessionInfo.getSessionClock();
+    }
+
+    @NonNull
+    public CentralPluginCollection getPluginCollection() {
+        return mPluginCollection;
     }
 
     /**

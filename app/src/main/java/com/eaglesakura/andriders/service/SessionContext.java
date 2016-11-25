@@ -99,10 +99,17 @@ public class SessionContext {
             return centralSession;
         }).completed((result, task) -> {
             mSession = centralSession;
+            // プラグインの接続を行う
+            mSession.getPluginCollection().safeEach(plugin -> {
+                plugin.setNotificationManager(() -> mCentralDisplayWindow.getCentralNotificationManager());
+                plugin.setCentralDataManager(() -> mSession.getCentralDataManager());
+
+                // 起動完了を通知
+                plugin.onCentralBootCompleted();
+            });
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
         }).start();
-
     }
 
     @NonNull

@@ -338,4 +338,8 @@ public class CentralDataManager {
             return result;
         }
     }
+
+    public interface Holder {
+        CentralDataManager getCentralDataManager();
+    }
 }

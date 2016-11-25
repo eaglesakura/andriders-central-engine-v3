@@ -3,8 +3,13 @@ package com.eaglesakura.andriders.service.ui;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
+import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
+import com.eaglesakura.andriders.provider.SessionManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
+import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.util.ViewUtil;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
@@ -29,6 +34,11 @@ public class CentralDisplayWindow {
     private ViewGroup mNotificationDisplay;
 
     /**
+     * 通知用View
+     */
+    private CentralNotificationView mNotificationView;
+
+    /**
      * サイコンのKey-Value表示ディスプレイ
      */
     private ViewGroup mDataDisplay;
@@ -39,6 +49,9 @@ public class CentralDisplayWindow {
     @NonNull
     final WindowManager mWindowManager;
 
+    @Inject(SessionManagerProvider.class)
+    CentralNotificationManager mCentralNotificationManager;
+
     CentralDisplayWindow(@NonNull Context context) {
         mContext = context;
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -46,9 +59,19 @@ public class CentralDisplayWindow {
 
     public static CentralDisplayWindow attach(@NonNull Context context, ServiceLifecycleDelegate lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session) {
         CentralDisplayWindow result = new CentralDisplayWindow(context);
+        session.getStateBus().bind(lifecycleDelegate, result);
         session.getDataBus().bind(lifecycleDelegate, result);
         animationFrameBus.bind(lifecycleDelegate, result);
+
+        Garnet.create(result)
+                .depend(CentralSession.class, session)
+                .inject();
+
         return result;
+    }
+
+    public CentralNotificationManager getCentralNotificationManager() {
+        return mCentralNotificationManager;
     }
 
     /**
@@ -65,6 +88,10 @@ public class CentralDisplayWindow {
             // ウィンドウを削除する
             mWindowManager.removeView(mDataDisplay);
             mWindowManager.removeView(mNotificationDisplay);
+
+            mNotificationDisplay = null;
+            mNotificationView = null;
+            mDataDisplay = null;
         }
     }
 
@@ -116,13 +143,19 @@ public class CentralDisplayWindow {
                 PixelFormat.TRANSLUCENT);
 
         mWindowManager.addView(mNotificationDisplay, layoutParams);
+
+        mNotificationView = ViewUtil.findViewByMatcher(mNotificationDisplay, it -> it instanceof CentralNotificationView);
+        mNotificationView.setNotificationManager(mCentralNotificationManager);
     }
 
     @Subscribe
     private void onAnimationFrame(AnimationFrame.Bus frame) {
 //        AppLog.system("onAnimationFrame frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
-        if (mNotificationDisplay != null) {
-            mNotificationDisplay.invalidate();
+        // 通知を更新
+        mCentralNotificationManager.onUpdate(frame.getDeltaSec());
+
+        if (mNotificationView != null) {
+            mNotificationView.invalidate();
         }
     }
 }

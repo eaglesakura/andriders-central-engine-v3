@@ -1,21 +1,38 @@
 package com.eaglesakura.andriders.central;
 
 import com.eaglesakura.andriders.central.data.CentralDataManager;
+import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.lambda.Action1;
 
 public class CentralDataUtil {
 
     /**
-     * CentralDataが有効であれば、処理を実行する
+     * Managerが有効であれば、処理を実行する
      */
-    public static void execute(CentralDataHolder holder, Action1<CentralDataManager> action) {
+    public static void execute(CentralDataManager.Holder holder, Action1<CentralDataManager> action) {
         try {
-            CentralDataManager dataManager = (holder == null ? null : holder.getCentralDataManager());
-            if (dataManager == null) {
+            CentralDataManager manager = (holder == null ? null : holder.getCentralDataManager());
+            if (manager == null) {
                 return;
             }
 
-            action.action(dataManager);
+            action.action(manager);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Managerが有効であれば処理を実行する
+     */
+    public static void execute(CentralNotificationManager.Holder holder, Action1<CentralNotificationManager> action) {
+        try {
+            CentralNotificationManager manager = (holder == null ? null : holder.getCentralNotificationManager());
+            if (manager == null) {
+                return;
+            }
+
+            action.action(manager);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
