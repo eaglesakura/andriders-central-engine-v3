@@ -1,8 +1,11 @@
 package com.eaglesakura.andriders.service;
 
+import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
+import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
+import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.service.log.SessionLogController;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.service.ui.CentralDisplayWindow;
@@ -15,6 +18,8 @@ import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.util.SerializeUtil;
+import com.squareup.otto.Subscribe;
 
 import android.app.Service;
 import android.content.Intent;
@@ -87,6 +92,7 @@ public class SessionContext {
 
         CentralSession centralSession = CentralSession.newInstance(sessionInfo);
         centralSession.getStateBus().bind(mLifecycleDelegate, this);
+        centralSession.getDataBus().bind(mLifecycleDelegate, this);
         centralSession.getStateBus().bind(mLifecycleDelegate, mService);
 
         mSessionLogController = SessionLogController.attach(mLifecycleDelegate, centralSession);
@@ -157,6 +163,32 @@ public class SessionContext {
     @Nullable
     public AnimationFrame.Bus getAnimationFrameBus() {
         return mAnimationFrameBus;
+    }
+
+
+    /**
+     * データ更新をハンドリングする
+     */
+    @Subscribe
+    private void onSessionDataChanged(SessionData.Bus data) {
+        RawCentralData raw = data.getLatestData();
+        if (raw == null) {
+            AppLog.broadcast("RawCentralData == null");
+            return;
+        }
+
+        AppLog.broadcast("RawCentralData date[%d]", raw.centralStatus.date);
+
+        // 対応アプリに対してブロードキャストを行う
+        Intent intent = new Intent();
+        intent.setAction(CentralDataReceiver.ACTION_UPDATE_CENTRAL_DATA);
+        intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
+        try {
+            intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(raw, true));
+            mService.sendBroadcast(intent);
+        } catch (Exception e) {
+            AppLog.report(e);
+        }
     }
 
     /**

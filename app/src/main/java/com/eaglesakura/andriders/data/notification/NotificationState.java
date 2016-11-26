@@ -1,6 +1,5 @@
 package com.eaglesakura.andriders.data.notification;
 
-import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.device.display.DisplayInfo;
 import com.eaglesakura.android.graphics.Graphics;
@@ -124,17 +123,17 @@ public class NotificationState {
         if (mShowTimeSec < INOUT_TIME_SEC) {
             // カードの出現
             mInsertWeight = (float) (mShowTimeSec / INOUT_TIME_SEC);
-            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
+//            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
         } else if (mShowTimeSec > mCard.getShowTimeSec()) {
             // カードの表示時間を超えている
             double overTime = mShowTimeSec - mCard.getShowTimeSec();
 
             // カードを引っ込める
             mInsertWeight = 1.0f - (float) (overTime / INOUT_TIME_SEC);
-            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
+//            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
         } else {
             mInsertWeight = 1.0f;
-            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
+//            AppLog.test("mInsertWeight[%.3f]", mInsertWeight);
         }
 
         // カードを移動する

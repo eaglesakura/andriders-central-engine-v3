@@ -78,6 +78,7 @@ public class CentralDataManagerTest extends AppUnitTestCase {
         assertNotNull(centralData.centralStatus);
         assertNotNull(centralData.specs);
         assertNotNull(centralData.record);
+        assertNotNull(centralData.sensor);
 
         // ログチェックを行う
         {
