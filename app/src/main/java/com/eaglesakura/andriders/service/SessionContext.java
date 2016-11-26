@@ -4,6 +4,8 @@ import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionData;
+import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.service.log.SessionLogController;
@@ -99,6 +101,8 @@ public class SessionContext {
         mSessionNotification = CentralStatusBar.attach(mLifecycleDelegate, centralSession, mNotificationCallback);
         mAnimationController = ServiceAnimationController.attach(mLifecycleDelegate, centralSession, mAnimationCallback);
         mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession);
+        // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
+        mCentralDisplayWindow.getCentralNotificationManager().addListener(mOnNotificationShowingListener);
 
         mLifecycleDelegate.asyncUI((BackgroundTask<CentralSession> task) -> {
             centralSession.initialize(option, AppSupportUtil.asCancelCallback(task));
@@ -165,7 +169,6 @@ public class SessionContext {
         return mAnimationFrameBus;
     }
 
-
     /**
      * データ更新をハンドリングする
      */
@@ -190,6 +193,22 @@ public class SessionContext {
             AppLog.report(e);
         }
     }
+
+    private final CentralNotificationManager.OnNotificationShowingListener mOnNotificationShowingListener = new CentralNotificationManager.OnNotificationShowingListener() {
+        @Override
+        public void onNotificationShowing(CentralNotificationManager self, NotificationData data) {
+            try {
+                Intent intent = new Intent();
+                intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
+                intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
+                intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
+
+                mService.sendBroadcast(intent);
+            } catch (Throwable e) {
+                AppLog.report(e);
+            }
+        }
+    };
 
     /**
      * 通知制御のコールバック

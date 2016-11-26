@@ -1,26 +1,23 @@
 package com.eaglesakura.andriders.plugin.service;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.display.ZoneColor;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.AcePluginService;
 import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginInformation;
+import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.service.ui.CadenceDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.DisplayDataSender;
 import com.eaglesakura.andriders.plugin.service.ui.HeartrateDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.SpeedDisplaySender;
-import com.eaglesakura.andriders.display.ZoneColor;
-import com.eaglesakura.andriders.notification.NotificationData;
-import com.eaglesakura.andriders.plugin.display.BasicValue;
-import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
 import com.eaglesakura.android.thread.ui.UIHandler;
 
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -113,7 +110,7 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         connection.getDisplay().queueNotification(
                 new NotificationData.Builder(this, NotificationData.ID_CENTRAL_SERVICE_BOOT)
                         .icon(R.mipmap.ic_launcher)
-                        .message("Andriders Central Engineを起動しました").getNotification()
+                        .message("A.C.E. セッション開始").getNotification()
         );
     }
 
