@@ -1,6 +1,9 @@
 package com.eaglesakura.andriders.central.data.command.proximity;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
+import com.eaglesakura.andriders.command.CommandKey;
+import com.eaglesakura.andriders.dao.central.DbCommand;
+import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.service.command.ProximityData;
 import com.eaglesakura.andriders.util.Clock;
@@ -10,7 +13,7 @@ import com.eaglesakura.util.Util;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ProximityCommandControllerTest extends AppUnitTestCase {
 
@@ -65,6 +68,14 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
 //        }
 //    }
 //
+
+    CommandData newCommand(int sec) {
+        CommandData result = new CommandData(new DbCommand());
+        result.getRaw().setCommandKey(CommandKey.fromProximity(sec).toString());
+        CommandData.Extra extra = result.getInternalExtra();
+        return result;
+    }
+
     @Test
     public void 近接コマンドのBootを行える() throws Throwable {
         // 1秒経過ごとにフィードバックされる
@@ -81,14 +92,14 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
 
             ProximityCommandController controller = new ProximityCommandController(getApplication());
             controller.setBootListener(listener);
-            controller.setCommands(new CommandDataCollection(new ArrayList<>()));
+            controller.setCommands(new CommandDataCollection(Arrays.asList(newCommand(1), newCommand(2), newCommand(3), newCommand(4))));
 
             // 近接開始
             {
                 ProximityData data = new ProximityData(clock.nowDate(), true);
                 controller.onUpdate(data);
             }
-            clock.offset(1000 * i + 1);
+            clock.offset(1000 * (i + 1) + 1);   // 最初の1秒はキャンセルチェックなので飛ばす
             clock.offset(10);
             {
                 ProximityData data = new ProximityData(clock.nowDate(), false);

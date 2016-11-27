@@ -183,6 +183,9 @@ public class SessionContext {
 
     /**
      * データ更新をハンドリングする
+     *
+     * データの圧縮等、送出には20ms程度を要する。
+     * UIスレッドを止めるには多少気になる時間なので、圧縮はasyncで行う。
      */
     @Subscribe
     private void onSessionDataChanged(SessionData.Bus data) {
@@ -194,16 +197,17 @@ public class SessionContext {
 
         AppLog.broadcast("RawCentralData date[%d]", raw.centralStatus.date);
 
-        // 対応アプリに対してブロードキャストを行う
-        Intent intent = new Intent();
-        intent.setAction(CentralDataReceiver.ACTION_UPDATE_CENTRAL_DATA);
-        intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
-        try {
-            intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(raw, true));
+        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<byte[]> task) -> {
+            return SerializeUtil.serializePublicFieldObject(raw, true);
+        }).completed((result, task) -> {
+            // 対応アプリに対してブロードキャストを行う
+            Intent intent = new Intent();
+            intent.setAction(CentralDataReceiver.ACTION_UPDATE_CENTRAL_DATA);
+            intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
+            intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, result);
             mService.sendBroadcast(intent);
-        } catch (Exception e) {
-            AppLog.report(e);
-        }
+        }).start();
+
     }
 
     private final CentralNotificationManager.OnNotificationShowingListener mOnNotificationShowingListener = new CentralNotificationManager.OnNotificationShowingListener() {
