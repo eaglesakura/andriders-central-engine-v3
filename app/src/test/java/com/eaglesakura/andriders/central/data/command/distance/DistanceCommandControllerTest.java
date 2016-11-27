@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.central.data.command;
+package com.eaglesakura.andriders.central.data.command.distance;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.dao.central.DbCommand;
@@ -35,11 +35,9 @@ public class DistanceCommandControllerTest extends AppUnitTestCase {
         RawCentralData dummyData = new RawCentralData(Random.class);
         dummyData.session.distanceKm = 0.0f;
 
-        controller.onUpdate();
         while (dummyData.session.distanceKm <= 10.5f) {
             dummyData.session.distanceKm += 0.001f;
             controller.mDataHandler.onReceived(dummyData);
-            controller.onUpdate();
         }
 
         assertEquals(holder.value, 1);
@@ -59,11 +57,9 @@ public class DistanceCommandControllerTest extends AppUnitTestCase {
         RawCentralData dummyData = new RawCentralData(Random.class);
         dummyData.session.distanceKm = 0.0f;
 
-        controller.onUpdate();
         while (dummyData.session.distanceKm <= 10.5f) {
             dummyData.session.distanceKm += 0.001f;
             controller.mDataHandler.onReceived(dummyData);
-            controller.onUpdate();
         }
 
         assertEquals(holder.value, 10);
@@ -83,11 +79,9 @@ public class DistanceCommandControllerTest extends AppUnitTestCase {
         RawCentralData dummyData = new RawCentralData(Random.class);
         dummyData.today.distanceKm = 100.0f;
 
-        controller.onUpdate();
         while (dummyData.today.distanceKm <= 100.5f) {
             dummyData.today.distanceKm += 0.001f;
             controller.mDataHandler.onReceived(dummyData);
-            controller.onUpdate();
         }
 
         // 0.5km走っただけではまだコールされない
@@ -98,7 +92,6 @@ public class DistanceCommandControllerTest extends AppUnitTestCase {
         while (dummyData.today.distanceKm <= 101.5f) {
             dummyData.today.distanceKm += 0.001f;
             controller.mDataHandler.onReceived(dummyData);
-            controller.onUpdate();
         }
 
         // 0.5km走っただけではまだコールされない

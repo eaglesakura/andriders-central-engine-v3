@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.central.data.command;
+package com.eaglesakura.andriders.central.data.command.timer;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.dao.central.DbCommand;
@@ -25,7 +25,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
 
         Clock clock = new Clock(10000);
         TimerCommandController commandController =
-                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_SESSION, 0x00), clock);
+                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_SESSION, 0x00), clock.now());
 
         IntHolder holder = new IntHolder();
         commandController.setBootListener((self, data) -> {
@@ -36,7 +36,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
         // まだコールされないはず
         for (int i = 0; i < 99; ++i) {
             clock.offset(1000 / 100);
-            commandController.onUpdate();
+            commandController.onUpdate(clock.now());
         }
 
         assertEquals(holder.value, 0);
@@ -44,7 +44,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
         // フレーム経過で、コールされる
         for (int i = 0; i < 10; ++i) {
             clock.offset(1000 / 100);
-            commandController.onUpdate();
+            commandController.onUpdate(clock.now());
         }
 
         // 一度だけコールされる
@@ -53,7 +53,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
         // もう絶対にコールされない
         for (int i = 0; i < (100 * 60 * 24); ++i) {
             clock.offset(1000 / 100);
-            commandController.onUpdate();
+            commandController.onUpdate(clock.now());
             assertEquals(holder.value, 1);
         }
     }
@@ -63,7 +63,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
 
         Clock clock = new Clock(10000);
         TimerCommandController commandController =
-                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_SESSION, CommandData.TIMER_FLAG_REPEAT), clock);
+                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_SESSION, CommandData.TIMER_FLAG_REPEAT), clock.now());
 
         IntHolder holder = new IntHolder();
         commandController.setBootListener((self, data) -> {
@@ -73,7 +73,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
         for (int i = 0; i < 10; ++i) {
             for (int k = 0; k < 100; ++k) {
                 clock.offset(1000 / 100);
-                commandController.onUpdate();
+                commandController.onUpdate(clock.now());
             }
             // 繰り返しの回数分コールされている
             assertEquals(holder.value, i + 1);
@@ -85,7 +85,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
 
         Clock clock = new Clock(10500);
         TimerCommandController commandController =
-                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_REALTIME, 0x00), clock);
+                new TimerCommandController(getContext(), newCommand(1000, CommandData.TIMER_TYPE_REALTIME, 0x00), clock.now());
 
         IntHolder holder = new IntHolder();
         commandController.setBootListener((self, data) -> {
@@ -96,7 +96,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
         // 絶対時間が基準のため、コールされている
         for (int i = 0; i < 50; ++i) {
             clock.offset(1000 / 100);
-            commandController.onUpdate();
+            commandController.onUpdate(clock.now());
         }
 
         assertEquals(holder.value, 1);
@@ -104,7 +104,7 @@ public class TimerCommandControllerTest extends AppUnitTestCase {
         // もう絶対にコールされない
         for (int i = 0; i < (100 * 60 * 24); ++i) {
             clock.offset(1000 / 100);
-            commandController.onUpdate();
+            commandController.onUpdate(clock.now());
             assertEquals(holder.value, 1);
         }
     }

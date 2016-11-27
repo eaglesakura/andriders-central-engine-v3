@@ -74,6 +74,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
         session.getDbCommandDao().deleteByKey(key.toString());
     }
 
+
     /**
      * 指定したカテゴリのコマンドを列挙する
      *
@@ -93,6 +94,17 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     }
 
     /**
+     * すべてのカテゴリのコマンドを列挙する
+     */
+    @NonNull
+    public List<CommandData> listCommands() {
+        List<DbCommand> commands = session.getDbCommandDao().loadAll();
+
+        return CollectionUtil.asOtherList(commands, it -> new CommandData(it));
+    }
+
+    /**
+     * /**
      * すべてのレイアウト情報を列挙する
      */
     @NonNull

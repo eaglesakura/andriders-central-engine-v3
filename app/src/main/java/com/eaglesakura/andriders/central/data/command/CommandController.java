@@ -5,7 +5,6 @@ import com.eaglesakura.andriders.model.command.CommandData;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 /**
  * ACEs実行時のコマンド管理を行う
@@ -24,7 +23,7 @@ public abstract class CommandController {
         mBootListener = bootListener;
     }
 
-    void requestCommandBoot(@Nullable CommandData data) {
+    protected void requestCommandBoot(@Nullable CommandData data) {
         CommandBootListener listener = mBootListener;
         if (listener == null) {
             return;
@@ -32,9 +31,6 @@ public abstract class CommandController {
 
         listener.onBootCommand(this, data);
     }
-
-    @WorkerThread
-    public abstract void onUpdate();
 
     public interface CommandBootListener {
 

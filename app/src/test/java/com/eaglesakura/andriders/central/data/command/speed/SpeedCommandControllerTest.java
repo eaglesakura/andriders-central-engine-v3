@@ -1,4 +1,4 @@
-package com.eaglesakura.andriders.central.data.command;
+package com.eaglesakura.andriders.central.data.command.speed;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.dao.central.DbCommand;
@@ -68,7 +68,7 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
                 assertEquals(controller.mState, MaxSpeedCommandController.STATE_CHALLENGE);
             } else {
                 // ステートはLower
-                assertEquals(controller.mState, MaxSpeedCommandController.STATE_LOWERSPEED);
+                assertEquals(controller.mState, MaxSpeedCommandController.STATE_LOWER_SPEED);
             }
         }
         Util.sleep(100);
@@ -82,7 +82,7 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
                 assertEquals(controller.mState, MaxSpeedCommandController.STATE_CHALLENGE);
             } else {
                 // ステートはLower
-                assertEquals(controller.mState, MaxSpeedCommandController.STATE_LOWERSPEED);
+                assertEquals(controller.mState, MaxSpeedCommandController.STATE_LOWER_SPEED);
             }
         }
         Util.sleep(100);
@@ -143,7 +143,7 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
         }
         Util.sleep(100);
         assertEquals(bootHolder.value, 0);  // 追加の呼び出しはない
-        assertEquals(controller.mState, MaxSpeedCommandController.STATE_LOWERSPEED);
+        assertEquals(controller.mState, MaxSpeedCommandController.STATE_LOWER_SPEED);
     }
 
     @Test
@@ -178,8 +178,8 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
     public void 一定速度を上回ったらコマンドを実行する() throws Throwable {
         IntHolder bootHolder = new IntHolder(0);
 
-        BasicSpeedCommandController controller =
-                new BasicSpeedCommandController(getApplication(),
+        CurrentSpeedCommandController controller =
+                new CurrentSpeedCommandController(getApplication(),
                         newCommand(25.0f, CommandData.SPEED_TYPE_UPPER));
 
         // callback
@@ -209,8 +209,8 @@ public class SpeedCommandControllerTest extends AppUnitTestCase {
     public void 一定速度を下回ったらコマンドを実行する() throws Throwable {
         IntHolder bootHolder = new IntHolder(0);
 
-        BasicSpeedCommandController controller =
-                new BasicSpeedCommandController(getApplication(),
+        CurrentSpeedCommandController controller =
+                new CurrentSpeedCommandController(getApplication(),
                         newCommand(25.0f, CommandData.SPEED_TYPE_LOWER));
 
         // callback

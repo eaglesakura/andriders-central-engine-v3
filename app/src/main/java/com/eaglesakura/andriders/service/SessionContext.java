@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.service.command.CentralCommandController;
 import com.eaglesakura.andriders.service.log.SessionLogController;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.service.ui.CentralDisplayWindow;
@@ -76,6 +77,12 @@ public class SessionContext {
     @NonNull
     CentralDisplayWindow mCentralDisplayWindow;
 
+    /**
+     * コマンド管理
+     */
+    @NonNull
+    CentralCommandController mCommandController;
+
     public SessionContext(@NonNull Service service) {
         mService = service;
     }
@@ -98,11 +105,15 @@ public class SessionContext {
         centralSession.getStateBus().bind(mLifecycleDelegate, mService);
 
         mSessionLogController = SessionLogController.attach(mLifecycleDelegate, centralSession);
+
         mSessionNotification = CentralStatusBar.attach(mLifecycleDelegate, centralSession, mNotificationCallback);
+
         mAnimationController = ServiceAnimationController.attach(mLifecycleDelegate, centralSession, mAnimationCallback);
+
         mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession);
-        // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
-        mCentralDisplayWindow.getCentralNotificationManager().addListener(mOnNotificationShowingListener);
+        mCentralDisplayWindow.getCentralNotificationManager().addListener(mOnNotificationShowingListener);  // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
+
+        mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, centralSession);
 
         mLifecycleDelegate.asyncUI((BackgroundTask<CentralSession> task) -> {
             centralSession.initialize(option, AppSupportUtil.asCancelCallback(task));

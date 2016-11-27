@@ -1,18 +1,18 @@
-package com.eaglesakura.andriders.central.data.command;
+package com.eaglesakura.andriders.central.data.command.speed;
 
 import com.eaglesakura.andriders.model.command.CommandData;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-public class BasicSpeedCommandController extends SpeedCommandController {
+public class CurrentSpeedCommandController extends SpeedCommandController {
 
-    public BasicSpeedCommandController(@NonNull Context context, CommandData data) {
+    public CurrentSpeedCommandController(@NonNull Context context, CommandData data) {
         super(context, data);
     }
 
     @Override
-    void onUpdateSpeed(float currentSpeedKmh) {
+    protected void onUpdateSpeed(float currentSpeedKmh) {
         super.onUpdateSpeed(currentSpeedKmh);
         if (mCommandType == CommandData.SPEED_TYPE_UPPER) {
             // 速度上昇でコマンド
@@ -25,10 +25,5 @@ public class BasicSpeedCommandController extends SpeedCommandController {
                 requestCommandBoot(mCommandData);
             }
         }
-    }
-
-    @Override
-    public void onUpdate() {
-
     }
 }

@@ -1,7 +1,8 @@
-package com.eaglesakura.andriders.central.data.command;
+package com.eaglesakura.andriders.central.data.command.speed;
 
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.SensorDataReceiver;
+import com.eaglesakura.andriders.central.data.command.CommandController;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawRecord;
@@ -60,7 +61,7 @@ public abstract class SpeedCommandController extends CommandController {
     /**
      * 速度更新処理
      */
-    void onUpdateSpeed(float currentSpeedKmh) {
+    protected void onUpdateSpeed(float currentSpeedKmh) {
         mBeforeSpeedKmh = mCurrentSpeedKmh;
         mCurrentSpeedKmh = currentSpeedKmh;
     }
@@ -73,7 +74,6 @@ public abstract class SpeedCommandController extends CommandController {
             // 接続が確立されていない
             return false;
         }
-
         return mBeforeSpeedKmh < kmh // 以前のチェックでは規定速度を超えていなかった
                 && mCurrentSpeedKmh >= kmh; // 現在は規定速度を超えている
     }
@@ -91,7 +91,7 @@ public abstract class SpeedCommandController extends CommandController {
                 && mCurrentSpeedKmh <= kmh; // 現在は規定速度を下回っている
     }
 
-    final SensorDataReceiver.SpeedHandler mSpeedHandler = new SensorDataReceiver.SpeedHandler() {
+    private final SensorDataReceiver.SpeedHandler mSpeedHandler = new SensorDataReceiver.SpeedHandler() {
         @Override
         public void onReceived(@NonNull RawCentralData master, @NonNull RawSensorData.RawSpeed sensor) {
             // 最高速度の更新
@@ -114,7 +114,7 @@ public abstract class SpeedCommandController extends CommandController {
         switch (type) {
             case CommandData.SPEED_TYPE_UPPER:
             case CommandData.SPEED_TYPE_LOWER:
-                controller = new BasicSpeedCommandController(context, data);
+                controller = new CurrentSpeedCommandController(context, data);
                 break;
             default:
                 controller = new MaxSpeedCommandController(context, data);

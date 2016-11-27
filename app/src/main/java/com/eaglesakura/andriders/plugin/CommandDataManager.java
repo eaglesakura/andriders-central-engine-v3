@@ -40,6 +40,15 @@ public class CommandDataManager extends CentralSettingManager {
         }
     }
 
+    /**
+     * すべての設定済みコマンドを列挙する
+     */
+    public CommandDataCollection loadAll() {
+        try (CentralSettingDatabase db = open()) {
+            return new CommandDataCollection(db.listCommands());
+        }
+    }
+
     public void remove(@NonNull CommandData data) {
         if (data == null) {
             return;

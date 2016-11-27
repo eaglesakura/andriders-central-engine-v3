@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.AppUnitTestCase;
-import com.eaglesakura.andriders.central.data.command.SpeedCommandControllerTest;
+import com.eaglesakura.andriders.central.data.command.speed.SpeedCommandControllerTest;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.provider.AppManagerProvider;

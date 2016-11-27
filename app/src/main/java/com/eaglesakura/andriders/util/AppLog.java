@@ -60,6 +60,13 @@ public class AppLog {
         LogUtil.out(tag, fmt, args);
     }
 
+    public static void command(String fmt, Object... args) {
+        String tag = "App.Command";
+
+        LogUtil.setLogger(tag, sAppLogger);
+        LogUtil.out(tag, fmt, args);
+    }
+
     public static void db(String fmt, Object... args) {
         String tag = "App.DB";
 

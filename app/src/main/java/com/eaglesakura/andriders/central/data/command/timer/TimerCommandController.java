@@ -1,7 +1,7 @@
-package com.eaglesakura.andriders.central.data.command;
+package com.eaglesakura.andriders.central.data.command.timer;
 
+import com.eaglesakura.andriders.central.data.command.CommandController;
 import com.eaglesakura.andriders.model.command.CommandData;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.util.Timer;
 
 import android.content.Context;
@@ -13,25 +13,22 @@ import android.support.annotation.NonNull;
 public class TimerCommandController extends CommandController {
     final CommandData mCommandData;
 
-    final Clock mClock;
-
     /**
      * 次に反応すべき時刻
      */
     long mNextTriggerTime;
 
-    public TimerCommandController(@NonNull Context context, @NonNull CommandData commandData, @NonNull Clock clock) {
+    public TimerCommandController(@NonNull Context context, @NonNull CommandData commandData, long nowTimeMS) {
         super(context);
-        mClock = clock;
         mCommandData = commandData;
 
-        updateNextTriggerTime();
+        updateNextTriggerTime(nowTimeMS);
     }
 
     /**
      * 次に反応すべき時刻を更新する
      */
-    protected void updateNextTriggerTime() {
+    private void updateNextTriggerTime(long nowTimeMS) {
         CommandData.Extra extra = mCommandData.getInternalExtra();
 
         final long INTERVAL_MS = Timer.toMilliSec(0, 0, 0, Math.max(extra.timerIntervalSec, 1), 0);
@@ -40,11 +37,11 @@ public class TimerCommandController extends CommandController {
             // 初回リセット
             if (extra.timerType == CommandData.TIMER_TYPE_SESSION) {
                 // 初回はclockからの同期にする
-                mNextTriggerTime = mClock.now() + INTERVAL_MS;
+                mNextTriggerTime = nowTimeMS + INTERVAL_MS;
             } else {
                 // リアルタイムと同期で調整する
                 // 初回実行のみ繰り上げで実行する
-                mNextTriggerTime = ((mClock.now() / INTERVAL_MS) + 1) * INTERVAL_MS;
+                mNextTriggerTime = ((nowTimeMS / INTERVAL_MS) + 1) * INTERVAL_MS;
             }
         } else {
             if ((extra.flags & CommandData.TIMER_FLAG_REPEAT) != 0) {
@@ -60,19 +57,18 @@ public class TimerCommandController extends CommandController {
     /**
      * トリガーを実行する
      */
-    protected void onTriggerTime() {
+    private void onTriggerTime() {
         // コマンドの実行リクエストを送る
         requestCommandBoot(mCommandData);
     }
 
-    @Override
-    public void onUpdate() {
-        if (mClock.now() >= mNextTriggerTime) {
+    public void onUpdate(long nowTimeMs) {
+        if (nowTimeMs >= mNextTriggerTime) {
             // トリガーを実行
             onTriggerTime();
 
             // トリガー時刻を更新する
-            updateNextTriggerTime();
+            updateNextTriggerTime(nowTimeMs);
         }
     }
 }

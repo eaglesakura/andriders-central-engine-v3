@@ -148,10 +148,11 @@ public class NavigationMapFragment extends AppFragment {
         }).start();
     }
 
-    private Marker newMarker(Bitmap icon) {
+    private Marker newMarker(Bitmap icon, LatLng pos) {
         MarkerOptions opt = new MarkerOptions()
                 .anchor(0.5f, 0.5f)
                 .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                .position(pos)
                 .visible(true);
 
         return mGoogleMap.addMarker(opt);
@@ -168,10 +169,10 @@ public class NavigationMapFragment extends AppFragment {
     SensorDataReceiver.LocationHandler mLocationHandlerImpl = new SensorDataReceiver.LocationHandler() {
         @Override
         public void onReceived(@NonNull RawCentralData master, @NonNull RawLocation sensor) {
-            if (mUserMarker == null) {
-                mUserMarker = newMarker(mUserIcon);
-            }
             LatLng latLng = new LatLng(sensor.latitude, sensor.longitude);
+            if (mUserMarker == null) {
+                mUserMarker = newMarker(mUserIcon, latLng);
+            }
             mUserMarker.setPosition(latLng);
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         }

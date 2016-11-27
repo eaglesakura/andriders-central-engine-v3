@@ -1,7 +1,8 @@
-package com.eaglesakura.andriders.central.data.command;
+package com.eaglesakura.andriders.central.data.command.distance;
 
 import com.eaglesakura.andriders.central.CentralDataHandler;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
+import com.eaglesakura.andriders.central.data.command.CommandController;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawSessionData;
@@ -69,22 +70,7 @@ public class DistanceCommandController extends CommandController {
         requestCommandBoot(mCommandData);
     }
 
-    @Override
-    public void onUpdate() {
-        if (!mInitialized) {
-            return;
-        }
-
-        if (mCurrentDistance >= mNextTriggerDistance) {
-            // トリガーを実行
-            onTriggerTime();
-
-            // トリガー時刻を更新する
-            updateNextTriggerDistance();
-        }
-    }
-
-    CentralDataHandler mDataHandler = new CentralDataHandler() {
+    final CentralDataHandler mDataHandler = new CentralDataHandler() {
         @Override
         public void onReceived(RawCentralData newData) {
             CommandData.Extra internalExtra = mCommandData.getInternalExtra();
@@ -109,6 +95,14 @@ public class DistanceCommandController extends CommandController {
                 // それを避けるため、初回受信時には反応距離を加算して次回実行距離を正しく扱う
                 mNextTriggerDistance += mCurrentDistance;
                 mInitialized = true;
+            }
+
+            if (mCurrentDistance >= mNextTriggerDistance) {
+                // トリガーを実行
+                onTriggerTime();
+
+                // トリガー時刻を更新する
+                updateNextTriggerDistance();
             }
         }
     };
