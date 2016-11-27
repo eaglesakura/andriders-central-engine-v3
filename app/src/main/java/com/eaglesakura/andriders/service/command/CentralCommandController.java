@@ -9,10 +9,12 @@ import com.eaglesakura.andriders.central.data.command.timer.TimerCommandControll
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.central.service.SessionState;
+import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.lifecycle.LifecycleDelegate;
@@ -25,6 +27,7 @@ import com.eaglesakura.android.rx.ExecuteTarget;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -39,6 +42,9 @@ public class CentralCommandController {
 
     @NonNull
     final private Context mContext;
+
+    @NonNull
+    private Callback mCallback;
 
     /**
      * 各パラメータのハンドリングを容易にするため、振り分けのためのレシーバを持つ
@@ -66,15 +72,16 @@ public class CentralCommandController {
 
     final List<TimerCommandController> mTimerCommandControllerList = new ArrayList<>();
 
-    CentralCommandController(@NonNull Context context, LifecycleDelegate delegate, CentralSession session) {
+    CentralCommandController(@NonNull Context context, LifecycleDelegate delegate, CentralSession session, Callback callback) {
         mContext = context;
+        mCallback = callback;
         mCentralDataReceiver = new CentralDataReceiver(mContext);
         mLifecycleDelegate = delegate;
         mSession = session;
     }
 
-    public static CentralCommandController attach(@NonNull Context context, ServiceLifecycleDelegate lifecycleDelegate, @NonNull CentralSession session) {
-        CentralCommandController result = new CentralCommandController(context, lifecycleDelegate, session);
+    public static CentralCommandController attach(@NonNull Context context, ServiceLifecycleDelegate lifecycleDelegate, @NonNull CentralSession session, Callback callback) {
+        CentralCommandController result = new CentralCommandController(context, lifecycleDelegate, session, callback);
         Garnet.create(result)
                 .depend(Context.class, context)
                 .inject();
@@ -201,5 +208,32 @@ public class CentralCommandController {
 
     private final CommandController.CommandBootListener mCommandBootListener = ((self, data) -> {
         AppLog.command("Boot Command[%s]", data.getKey());
+        RawIntent rawIntent = data.getIntent();
+        Intent intent = SerializableIntent.newIntent(rawIntent);
+        try {
+            switch (rawIntent.intentType) {
+                case Activity:
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 新規Taskでなければならない
+                    mCallback.requestActivityCommand(this, data, intent);
+                    break;
+                case Service:
+                    mCallback.requestServiceCommand(this, data, intent);
+                    break;
+                case Broadcast:
+                    intent.setPackage(data.getPackageName());   // 対象packageを固定する
+                    mCallback.requestBroadcastCommand(this, data, intent);
+                    break;
+            }
+        } catch (Exception e) {
+            AppLog.printStackTrace(e);
+        }
     });
+
+    public interface Callback {
+        void requestActivityCommand(CentralCommandController self, CommandData data, Intent commandIntent);
+
+        void requestBroadcastCommand(CentralCommandController self, CommandData data, Intent commandIntent);
+
+        void requestServiceCommand(CentralCommandController self, CommandData data, Intent commandIntent);
+    }
 }

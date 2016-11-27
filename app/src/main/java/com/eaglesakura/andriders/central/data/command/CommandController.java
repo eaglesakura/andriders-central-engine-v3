@@ -25,7 +25,7 @@ public abstract class CommandController {
 
     protected void requestCommandBoot(@Nullable CommandData data) {
         CommandBootListener listener = mBootListener;
-        if (listener == null) {
+        if (listener == null || data == null) {
             return;
         }
 

@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
+import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.serialize.RawCentralData;
@@ -32,6 +33,7 @@ import android.support.annotation.Nullable;
 /**
  * サービスで動作させる1セッションの情報を管理する
  */
+@SuppressWarnings("ALL")
 public class SessionContext {
     @NonNull
     private final Service mService;
@@ -113,7 +115,7 @@ public class SessionContext {
         mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession);
         mCentralDisplayWindow.getCentralNotificationManager().addListener(mOnNotificationShowingListener);  // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
 
-        mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, centralSession);
+        mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, centralSession, mCommandCallback);
 
         mLifecycleDelegate.asyncUI((BackgroundTask<CentralSession> task) -> {
             centralSession.initialize(option, AppSupportUtil.asCancelCallback(task));
@@ -133,7 +135,6 @@ public class SessionContext {
         }).start();
     }
 
-    @NonNull
     public void dispose() {
         mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
             if (mSession != null) {
@@ -236,6 +237,9 @@ public class SessionContext {
         }
     };
 
+    /**
+     * アニメーションコントロール
+     */
     private final ServiceAnimationController.Callback mAnimationCallback = new ServiceAnimationController.Callback() {
         /**
          * 前回のセッション更新からの経過時間
@@ -253,6 +257,38 @@ public class SessionContext {
 
             // アニメーションを追加
             mAnimationFrameBus.onUpdate(session, deltaSec);
+        }
+    };
+
+    /**
+     * コマンド起動
+     */
+    private final CentralCommandController.Callback mCommandCallback = new CentralCommandController.Callback() {
+        @Override
+        public void requestActivityCommand(CentralCommandController self, CommandData data, Intent commandIntent) {
+            try {
+                mService.startActivity(commandIntent);
+            } catch (Exception e) {
+                AppLog.printStackTrace(e);
+            }
+        }
+
+        @Override
+        public void requestBroadcastCommand(CentralCommandController self, CommandData data, Intent commandIntent) {
+            try {
+                mService.sendBroadcast(commandIntent);             // Brodacastを投げる
+            } catch (Exception e) {
+                AppLog.printStackTrace(e);
+            }
+        }
+
+        @Override
+        public void requestServiceCommand(CentralCommandController self, CommandData data, Intent commandIntent) {
+            try {
+                mService.startService(commandIntent);  // Serviceを開始
+            } catch (Exception e) {
+                AppLog.printStackTrace(e);
+            }
         }
     };
 }
