@@ -1,11 +1,10 @@
 package com.eaglesakura.andriders.ui.navigation.info;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
+import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
+import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 
 
@@ -16,11 +15,8 @@ import android.support.v4.app.FragmentTransaction;
  * <p/>
  * * ビルド情報
  */
-public class InformationFragmentMain extends NavigationBaseFragment {
-
-    public InformationFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_simiple_main);
-    }
+@FragmentLayout(R.layout.system_fragment_stack)
+public class InformationFragmentMain extends AppFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,15 +29,5 @@ public class InformationFragmentMain extends NavigationBaseFragment {
             }
             transaction.commit();
         }
-    }
-
-    @Nullable
-    @Override
-    public CharSequence getTitle() {
-        return getString(R.string.Main_Menu_Information);
-    }
-
-    public static InformationFragmentMain newInstance(Context context) {
-        return new InformationFragmentMain();
     }
 }

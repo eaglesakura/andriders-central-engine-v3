@@ -1,64 +1,50 @@
 package com.eaglesakura.andriders.ui.navigation.profile;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.gen.prop.UserProfiles;
-import com.eaglesakura.andriders.ui.base.AppBaseFragment;
-import com.eaglesakura.andriders.util.AppUtil;
+import com.eaglesakura.andriders.model.profile.RoadbikeWheelLength;
+import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.system.context.AppSettings;
+import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
+import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.margarine.OnClick;
-import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.material.widget.MaterialInputDialog;
+import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
+import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.collection.DataCollection;
+import com.eaglesakura.material.widget.SpinnerAdapterBuilder;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
-import android.widget.EditText;
-import android.widget.TextView;
 
-public class RoadbikeSettingFragment extends AppBaseFragment {
+/**
+ * ロードバイク基本設定用Fragment
+ *
+ * タイヤ規格設定
+ */
+@FragmentLayout(R.layout.profile_roadbike)
+public class RoadbikeSettingFragment extends AppFragment {
 
-    @Bind(R.id.Setting_RoadBikeProfile_WheelSetting_Value)
-    TextView mWheelOuterLengthValue;
-
-    public RoadbikeSettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_roadbike);
-    }
+    @Inject(AppContextProvider.class)
+    AppSettings mAppSettings;
 
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
-        updateUI();
+
+        AQuery q = new AQuery(self.getView());
+
+
+        DataCollection<RoadbikeWheelLength> wheelLengthCollection = mAppSettings.getConfig().listWheelLength();
+        SpinnerAdapterBuilder.from(q.id(R.id.Selector_WheelOuterLength).getSpinner(), RoadbikeWheelLength.class)
+                .items(wheelLengthCollection.getSource())
+                .title((index, item) -> item.getDisplayTitle(getContext()))
+                .selection(item -> Math.abs(mAppSettings.getUserProfiles().getWheelOuterLength() - item.getOuterLength()) < 3)  // 近似する周長を初期選択
+                .selected((index, item) -> onSelected(item))
+                .build();
     }
 
     @UiThread
-    void updateUI() {
-        mWheelOuterLengthValue.setText(String.valueOf(getSettings().getUserProfiles().getWheelOuterLength()));
+    void onSelected(@NonNull RoadbikeWheelLength length) {
+        mAppSettings.getUserProfiles().setWheelOuterLength(length.getOuterLength());
+        mAppSettings.commit();
     }
-
-    @OnClick(R.id.Setting_RoadBikeProfile_WheelSetting)
-    void clickWheelSetting() {
-        MaterialInputDialog dialog = new MaterialInputDialog(getActivity()) {
-            @Override
-            protected void onInitializeViews(TextView header, EditText input, TextView fooder) {
-                ViewUtil.setInputIntegerOnly(input);
-                fooder.setText(" mm");
-                input.setText("" + getSettings().getUserProfiles().getWheelOuterLength());
-            }
-
-            @Override
-            protected void onCommit(EditText input) {
-                UserProfiles userProfiles = getSettings().getUserProfiles();
-                int length = (int) ViewUtil.getLongValue(input, userProfiles.getWheelOuterLength());
-                if (length > AppUtil.WHEEL_LENGTH_MAX) {
-                    toast(getString(R.string.Setting_Roadbike_MaxWheelLength, AppUtil.WHEEL_LENGTH_MAX));
-                } else {
-                    userProfiles.setWheelOuterLength((int) ViewUtil.getLongValue(input, userProfiles.getWheelOuterLength()));
-                    asyncCommitSettings();
-                }
-                updateUI();
-            }
-        };
-        dialog.setTitle(getString(R.string.Setting_Roadbike_WheelOuterLength));
-        dialog.show();
-    }
-
 }

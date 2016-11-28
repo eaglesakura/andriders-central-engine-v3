@@ -1,0 +1,36 @@
+{
+  "sizes": [
+    {
+      "name": "700x18C",
+      "length": 2070
+    },
+    {
+      "name": "700x19C",
+      "length": 2080
+    },
+    {
+      "name": "700x20C",
+      "length": 2086
+    },
+    {
+      "name": "700x23C",
+      "length": 2096
+    },
+    {
+      "name": "700x25C",
+      "length": 2105
+    },
+    {
+      "name": "700x28C",
+      "length": 2136
+    },
+    {
+      "name": "700x30C",
+      "length": 2146
+    },
+    {
+      "name": "700x32C",
+      "length": 2155
+    }
+  ]
+}

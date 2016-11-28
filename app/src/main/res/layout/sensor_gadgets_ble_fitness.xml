@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:layout_marginTop="@dimen/EsMaterial.Widget.Margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/Selector.Device"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

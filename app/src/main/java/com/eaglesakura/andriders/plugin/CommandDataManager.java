@@ -1,13 +1,18 @@
 package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.dao.command.DbCommand;
-import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.andriders.db.command.CommandDataCollection;
-import com.eaglesakura.andriders.db.command.CommandDatabase;
-import com.eaglesakura.andriders.db.command.CommandSetupData;
+import com.eaglesakura.andriders.dao.central.DbCommand;
+import com.eaglesakura.andriders.data.db.CentralSettingDatabase;
+import com.eaglesakura.andriders.model.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandDataCollection;
+import com.eaglesakura.andriders.model.command.CommandSetupData;
+import com.eaglesakura.andriders.serialize.RawIntent;
+import com.eaglesakura.andriders.system.manager.CentralSettingManager;
+import com.eaglesakura.json.JSON;
 import com.eaglesakura.serialize.error.SerializeException;
 import com.eaglesakura.util.SerializeUtil;
+
+import org.greenrobot.greendao.annotation.NotNull;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -16,27 +21,31 @@ import android.support.annotation.Nullable;
 /**
  * コマンド管理用Manager
  */
-public class CommandDataManager {
-    @NonNull
-    final Context mContext;
-
-    CommandDatabase mDatabase;
-
-    public CommandDataManager(@NonNull Context context) {
-        mContext = context.getApplicationContext();
-        mDatabase = new CommandDatabase(mContext);
-    }
-
-    CommandDatabase open() {
-        return mDatabase.openWritable(CommandDatabase.class);
+public class CommandDataManager extends CentralSettingManager {
+    public CommandDataManager(@NotNull Context context) {
+        super(context);
     }
 
     /**
      * カテゴリを指定して列挙する
+     *
+     * @see CommandData#CATEGORY_TIMER
+     * @see CommandData#CATEGORY_DISTANCE
+     * @see CommandData#CATEGORY_PROXIMITY
+     * @see CommandData#CATEGORY_SPEED
      */
     public CommandDataCollection loadFromCategory(int category) {
-        try (CommandDatabase db = open()) {
-            return new CommandDataCollection(db.list(category));
+        try (CentralSettingDatabase db = open()) {
+            return new CommandDataCollection(db.listCommands(category));
+        }
+    }
+
+    /**
+     * すべての設定済みコマンドを列挙する
+     */
+    public CommandDataCollection loadAll() {
+        try (CentralSettingDatabase db = open()) {
+            return new CommandDataCollection(db.listCommands());
         }
     }
 
@@ -51,13 +60,13 @@ public class CommandDataManager {
         if (key == null) {
             return;
         }
-        try (CommandDatabase db = open()) {
+        try (CentralSettingDatabase db = open()) {
             db.remove(key);
         }
     }
 
     public void save(CommandData data) {
-        try (CommandDatabase db = open()) {
+        try (CentralSettingDatabase db = open()) {
             db.update(data.getRaw());
         }
     }
@@ -65,17 +74,21 @@ public class CommandDataManager {
     /**
      * コマンドを保存する
      */
-    public CommandData save(CommandSetupData data, int category, @Nullable CommandData.RawExtra extra) {
-        try (CommandDatabase db = open()) {
+    public CommandData save(CommandSetupData data, int category, @Nullable CommandData.Extra extra) {
+        try (CentralSettingDatabase db = open()) {
             DbCommand dbCommand = new DbCommand();
-            dbCommand.setCommandKey(data.getKey().getKey());
+            dbCommand.setCommandKey(data.getKey().toString());
             dbCommand.setCategory(category);
-            dbCommand.setCommandData(data.getUserIntent());
             dbCommand.setIconPng(data.getIconFile());
             dbCommand.setPackageName(data.getPackageName());
-            dbCommand.setIntentData(data.getUserIntent());
+
+            if (data.getUserIntent() != null) {
+                RawIntent rawIntent = SerializeUtil.deserializePublicFieldObject(RawIntent.class, data.getUserIntent());
+                dbCommand.setIntentJson(JSON.encodeOrNull(rawIntent));
+            }
+
             if (extra != null) {
-                dbCommand.setCommandData(SerializeUtil.serializePublicFieldObject(extra, false));
+                dbCommand.setExtraJson(JSON.encodeOrNull(extra));
             }
 
             db.update(dbCommand);

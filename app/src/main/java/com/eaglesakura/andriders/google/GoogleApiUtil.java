@@ -29,9 +29,7 @@ public class GoogleApiUtil {
      * 取得できなかったら負の値を返す
      */
     public static float getUserWeightFromFit(GoogleApiClient client, CancelCallback cancelCallback) throws TaskCanceledException {
-        if (AndroidThreadUtil.isUIThread()) {
-            throw new IllegalStateException("call uithread");
-        }
+        AndroidThreadUtil.assertBackgroundThread();
 
         DataReadRequest request = new DataReadRequest.Builder()
                 .setTimeRange(DateUtil.getDateStart(new Date(), AppUtil.DEFAULT_TIMEZONE).getTime() - (1000 * 3600 * 24 * 7), System.currentTimeMillis(), TimeUnit.MILLISECONDS)

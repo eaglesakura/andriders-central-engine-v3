@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
+        android:layout_marginTop="@dimen/EsMaterial.Widget.Margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                app:headerIcon="@drawable/ic_person"
+                app:headerText="フィットネスデータ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <LinearLayout
+                style="@style/App.Theme.BasicSetting"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:id="@+id/CycleComputer.Personal.Weight"
+                    android:background="@drawable/esm_button_transparent_fill"
+                    android:clickable="true"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/EsMaterial.Button.MinHeight"
+                    android:orientation="horizontal">
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="体重"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/Setting.Personal.WeightValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:text="60"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text=" kg"/>
+            </LinearLayout>
+
+            <include layout="@layout/esm_material_separator"/>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="心拍"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/Item.HeartrateMin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="70 bpm"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text=" - "/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/Item.HeartrateMax"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="190 bpm"/>
+            </LinearLayout>
+
+            <com.edmodo.rangebar.RangeBar
+                    app:tickCount="150"
+                    app:tickHeight="0dp"
+                    app:thumbColorPressed="@color/EsMaterial.LightGreen.Button.Pressed"
+                    app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
+                    app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
+                    app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
+                    android:id="@+id/Range.Heartrate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>

@@ -5,55 +5,75 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.google.GoogleApiUtil;
-import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.system.context.AppSettings;
+import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
+import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
+import com.eaglesakura.android.gms.util.PlayServiceUtil;
+import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.saver.BundleState;
-import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.MaterialInputDialog;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.material.widget.SnackbarBuilder;
+import com.eaglesakura.util.StringUtil;
+import com.edmodo.rangebar.RangeBar;
 
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
 
-public class FitnessSettingFragment extends AppBaseFragment {
-    UserProfiles mPersonalDataSettings;
+@FragmentLayout(R.layout.profile_fitness)
+public class FitnessSettingFragment extends AppFragment {
 
-    public FitnessSettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_setting_fitness);
-    }
+    private final int MIN_HEARTRATE = 50;
+
+    @Inject(AppContextProvider.class)
+    AppSettings mAppSettings;
+
+    @NonNull
+    UserProfiles mUserProfile;
+
+    @Bind(R.id.Range_Heartrate)
+    RangeBar mHeartrateZone;
+
+    /**
+     * 既にGoogle Fitのメッセージを表示していたらtrue
+     */
+    @BundleState
+    boolean mWeightSyncMessageBooted = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPersonalDataSettings = getSettings().getUserProfiles();
+        mUserProfile = mAppSettings.getUserProfiles();
     }
 
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
+        mHeartrateZone.setThumbIndices(mUserProfile.getNormalHeartrate() - MIN_HEARTRATE, mUserProfile.getMaxHeartrate() - MIN_HEARTRATE);
+        mHeartrateZone.setOnRangeBarChangeListener(mHeartrateRangeListenerImpl);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updatePersonalUI();
+        updateUI();
         syncFitnessData();
     }
 
@@ -61,14 +81,13 @@ public class FitnessSettingFragment extends AppBaseFragment {
      * 個人設定を更新する
      */
     @UiThread
-    void updatePersonalUI() {
+    void updateUI() {
         AQuery q = new AQuery(getView());
 
         // 体重設定
-        q.id(R.id.Setting_Personal_WeightValue).text(String.format("%.1f", mPersonalDataSettings.getUserWeight()));
-        // 心拍設定
-        q.id(R.id.Setting_Personal_NormalHeartrateValue).text(String.valueOf(mPersonalDataSettings.getNormalHeartrate()));
-        q.id(R.id.Setting_Personal_MaxHeartrateValue).text(String.valueOf(mPersonalDataSettings.getMaxHeartrate()));
+        q.id(R.id.Setting_Personal_WeightValue).text(String.valueOf(mUserProfile.getUserWeight()));
+        q.id(R.id.Item_HeartrateMin).text(StringUtil.format("%d bpm", mUserProfile.getNormalHeartrate()));
+        q.id(R.id.Item_HeartrateMax).text(StringUtil.format("%d bpm", mUserProfile.getMaxHeartrate()));
     }
 
     /**
@@ -76,8 +95,10 @@ public class FitnessSettingFragment extends AppBaseFragment {
      */
     @OnClick(R.id.CycleComputer_Personal_Weight)
     void clickPersonalWeigth() {
+
+        ComponentName componentName = mAppSettings.getConfig().getGoogleFitAppComponent();
+
         try {
-            ComponentName componentName = new ComponentName("com.google.android.apps.fitness", "com.google.android.apps.fitness.preferences.settings.SettingsActivity");
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setComponent(componentName);
             startActivityForResult(intent, AppConstants.REQUEST_GOOGLE_FIT_SETTING);
@@ -88,24 +109,13 @@ public class FitnessSettingFragment extends AppBaseFragment {
             AppLog.printStackTrace(e);
         }
 
-        MaterialInputDialog dialog = new MaterialInputDialog(getActivity()) {
-            @Override
-            protected void onInitializeViews(TextView header, EditText input, TextView fooder) {
-                ViewUtil.setInputDecimal(input);
-                input.setHint(R.string.Setting_Fitness_Weight_DialogHiht);
-                fooder.setText(R.string.Setting_Fitness_Weight_Unit);
-            }
-
-            @Override
-            protected void onCommit(EditText input) {
-                mPersonalDataSettings.setUserWeight((float) ViewUtil.getDoubleValue(input, mPersonalDataSettings.getUserWeight()));
-                updatePersonalUI();
-
-                asyncCommitSettings();
-            }
-        };
-        dialog.setTitle(R.string.Setting_Fitness_Weight_DialogTitle);
-        dialog.show();
+        AppDialogBuilder.newAlert(getContext(), R.string.Word_Profile_GoogleFitNotInstalled)
+                .positiveButton(R.string.Word_Common_Install, () -> {
+                    Intent installIntent = PlayServiceUtil.newGooglePlayInstallIntent(getContext(), componentName.getPackageName());
+                    startActivity(installIntent);
+                })
+                .neutralButton(R.string.Common_OK, null)
+                .show(mLifecycleDelegate);
     }
 
 
@@ -117,93 +127,58 @@ public class FitnessSettingFragment extends AppBaseFragment {
         syncFitnessData();
     }
 
-    interface HeartrateInputListener {
-        void onInputHeartrate(int bpm);
-    }
-
-    /**
-     * 既にGoogle Fitのメッセージを表示していたらtrue
-     */
-    @BundleState
-    boolean mGoogleFitFailedMessageBooted = false;
-
     /**
      * Google Fitのデータと同期を行う
      */
+    @UiThread
     void syncFitnessData() {
         asyncUI((BackgroundTask<Float> task) -> {
             GoogleApiClient.Builder builder = AppUtil.newFullPermissionClient(getActivity());
-
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task, 60, TimeUnit.SECONDS);
             try (PlayServiceConnection connection = PlayServiceConnection.newInstance(builder, cancelCallback)) {
                 GoogleApiClient client = connection.getClientIfSuccess();
                 float userWeight = GoogleApiUtil.getUserWeightFromFit(client, cancelCallback);
-                if (userWeight > 0 && userWeight != mPersonalDataSettings.getUserWeight()) {
-                    mPersonalDataSettings.setUserWeight(userWeight);
-                    mPersonalDataSettings.commit();
-                    toast(R.string.Setting_Fitness_Weight_SyncCompleted);
-                } else if (userWeight <= 0) {
-                    toast(R.string.Setting_Fitness_Weight_SyncFailed);
+                if (userWeight > 0) {
+                    mUserProfile.setUserWeight(userWeight);
+                    mAppSettings.commit();
                 }
                 return userWeight;
             }
         }).completed((weight, task) -> {
-            updatePersonalUI();
+            updateUI();
+            if (!mWeightSyncMessageBooted) {
+                SnackbarBuilder.from(this)
+                        .message(R.string.Message_Profile_WeightSyncCompleted)
+                        .show();
+                mWeightSyncMessageBooted = true;
+            }
         }).failed((err, task) -> {
             AppLog.printStackTrace(err);
 
-            if (!mGoogleFitFailedMessageBooted) {
-                toast(R.string.Setting_Fitness_Weight_SyncFailed);
-                mGoogleFitFailedMessageBooted = true;
+            if (!mWeightSyncMessageBooted) {
+                SnackbarBuilder.from(this)
+                        .message(R.string.Message_Profile_WeightSyncFailed)
+                        .show();
+                mWeightSyncMessageBooted = true;
             }
         }).start();
     }
 
+    /**
+     * 心拍ゾーンを設定する
+     */
+    final RangeBar.OnRangeBarChangeListener mHeartrateRangeListenerImpl = (rangeBar, minValue, maxValue) -> {
+        AppLog.widget("Heartrate Range(%d <--> %d)", minValue, maxValue);
+        minValue = Math.max(minValue, 0);
+        maxValue = Math.max(maxValue, minValue);
 
-    @OnClick(R.id.CycleComputer_Personal_MaxHeartrate)
-    void clickPersonalMaxHeartrate() {
-        showHeartrateInputDialog(
-                R.string.Setting_Fitness_MaxHeartrate_DialogTitle, R.string.Setting_Fitness_MaxHeartrate_DialogHiht,
-                mPersonalDataSettings.getMaxHeartrate(),
-                // 心拍受信ハンドリング
-                bpm -> {
-                    mPersonalDataSettings.setMaxHeartrate(bpm);
-                    asyncCommitSettings();
-                }
-        );
-    }
+        UserProfiles profile = mAppSettings.getUserProfiles();
 
-    @OnClick(R.id.CycleComputer_Personal_NormalHeartrate)
-    void clickPersonalNormalHeartrate() {
-        showHeartrateInputDialog(
-                R.string.Setting_Fitness_NormalHeartrate_DialogTitle, R.string.Setting_Fitness_MaxHeartrate_DialogHiht,
-                mPersonalDataSettings.getNormalHeartrate(), (bpm) -> {
-                    mPersonalDataSettings.setNormalHeartrate(bpm);
-                    asyncCommitSettings();
-                }
-        );
-    }
+        profile.setNormalHeartrate(MIN_HEARTRATE + minValue);
+        profile.setMaxHeartrate(MIN_HEARTRATE + maxValue);
 
-    void showHeartrateInputDialog(final @StringRes int titleRes, final @StringRes int hintRes, final int defaultValue, final HeartrateInputListener listener) {
-        MaterialInputDialog dialog = new MaterialInputDialog(getActivity()) {
-            @Override
-            protected void onInitializeViews(TextView header, EditText input, TextView fooder) {
-                ViewUtil.setInputIntegerOnly(input);
-                input.setHint(hintRes);
-                fooder.setText(R.string.Setting_Fitness_MaxHeartrate_Unit);
-            }
-
-            @Override
-            protected void onCommit(EditText input) {
-                listener.onInputHeartrate((int) ViewUtil.getLongValue(input, defaultValue));
-                updatePersonalUI();
-
-                asyncCommitSettings();
-            }
-        };
-        dialog.setTitle(titleRes);
-        dialog.show();
-    }
+        updateUI();
+    };
 
 
 }

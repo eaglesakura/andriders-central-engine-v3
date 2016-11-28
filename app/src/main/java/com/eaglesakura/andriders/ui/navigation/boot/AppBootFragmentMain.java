@@ -7,13 +7,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ui.navigation.NavigationActivity;
-import com.eaglesakura.andriders.ui.navigation.NavigationBaseFragment;
+import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.system.context.AppSettings;
+import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.firebase.auth.FirebaseAuthorizeManager;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.gms.error.SignInRequireException;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
@@ -22,10 +24,10 @@ import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.saver.BundleState;
-import com.eaglesakura.android.util.AndroidNetworkUtil;
 import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.util.Timer;
 
 import android.content.Intent;
 import android.support.annotation.UiThread;
@@ -33,11 +35,12 @@ import android.support.v7.app.AlertDialog;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * アプリを起動し、必要なハンドリングを行う
  */
-public class AppBootFragmentMain extends NavigationBaseFragment {
+public class AppBootFragmentMain extends AppNavigationFragment {
 
     /**
      * パーミッションをリクエストした回数
@@ -60,7 +63,11 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
     /**
      * サインインを行えた場合
      */
+    @BundleState
     GoogleSignInAccount mSignInAccount;
+
+    @Inject(AppContextProvider.class)
+    AppSettings mAppSettings;
 
     FirebaseAuthorizeManager mFirebaseAuthorizeManager = FirebaseAuthorizeManager.getInstance();
 
@@ -71,7 +78,7 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             );
 
     public AppBootFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_app_boot);
+        mFragmentDelegate.setLayoutId(R.layout.boot);
     }
 
     @Override
@@ -87,13 +94,16 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
                 // 警告ダイアログを出す
                 onFailedUserPermission();
             }
+            return;
         } else {
             if (!PermissionUtil.canDrawOverlays(getContext())) {
                 // 特殊パーミッションを取得する
                 onFailedDrawOverlays();
+                return;
             } else if (!PermissionUtil.isUsageStatsAllowed(getContext())) {
                 // アプリ履歴にアクセス出来ない
                 onFailedUsageStatus();
+                return;
             }
         }
 
@@ -110,66 +120,84 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
             return;
         }
 
-        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<Intent> task) -> {
+        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, task -> {
             task.throwIfCanceled();
 
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
 
             // 所定のパーミッションを得るまで起動させない
             while (!PermissionUtil.isRuntimePermissionGranted(getContext(), REQUIRE_PERMISSIONS)) {
-                task.waitTime(100);
+                task.waitTime(1);
             }
 
             task.throwIfCanceled();
 
             // オーバーレイ描画が行えるか
             while (!PermissionUtil.canDrawOverlays(getContext())) {
-                task.waitTime(100);
+                task.waitTime(1);
             }
 
             // アプリ使用履歴チェック
             while (!PermissionUtil.isUsageStatsAllowed(getContext())) {
-                task.waitTime(100);
+                task.throwIfCanceled();
+
+                task.waitTime(1);
             }
 
             task.throwIfCanceled();
 
-            // ネットワーク接続されているならば、アカウントログインチェック
-            if (AndroidNetworkUtil.isNetworkConnected(getContext())) {
-                try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, cancelCallback)) {
-                    if (!connection.isConnectionSuccess(Auth.GOOGLE_SIGN_IN_API, Fitness.SESSIONS_API, Fitness.HISTORY_API)) {
-                        task.throwIfCanceled();
-                        // 必要なAPIを満たしていない場合、ログインを行わせる
-                        PlayServiceUtil.await(Auth.GoogleSignInApi.revokeAccess(connection.getClient()), cancelCallback);
-                        throw new SignInRequireException(connection.newSignInIntent());
-                    }
+            // アカウントログインチェック
+            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, cancelCallback)) {
+                if (!connection.isConnectionSuccess(Auth.GOOGLE_SIGN_IN_API, Fitness.SESSIONS_API, Fitness.HISTORY_API)) {
+                    task.throwIfCanceled();
+                    // 必要なAPIを満たしていない場合、ログインを行わせる
+                    PlayServiceUtil.await(Auth.GoogleSignInApi.revokeAccess(connection.getClient()), cancelCallback);
+                    throw new SignInRequireException(connection.newSignInIntent());
+                }
 
-                    // Firebaseログイン
-                    if (mSignInAccount != null) {
-                        mFirebaseAuthorizeManager.signIn(mSignInAccount, cancelCallback);
-                    } else if (mFirebaseAuthorizeManager.getCurrentUser() == null) {
-                        // Firebaseログインが必要
-                        throw new SignInRequireException(connection.newSignInIntent());
-                    }
+                // Firebaseログイン
+                if (mSignInAccount != null) {
+                    mFirebaseAuthorizeManager.signIn(mSignInAccount, cancelCallback);
+                    mSignInAccount = null;
+                }
+
+                if (mFirebaseAuthorizeManager.await(cancelCallback) == null) {
+                    // Firebaseログインが必要
+                    throw new SignInRequireException(connection.newSignInIntent());
                 }
             }
-
             task.throwIfCanceled();
 
+            // Configを取得する
+            Timer timer = new Timer();
+            try {
+                CancelCallback callback = AppSupportUtil.asCancelCallback(task, 1000 * 10, TimeUnit.MILLISECONDS);
+                mAppSettings.getConfig().fetch(callback);
+            } catch (Throwable e) {
+                if (mAppSettings.getConfig().requireFetch()) {
+                    // Fetchに失敗し、かつコンフィグの同期も行われていない初回は起動に失敗しなければならない
+                    // もしFetchに失敗し、古いコンフィグさえある状態であれば動作の継続は行えるため例外を握りつぶす
+                    throw e;
+                }
+            } finally {
+                AppLog.system("Config SyncTime[%d ms]", timer.end());
+            }
+
             AppLog.system("Boot Success");
-            Intent intent = new Intent(getActivity(), NavigationActivity.class);
-            return intent;
-        }).completed((intent, task) -> {
+            return this;
+        }).completed((result, task) -> {
             // Activityを起動する
-            startActivity(intent);
-            getActivity().finish();
+            for (Listener listener : listInterfaces(Listener.class)) {
+                listener.onBootCompleted(this);
+            }
         }).failed((error, task) -> {
             AppLog.report(error);
             if (error instanceof SignInRequireException && mGoogleAutStep == GOOGLE_AUTH_STEP_NONE) {
                 mGoogleAutStep = GOOGLE_AUTH_STEP_API_CONNECT;
                 startActivityForResult(((SignInRequireException) error).getSignInIntent(), AppConstants.REQUEST_GOOGLE_AUTH);
             }
-        }).cancelSignal(this).start();
+        }).cancelSignal(this)
+                .start();
     }
 
     /**
@@ -247,9 +275,13 @@ public class AppBootFragmentMain extends NavigationBaseFragment {
         if (signInResult.isSuccess()) {
             mSignInAccount = signInResult.getSignInAccount();
             AppLog.test("mail[%s]", mSignInAccount.getEmail());
-            AppLog.test("idToken[%s]", mSignInAccount.getIdToken());
+            AppLog.test("photo[%s]", mSignInAccount.getPhotoUrl().toString());
         }
         mGoogleAutStep = GOOGLE_AUTH_STEP_NONE;
         startBootCheck();
+    }
+
+    public interface Listener {
+        void onBootCompleted(AppBootFragmentMain self);
     }
 }

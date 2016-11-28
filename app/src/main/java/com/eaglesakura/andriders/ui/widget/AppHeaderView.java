@@ -36,7 +36,7 @@ public class AppHeaderView extends FrameLayout {
 
     void init(Context context, AttributeSet attrs, int defStyleAttr) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.view_item_header, this);
+        View view = inflater.inflate(R.layout.widget_item_header, this);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, new int[]{
                 R.attr.headerIcon,

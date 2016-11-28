@@ -15,11 +15,41 @@ public class DbSessionPoint {
     private java.util.Date date;
 
     @Index
-    private int uploadState;
+    private long sessionId;
 
     @NotNull
     private String centralJson;
-    private byte[] extra;
+
+    @NotNull
+    @Index
+    private String valueFlags;
+
+    @Index
+    private Integer valueHeartrate;
+
+    @Index
+    private Integer valueCadence;
+
+    @Index
+    private Float valueSensorSpeed;
+
+    @Index
+    private Float valueGpsSpeed;
+    private Float valueFitCalories;
+    private Float valueFitExercise;
+    private Float valueRecordDistanceKm;
+    private Float valueRecordSumAltMeter;
+    private Float valueActiveDistanceKm;
+    private Integer valueActiveTimeMs;
+
+    @Index
+    private String valueGeohash10;
+
+    @Index
+    private String valueGeohash7Peripherals;
+
+    @Index
+    private int valueIntervalIndex;
 
     @Generated
     public DbSessionPoint() {
@@ -30,11 +60,24 @@ public class DbSessionPoint {
     }
 
     @Generated
-    public DbSessionPoint(java.util.Date date, int uploadState, String centralJson, byte[] extra) {
+    public DbSessionPoint(java.util.Date date, long sessionId, String centralJson, String valueFlags, Integer valueHeartrate, Integer valueCadence, Float valueSensorSpeed, Float valueGpsSpeed, Float valueFitCalories, Float valueFitExercise, Float valueRecordDistanceKm, Float valueRecordSumAltMeter, Float valueActiveDistanceKm, Integer valueActiveTimeMs, String valueGeohash10, String valueGeohash7Peripherals, int valueIntervalIndex) {
         this.date = date;
-        this.uploadState = uploadState;
+        this.sessionId = sessionId;
         this.centralJson = centralJson;
-        this.extra = extra;
+        this.valueFlags = valueFlags;
+        this.valueHeartrate = valueHeartrate;
+        this.valueCadence = valueCadence;
+        this.valueSensorSpeed = valueSensorSpeed;
+        this.valueGpsSpeed = valueGpsSpeed;
+        this.valueFitCalories = valueFitCalories;
+        this.valueFitExercise = valueFitExercise;
+        this.valueRecordDistanceKm = valueRecordDistanceKm;
+        this.valueRecordSumAltMeter = valueRecordSumAltMeter;
+        this.valueActiveDistanceKm = valueActiveDistanceKm;
+        this.valueActiveTimeMs = valueActiveTimeMs;
+        this.valueGeohash10 = valueGeohash10;
+        this.valueGeohash7Peripherals = valueGeohash7Peripherals;
+        this.valueIntervalIndex = valueIntervalIndex;
     }
 
     @NotNull
@@ -47,12 +90,12 @@ public class DbSessionPoint {
         this.date = date;
     }
 
-    public int getUploadState() {
-        return uploadState;
+    public long getSessionId() {
+        return sessionId;
     }
 
-    public void setUploadState(int uploadState) {
-        this.uploadState = uploadState;
+    public void setSessionId(long sessionId) {
+        this.sessionId = sessionId;
     }
 
     @NotNull
@@ -65,12 +108,118 @@ public class DbSessionPoint {
         this.centralJson = centralJson;
     }
 
-    public byte[] getExtra() {
-        return extra;
+    @NotNull
+    public String getValueFlags() {
+        return valueFlags;
     }
 
-    public void setExtra(byte[] extra) {
-        this.extra = extra;
+    /** Not-null value; ensure this value is available before it is saved to the database. */
+    public void setValueFlags(@NotNull String valueFlags) {
+        this.valueFlags = valueFlags;
+    }
+
+    public Integer getValueHeartrate() {
+        return valueHeartrate;
+    }
+
+    public void setValueHeartrate(Integer valueHeartrate) {
+        this.valueHeartrate = valueHeartrate;
+    }
+
+    public Integer getValueCadence() {
+        return valueCadence;
+    }
+
+    public void setValueCadence(Integer valueCadence) {
+        this.valueCadence = valueCadence;
+    }
+
+    public Float getValueSensorSpeed() {
+        return valueSensorSpeed;
+    }
+
+    public void setValueSensorSpeed(Float valueSensorSpeed) {
+        this.valueSensorSpeed = valueSensorSpeed;
+    }
+
+    public Float getValueGpsSpeed() {
+        return valueGpsSpeed;
+    }
+
+    public void setValueGpsSpeed(Float valueGpsSpeed) {
+        this.valueGpsSpeed = valueGpsSpeed;
+    }
+
+    public Float getValueFitCalories() {
+        return valueFitCalories;
+    }
+
+    public void setValueFitCalories(Float valueFitCalories) {
+        this.valueFitCalories = valueFitCalories;
+    }
+
+    public Float getValueFitExercise() {
+        return valueFitExercise;
+    }
+
+    public void setValueFitExercise(Float valueFitExercise) {
+        this.valueFitExercise = valueFitExercise;
+    }
+
+    public Float getValueRecordDistanceKm() {
+        return valueRecordDistanceKm;
+    }
+
+    public void setValueRecordDistanceKm(Float valueRecordDistanceKm) {
+        this.valueRecordDistanceKm = valueRecordDistanceKm;
+    }
+
+    public Float getValueRecordSumAltMeter() {
+        return valueRecordSumAltMeter;
+    }
+
+    public void setValueRecordSumAltMeter(Float valueRecordSumAltMeter) {
+        this.valueRecordSumAltMeter = valueRecordSumAltMeter;
+    }
+
+    public Float getValueActiveDistanceKm() {
+        return valueActiveDistanceKm;
+    }
+
+    public void setValueActiveDistanceKm(Float valueActiveDistanceKm) {
+        this.valueActiveDistanceKm = valueActiveDistanceKm;
+    }
+
+    public Integer getValueActiveTimeMs() {
+        return valueActiveTimeMs;
+    }
+
+    public void setValueActiveTimeMs(Integer valueActiveTimeMs) {
+        this.valueActiveTimeMs = valueActiveTimeMs;
+    }
+
+    public String getValueGeohash10() {
+        return valueGeohash10;
+    }
+
+    public void setValueGeohash10(String valueGeohash10) {
+        this.valueGeohash10 = valueGeohash10;
+    }
+
+    public String getValueGeohash7Peripherals() {
+        return valueGeohash7Peripherals;
+    }
+
+    public void setValueGeohash7Peripherals(String valueGeohash7Peripherals) {
+        this.valueGeohash7Peripherals = valueGeohash7Peripherals;
+    }
+
+    public int getValueIntervalIndex() {
+        return valueIntervalIndex;
+    }
+
+    public void setValueIntervalIndex(int valueIntervalIndex) {
+        this.valueIntervalIndex = valueIntervalIndex;
     }
 
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/Menu.Profile"
+            android:icon="@drawable/ic_bicycle"
+            android:title="@string/Main.Menu.Profile"/>
+
+    <item
+            android:id="@+id/Menu.CycleComputer"
+            android:icon="@drawable/ic_cycle_computer"
+            android:title="@string/Main.Menu.CycleComputer"/>
+    <item
+            android:id="@+id/Menu.Commands"
+            android:icon="@drawable/ic_command"
+            android:title="@string/Main.Menu.Commands"/>
+
+    <item
+            android:id="@+id/Menu.Plugins"
+            android:icon="@drawable/ic_plugins"
+            android:title="@string/Main.Menu.Plugins"/>
+    <item
+            android:id="@+id/Menu.Gadgets"
+            android:icon="@drawable/ic_heart_beats"
+            android:title="@string/Main.Menu.Gadgets"/>
+
+    <!--<item-->
+            <!--android:id="@+id/Main.Menu.UserLog"-->
+            <!--android:icon="@drawable/ic_calendar"-->
+            <!--android:title="@string/Main.Menu.Activity"/>-->
+    <item
+            android:id="@+id/Menu.Information"
+            android:icon="@drawable/ic_info"
+            android:title="@string/Main.Menu.Information"/>
+
+</menu>

@@ -33,8 +33,10 @@
             android:label="@string/Env.AppName"
             android:theme="@style/App.Theme">
 
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="${google_api_key}"/>
+
         <activity
-                android:name=".ui.navigation.AppBootActivity"
+                android:name="com.eaglesakura.andriders.ui.navigation.AppBootActivity"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -42,11 +44,35 @@
             </intent-filter>
         </activity>
 
-        <!-- 指定アプリ起動 -->
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.UserSessionActivity"
+                  android:screenOrientation="portrait"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.PluginSettingActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Title.Plugin"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.InformationActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Title.Info"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.CommandSettingActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Title.Command"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.SensorDeviceSettingActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Title.Sensor"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.ProfileSettingActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Title.Profile"/>
         <activity
-                android:name=".basicui.command.LauncherSelectActivity"
-                android:label="指定アプリを起動"
-                android:screenOrientation="portrait">
+                android:name="com.eaglesakura.andriders.ui.navigation.DisplayLayoutSettingActivity"
+                android:screenOrientation="portrait"
+                android:label="@string/Title.Display"/>
+        <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
+        </service>
+
+
+        <!-- 指定のLauncherを起動する -->
+        <activity android:name="com.eaglesakura.andriders.trigger.LauncherSelectActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Word.SelectLauncher">
             <intent-filter>
                 <!-- acetrigger://で起動する -->
                 <data android:scheme="acecommand"/>
@@ -55,31 +81,24 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <!--<activity-->
+        <!--android:name=".ui.navigation.NavigationActivity"-->
+        <!--android:screenOrientation="portrait">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.MAIN"/>-->
+        <!--&lt;!&ndash;<category android:name="android.intent.category.LAUNCHER"/>&ndash;&gt;-->
+        <!--</intent-filter>-->
+        <!--</activity>-->
 
-        <activity
-                android:name=".ui.navigation.NavigationActivity"
-                android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
-            </intent-filter>
-        </activity>
-
-        <!-- Permission更新用Activity -->
-        <activity
-                android:name="com.eaglesakura.andriders.ui.auth.PermissionRequestActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/EsMaterial.Theme.Transparent"/>
-
-        <!-- ACE Service -->
-        <service
-                android:name="com.eaglesakura.andriders.service.central.CentralService"
-                android:process=":ace">
-        </service>
+        <!--&lt;!&ndash; ACE Service &ndash;&gt;-->
+        <!--<service-->
+        <!--android:name="com.eaglesakura.andriders.service.central.CentralService"-->
+        <!--android:process=":ace">-->
+        <!--</service>-->
 
         <!-- 組み込み拡張機能 "デフォルト表示" -->
         <service
-                android:name="com.eaglesakura.andriders.basicui.BasicExtensionService"
+                android:name="com.eaglesakura.andriders.plugin.service.CentralInterfacePluginService"
                 android:icon="@mipmap/ic_launcher"
                 android:label="@string/Extension.Inner.Default.Name"
                 android:process=":ace">
@@ -87,36 +106,45 @@
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>
         </service>
-        <!-- 組み込み拡張機能 "GPS連携" -->
         <service
-                android:name="com.eaglesakura.andriders.location.LocationExtensionService"
-                android:icon="@drawable/ic_save"
+                android:name="com.eaglesakura.andriders.plugin.service.GpsLocationPluginService"
+                android:icon="@mipmap/ic_launcher"
                 android:label="@string/Extension.Inner.Location.Name"
                 android:process=":ace">
             <intent-filter>
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>
         </service>
-        <!-- 組み込み拡張機能 "BLE心拍" -->
-        <service
-                android:name="com.eaglesakura.andriders.ble.service.BleHeartrateExtensionService"
-                android:icon="@drawable/ic_heart_beats"
-                android:label="@string/Extension.Inner.BleSensor.Name"
-                android:process=":ace">
-            <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
-            </intent-filter>
-        </service>
-        <!-- 組み込み拡張機能 "BLE S&C" -->
-        <service
-                android:name="com.eaglesakura.andriders.ble.service.BleSpeedCadenceExtensionService"
-                android:icon="@drawable/ic_speed"
-                android:label="@string/Extension.Inner.BleSensor.Name"
-                android:process=":ace">
-            <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
-            </intent-filter>
-        </service>
+        <!--&lt;!&ndash; 組み込み拡張機能 "GPS連携" &ndash;&gt;-->
+        <!--<service-->
+        <!--android:name="com.eaglesakura.andriders.location.LocationExtensionService"-->
+        <!--android:icon="@drawable/ic_save"-->
+        <!--android:label="@string/Extension.Inner.Location.Name"-->
+        <!--android:process=":ace">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>-->
+        <!--</intent-filter>-->
+        <!--</service>-->
+        <!--&lt;!&ndash; 組み込み拡張機能 "BLE心拍" &ndash;&gt;-->
+        <!--<service-->
+        <!--android:name="com.eaglesakura.andriders.ble.service.BleHeartrateExtensionService"-->
+        <!--android:icon="@drawable/ic_heart_beats"-->
+        <!--android:label="@string/Extension.Inner.BleSensor.Name"-->
+        <!--android:process=":ace">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>-->
+        <!--</intent-filter>-->
+        <!--</service>-->
+        <!--&lt;!&ndash; 組み込み拡張機能 "BLE S&C" &ndash;&gt;-->
+        <!--<service-->
+        <!--android:name="com.eaglesakura.andriders.ble.service.BleSpeedCadenceExtensionService"-->
+        <!--android:icon="@drawable/ic_speed"-->
+        <!--android:label="@string/Extension.Inner.BleSensor.Name"-->
+        <!--android:process=":ace">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>-->
+        <!--</intent-filter>-->
+        <!--</service>-->
     </application>
 
 </manifest>

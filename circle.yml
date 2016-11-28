@@ -20,7 +20,7 @@ dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
   override:
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk.sh)"
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk-auto.sh)"
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-extra-repo.sh)"
     - ./script/developer-install-private.sh
     - ./gradlew --refresh-dependencies :app:dependencies
