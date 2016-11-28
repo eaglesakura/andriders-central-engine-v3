@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.util;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -16,6 +17,10 @@ public class Clock {
 
     public long now() {
         return mCurrentTime.get();
+    }
+
+    public Date nowDate() {
+        return new Date(now());
     }
 
     /**

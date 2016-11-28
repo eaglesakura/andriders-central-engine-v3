@@ -2,25 +2,25 @@ package com.eaglesakura.andriders.ui.navigation.command.timer;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
-import com.eaglesakura.andriders.databinding.CardCommandTimerBinding;
-import com.eaglesakura.andriders.db.command.CommandData;
-import com.eaglesakura.andriders.db.command.CommandDatabase;
-import com.eaglesakura.andriders.db.command.CommandSetupData;
+import com.eaglesakura.andriders.databinding.CommandSetupTimerRowBinding;
+import com.eaglesakura.andriders.model.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandSetupData;
 import com.eaglesakura.andriders.ui.navigation.command.CommandBaseFragment;
+import com.eaglesakura.andriders.ui.navigation.command.CommandEditDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.IFragmentPagerTitle;
+import com.eaglesakura.android.framework.delegate.fragment.FragmentPagerTitle;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.material.widget.MaterialAlertDialog;
+import com.eaglesakura.material.widget.SnackbarBuilder;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.StringUtil;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.BitmapDrawable;
@@ -31,19 +31,19 @@ import android.view.ViewGroup;
 /**
  * タイマーコマンドのセットアップ
  */
-public class TimerCommandFragment extends CommandBaseFragment implements IFragmentPagerTitle {
+public class TimerCommandFragment extends CommandBaseFragment implements FragmentPagerTitle {
     final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_TIMER;
 
     @BindStringArray(R.array.Command_Timer_TypeInfo)
     protected String[] mInfoFormats;
 
     public TimerCommandFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_command_list);
+        mFragmentDelegate.setLayoutId(R.layout.command_setup_list);
     }
 
     @Override
     protected int getCommandCategory() {
-        return CommandDatabase.CATEGORY_TIMER;
+        return CommandData.CATEGORY_TIMER;
     }
 
     @Override
@@ -51,13 +51,13 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
         return new CardAdapter<CommandData>() {
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
-                return CardCommandTimerBinding.inflate(getActivity().getLayoutInflater(), parent, false).getRoot();
+                return CommandSetupTimerRowBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
             }
 
             @Override
             protected void onBindCard(CardBind<CommandData> bind, int position) {
                 CommandData item = bind.getItem();
-                CardCommandTimerBinding binding = DataBindingUtil.getBinding(bind.getCard());
+                CommandSetupTimerRowBinding binding = DataBindingUtil.getBinding(bind.getCard());
                 binding.setItem(new CardBinding() {
                     @Override
                     public Drawable getIcon() {
@@ -77,13 +77,16 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
                     }
                 });
                 binding.CommandItem.setOnClickListener(it -> {
-                    addAutoDismiss(newSettingDialog(item)).show();
+                    CommandEditDialogBuilder.from(getContext(), item)
+                            .commit(mCommandCommitListener)
+                            .delete(mCommandDeleteListener)
+                            .show(mLifecycleDelegate);
                 });
             }
         };
     }
 
-    @OnClick(R.id.Command_Item_Add)
+    @OnClick(R.id.Button_Add)
     protected void clickAddButton() {
         startActivityForResult(
                 AppUtil.newCommandSettingIntent(getActivity(), CommandKey.fromTimer(System.currentTimeMillis())),
@@ -98,74 +101,28 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
             return;
         }
 
-        CommandData.RawExtra extra = new CommandData.RawExtra();
+        CommandData.Extra extra = new CommandData.Extra();
         extra.timerIntervalSec = (60 * 5);
         extra.timerType = CommandData.TIMER_TYPE_SESSION;
         CommandData commandData = mCommandDataManager.save(data, getCommandCategory(), extra);
         mAdapter.getCollection().insertOrReplace(0, commandData);
     }
 
-    @Override
-    protected MaterialAlertDialog newSettingDialog(CommandData data) {
-        return new MaterialAlertDialog(getActivity()) {
-            MaterialAlertDialog init() {
-                setDialogContent(R.layout.dialog_timer_command);
+    CommandEditDialogBuilder.OnCommitListener mCommandCommitListener = (view, data) -> {
+        AQuery q = new AQuery(view);
+        CommandData.Extra extra = data.getInternalExtra();
+        int interval = (int) ViewUtil.getLongValue(q.id(R.id.Item_Value).getEditText(), -1);
+        if (interval < 0) {
+            SnackbarBuilder.from(this).message(R.string.Message_Command_InvalidValue).show();
+            return;
+        }
 
-                initTimerUi();
+        extra.timerType = q.id(R.id.Selector_Type).getSelectedItemPosition();
+        extra.timerIntervalSec = interval;
+        extra.flags = MathUtil.setFlag(extra.flags, CommandData.TIMER_FLAG_REPEAT, q.id(R.id.Button_Repeat).isChecked());
 
-                setTitle("条件変更");
-                setPositiveButton("保存", (dlg, which) -> {
-                    onCommit();
-                });
-
-                setNeutralButton("削除", (dlg, which) -> {
-                    showDeleteDialog(data);
-                });
-                return this;
-            }
-
-            /**
-             * type設定のUIを構築する
-             */
-            void initTimerUi() {
-                String[] information = getResources().getStringArray(R.array.Command_Timer_TypeSelector);
-                BasicSpinnerAdapter adapter = new BasicSpinnerAdapter(getContext());
-                for (String s : information) {
-                    adapter.add(s);
-                }
-
-                CommandData.RawExtra extra = data.getInternalExtra();
-                new AQuery(root)
-                        .id(R.id.Command_Timer_Type)
-                        .adapter(adapter)
-                        .setSelection(data.getInternalExtra().timerType)
-                        .id(R.id.Command_Timer_Text)
-                        .text(StringUtil.format("%d", extra.timerIntervalSec))
-                        .id(R.id.Command_Timer_Repeat)
-                        .checked((extra.flags & CommandData.TIMER_FLAG_REPEAT) != 0)
-                ;
-            }
-
-            /**
-             * 変更を確定する
-             */
-            void onCommit() {
-                AQuery q = new AQuery(root);
-                CommandData.RawExtra extra = data.getInternalExtra();
-                int interval = (int) ViewUtil.getLongValue(q.id(R.id.Command_Timer_Text).getEditText(), -1);
-                if (interval < 0) {
-                    toast("速度設定に間違いがあります");
-                    return;
-                }
-
-                extra.timerType = q.id(R.id.Command_Timer_Type).getSelectedItemPosition();
-                extra.timerIntervalSec = interval;
-                extra.flags = MathUtil.setFlag(extra.flags, CommandData.TIMER_FLAG_REPEAT, q.id(R.id.Command_Timer_Repeat).isChecked());
-
-                onCommitData(data);
-            }
-        }.init();
-    }
+        onCommitData(data);
+    };
 
     public interface CardBinding {
         Drawable getIcon();
@@ -174,7 +131,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements IFragme
     }
 
     @Override
-    public CharSequence getTitle() {
-        return "タイマー";
+    public CharSequence getTitle(Context context) {
+        return context.getString(R.string.Title_Command_Timer);
     }
 }

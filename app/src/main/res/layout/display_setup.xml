@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/esmWindowBackgroundColorDark">
+    <android.support.v7.widget.CardView
+            android:layout_marginTop="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+            android:layout_marginBottom="@dimen/EsMaterial.Margin.KeyLine1Vertical"
+            style="@style/EsMaterial.Widget.CardView.Light"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+        <LinearLayout android:layout_width="match_parent"
+                      android:orientation="vertical"
+                      android:layout_height="match_parent">
+
+            <!-- アプリ選択画面 -->
+            <FrameLayout android:layout_width="match_parent"
+                         android:id="@+id/Content.Holder.AppSelector"
+                         android:minHeight="@dimen/EsMaterial.Button.MinHeight"
+                         android:layout_height="wrap_content"/>
+
+            <!-- 表示内容選択画面 -->
+            <FrameLayout android:layout_width="match_parent"
+                         android:id="@+id/Content.Holder.DisplayLayout"
+                         android:layout_height="match_parent"/>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</FrameLayout>

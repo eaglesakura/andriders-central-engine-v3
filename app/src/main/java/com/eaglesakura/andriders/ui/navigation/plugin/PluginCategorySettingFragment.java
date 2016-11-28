@@ -1,19 +1,22 @@
 package com.eaglesakura.andriders.ui.navigation.plugin;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.db.plugin.PluginDatabase;
 import com.eaglesakura.andriders.plugin.Category;
-import com.eaglesakura.andriders.plugin.PluginConnector;
+import com.eaglesakura.andriders.plugin.CentralPlugin;
+import com.eaglesakura.andriders.plugin.CentralPluginCollection;
+import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.plugin.PluginInformation;
-import com.eaglesakura.andriders.plugin.PluginManager;
-import com.eaglesakura.andriders.ui.base.AppBaseFragment;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
+import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.SupportAQuery;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.saver.BundleState;
-import com.eaglesakura.util.Util;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
@@ -28,7 +31,7 @@ import java.util.List;
 /**
  * カテゴリごとにプラグインを列挙するFragment
  */
-public class PluginCategorySettingFragment extends AppBaseFragment {
+public class PluginCategorySettingFragment extends AppFragment {
 
     @BundleState
     int mTitleResId;
@@ -45,13 +48,13 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
     @Bind(R.id.Extension_List_Root)
     ViewGroup mModulesRoot;
 
-    /**
-     * 親Fragmentは固定
-     */
-    PluginSettingFragmentMain mParent;
+    @Inject(AppManagerProvider.class)
+    PluginDataManager mPluginDataManager;
+
+    CentralPluginCollection mCentralPluginCollection;
 
     public PluginCategorySettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.fragment_plugin_modules);
+        mFragmentDelegate.setLayoutId(R.layout.plugin_module);
     }
 
     /**
@@ -71,11 +74,6 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
-        mParent = (PluginSettingFragmentMain) getParentFragment();
-        if (mParent == null) {
-            throw new IllegalStateException();
-        }
     }
 
     @Override
@@ -91,75 +89,84 @@ public class PluginCategorySettingFragment extends AppBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        updateExtensionViews();
-    }
 
-    @UiThread
-    void updateExtensionViews() {
-        asyncUI((BackgroundTask<PluginManager> it) -> {
-            while (!it.isCanceled()) {
-                PluginManager manager = mParent.getClientManager();
-                if (manager != null) {
-                    return manager;
-                }
-                Util.sleep(1);
+        asyncUI(task -> {
+            while (getParent(PluginSettingFragmentMain.class).getPlugins() == null) {
+                task.waitTime(1);
             }
-
-            throw new IllegalStateException();
-        }).completed((manager, task) -> {
-            // 取得成功したらViewに反映する
-            mModulesRoot.removeAllViews();
-
-            List<PluginConnector> clients = manager.listClients(Category.fromName(mCategoryName));
-            for (PluginConnector client : clients) {
-                // クライアント表示を追加する
-                addClientSetting(client);
-            }
+            return this;
+        }).completed((result, task) -> {
+            updateExtensionViews(getParent(PluginSettingFragmentMain.class).getPlugins());
         }).start();
     }
 
-    /**
-     * TODO クライアントのViewを構築する
-     */
     @UiThread
-    private void addClientSetting(final PluginConnector client) {
-        View card = View.inflate(getActivity(), R.layout.card_extension_module, null);
-        AQuery q = new AQuery(card);
-        q.id(R.id.Extension_Module_Icon).image(client.loadIcon());
-        // チェック有無判定
-        q.id(R.id.Extension_Module_Switch)
-                .text(client.getName())
-                .checked(client.isActive())
-                .checkedChange((button, isChecked) -> {
-                    client.setEnable(isChecked);
-                });
+    void updateExtensionViews(CentralPluginCollection pluginCollection) {
+        // 取得成功したらViewに反映する
+        mModulesRoot.removeAllViews();
+        mCentralPluginCollection = pluginCollection;
 
-        PluginInformation information = client.getInformation();
-        if (information != null) {
-            // TODO 説明テキスト設定
-        }
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mModulesRoot.addView(card, params);
-    }
+        Category pluginCategory = Category.fromName(mCategoryName);
+        List<CentralPlugin> pluginList = pluginCollection.list(pluginCategory);
+        for (CentralPlugin plugin : pluginList) {
 
-    @UiThread
-    void commitEnableChanged(PluginConnector plugin, boolean enabled) {
-        asyncUI(task -> {
-            PluginDatabase db = new PluginDatabase(getActivity());
+            boolean pluginActive = false;
             try {
-                db.openWritable();
-
-                Category category = Category.fromName(mCategoryName);
-
-                if (category.hasAttribute(Category.ATTRIBUTE_SINGLE_SELECT)) {
-                    // 属性を指定する
-                }
-            } finally {
-                db.close();
+                pluginActive = mPluginDataManager.isActive(plugin);
+            } catch (Exception e) {
             }
 
+            // クライアント表示を追加する
+            View card = View.inflate(getActivity(), R.layout.plugin_module_row, null);
+            AQuery q = new AQuery(card);
+            q.id(R.id.Extension_Module_Icon).image(plugin.loadIcon());
+            // チェック有無判定
+            q.id(R.id.Extension_Module_Switch)
+                    .text(plugin.getName())
+                    .checked(pluginActive)
+                    .checkedChange((button, isChecked) -> {
+                        activate(plugin, isChecked);
+                    });
+
+            PluginInformation information = plugin.getInformation();
+            if (information != null) {
+                // TODO 説明テキスト設定
+            }
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mModulesRoot.addView(card, params);
+        }
+    }
+
+    /**
+     * プラグインのON/OFF制御を行う
+     *
+     * @param plugin 対象プラグイン
+     */
+    @UiThread
+    void activate(CentralPlugin plugin, boolean isChecked) {
+        asyncUI(task -> {
+            Category pluginCategory = Category.fromName(mCategoryName);
+            List<CentralPlugin> pluginList = mCentralPluginCollection.list(pluginCategory);
+
+            try (ProgressToken token = pushProgress(R.string.Common_Worning)) {
+                if (isChecked && pluginCategory.hasAttribute(Category.ATTRIBUTE_SINGLE_SELECT)) {
+                    // 1つしか選択できないのなら、一旦全てを外す
+                    for (CentralPlugin p : pluginList) {
+                        mPluginDataManager.setActive(p, false);
+                    }
+                }
+
+                // プラグインのチェック状態を更新する
+                mPluginDataManager.setActive(plugin, isChecked);
+            }
             return this;
+        }).failed((error, task) -> {
+            AppLog.printStackTrace(error);
+            AppDialogBuilder.newError(getContext(), error)
+                    .positiveButton(R.string.Common_OK, null)
+                    .show(mLifecycleDelegate);
         }).start();
     }
 

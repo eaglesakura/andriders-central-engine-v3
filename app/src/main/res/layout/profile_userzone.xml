@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
+        android:layout_marginTop="@dimen/EsMaterial.Widget.Margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                app:headerIcon="@drawable/ic_zone"
+                app:headerText="ゾーン設定"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <LinearLayout
+                style="@style/App.Theme.BasicSetting"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+            <LinearLayout
+                    android:id="@+id/Setting.RoadBikeProfile.BikeName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="巡航速度"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/Item.SpeedMin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="25 km/h"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text=" - "/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/Item.SpeedMax"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="35 km/h"/>
+            </LinearLayout>
+
+            <com.edmodo.rangebar.RangeBar
+                    app:tickCount="30"
+                    app:tickHeight="0dp"
+                    app:thumbColorPressed="@color/EsMaterial.LightGreen.Button.Pressed"
+                    app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
+                    app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
+                    app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
+                    android:id="@+id/Range.CruiseSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            <include layout="@layout/esm_material_separator"/>
+
+            <LinearLayout
+                    android:id="@+id/Setting.RoadBikeProfile.WheelSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="目標ケイデンス"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/Item.CadenceMin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="80rpm"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text=" - "/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/Item.CadenceMax"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="right"
+                        android:text="110rpm"/>
+            </LinearLayout>
+
+            <com.edmodo.rangebar.RangeBar
+                    app:tickHeight="0dp"
+                    app:tickCount="60"
+                    app:thumbColorPressed="@color/EsMaterial.LightGreen.Button.Pressed"
+                    app:thumbColorNormal="@color/EsMaterial.LightGreen.Button.Normal"
+                    app:barColor="@color/EsMaterial.LightGreen.Button.Normal"
+                    app:connectingLineColor="@color/EsMaterial.LightGreen.Button.Focused"
+                    android:id="@+id/Range.Cadence"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

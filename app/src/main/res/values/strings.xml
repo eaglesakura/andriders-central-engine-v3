@@ -67,17 +67,10 @@
     </string-array>
 
     <!-- フィットネス -->
-    <string name="Setting.Fitness.Weight.SyncCompleted">体重データを同期しました</string>
-    <string name="Setting.Fitness.Weight.SyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>
-    <string name="Setting.Fitness.Weight">体重</string>
-    <string name="Setting.Fitness.Weight.Unit">kg</string>
-    <string name="Setting.Fitness.Weight.DialogHiht"></string>
-    <string name="Setting.Fitness.Weight.DialogTitle">体重入力</string>
-    <string name="Setting.Fitness.MaxHeartrate">最大心拍数</string>
-    <string name="Setting.Fitness.MaxHeartrate.Unit">bpm</string>
-    <string name="Setting.Fitness.MaxHeartrate.DialogHiht"></string>
-    <string name="Setting.Fitness.MaxHeartrate.DialogTitle">最大心拍数入力</string>
-    <string name="Setting.Fitness.NormalHeartrate.DialogTitle">安静心拍数入力</string>
+    <string name="Message.Profile.WeightSyncCompleted">体重データを同期しました</string>
+    <string name="Message.Profile.WeightSyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>
+    <string name="Word.Common.Weight">体重</string>
+    <string name="Word.Profile.WeightUnit">kg</string>
 
     <!-- 拡張モジュール -->
     <string name="Extension.Empty">拡張モジュールがありません。</string>
@@ -145,6 +138,60 @@
     <string name="Setting.CycleComputer.Target.Default">デフォルト</string>
     <string name="Command.Flag.Repeat">繰り返し</string>
     <string name="Command.Flag.Distance.ActiveOnly">自走</string>
+    <string name="Word.Display.ErrorSlot">無効な表示内容</string>
+    <string name="Word.Central.SessionNow">セッション記録中</string>
+    <string name="Word.Central.SessionStart">セッション開始</string>
+    <string name="Title.Central.SessionFinish">セッション終了</string>
+    <string name="Message.Central.SessionFinish">走行セッションを終了しますか？</string>
+    <string name="Choose.Central.SessionFinish">セッション終了</string>
+    <string name="Title.Central.SessionStart">セッション開始</string>
+    <string name="Message.Central.SessionStart">走行セッションを開始しますか？</string>
+    <string name="Choose.Central.SessionStart">セッション開始</string>
+    <string name="Title.Launcher.ChooseApp">起動するアプリを選択</string>
+    <string name="Word.App.AndridersCentralEngine">Andriders Central Engine</string>
+    <string name="Title.Error.Runtime">実行時エラー</string>
+    <string name="Title.Error.DatabaseIO">データベース処理エラー</string>
+    <string name="Message.Error.Runtime">処理中に問題が発生しました</string>
+    <string name="Title.Plugin">プラグイン設定</string>
+    <string name="Message.LocationPlugin.PermissionError">GPS利用が許可されていません</string>
+    <string name="Message.Boot">アプリ起動中</string>
+    <string name="Word.Progress.ConnectACEs">ACEs接続...</string>
+    <string name="Word.Common.NowSessionStarted">走行セッション中</string>
+    <string name="Word.Session.SessionStop">セッション停止</string>
+    <string name="Word.Session.SessionStart">セッション開始</string>
+    <string name="Message.Session.SessionAbort">セッションを停止しますか？\n走行時間[%1$s]</string>
+    <string name="Message.Session.SessionStart">走行セッションを開始しますか?</string>
+    <string name="Title.Info">アプリ情報</string>
+    <string name="Title.Command">コマンド</string>
+    <string name="Word.SelectLauncher">アプリ選択</string>
+    <string name="Title.Command.Edit">条件設定</string>
+    <string name="Word.Common.Save">保存</string>
+    <string name="Word.Common.Delete">削除</string>
+    <string name="Title.Command.Distance">距離</string>
+    <string name="Message.Command.InvalidValue">無効な設定値です</string>
+    <string name="Title.Command.Speed">スピード</string>
+    <string name="Title.Command.Timer">タイマー</string>
+    <string name="Title.Sensor">センサー・周辺機器</string>
+    <string name="Message.Sensor.Found">センサーを検出 [%1$s]</string>
+    <string name="Word.Common.Roadbike">ロードバイク</string>
+    <string name="Word.Profile.WheelOuterLengthFormat">%2$d mm / %1$s</string>
+    <string name="Title.Profile">プロファイル</string>
+    <string name="Word.Profile.TireSetting">タイヤ規格</string>
+    <string name="Word.Common.Install">インストール</string>
+    <string name="Word.Profile.GoogleFitNotInstalled">Google Fitアプリがインストールされていません。\n体重設定を行う場合、Google
+        Fitアプリをインストールしてください。
+    </string>
+    <string name="Title.Display">サイコン表示</string>
+    <string name="Word.Common.Default">デフォルト</string>
+    <string name="Word.Common.Working">処理中</string>
+    <string name="Message.Display.PluginNotEnabled">プラグインが有効化されていません。\n使用するプラグインを選択してください。</string>
+    <string name="Title.Command.Proximity">近接</string>
+    <string name="Title.Display.Choose">表示内容選択</string>
+    <string name="Message.Display.HeartrateSummary">心拍を表示します。センサーに接続されていない場合は表示されません。</string>
+    <string name="Message.Display.SpeedSummary">
+        速度を表示します。センサーに接続できた場合はセンサーの値を表示します。それ以外の場合はGPSから速度が計算されます。
+    </string>
+    <string name="Message.Display.CadenceSummary">ケイデンスを表示します。センサーに接続されていない場合は表示されません。</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>

@@ -29,7 +29,11 @@ public class AppLog {
      */
     public static void report(Throwable e) {
         e.printStackTrace();
-        FirebaseCrash.report(e);
+        try {
+            FirebaseCrash.report(e);
+        } catch (Exception fbc) {
+
+        }
     }
 
     /**
@@ -51,6 +55,13 @@ public class AppLog {
 
     public static void system(String fmt, Object... args) {
         String tag = "App.System";
+
+        LogUtil.setLogger(tag, sAppLogger);
+        LogUtil.out(tag, fmt, args);
+    }
+
+    public static void command(String fmt, Object... args) {
+        String tag = "App.Command";
 
         LogUtil.setLogger(tag, sAppLogger);
         LogUtil.out(tag, fmt, args);

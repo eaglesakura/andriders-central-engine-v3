@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:orientation="vertical"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <FrameLayout
+            android:id="@+id/ViewHolder.Navigation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    <android.support.v7.widget.AppCompatButton
+            android:visibility="invisible"
+            android:id="@+id/Button.SessionChange"
+            android:layout_margin="@dimen/EsMaterial.Widget.Margin"
+            android:theme="@style/App.Theme.Button.Session"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginBottom="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+</FrameLayout>

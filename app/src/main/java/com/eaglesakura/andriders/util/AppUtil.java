@@ -10,14 +10,21 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.util.SerializeUtil;
+import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.android.util.ImageUtil;
+import com.eaglesakura.io.CancelableInputStream;
+import com.eaglesakura.lambda.CancelCallback;
+
+import org.greenrobot.greendao.annotation.NotNull;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.TimeZone;
 
 /**
@@ -77,37 +84,6 @@ public class AppUtil {
 //
 
     /**
-     * Serialize -> Deserializeを行うことで簡易cloneを行う
-     */
-    public static <T> T publicFieldClone(T origin) {
-        try {
-            return SerializeUtil.deserializePublicFieldObject((Class<T>) origin.getClass(), SerializeUtil.serializePublicFieldObject(origin, false));
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public static byte[] publicFieldSerialize(Object obj) {
-        try {
-            return SerializeUtil.serializePublicFieldObject(obj, true);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public static void startSettingIntent(Context context, Intent intent) {
-        try {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            intent.setData(Uri.parse("package:" + context.getPackageName()));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        }
-    }
-
-    /**
      * コマンド設定を行うためのIntentを投げる
      *
      * @param commandKey コマンド識別キー
@@ -157,5 +133,34 @@ public class AppUtil {
 //                // GPS
 //                .addApi(LocationServices.API)
 //                ;
+    }
+
+    public static String getErrorTitle(Throwable e) {
+        Context context = FrameworkCentral.getApplication();
+        return context.getString(R.string.Title_Error_Runtime);
+    }
+
+    public static String getErrorMessage(Throwable e) {
+        Context context = FrameworkCentral.getApplication();
+        return context.getString(R.string.Message_Error_Runtime);
+    }
+
+    /**
+     * アイコンをロードする
+     *
+     * @param uri アイコンURI
+     */
+    @NonNull
+    public static Bitmap loadIcon(@NonNull Context context, @NotNull Uri uri, CancelCallback cancelCallback) throws TaskCanceledException {
+        try (InputStream is = new CancelableInputStream(context.getContentResolver().openInputStream(uri), cancelCallback)) {
+            Bitmap image = ImageUtil.decode(is);
+            Bitmap scaled = ImageUtil.toScaledImage(image, 256, 256);
+            if (image != scaled) {
+                image.recycle();
+            }
+            return scaled;
+        } catch (IOException e) {
+            return ImageUtil.decode(context, R.mipmap.ic_user_position);
+        }
     }
 }

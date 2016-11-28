@@ -7,69 +7,92 @@ buildscript {
     }
     dependencies {
         classpath "com.eaglesakura:plugin-android-dbgenerator:2.0.146"
+        classpath "com.eaglesakura:plugin-firebase-remoteconfig:1.0.36"
     }
+}
+
+/**
+ * Firebaseで管理されるConfigを生成する
+ */
+task generateFirebaseConfig(type: com.eaglesakura.gradle.task.FirebaseRemoteConfigGenTask) {
+    outDirectory = file("src/main/gen/java")
+    def AppStatusConfig = newConfig("${android.defaultConfig.applicationId}.gen.config.AppStatusConfig");
+    AppStatusConfig.stringConfig("database_path_config", "nil");      // Databaseのコンフィグリンク
 }
 
 /**
  * サイクルコンピューター設定用プロファイルを出力する
  */
-task generateDisplayDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
+task generateCentralSettingDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
-    def profileSchema = newSchema(1, "display");
+    def schema = newSchema(1, "central");
 
     /**
-     * 表示グルーピング用DAO
+     * 表示スロットと表示内容(対象プラグイン、表示ID)を紐付ける
+     *
+     * packageName + slotIdで一意に識別される
      */
-    def DbDisplayTarget = profileSchema.addEntity("DbDisplayTarget");
-    DbDisplayTarget.addStringProperty("uniqueId").notNull().unique().index().primaryKey();
-    DbDisplayTarget.addDateProperty("createdDate").notNull(); // 作成日時
-    DbDisplayTarget.addDateProperty("modifiedDate").notNull();    // 更新日時
-    DbDisplayTarget.addStringProperty("name").notNull();
-    DbDisplayTarget.addIntProperty("layoutType").notNull(); // 後の拡張用
-    DbDisplayTarget.addStringProperty("targetPackage");    // 表示対象のパッケージ名
-
-    /**
-     * 表示アイテム用
-     */
-    def DbDisplayLayout = profileSchema.addEntity("DbDisplayLayout");
+    def DbDisplayLayout = schema.addEntity("DbDisplayLayout");
     DbDisplayLayout.addStringProperty("uniqueId").notNull().unique().index().primaryKey();
-    DbDisplayLayout.addStringProperty("targetPackage").notNull();    // 表示対象のパッケージ名
+    DbDisplayLayout.addDateProperty("updatedDate").notNull();    // 更新日時
+    DbDisplayLayout.addStringProperty("appPackageName").notNull();    // 表示対象のアプリパッケージ名
     DbDisplayLayout.addIntProperty("slotId").notNull();    // 設定対象のスロットID
-    DbDisplayLayout.addStringProperty("extensionId").notNull();    // 表示対象の拡張機能
-    DbDisplayLayout.addStringProperty("valueId").notNull();   // 設定される値の識別
+    DbDisplayLayout.addStringProperty("pluginId");    // 表示対象のプラグインID,
+    DbDisplayLayout.addStringProperty("valueId");   // 設定される値の識別
+
+    /**
+     * スキャンしたデバイスキャッシュ一覧
+     */
+    def DbBleSensor = schema.addEntity("DbBleSensor");
+    DbBleSensor.addStringProperty("address").notNull().unique().primaryKey();
+    DbBleSensor.addStringProperty("name").notNull();
+    DbBleSensor.addStringProperty("typeFlags").notNull();
+
+    /**
+     * セットアップされたコマンド
+     */
+    def DbCommand = schema.addEntity("DbCommand");
+
+    // 起動するコマンドキー
+    // 一意に割り当てられる
+    DbCommand.addStringProperty("commandKey").notNull().unique().primaryKey();
+    DbCommand.addIntProperty("category").notNull().index();    // コマンドの管理カテゴリ
+    DbCommand.addStringProperty("packageName").notNull();  // 起動対象の対応アプリpackage
+    DbCommand.addByteArrayProperty("iconPng").notNull(); // アイコンファイル
+    DbCommand.addStringProperty("extraJson");  // コマンドの付与情報（タイマー間隔、スピード等のメタ情報
+    // Intentで直接起動するオプション
+    DbCommand.addStringProperty("intentJson");  // Intent情報
+
+    /**
+     * プラグイン情報
+     */
+    def DbActivePlugin = schema.addEntity("DbActivePlugin");
+
+    DbActivePlugin.addStringProperty("uniqueId").notNull().unique().primaryKey();
+    DbActivePlugin.addStringProperty("category").notNull().index();  // プラグインのカテゴリ
+    DbActivePlugin.addStringProperty("packageName").notNull().index();  // プラグインのapp package name
+    DbActivePlugin.addStringProperty("className").notNull().index();    // プラグインのfull class name
 }
 
-task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
+/**
+ * セッション情報は書き出しが多いので別なSchemaにしておく
+ */
+task generateCentralLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
     outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
     def sessionSchema = newSchema(1, "session");
 
-    /**
-     * セッションごとの情報を設定する
-     */
-    def DbSessionLog = sessionSchema.addEntity("DbSessionLog");
-    DbSessionLog.addStringProperty("sessionId").notNull().unique().primaryKey(); // 打刻時間
-    DbSessionLog.addDateProperty("startTime").notNull();  // その日最初のセッション開始時刻
-    DbSessionLog.addDateProperty("endTime").notNull();  // その日最後のセッション終了時刻
-    DbSessionLog.addLongProperty("activeTimeMs").notNull(); // セッションがアクティブ（走行）中だった時間
-    DbSessionLog.addDoubleProperty("activeDistanceKm").notNull(); // アクティブ走行した距離
-
-    // 最高記録
-    DbSessionLog.addDoubleProperty("maxSpeedKmh").notNull().index(); // 最高速
-    DbSessionLog.addIntProperty("maxCadence").notNull();   // 最高ケイデンス
-    DbSessionLog.addIntProperty("maxHeartrate").notNull();   // 最高心拍
-    DbSessionLog.addDoubleProperty("sumAltitude").notNull();
-
-    // 延べ記録
-    DbSessionLog.addDoubleProperty("sumDistanceKm").notNull().index();   // 移動距離合計（キロ単位）
-
-    // 延べ消費Calorie
-    DbSessionLog.addDoubleProperty("calories").notNull();
-    // 延べエクササイズ
-    DbSessionLog.addDoubleProperty("exercise").notNull();
+//    /**
+//     * セッションごとの情報を設定する
+//     */
+//    def DbSessionInfo = sessionSchema.addEntity("DbSessionInfo");
+//    DbSessionInfo.addLongProperty("sessionId").notNull().unique().primaryKey(); // 開始時間がそのままキーになる
+//    DbSessionInfo.addStringProperty("flags").index();        // セッション状況フラグ
+//    DbSessionInfo.addStringProperty("infoJson");                // セッション元情報
+//    DbSessionInfo.addFloatProperty("fitWeight");             // ユーザーの体重, 統計用のため別Column
 
     /**
      * セッショングループは日単位で設定する。
@@ -80,74 +103,25 @@ task generateCycleLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
      */
     def DbSessionPoint = sessionSchema.addEntity("DbSessionPoint");
     DbSessionPoint.addDateProperty("date").notNull().unique().primaryKey();  // 打刻時間は常にUniqueになるはず
-    DbSessionPoint.addIntProperty("uploadState").notNull().index();          // サーバー同期フラグ
-    DbSessionPoint.addStringProperty("centralJson").notNull();               // CentraをJSON化したデータ
-    DbSessionPoint.addByteArrayProperty("extra");                            // その他メタ情報用のバッファ
-}
+    DbSessionPoint.addLongProperty("sessionId").notNull().index();              // 所属するセッションID内
+    DbSessionPoint.addStringProperty("centralJson").notNull();               // CentralをJSON化したデータ
 
-/**
- * Bluetoothデバイス保存用DAOを出力
- */
-task generateBluetoothDeviceDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/gen/java")
-    classPackageBase = "com.eaglesakura.andriders.dao"
-
-    def bledeviceScheme = newSchema(0x01, "bledevice");
-
-    /**
-     * スキャンしたデバイス一覧
-     */
-    def DbBleFitnessDevice = bledeviceScheme.addEntity("DbBleFitnessDevice");
-    // addressは重複しない
-    DbBleFitnessDevice.addStringProperty("address").notNull().unique().primaryKey();
-    // 別名
-    DbBleFitnessDevice.addStringProperty("name").notNull();
-    // 元の名前
-    DbBleFitnessDevice.addStringProperty("nameOrigin").notNull();
-    // 接続数
-    DbBleFitnessDevice.addIntProperty("selectedCount").notNull();
-    // 初検出日時
-    DbBleFitnessDevice.addDateProperty("firstFoundDate").notNull().index();
-    // デバイスの種類
-    DbBleFitnessDevice.addIntProperty("deviceType").notNull();
-}
-
-/**
- * 各種コマンド内容を保存するためのDAOを出力
- */
-task generateCommandDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/gen/java")
-    classPackageBase = "com.eaglesakura.andriders.dao"
-
-    def schema = newSchema(1, "command");
-    def DbCommand = schema.addEntity("DbCommand");
-
-    // 起動するコマンドキー
-    // 一意に割り当てられる
-    DbCommand.addStringProperty("commandKey").notNull().unique().primaryKey();
-    DbCommand.addIntProperty("category").notNull().index();    // コマンドの管理カテゴリ
-    DbCommand.addStringProperty("packageName").notNull();  // 起動対象の対応アプリpackage
-    DbCommand.addByteArrayProperty("iconPng").notNull(); // アイコンファイル
-
-    // 制御情報
-    DbCommand.addByteArrayProperty("commandData");  // コマンドの付与情報（タイマー間隔、スピード等のメタ情報
-
-    // Intentで直接起動するオプション
-    DbCommand.addByteArrayProperty("intentData");  // Intent情報
-}
-
-/**
- * 各種コマンド内容を保存するためのDAOを出力
- */
-task generatePluginDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
-    outDirectory = file("src/main/gen/java")
-    classPackageBase = "com.eaglesakura.andriders.dao"
-
-    def schema = newSchema(1, "plugin");
-    def DbActivePlugin = schema.addEntity("DbActivePlugin");
-
-    DbActivePlugin.addStringProperty("uniqueId").notNull().unique().primaryKey();
-    DbActivePlugin.addStringProperty("category").notNull().index();  // プラグインのカテゴリ
-    DbActivePlugin.addStringProperty("packageName").notNull().index();  // プラグインのapp package name
-    DbActivePlugin.addStringProperty("className").notNull().index();    // プラグインのfull class name
+    // 統計用の値, SQLのMaxでセッション単位で取得できるよう、全てインデックスを貼る
+    DbSessionPoint.addStringProperty("valueFlags").notNull().index();       // 統計用フラグ
+    DbSessionPoint.addIntProperty("valueHeartrate").index();        // 心拍(Max, Avgを取る)
+    DbSessionPoint.addIntProperty("valueCadence").index();          // ケイデンス(Maxを取る)
+    DbSessionPoint.addFloatProperty("valueSensorSpeed").index();
+    // センサー由来の速度(Max, Avgを取る) 採用された場合のみ書き込まれる
+    DbSessionPoint.addFloatProperty("valueGpsSpeed").index();
+    // GPS由来の速度(Max, Avgを取る)    採用された場合のみ書き込まれる
+    DbSessionPoint.addFloatProperty("valueFitCalories").index();       // セッション消費カロリー
+    DbSessionPoint.addFloatProperty("valueFitExercise").index();       // セッション獲得エクササイズ
+    DbSessionPoint.addFloatProperty("valueRecordDistanceKm").index();       // セッション合計移動距離
+    DbSessionPoint.addFloatProperty("valueRecordSumAltMeter").index();       // セッション合計獲得標高
+    DbSessionPoint.addFloatProperty("valueActiveDistanceKm").index();       // セッション自走距離
+    DbSessionPoint.addIntProperty("valueActiveTimeMs").index();       // セッション自走時間
+    // 将来的な機能予約
+    DbSessionPoint.addStringProperty("valueGeohash10").index();       // 高精度ジオハッシュ
+    DbSessionPoint.addStringProperty("valueGeohash7Peripherals").index();       // 100m単位の隣接情報
+    DbSessionPoint.addIntProperty("valueIntervalIndex").notNull().index();       // セッション内のインターバル番号
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:background="@drawable/esm_button_transparent_fill"
+             android:id="@+id/Item.Root"
+             android:layout_width="match_parent"
+             android:minHeight="@dimen/EsMaterial.Notification.MinHeight"
+             android:layout_height="match_parent">
+
+    <LinearLayout android:layout_margin="@dimen/EsMaterial.Widget.Margin"
+
+                  android:layout_gravity="center_vertical"
+                  android:orientation="horizontal"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content">
+        <ImageView
+                android:layout_marginLeft="@dimen/EsMaterial.Widget.Margin"
+                android:layout_width="@dimen/App.Icon.Large"
+                android:layout_height="@dimen/App.Icon.Large"
+                android:layout_gravity="center_vertical"
+                android:src="@mipmap/ic_launcher"/>
+        <TextView
+                android:layout_marginLeft="@dimen/EsMaterial.Widget.Margin"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/EsMaterial.Grey.700"
+                android:text="セッション開始中"/>
+        <ProgressBar
+                android:layout_marginLeft="@dimen/EsMaterial.Widget.Margin"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</FrameLayout>
