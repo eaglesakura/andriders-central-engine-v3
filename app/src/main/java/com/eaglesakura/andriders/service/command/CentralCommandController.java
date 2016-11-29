@@ -14,6 +14,7 @@ import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.provider.SessionManagerProvider;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.util.AppLog;
@@ -61,7 +62,15 @@ public class CentralCommandController {
     @Inject(AppManagerProvider.class)
     private CommandDataManager mCommandDataManager;
 
+    /**
+     * 近接センサー管理
+     */
     private ProximitySensorManager mProximitySensorManager;
+
+    /**
+     * 近接センサーフィードバック
+     */
+    private ProximityFeedbackManager mProximityFeedbackManager;
 
     @Nullable
     private ProximityCommandController mProximityCommandController;
@@ -72,16 +81,20 @@ public class CentralCommandController {
 
     final List<TimerCommandController> mTimerCommandControllerList = new ArrayList<>();
 
-    CentralCommandController(@NonNull Context context, LifecycleDelegate delegate, CentralSession session, Callback callback) {
+    @NonNull
+    private AnimationFrame.Bus mAnimationBus;
+
+    CentralCommandController(@NonNull Context context, LifecycleDelegate delegate, CentralSession session, AnimationFrame.Bus animationFrameBus, Callback callback) {
         mContext = context;
         mCallback = callback;
         mCentralDataReceiver = new CentralDataReceiver(mContext);
         mLifecycleDelegate = delegate;
         mSession = session;
+        mAnimationBus = animationFrameBus;
     }
 
-    public static CentralCommandController attach(@NonNull Context context, ServiceLifecycleDelegate lifecycleDelegate, @NonNull CentralSession session, Callback callback) {
-        CentralCommandController result = new CentralCommandController(context, lifecycleDelegate, session, callback);
+    public static CentralCommandController attach(@NonNull Context context, ServiceLifecycleDelegate lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session, Callback callback) {
+        CentralCommandController result = new CentralCommandController(context, lifecycleDelegate, session, animationFrameBus, callback);
         Garnet.create(result)
                 .depend(Context.class, context)
                 .inject();
@@ -103,7 +116,7 @@ public class CentralCommandController {
         } else if (state.getState() == SessionState.State.Stopping) {
             // 必要であれば近接コマンドから切断する
             if (mProximitySensorManager != null) {
-                mProximitySensorManager.disconnct();
+                mProximitySensorManager.disconnect();
                 mProximitySensorManager = null;
             }
         }
@@ -138,11 +151,20 @@ public class CentralCommandController {
             mProximityCommandController.setCommands(new CommandDataCollection(proximityCommands));
 
             // 近接センサーをセットアップ
-            mProximitySensorManager = Garnet.instance(AppManagerProvider.class, ProximitySensorManager.class);
-            mProximitySensorManager.getProximityDataBus().bind(mLifecycleDelegate, this);
-
+            mProximitySensorManager = Garnet.factory(SessionManagerProvider.class).depend(CentralSession.class, mSession).instance(ProximitySensorManager.class);
             // データを接続
             mProximitySensorManager.connect();
+
+            // フィードバックを設定
+            mProximityFeedbackManager = Garnet.factory(SessionManagerProvider.class)
+                    .depend(CentralSession.class, mSession)
+                    .instance(ProximityFeedbackManager.class);
+            mProximityFeedbackManager.setProximityCommands(new CommandDataCollection(proximityCommands));
+
+            // Busに登録する
+            mProximitySensorManager.getProximityDataBus().bind(mLifecycleDelegate, this);
+            mProximitySensorManager.getProximityDataBus().bind(mLifecycleDelegate, mProximityFeedbackManager);
+            mAnimationBus.bind(mLifecycleDelegate, mProximityFeedbackManager);
         }
 
         // その他のコマンドを付与する

@@ -113,9 +113,9 @@ public class SessionContext {
         mAnimationController = ServiceAnimationController.attach(mLifecycleDelegate, centralSession, mAnimationCallback);
 
         mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession);
-        mCentralDisplayWindow.getCentralNotificationManager().addListener(mOnNotificationShowingListener);  // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
+        mCentralDisplayWindow.getCentralNotificationManager().addListener(mNotificationShowingListener);  // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
 
-        mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, centralSession, mCommandCallback);
+        mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession, mCommandCallback);
 
         mLifecycleDelegate.asyncUI((BackgroundTask<CentralSession> task) -> {
             centralSession.initialize(option, AppSupportUtil.asCancelCallback(task));
@@ -210,7 +210,7 @@ public class SessionContext {
 
     }
 
-    private final CentralNotificationManager.OnNotificationShowingListener mOnNotificationShowingListener = new CentralNotificationManager.OnNotificationShowingListener() {
+    private final CentralNotificationManager.OnNotificationShowingListener mNotificationShowingListener = new CentralNotificationManager.OnNotificationShowingListener() {
         @Override
         public void onNotificationShowing(CentralNotificationManager self, NotificationData data) {
             try {
