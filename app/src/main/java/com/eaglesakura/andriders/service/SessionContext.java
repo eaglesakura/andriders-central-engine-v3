@@ -6,10 +6,12 @@ import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.model.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.service.command.CentralCommandController;
+import com.eaglesakura.andriders.service.command.ProximityFeedbackManager;
 import com.eaglesakura.andriders.service.log.SessionLogController;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.service.ui.CentralDisplayWindow;
@@ -182,6 +184,11 @@ public class SessionContext {
     }
 
     /**
+     * 最後にデータをBroadcastした時刻
+     */
+    private long mLastDataBroadcastTime = 0;
+
+    /**
      * データ更新をハンドリングする
      *
      * データの圧縮等、送出には20ms程度を要する。
@@ -194,6 +201,11 @@ public class SessionContext {
             AppLog.broadcast("RawCentralData == null");
             return;
         }
+
+        if ((raw.centralStatus.date - mLastDataBroadcastTime) < 1000) {
+            return;
+        }
+        mLastDataBroadcastTime = raw.centralStatus.date;
 
         AppLog.broadcast("RawCentralData date[%d]", raw.centralStatus.date);
 
@@ -245,19 +257,10 @@ public class SessionContext {
      * アニメーションコントロール
      */
     private final ServiceAnimationController.Callback mAnimationCallback = new ServiceAnimationController.Callback() {
-        /**
-         * 前回のセッション更新からの経過時間
-         */
-        double mSessionUpdateDeltaSec;
-
         @Override
         public void onUpdate(ServiceAnimationController self, CentralSession session, double deltaSec) {
-            mSessionUpdateDeltaSec += deltaSec;
-            if (mSessionUpdateDeltaSec > 1.0) {
-                // 1秒以上経過したのでセッション情報を行進
-                mSession.onUpdate(mSessionUpdateDeltaSec);
-                mSessionUpdateDeltaSec = 0;
-            }
+            // セッションを更新
+            mSession.onUpdate(deltaSec);
 
             // アニメーションを追加
             mAnimationFrameBus.onUpdate(session, deltaSec);
@@ -265,9 +268,19 @@ public class SessionContext {
     };
 
     /**
-     * コマンド起動
+     * コマンド制御・起動
      */
     private final CentralCommandController.Callback mCommandCallback = new CentralCommandController.Callback() {
+
+        @Override
+        public void onCommandLoaded(CentralCommandController self, CommandDataCollection commands) {
+            ProximityFeedbackManager proximityFeedbackManager = self.getProximityFeedbackManager();
+            if (proximityFeedbackManager != null) {
+                // 近接コマンドフィードバックが行えるので、リンクする
+                mCentralDisplayWindow.getNotificationView().setProximityFeedbackManager(proximityFeedbackManager);
+            }
+        }
+
         @Override
         public void requestActivityCommand(CentralCommandController self, CommandData data, Intent commandIntent) {
             try {

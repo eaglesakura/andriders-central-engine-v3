@@ -74,6 +74,10 @@ public class CentralDisplayWindow {
         return mCentralNotificationManager;
     }
 
+    public CentralNotificationView getNotificationView() {
+        return mNotificationView;
+    }
+
     /**
      * Sessionのステート変更通知をハンドリングする
      */

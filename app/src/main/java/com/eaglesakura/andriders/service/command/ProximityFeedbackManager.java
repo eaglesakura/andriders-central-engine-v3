@@ -4,7 +4,6 @@ import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
-import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.android.util.AndroidUtil;
@@ -29,10 +28,6 @@ public class ProximityFeedbackManager {
     @NonNull
     private final Context mContext;
 
-    /**
-     * 現在時刻チェック
-     */
-    private final Clock mClock;
 
     /**
      * 現在の近接状態
@@ -63,9 +58,8 @@ public class ProximityFeedbackManager {
      */
     int mLastVibeSec;
 
-    public ProximityFeedbackManager(@NonNull Context context, @NonNull Clock clock) {
+    public ProximityFeedbackManager(@NonNull Context context) {
         mContext = context;
-        mClock = clock;
     }
 
     public void setProximityCommands(CommandDataCollection proximityCommands) {
@@ -75,6 +69,10 @@ public class ProximityFeedbackManager {
     private static final int VIBRATE_TIME_SHORT = 100;
 
     private static final int VIBRATE_TIME_LONG = 500;
+
+    private int getDurationTimeMs() {
+        return (mCurrentProximity != null && mCurrentProximity.isProximity()) ? Math.max((int) (System.currentTimeMillis() - mCurrentProximity.getDate().getTime()), 0) : 0;
+    }
 
     /**
      * 近接コマンド状態が更新された
@@ -93,13 +91,11 @@ public class ProximityFeedbackManager {
 
     @Subscribe
     private void onAnimation(AnimationFrame.Bus data) {
-        int durationSec = mCurrentProximity != null ? (int) (mClock.now() - mCurrentProximity.getDate().getTime()) : 0;
-        if (durationSec > 0 && mLastVibeSec != durationSec && mCurrentProximity.isProximity()) {
+        int durationSec = getDurationTimeMs() / 1000;
+        if (durationSec > 0 && durationSec <= CommandKey.PROXIMITY_COMMAND_NUM && mLastVibeSec != durationSec && mCurrentProximity.isProximity()) {
             // フィードバック時刻になったので端末を振動
             AndroidUtil.vibrate(mContext, VIBRATE_TIME_LONG);
             mLastVibeSec = durationSec;
-
-            // 画像をロードする
         }
     }
 
@@ -123,11 +119,10 @@ public class ProximityFeedbackManager {
     @UiThread
     public void rendering(Graphics graphics) {
         if (mCurrentProximity == null || !mCurrentProximity.isProximity()) {
-            // 近接状態に無いのでレンダリングしない
             return;
         }
 
-        int DURATION_TIME_MS = ((int) (mClock.now() - mCurrentProximity.getDate().getTime()));
+        int DURATION_TIME_MS = getDurationTimeMs();
         int CURRENT_TIME_SEC = DURATION_TIME_MS / 1000;
         graphics.setColorARGB(0xFFFFFFFF);
 
@@ -140,15 +135,18 @@ public class ProximityFeedbackManager {
         final double ROUND_RADIUS = Math.min(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.4;
 
         @ColorInt
-        int backgroundColor = BACKGROUND_COLOR_TABLE[0];
+        int backgroundColor;
         if (CURRENT_TIME_SEC < BACKGROUND_COLOR_TABLE.length) {
             backgroundColor = BACKGROUND_COLOR_TABLE[CURRENT_TIME_SEC];
+        } else {
+            return;
         }
 
         // 中心円を表示する
         {
             // 待機時間
             final float CURRENT_WEIGHT = CURRENT_TIME_SEC > 0 ? 1.0f : (float) (DURATION_TIME_MS % 1000) / 1000.0f;
+//            AppLog.system("CURRENT_WEIGHT[%.3f]", CURRENT_WEIGHT);
 
             // 中心を指定色で塗りつぶす
             graphics.setColorARGB(backgroundColor);

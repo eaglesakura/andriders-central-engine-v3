@@ -102,6 +102,10 @@ public class CentralCommandController {
         return result;
     }
 
+    public ProximityFeedbackManager getProximityFeedbackManager() {
+        return mProximityFeedbackManager;
+    }
+
     /**
      * Sessionのステート変更通知をハンドリングする
      */
@@ -197,6 +201,8 @@ public class CentralCommandController {
                 break;
             }
         }
+
+        mCallback.onCommandLoaded(this, allCommands);
     }
 
     /**
@@ -252,6 +258,14 @@ public class CentralCommandController {
     });
 
     public interface Callback {
+
+        /**
+         * コマンド情報のロードが完了した
+         *
+         * @param commands ロードしたコマンド一覧
+         */
+        void onCommandLoaded(CentralCommandController self, CommandDataCollection commands);
+
         void requestActivityCommand(CentralCommandController self, CommandData data, Intent commandIntent);
 
         void requestBroadcastCommand(CentralCommandController self, CommandData data, Intent commandIntent);

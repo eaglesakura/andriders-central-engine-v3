@@ -31,7 +31,7 @@ public class LoggerProvider implements Provider {
 
     @Override
     public void onInjectCompleted(Object inject) {
-
+        LogUtil.setLogEnable("App.Broadcast", false);
     }
 
     /**

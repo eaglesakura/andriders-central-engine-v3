@@ -5,7 +5,6 @@ import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.service.command.ProximityFeedbackManager;
 import com.eaglesakura.andriders.service.command.ProximitySensorManager;
-import com.eaglesakura.android.framework.delegate.lifecycle.LifecycleDelegate;
 import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Depend;
 import com.eaglesakura.android.garnet.Provide;
@@ -41,6 +40,6 @@ public class SessionManagerProvider extends ContextProvider {
 
     @Provide
     public ProximityFeedbackManager provideProximityFeedbackManager() {
-        return new ProximityFeedbackManager(getContext(), mSessionInfo.getSessionClock());
+        return new ProximityFeedbackManager(getContext());
     }
 }
