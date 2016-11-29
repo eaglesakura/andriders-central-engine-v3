@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_margin="@dimen/CycleComputer.Margin.Normal"
+        android:id="@+id/Container.DisplayBasic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/Item.Value"
+            style="@style/CycleComputer.Font.Normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="@dimen/CycleComputer.Card.InnerPadding"
+            android:maxLines="1"
+            android:text="@string/Display.Common.NoData"/>
+
+    <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/Item.Title"
+            style="@style/CycleComputer.Font.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="@dimen/CycleComputer.Margin.Normal"
+            android:text="@string/Display.Common.NoData"/>
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/CycleComputer.Margin.Normal">
+
+        <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/Item.ZoneColorBar.Left"
+                android:layout_width="@dimen/CycleComputer.Zonebar.Width"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"/>
+
+        <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/Item.ZoneTitle.Left"
+                style="@style/CycleComputer.Font.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/CycleComputer.Margin.Normal">
+
+        <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/Item.ZoneTitle.Right"
+                style="@style/CycleComputer.Font.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"/>
+
+        <View
+                android:id="@+id/Item.ZoneColorBar.Right"
+                android:layout_width="@dimen/CycleComputer.Zonebar.Width"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"/>
+
+    </LinearLayout>
+</FrameLayout>

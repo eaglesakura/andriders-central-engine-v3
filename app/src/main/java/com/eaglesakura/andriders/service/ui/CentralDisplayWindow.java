@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.service.ui;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
+import com.eaglesakura.andriders.data.display.DisplayBindManager;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.provider.SessionManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
@@ -52,6 +53,9 @@ public class CentralDisplayWindow {
     @Inject(SessionManagerProvider.class)
     CentralNotificationManager mCentralNotificationManager;
 
+    @Inject(SessionManagerProvider.class)
+    DisplayBindManager mCentralDisplayBindManager;
+
     CentralDisplayWindow(@NonNull Context context) {
         mContext = context;
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -70,13 +74,24 @@ public class CentralDisplayWindow {
         return result;
     }
 
+    /**
+     * 通知レンダリング用のマネージャを取得する
+     */
     public CentralNotificationManager getCentralNotificationManager() {
         return mCentralNotificationManager;
+    }
+
+    /**
+     * ディスプレイとの関連付けマネージャを取得する
+     */
+    public DisplayBindManager getCentralDisplayBindManager() {
+        return mCentralDisplayBindManager;
     }
 
     public CentralNotificationView getNotificationView() {
         return mNotificationView;
     }
+
 
     /**
      * Sessionのステート変更通知をハンドリングする

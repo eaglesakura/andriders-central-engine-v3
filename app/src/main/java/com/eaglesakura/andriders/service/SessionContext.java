@@ -127,6 +127,7 @@ public class SessionContext {
             // プラグインの接続を行う
             mSession.getPluginCollection().safeEach(plugin -> {
                 plugin.setNotificationManager(() -> mCentralDisplayWindow.getCentralNotificationManager());
+                plugin.setDisplayBindManager(() -> mCentralDisplayWindow.getCentralDisplayBindManager());
                 plugin.setCentralDataManager(() -> mSession.getCentralDataManager());
 
                 // 起動完了を通知
