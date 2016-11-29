@@ -99,6 +99,7 @@ public class CentralCommandController {
                 .depend(Context.class, context)
                 .inject();
         session.getStateBus().bind(lifecycleDelegate, result);
+        animationFrameBus.bind(lifecycleDelegate, result);
         return result;
     }
 
