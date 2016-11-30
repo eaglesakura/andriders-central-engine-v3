@@ -1,8 +1,10 @@
 package com.eaglesakura.andriders.plugin.service;
 
+import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ble.heartrate.BleHeartrateMonitor;
 import com.eaglesakura.andriders.ble.heartrate.HeartrateGattReceiver;
 import com.eaglesakura.andriders.ble.heartrate.HeartrateSensorData;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.AcePluginService;
 import com.eaglesakura.andriders.plugin.Category;
 import com.eaglesakura.andriders.plugin.DisplayKey;
@@ -78,6 +80,8 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
         receiver = new HeartrateGattReceiver(this, mLifecycleDelegate.getCallbackQueue(), mClock);
         receiver.setTargetFitnessDeviceAddress(address);
         receiver.setHeartrateListener(new BleHeartrateMonitor.BleHeartrateListener() {
+            int mUpdateCount = 0;
+
             @Override
             public void onDeviceNotSupportedHeartrate(BleHeartrateMonitor sensor, BluetoothDevice device) {
             }
@@ -88,6 +92,14 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
 
             @Override
             public void onHeartrateUpdated(BleHeartrateMonitor sensor, HeartrateSensorData heartrate) {
+                if (mUpdateCount == 0) {
+                    NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
+                            .message("ハートレートモニターに接続")
+                            .icon(R.mipmap.ic_launcher)
+                            .getNotification();
+                    connection.getDisplay().queueNotification(notification);
+                }
+                ++mUpdateCount;
                 centralData.setHeartrate(heartrate.getBpm());
             }
         });
