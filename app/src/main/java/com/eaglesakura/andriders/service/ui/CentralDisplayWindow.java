@@ -17,8 +17,10 @@ import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.android.rx.ResultCollection;
 import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.android.util.ViewUtil;
+import com.eaglesakura.util.Timer;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
@@ -77,6 +79,11 @@ public class CentralDisplayWindow {
 
     @NonNull
     private final ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
+
+    /**
+     * 最後にチェックした際のアプリケーションID
+     */
+    String mLastTopApplication;
 
     CentralDisplayWindow(@NonNull Context context) {
         mContext = context;
@@ -202,7 +209,15 @@ public class CentralDisplayWindow {
         mNotificationView.setNotificationManager(mCentralNotificationManager);
     }
 
-    private double mDeltaSec;
+    /**
+     * 前回のディスプレイ更新時間からの時間
+     */
+    private double mDisplayDeltaSec;
+
+    /**
+     * 前回のデバイス状態チェックからの時間
+     */
+    private double mDeviceCheckDeltaSec;
 
     @Subscribe
     private void onAnimationFrame(AnimationFrame.Bus frame) {
@@ -214,17 +229,20 @@ public class CentralDisplayWindow {
             mNotificationView.invalidate();
         }
 
-        mDeltaSec += frame.getDeltaSec();
-        if (mDeltaSec > 1.0) {
-            if (mCurrentDisplayLayout != null) {
-                for (DisplayLayout layout : mCurrentDisplayLayout.getSource()) {
-                    mCentralDisplayBindManager.bind(layout, mDataDisplay);
-                }
+        mDisplayDeltaSec += frame.getDeltaSec();
+        mDeviceCheckDeltaSec += frame.getDeltaSec();
+
+        if (mDisplayDeltaSec > 1.0 && mCurrentDisplayLayout != null) {
+            for (DisplayLayout layout : mCurrentDisplayLayout.getSource()) {
+                mCentralDisplayBindManager.bind(layout, mDataDisplay);
             }
+            mDisplayDeltaSec = 0;
+        }
+
+        if (mDeviceCheckDeltaSec > 0.5) {
             // データをリフレッシュ
             refreshDeviceContext();
-
-            mDeltaSec = 0;
+            mDeviceCheckDeltaSec = 0;
         }
     }
 
@@ -233,13 +251,25 @@ public class CentralDisplayWindow {
      */
     @UiThread
     void refreshDeviceContext() {
-        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<DisplayLayoutCollection> task) -> {
+        Timer timer = new Timer();
+        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<ResultCollection> task) -> {
             String currentAppPackage = PackageUtil.getTopApplicationPackage(mContext);
-            AppLog.system("TopApplication[%s]", currentAppPackage);
-            return mDisplayLayoutManager.listOrDefault(currentAppPackage);
+            DisplayLayoutCollection collection = mCurrentDisplayLayout;
+            if (!currentAppPackage.equals(mLastTopApplication)) {
+                // レイアウト構成をリロードする
+                collection = mDisplayLayoutManager.listOrDefault(currentAppPackage);
+            }
+            return new ResultCollection()
+                    .put("list", collection)
+                    .put("package", currentAppPackage);
         }).completed((result, task) -> {
-            AppLog.system("Loaded Layout[%d]", result.size());
-            mCurrentDisplayLayout = result;
+            mCurrentDisplayLayout = result.get("list");
+
+            String packageName = result.get("package");
+            if (mLastTopApplication == null || !mLastTopApplication.equals(packageName)) {
+                AppLog.system("Loaded package[%s] Layout[%d] LoadTime[%d ms]", packageName, mCurrentDisplayLayout.size(), timer.end());
+            }
+            mLastTopApplication = packageName;
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
         }).start();
