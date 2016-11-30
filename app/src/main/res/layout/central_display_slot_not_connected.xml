@@ -10,5 +10,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:maxLines="1"
+            android:textColor="@color/EsMaterial.Grey.800"
             android:text="@string/Display.Common.NoData"/>
 </FrameLayout>

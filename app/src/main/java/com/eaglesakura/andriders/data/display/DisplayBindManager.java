@@ -1,15 +1,18 @@
 package com.eaglesakura.andriders.data.display;
 
-import com.eaglesakura.andriders.plugin.CentralPlugin;
+import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.HashMap;
@@ -44,13 +47,12 @@ public class DisplayBindManager {
     /**
      * 拡張サービスから受信した表示データを保存する
      *
-     * @param plugin 受信したプラグイン
      * @param values 表示内容
      */
-    public void putValue(final CentralPlugin plugin, List<DisplayData> values) {
+    public void putValue(List<DisplayData> values) {
         synchronized (lock) {
             for (DisplayData value : values) {
-                String key = createKey(plugin, value);
+                String key = value.getId();
                 ValueHolder holder = mValues.get(key);
                 if (holder == null) {
                     holder = new ValueHolder(value);
@@ -62,21 +64,38 @@ public class DisplayBindManager {
         }
     }
 
+    private DataViewBinder getBinder(View rootView, int slotId) {
+        ViewGroup stub = (ViewGroup) rootView.findViewById(slotId);
+        DataViewBinder binder = (DataViewBinder) stub.getTag(R.id.Tag_SlotViewBinder);
+        if (binder == null) {
+            binder = new DataViewBinder(mContext, stub, mClock);
+            stub.setTag(R.id.Tag_SlotViewBinder, binder);
+        }
+        return binder;
+    }
 
     /**
      * スロット表示内容を更新させる
      */
     @UiThread
-    public int bind(@NonNull CentralPlugin plugin, @NonNull DisplayKey info, @NonNull DataViewBinder binder, @NonNull ViewGroup slotRoot) {
+    public void bind(@NonNull DisplayLayout layout, @NonNull ViewGroup rootView) {
         AndroidThreadUtil.assertUIThread();
         synchronized (lock) {
-            ValueHolder holder = mValues.get(createKey(plugin, info));
-            if (holder == null) {
-                binder.bind(slotRoot, null, 0);
+            DataViewBinder binder = getBinder(rootView, layout.getSlotId());
+
+            if (StringUtil.isEmpty(layout.getValueId())) {
+                // 値が設定されていないので、このスロットはブランクである
+                binder.getSlotRoot().setVisibility(View.INVISIBLE);
             } else {
-                binder.bind(slotRoot, holder.mData, holder.mDate);
+                binder.getSlotRoot().setVisibility(View.VISIBLE);
+                ValueHolder holder = mValues.get(layout.getValueId());
+
+                if (holder == null) {
+                    binder.bind(null, 0);
+                } else {
+                    binder.bind(holder.mData, holder.mDate);
+                }
             }
-            return 0;
         }
     }
 
@@ -84,13 +103,12 @@ public class DisplayBindManager {
     /**
      * 拡張サービスから表示データを取得する
      *
-     * @param plugin 拡張サービス名
-     * @param info   表示データ名
+     * @param info 表示データ名
      */
     @Nullable
-    public DisplayData getValue(CentralPlugin plugin, DisplayKey info) {
+    public DisplayData getValue(DisplayKey info) {
         synchronized (lock) {
-            ValueHolder holder = mValues.get(createKey(plugin, info));
+            ValueHolder holder = mValues.get(info.getId());
             if (holder != null) {
                 return holder.mData;
             } else {
@@ -118,20 +136,6 @@ public class DisplayBindManager {
             mDate = mClock.now();
             mData = data;
         }
-    }
-
-    /**
-     * 管理用のキーに変換する
-     */
-    private String createKey(CentralPlugin plugin, DisplayData displayValue) {
-        return plugin.getId() + "@" + displayValue.getId();
-    }
-
-    /**
-     * 管理用のキーに変換する
-     */
-    private String createKey(CentralPlugin plugin, DisplayKey info) {
-        return plugin.getId() + "@" + info.getId();
     }
 
     public interface Holder {

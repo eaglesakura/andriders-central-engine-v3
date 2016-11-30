@@ -318,7 +318,7 @@ public class CentralPlugin {
         mCmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
             List<DisplayData> listCommands = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
             // 表示内容を更新する
-            CentralDataUtil.execute(mDisplayBindManagerHolder, it -> it.putValue(this, listCommands));
+            CentralDataUtil.execute(mDisplayBindManagerHolder, it -> it.putValue(listCommands));
             return null;
         });
 //

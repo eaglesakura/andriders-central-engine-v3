@@ -27,9 +27,16 @@ public class DataViewBinder {
     @NonNull
     final Context mContext;
 
-    public DataViewBinder(@NonNull Context context, @NonNull Clock clock) {
+    final ViewGroup mSlotRoot;
+
+    public DataViewBinder(@NonNull Context context, @NonNull ViewGroup slotRoot, @NonNull Clock clock) {
         mClock = clock;
         mContext = context.getApplicationContext();
+        mSlotRoot = slotRoot;
+    }
+
+    public ViewGroup getSlotRoot() {
+        return mSlotRoot;
     }
 
     public static final int BIND_RESULT_INFLATE = 0x1 << 0;
@@ -37,17 +44,17 @@ public class DataViewBinder {
     public static final int BIND_RESULT_LINEVALUE = 0x1 << 2;
     public static final int BIND_RESULT_NAVLUE = 0x1 << 3;
 
-    public int bind(@NonNull ViewGroup slotRoot, @Nullable DisplayData data, long dataTime) {
+    public int bind(@Nullable DisplayData data, long dataTime) {
         AndroidThreadUtil.assertUIThread();
 
         int result = 0;
-        if (slotRoot.getChildCount() == 0) {
+        if (mSlotRoot.getChildCount() == 0) {
             // 子を生成する
-            inflate(slotRoot);
+            inflate(mSlotRoot);
             result |= BIND_RESULT_INFLATE;
         }
 
-        AQuery q = new AQuery(slotRoot);
+        AQuery q = new AQuery(mSlotRoot);
         if (data == null || (data.hasTimeout() && mClock.absDiff(dataTime) > data.getTimeoutMs())) {
             // タイムアウトしている
             resetView(q, VISIBLE_NA_VALUE);
@@ -55,7 +62,7 @@ public class DataViewBinder {
         }
 
         if (data.getBasicValue() != null) {
-            bind(slotRoot.getId(), q, data.getBasicValue());
+            bind(mSlotRoot.getId(), q, data.getBasicValue());
             result |= BIND_RESULT_BASICVALUE;
         } else if (data.getLineValue() != null) {
             bind(q, data.getLineValue());

@@ -13,6 +13,7 @@
             android:layout_gravity="center"
             android:paddingBottom="@dimen/CycleComputer.Card.InnerPadding"
             android:maxLines="1"
+            android:textColor="@color/EsMaterial.Grey.800"
             android:text="@string/Display.Common.NoData"/>
 
     <android.support.v7.widget.AppCompatTextView
@@ -22,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_marginBottom="@dimen/CycleComputer.Margin.Normal"
+            android:textColor="@color/EsMaterial.Grey.800"
             android:text="@string/Display.Common.NoData"/>
 
     <LinearLayout
@@ -29,7 +31,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/CycleComputer.Margin.Normal">
 
-        <android.support.v7.widget.AppCompatTextView
+        <View
                 android:id="@+id/Item.ZoneColorBar.Left"
                 android:layout_width="@dimen/CycleComputer.Zonebar.Width"
                 android:layout_height="match_parent"
@@ -38,6 +40,7 @@
         <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/Item.ZoneTitle.Left"
                 style="@style/CycleComputer.Font.Small"
+                android:textColor="@color/EsMaterial.Grey.800"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"/>
@@ -51,6 +54,7 @@
 
         <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/Item.ZoneTitle.Right"
+                android:textColor="@color/EsMaterial.Grey.800"
                 style="@style/CycleComputer.Font.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
