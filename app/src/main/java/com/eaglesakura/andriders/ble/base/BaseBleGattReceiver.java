@@ -125,9 +125,6 @@ public abstract class BaseBleGattReceiver {
     private final BleDeviceListener mBaseDeviceListener = new BleDeviceListener() {
         @Override
         public void onDeviceConnected(BleDevice self, BluetoothDevice device) {
-            mCallbackQueue.run(CallbackTime.Alive, () -> {
-                incrementConnectCount(device);
-            });
         }
 
         @Override
@@ -140,28 +137,6 @@ public abstract class BaseBleGattReceiver {
         }
     };
 
-    void incrementConnectCount(final BluetoothDevice device) {
-        new BackgroundTaskBuilder<Void>(mCallbackQueue)
-                .callbackOn(CallbackTime.Foreground)
-                .executeOn(ExecuteTarget.LocalParallel)
-                .async(task -> {
-                    throw new Error("NotImpl");
-//                    FitnessDeviceCacheDatabase db = new FitnessDeviceCacheDatabase(mContext);
-//                    try {
-//                        db.openWritable();
-//                        DbBleFitnessDevice fitnessDevice = db.load(device.getAddress());
-//                        fitnessDevice.setSelectedCount(fitnessDevice.getSelectedCount() + 1);
-//
-//                        db.update(fitnessDevice);
-//                    } catch (Exception e) {
-//
-//                    } finally {
-//                        db.close();
-//                    }
-//                    return null;
-                })
-                .start();
-    }
 
     void requestReScan(long delayTimeMs) {
         UIHandler.rePostDelayedUI(mPendingRescanRunner, delayTimeMs);
