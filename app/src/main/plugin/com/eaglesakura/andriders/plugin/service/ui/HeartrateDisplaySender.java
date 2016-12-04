@@ -18,7 +18,7 @@ import android.support.annotation.NonNull;
  * 心拍更新を行う
  */
 public class HeartrateDisplaySender extends DisplayDataSender {
-    public static final String DISPLAY_ID = "DISPLAY_ID_HEARTRATE";
+    public static final String DISPLAY_ID = "HEARTRATE";
 
     @NonNull
     private final ZoneColor mZoneColor;

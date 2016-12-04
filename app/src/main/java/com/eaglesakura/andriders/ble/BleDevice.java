@@ -165,6 +165,17 @@ public abstract class BleDevice {
         return mBleGatt.getService(serviceUUID) != null;
     }
 
+
+    protected boolean readRequest(UUID serviceUuid, UUID characteristicUuid) {
+        BluetoothGattCharacteristic characteristic = BluetoothLeUtil.findBluetoothGattCharacteristic(mBleGatt, serviceUuid, characteristicUuid);
+        if (characteristic != null) {
+            mBleGatt.readCharacteristic(characteristic);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     protected boolean notificationEnable(UUID serviceUuid, UUID characteristicUuid) {
         BluetoothGattCharacteristic characteristic = BluetoothLeUtil.findBluetoothGattCharacteristic(mBleGatt, serviceUuid, characteristicUuid);
         if (characteristic != null) {

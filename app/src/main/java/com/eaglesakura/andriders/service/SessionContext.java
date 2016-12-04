@@ -258,14 +258,21 @@ public class SessionContext {
      * アニメーションコントロール
      */
     private final ServiceAnimationController.Callback mAnimationCallback = new ServiceAnimationController.Callback() {
-        boolean mClockInitialSync;
+        private boolean mClockInitialSync;
+
+        private double mSessionDeltaSec;
 
         @Override
         public void onUpdate(ServiceAnimationController self, CentralSession session, double deltaSec) {
             {
                 // セッション内部時間と現実時間とのズレを補正する
                 double centralDeltaSec = (double) (System.currentTimeMillis() - session.getSessionClock().now()) / 1000.0;
-                mSession.onUpdate(centralDeltaSec);
+                mSessionDeltaSec += centralDeltaSec;
+                if (mSessionDeltaSec > 0.5) {
+                    // 毎秒2回程度のアップデートに抑える
+                    mSession.onUpdate(centralDeltaSec);
+                    mSessionDeltaSec = 0;
+                }
             }
 
             // アニメーションを追加

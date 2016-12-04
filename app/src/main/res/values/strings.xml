@@ -37,6 +37,8 @@
     <string name="Display.Common.Heartrate">心拍</string>
     <string name="Display.Common.Cadence">ケイデンス</string>
     <string name="Display.Common.Speed">速度</string>
+    <string name="Display.Common.Speed.Max">最高速度</string>
+    <string name="Display.Common.Fitness.Calories">消費カロリー</string>
     <string name="Display.Common.Speed.GPS">GPS速度(km/h)</string>
     <string name="Display.Common.Speed.Sensor">速度(km/h)</string>
     <string name="Display.Common.Reconnect">再接続...</string>
@@ -190,6 +192,12 @@
     <string name="Message.Display.HeartrateSummary">心拍を表示します。センサーに接続されていない場合は表示されません。</string>
     <string name="Message.Display.SpeedSummary">
         速度を表示します。センサーに接続できた場合はセンサーの値を表示します。それ以外の場合はGPSから速度が計算されます。
+    </string>
+    <string name="Message.Display.MaxSpeedSummary">
+        自己最高速度・今日最高速度・セッション最高速度を表示します。
+    </string>
+    <string name="Message.Display.FitnessCaloriesSummary">
+        今日消費カロリーとセッション消費カロリーを表示します。\n心拍センサーを使用している場合のみ有効です。
     </string>
     <string name="Message.Display.CadenceSummary">ケイデンスを表示します。センサーに接続されていない場合は表示されません。</string>
     <string-array name="Command_Distance_TypeInfo">

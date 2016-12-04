@@ -19,7 +19,7 @@ import android.support.annotation.NonNull;
  * ケイデンス更新を行う
  */
 public class CadenceDisplaySender extends DisplayDataSender {
-    public static final String DISPLAY_ID = "DISPLAY_ID_CADENCE";
+    public static final String DISPLAY_ID = "CADENCE";
 
     @NonNull
     private final ZoneColor mZoneColor;

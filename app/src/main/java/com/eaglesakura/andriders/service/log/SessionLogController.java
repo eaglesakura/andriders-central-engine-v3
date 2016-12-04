@@ -113,6 +113,10 @@ public class SessionLogController {
                     return 0;
                 });
             }
+
+            // 同タイミングでキャッシュ削除のGCをかける
+            System.gc();
+
             return this;
         }).completed((result, task) -> {
             for (OnCommitListener listener : mCommitListeners) {
