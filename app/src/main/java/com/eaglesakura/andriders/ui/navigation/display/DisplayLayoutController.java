@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
+
 /**
  * レイアウトデータ管理
  */
@@ -55,8 +57,15 @@ public class DisplayLayoutController {
     /**
      * ソート対象のアプリ
      */
-    @NonNull
+    @Nullable
     DataCollection<DisplayLayoutApplication> mApplications;
+
+    /**
+     * デフォルト構成のアプリ
+     * package名はnull
+     */
+    @NonNull
+    DisplayLayoutApplication mDefaultApplication;
 
     /**
      * 選択されているアプリ
@@ -148,25 +157,42 @@ public class DisplayLayoutController {
             group.insertOrReplace(layout);
         }
 
-        // アプリ一覧をロードする
-        // ロード対象はLauncherが存在するActivityのみである
-        {
-            List<DisplayLayoutApplication> result = new ArrayList<>();
-            mSelectedApp = new DisplayLayoutApplication(mContext, null);
-            result.add(mSelectedApp);   // デフォルト構成用
+        mDefaultApplication = new DisplayLayoutApplication(mContext, null);
+        mSelectedApp = mDefaultApplication;
+    }
 
-            Set<String> existPackageNames = CollectionUtil.asOtherSet(PackageUtil.listLauncherApplications(mContext), it -> it.activityInfo.packageName);
+    /**
+     * 切替対象となるアプリ一覧をロードする
+     *
+     * キャッシュがある場合はキャッシュを利用し、それ以外の場合はロードを実行する。
+     */
+    public void loadTargetApplications(CancelCallback cancelCallback) throws TaskCanceledException {
+        if (mSelectedApp == null) {
+            throw new IllegalStateException("load() not called!");
+        }
 
-            for (ApplicationInfo info : PackageUtil.listInstallApplications(mContext)) {
-                if (existPackageNames.contains(info.packageName)) {
-                    AppLog.system("Load TargetLauncher package[%s]", info.packageName);
-                    result.add(new DisplayLayoutApplication(mContext, info));
-                }
+        if (mApplications != null && !mApplications.isEmpty()) {
+            // キャッシュっがある
+            return;
+        }
+
+        assertNotCanceled(cancelCallback);
+
+        List<DisplayLayoutApplication> result = new ArrayList<>();
+        result.add(mSelectedApp);   // デフォルト構成用
+
+        Set<String> existPackageNames = CollectionUtil.asOtherSet(PackageUtil.listLauncherApplications(mContext), it -> it.activityInfo.packageName);
+        for (ApplicationInfo info : PackageUtil.listInstallApplications(mContext)) {
+            if (existPackageNames.contains(info.packageName)) {
+                AppLog.system("Load TargetLauncher package[%s]", info.packageName);
+                result.add(new DisplayLayoutApplication(mContext, info));
             }
 
-            mApplications = new DataCollection<>(result);
-            mApplications.setComparator(DisplayLayoutApplication.COMPARATOR_ASC);
+            assertNotCanceled(cancelCallback);
         }
+
+        mApplications = new DataCollection<>(result);
+        mApplications.setComparator(DisplayLayoutApplication.COMPARATOR_ASC);
     }
 
     /**
@@ -200,8 +226,9 @@ public class DisplayLayoutController {
     /**
      * 設定されていない場合のグローバル設定を取得する
      */
+    @NonNull
     public DisplayLayoutApplication getDefaultApplication() {
-        return listSortedApplications().get(0);
+        return mDefaultApplication;
     }
 
     /**
