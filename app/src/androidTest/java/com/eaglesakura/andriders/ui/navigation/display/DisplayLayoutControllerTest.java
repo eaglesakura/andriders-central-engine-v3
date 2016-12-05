@@ -40,6 +40,9 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
         controller.load(() -> false);
         // リソース管理を簡略化するため、ロード完了した時点で、全て切断されていなければならない
         controller.mDisplayPlugins.each(it -> assertFalse(it.isConnected()));
+        assertNull(controller.mApplications);
+        assertNotNull(controller.getSelectedApp());
+        assertNotNull(controller.getDefaultApplication());
 
         validate(controller.mDisplayPlugins.list()).notEmpty().allNotNull().each(plugin -> {
             assertNotNull(plugin.loadIcon());
@@ -47,6 +50,12 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
             assertNotNull(plugin.getCategory());
             validate(plugin.listDisplayKeys().list()).notEmpty().allNotNull();
         });
+
+        // アプリ一覧をロードする
+        controller.loadTargetApplications(() -> false);
+        assertNotNull(controller.mApplications);
+        assertNotNull(controller.mSelectedApp);
+        assertNotNull(controller.mApplications.find(it -> it == controller.mSelectedApp));
         validate(controller.mApplications.list()).notEmpty().allNotNull().each(app -> {
             assertNotEmpty(app.getTitle());
             assertNotNull(app.getIcon());
@@ -101,6 +110,7 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
     public void アプリ一覧取得の順番制御が行える() throws Throwable {
         DisplayLayoutController controller = new DisplayLayoutController(getContext());
         controller.load(() -> false);
+        controller.loadTargetApplications(() -> false);
 
         Util.sleep(100);
         controller.getLayoutGroup("com.google.android.apps.maps");
@@ -122,6 +132,8 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
         {
             DisplayLayoutController controller = new DisplayLayoutController(getContext());
             controller.load(() -> false);
+            controller.loadTargetApplications(() -> false);
+
             DisplayLayoutGroup layoutGroup = controller.getLayoutGroup("com.example");
             assertNotNull(layoutGroup);
 
@@ -130,6 +142,8 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
         {
             DisplayLayoutController controller = new DisplayLayoutController(getContext());
             controller.load(() -> false);
+            controller.loadTargetApplications(() -> false);
+
             assertNotNull(controller.mLayouts.get("com.example"));
             controller.remove("com.example");
 
@@ -138,6 +152,8 @@ public class DisplayLayoutControllerTest extends AppDeviceTestCase {
         {
             DisplayLayoutController controller = new DisplayLayoutController(getContext());
             controller.load(() -> false);
+            controller.loadTargetApplications(() -> false);
+
             assertNull(controller.mLayouts.get("com.example"));
         }
     }

@@ -75,14 +75,6 @@ public class AppUtil {
     }
 
 
-//    public static LatLng toLatLng(RawGeoPoint geo) {
-//        if (geo == null) {
-//            return null;
-//        }
-//        return new LatLng(geo.latitude, geo.longitude);
-//    }
-//
-
     /**
      * コマンド設定を行うためのIntentを投げる
      *
