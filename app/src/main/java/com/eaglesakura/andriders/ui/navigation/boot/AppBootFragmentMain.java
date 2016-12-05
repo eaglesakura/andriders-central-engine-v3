@@ -13,12 +13,14 @@ import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
+import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.firebase.auth.FirebaseAuthorizeManager;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.gms.error.SignInRequireException;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
+import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
@@ -77,6 +79,17 @@ public class AppBootFragmentMain extends AppNavigationFragment {
                     PermissionUtil.PermissionType.BluetoothLE
             );
 
+    /**
+     * タップでスキップして良い
+     */
+    boolean mBootSkipEnabled;
+
+    /**
+     * 起動が完了した
+     */
+    boolean mBootCompleted;
+
+
     public AppBootFragmentMain() {
         mFragmentDelegate.setLayoutId(R.layout.boot);
     }
@@ -84,6 +97,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
     @Override
     public void onResume() {
         super.onResume();
+        setBootSkipEnabled(false);
 
         if (!PermissionUtil.isRuntimePermissionGranted(getContext(), REQUIRE_PERMISSIONS)) {
             // パーミッションを取得する
@@ -166,7 +180,13 @@ public class AppBootFragmentMain extends AppNavigationFragment {
                     throw new SignInRequireException(connection.newSignInIntent());
                 }
             }
+
             task.throwIfCanceled();
+
+            if (!mAppSettings.getConfig().requireFetch()) {
+                // Fetchが必須でない場合、起動をスキップできる
+                setBootSkipEnabled(true);
+            }
 
             // Configを取得する
             Timer timer = new Timer();
@@ -187,18 +207,49 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             return this;
         }).completed((result, task) -> {
             // Activityを起動する
-            for (Listener listener : listInterfaces(Listener.class)) {
-                listener.onBootCompleted(this);
-            }
+            onBootCompleted();
         }).failed((error, task) -> {
+            // 起動処理が完了しているなら文句を言わない
+            if (mBootCompleted) {
+                return;
+            }
+
             AppLog.report(error);
             if (error instanceof SignInRequireException && mGoogleAutStep == GOOGLE_AUTH_STEP_NONE) {
                 mGoogleAutStep = GOOGLE_AUTH_STEP_API_CONNECT;
                 startActivityForResult(((SignInRequireException) error).getSignInIntent(), AppConstants.REQUEST_GOOGLE_AUTH);
             }
-        }).cancelSignal(this)
-                .start();
+        }).start();
     }
+
+    @OnClick(R.id.Root)
+    void clickRoot() {
+        if (mBootSkipEnabled) {
+            AppLog.system("Skip BootProcess");
+            onBootCompleted();
+        }
+    }
+
+    void setBootSkipEnabled(boolean nextValue) {
+        getCallbackQueue().run(CallbackTime.CurrentForeground, () -> {
+            mBootSkipEnabled = nextValue;
+            new AQuery(getView()).id(R.id.Item_Message).text(nextValue ? R.string.Message_Boot_SkipEnabled : R.string.Message_Boot);
+        });
+    }
+
+    @UiThread
+    void onBootCompleted() {
+        if (mBootCompleted) {
+            return;
+        }
+
+        // Activityを起動する
+        for (Listener listener : listInterfaces(Listener.class)) {
+            listener.onBootCompleted(this);
+        }
+        mBootCompleted = true;
+    }
+
 
     /**
      * 基本的なパーミッション取得に失敗した
