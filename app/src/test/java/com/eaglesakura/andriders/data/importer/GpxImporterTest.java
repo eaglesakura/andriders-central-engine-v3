@@ -133,8 +133,8 @@ public class GpxImporterTest extends AppUnitTestCase {
         // 今日とトータルを取得する
         // 1日分のデータしか無いので、両者は合致するはずである
         LogStatistics[] testStatisticses = {
-                logManager.loadAllStatistics(),
-                logManager.loadTodayStatistics(DateUtil.getTime(TimeZone.getDefault(), 2015, 5, 24).getTime())
+                logManager.loadAllStatistics(() -> false),
+                logManager.loadTodayStatistics(DateUtil.getTime(TimeZone.getDefault(), 2015, 5, 24).getTime(), () -> false)
         };
 
         for (LogStatistics log : testStatisticses) {
