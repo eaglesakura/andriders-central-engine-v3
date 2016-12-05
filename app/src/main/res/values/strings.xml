@@ -157,6 +157,7 @@
     <string name="Title.Plugin">プラグイン設定</string>
     <string name="Message.LocationPlugin.PermissionError">GPS利用が許可されていません</string>
     <string name="Message.Boot">アプリ起動中</string>
+    <string name="Message.Boot.SkipEnabled">タップですぐに起動</string>
     <string name="Word.Progress.ConnectACEs">ACEs接続...</string>
     <string name="Word.Common.NowSessionStarted">走行セッション中</string>
     <string name="Word.Session.SessionStop">セッション停止</string>

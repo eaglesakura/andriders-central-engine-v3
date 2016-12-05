@@ -4,9 +4,12 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.ui.widget.IconItemAdapter;
+import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
+import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
+import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
@@ -14,6 +17,7 @@ import com.squareup.otto.Subscribe;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.UiThread;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +35,27 @@ public class LayoutAppSelectFragment extends AppFragment {
 
     @OnClick(R.id.Button_AppSelect)
     void clickAppSelect() {
+        asyncUI(task -> {
+            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
+                mDisplayLayoutController.loadTargetApplications(AppSupportUtil.asCancelCallback(task));
+                return this;
+            }
+        }).completed((result, task) -> {
+            onLoadApplicationList();
+        }).failed((error, task) -> {
+            AppLog.printStackTrace(error);
+            AppDialogBuilder.newError(getContext(), error)
+                    .positiveButton(R.string.Common_OK, null)
+                    .show(mLifecycleDelegate);
+        }).start();
+
+    }
+
+    /**
+     * アプリ一覧のロードが完了した
+     */
+    @UiThread
+    void onLoadApplicationList() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_appselect_dialog, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Launcher_ChooseApp), view)
                 .fullScreen(true)

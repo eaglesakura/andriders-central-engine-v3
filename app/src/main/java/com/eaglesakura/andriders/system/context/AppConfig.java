@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.v3.gen.config.AppStatusConfig;
 import com.eaglesakura.android.error.NetworkNotConnectException;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.CollectionUtil;
@@ -28,6 +29,11 @@ public class AppConfig {
     public AppConfig(Context context, AppConfigManager configManager) {
         mConfig = new AppStatusConfig();
         mConfigManager = configManager;
+
+        if (ContextUtil.isDebug(context)) {
+            // Debug版は30秒でExpire
+            mConfigManager.setConfigExpireTimeMs(1000 * 30);
+        }
     }
 
     /**
