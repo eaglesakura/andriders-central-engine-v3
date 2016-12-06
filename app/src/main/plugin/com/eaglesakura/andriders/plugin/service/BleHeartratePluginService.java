@@ -1,9 +1,6 @@
 package com.eaglesakura.andriders.plugin.service;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.ble.heartrate.BleHeartrateMonitor;
-import com.eaglesakura.andriders.ble.heartrate.HeartrateGattReceiver;
-import com.eaglesakura.andriders.ble.heartrate.HeartrateSensorData;
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.AcePluginService;
 import com.eaglesakura.andriders.plugin.Category;
@@ -11,14 +8,22 @@ import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.data.CentralEngineSessionData;
+import com.eaglesakura.andriders.plugin.display.DisplayDataSender;
 import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.bluetooth.error.BluetoothException;
+import com.eaglesakura.android.bluetooth.gatt.BleDeviceConnection;
+import com.eaglesakura.android.bluetooth.gatt.BleGattController;
+import com.eaglesakura.android.bluetooth.gatt.BleHeartrateMonitorCallback;
+import com.eaglesakura.android.bluetooth.gatt.BlePeripheralDeviceConnection;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
+import com.eaglesakura.android.framework.util.AppSupportUtil;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.StringUtil;
 
 import android.app.Service;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -26,13 +31,6 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 public class BleHeartratePluginService extends Service implements AcePluginService {
-    HeartrateGattReceiver receiver;
-
-    /**
-     * リアルタイム同期用時計
-     */
-    private final Clock mClock = Clock.getRealtimeClock();
-
     ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
     @Nullable
@@ -77,44 +75,15 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
         }
 
         mLifecycleDelegate.onCreate();
-        receiver = new HeartrateGattReceiver(this, mLifecycleDelegate.getCallbackQueue(), mClock);
-        receiver.setTargetFitnessDeviceAddress(address);
-        receiver.setHeartrateListener(new BleHeartrateMonitor.BleHeartrateListener() {
-            int mUpdateCount = 0;
-
-            @Override
-            public void onDeviceNotSupportedHeartrate(BleHeartrateMonitor sensor, BluetoothDevice device) {
-            }
-
-            @Override
-            public void onDeviceSupportedHeartrate(BleHeartrateMonitor sensor, BluetoothDevice device) {
-            }
-
-            @Override
-            public void onHeartrateUpdated(BleHeartrateMonitor sensor, HeartrateSensorData heartrate) {
-                if (mUpdateCount == 0) {
-                    NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
-                            .message("ハートレートモニターに接続")
-                            .icon(R.mipmap.ic_launcher)
-                            .getNotification();
-                    connection.getDisplay().queueNotification(notification);
-                }
-                ++mUpdateCount;
-                centralData.setHeartrate(heartrate.getBpm());
-            }
-        });
-
-        receiver.connect();
+        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, task -> {
+            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
+            deviceConnectLoop(address, centralData, connection.getDisplay(), cancelCallback);
+            return this;
+        }).start();
     }
 
     @Override
     public void onAceServiceDisconnected(PluginConnection connection) {
-        if (receiver != null) {
-            receiver.disconnect();
-            receiver = null;
-        }
-
-
         mLifecycleDelegate.onDestroy();
     }
 
@@ -133,4 +102,66 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
 
     }
 
+    /**
+     * BLEデバイス情報取得ループを行う
+     *
+     * @param address        有効なBLEデバイスアドレス
+     * @param centralData    データ送信先
+     * @param display        通知送信先
+     * @param cancelCallback デフォルトのキャンセルチェック
+     */
+    private void deviceConnectLoop(String address, CentralEngineSessionData centralData, DisplayDataSender display, CancelCallback cancelCallback) throws Throwable {
+        BlePeripheralDeviceConnection.SessionCallback sessionCallback = new BlePeripheralDeviceConnection.SessionCallback() {
+            @Override
+            public void onSessionStart(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
+                NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
+                        .message("ハートレートモニター検索中...")
+                        .icon(R.mipmap.ic_launcher)
+                        .getNotification();
+                display.queueNotification(notification);
+            }
+
+            @Override
+            public void onSessionFinished(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
+                NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
+                        .message("ハートレートモニター切断")
+                        .icon(R.mipmap.ic_launcher)
+                        .getNotification();
+                display.queueNotification(notification);
+            }
+        };
+        BleDeviceConnection.Callback dataCallback = new BleHeartrateMonitorCallback() {
+
+            @Override
+            public void onGattConnected(BleDeviceConnection self, BleGattController gatt) throws BluetoothException {
+                super.onGattConnected(self, gatt);
+                NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
+                        .message("ハートレートモニター接続")
+                        .icon(R.mipmap.ic_launcher)
+                        .getNotification();
+                display.queueNotification(notification);
+            }
+
+            /**
+             * ループは常に抜けない
+             * @param self
+             * @param gatt
+             * @return
+             * @throws BluetoothException
+             */
+            @Override
+            public boolean onLoop(BleDeviceConnection self, BleGattController gatt) throws BluetoothException {
+                return false;
+            }
+
+            @Override
+            protected void onUpdateHeartrateBpm(int newBpm) {
+                centralData.setHeartrate(newBpm);
+            }
+        };
+
+        BlePeripheralDeviceConnection deviceConnection =
+                new BlePeripheralDeviceConnection(this, address);
+        deviceConnection.alwaysConnect(sessionCallback, dataCallback, cancelCallback);
+    }
 }
