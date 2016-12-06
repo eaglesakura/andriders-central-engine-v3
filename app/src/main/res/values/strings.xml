@@ -201,6 +201,10 @@
         今日消費カロリーとセッション消費カロリーを表示します。\n心拍センサーを使用している場合のみ有効です。
     </string>
     <string name="Message.Display.CadenceSummary">ケイデンスを表示します。センサーに接続されていない場合は表示されません。</string>
+    <string name="Message.Sensor.HeartrateFinding">ハートレートモニター検索中...</string>
+    <string name="Message.Sensor.HeartrateDisconnected">ハートレートモニター切断</string>
+    <string name="Message.Sensor.HeartrateConnected">ハートレートモニター接続</string>
+    <string name="Message.Sensor.HeartrateBatteryInfo">"ハートレートモニター\nバッテリー残量 %1$d%%"</string>
     <string-array name="Command_Distance_TypeInfo">
         <item>今日走行 : %.1f km</item>
         <item>セッション走行 : %.1f km</item>
