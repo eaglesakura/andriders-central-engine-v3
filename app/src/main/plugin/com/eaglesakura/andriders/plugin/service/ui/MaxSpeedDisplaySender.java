@@ -71,7 +71,7 @@ public class MaxSpeedDisplaySender extends DisplayDataSender {
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Display_Common_Speed_Max));
+        result.setTitle(context.getString(R.string.Word_Display_Speed_Max));
         result.setSummary(context.getString(R.string.Message_Display_MaxSpeedSummary));
         return result;
     }

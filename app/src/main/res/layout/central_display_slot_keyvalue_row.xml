@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/EsMaterial.Grey.800"
-            android:text="@string/Display.Common.NoData"
+            android:text="@string/Word.Display.NoData"
             android:maxLines="1"
             android:ellipsize="end"
             android:gravity="right"/>

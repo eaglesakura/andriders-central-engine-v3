@@ -1,67 +1,46 @@
 <resources>
 
-    <!-- ルートメニュー -->
-    <string name="Login.Welcome.Information">Andriders Central
-        Engine(A.C.E)をダウンロードしていただき、ありがとうございます。\nこのアプリはGoogle Play
-        Serviceの機能を利用するため、ログインを行ってください。\nこの作業は数タップで完了します。
-    </string>
-    <string name="Login.Welcome.Information.UpdateRelease3">Andriders Central
-        Engine(A.C.E)はより良いユーザー体験のため、全面リニューアルしました。
-    </string>
-    <string name="Login.Initial.Error">ログイン失敗</string>
-    <string name="Login.Initial.Error.Information">Google Play Serviceへのログインに失敗しました。\n再度認証を行いますか？
-    </string>
-    <string name="Login.Initial.Success">ログイン完了</string>
-    <string name="Login.Initial.Success.Information">Google Play Serviceへのログインに成功しました。</string>
-    <string name="Login.Initial.Login">ログイン</string>
-    <string name="Login.Initial.Exit">終了</string>
-
-    <string name="Setting.Gadgets.GpsSpeed">速度計算でGPSを優先</string>
-    <string name="Setting.Gadgets.GpsDistance">距離計算でGPSを優先</string>
-    <string name="Setting.Gadgets.SpeedAndCadence">スピード＆ケイデンス</string>
-    <string name="Setting.Gadgets.Heartrate">ハートレートモニター</string>
-    <string name="Setting.Gadgets.RemoteCentral">リモートセントラル</string>
-    <string name="Setting.Gadgets.RemoteCentral.None">未選択</string>
-    <string name="Setting.Gadgets.BleDevice.NotConnected">未接続</string>
-    <string name="Setting.Gadgets.Sensors.Found">センサー【%1$s】を検出しました</string>
-    <!--<string name="Setting.Gadgets.Sensors.Selector">%1$s【%2$d 回接続】</string>-->
-    <string name="Setting.Gadgets.Sensors.Selector">%1$s【ID: %2$s】</string>
-    <string name="Setting.Gadgets.Sensors.Selector.None">センサー未選択</string>
+    <!-- 共通単語 -->
 
     <!-- ロードバイク設定 -->
-    <string name="Setting.Roadbike.MaxWheelLength">最大ホイール周長は%d mmです。</string>
-    <string name="Setting.Roadbike.WheelOuterLength">タイヤ外周サイズ</string>
+    <string name="Title.Roadbike.WheelOuterLength">タイヤ外周サイズ</string>
+
+    <!-- プラグイン -->
+    <string name="Message.Plugin.Empty">プラグインがありません。</string>
+    <string name="Title.PluginCategory.Location">位置情報</string>
+    <string name="Message.PluginCategory.Location">
+        現在位置の取得方法を選択します。スピードセンサーから値が取得できない場合、GPSから現在速度が計算されます。
+    </string>
+    <string name="Title.PluginCategory.Heartrate">心拍</string>
+    <string name="Message.PluginCategory.Heartrate">心拍の取得方法を選択します。</string>
+    <string name="Title.PluginCategory.SpeedAndCadence">スピード＆ケイデンス</string>
+    <string name="Message.PluginCategory.SpeedAndCadence">速度・ケイデンスの取得方法を選択します。</string>
+    <string name="Title.PluginCategory.Other">その他</string>
+    <string name="Message.PluginCategory.Other">インストールされたその他のモジュールの設定を行います。</string>
+
 
     <!-- ディスプレイ情報 -->
-    <string name="Display.Common.NoData">N/A</string>
-    <string name="Display.Common.Heartrate">心拍</string>
-    <string name="Display.Common.Cadence">ケイデンス</string>
-    <string name="Display.Common.Speed">速度</string>
-    <string name="Display.Common.Speed.Max">最高速度</string>
-    <string name="Display.Common.Fitness.Calories">消費カロリー</string>
-    <string name="Display.Common.Speed.GPS">GPS速度(km/h)</string>
-    <string name="Display.Common.Speed.Sensor">速度(km/h)</string>
-    <string name="Display.Common.Reconnect">再接続...</string>
+    <string name="Word.Display.NoData">N/A</string>
+    <string name="Word.Display.Heartrate">心拍</string>
+    <string name="Word.Display.Cadence">ケイデンス</string>
+    <string name="Word.Display.Speed.Title">速度</string>
+    <string name="Word.Display.Speed.Max">最高速度</string>
+    <string name="Word.Display.Speed.byGPS">GPS速度(km/h)</string>
+    <string name="Word.Display.Speed.bySensor">速度(km/h)</string>
+    <string name="Word.Display.FitnessCalories.Title">消費カロリー</string>
+    <string name="Word.Display.Reconnect">取得中</string>
 
-    <!-- 心拍 -->
-    <string-array name="Display_Heartrate_ZoneName">
-        <item>安静</item>
-        <item>軽度</item>
-        <item>燃焼</item>
-        <item>有酸素</item>
-        <item>無酸素</item>
-        <item>危険域</item>
-    </string-array>
 
     <!-- ケイデンス -->
-    <string-array name="Display_Cadence_ZoneName">
+    <string-array name="Word_Display_Cadence_ZoneName">
         <item>停止</item>
         <item>低回転</item>
         <item>標準</item>
         <item>高回転</item>
     </string-array>
+
     <!-- 速度 -->
-    <string-array name="Display_Speed_ZoneName">
+    <string-array name="Word_Display_Speed_ZoneName">
         <item>停止</item>
         <item>低速</item>
         <item>低速</item>
@@ -73,17 +52,6 @@
     <string name="Message.Profile.WeightSyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>
     <string name="Word.Common.Weight">体重</string>
     <string name="Word.Profile.WeightUnit">kg</string>
-
-    <!-- 拡張モジュール -->
-    <string name="Extension.Empty">拡張モジュールがありません。</string>
-    <string name="Extension.Category.Location">位置情報</string>
-    <string name="Extension.Category.Location.Information">現在位置の取得方法を選択します。</string>
-    <string name="Extension.Category.Heartrate">心拍</string>
-    <string name="Extension.Category.Heartrate.Information">心拍の取得方法を選択します。</string>
-    <string name="Extension.Category.SpeedAndCadence">スピード＆ケイデンス</string>
-    <string name="Extension.Category.SpeedAndCadence.Information">速度・ケイデンスの取得方法を選択します。</string>
-    <string name="Extension.Category.Other">その他</string>
-    <string name="Extension.Category.Other.Information">インストールされたその他のモジュールの設定を行います。</string>
 
     <!-- 内蔵拡張機能設定 -->
     <string name="Extension.Inner.Location.Name">GPSから取得</string>
@@ -103,8 +71,8 @@
     </string>
 
     <!-- その他 -->
-    <string name="Common.BleDevice.HeartRateMonitor">ハートレートモニター</string>
-    <string name="Common.BleDevice.SpeedAndCadenceSensor">スピード＆ケイデンスセンサー</string>
+    <string name="Common.BleDevice.HeartRateMonitor">BLE ハートレートモニター</string>
+    <string name="Common.BleDevice.SpeedAndCadenceSensor">BLE スピード＆ケイデンスセンサー</string>
     <string name="Common.Gadget.BluetoothServer">Bluetoothサーバー</string>
     <string name="Common.BleDevice.ScanTimeout">デバイス検索がタイムアウトしました</string>
     <string name="Common.Dialog.Title.Error">エラー</string>
@@ -112,7 +80,7 @@
     <string name="Common.OK">OK</string>
     <string name="Common.Cancel">キャンセル</string>
     <string name="Common.Reset">リセット</string>
-    <string name="Common.Worning">注意</string>
+    <string name="Common.Warning">注意</string>
     <string name="Common.File.Processing">処理中</string>
     <string name="Common.File.Load">読み込み中</string>
     <string name="Common.File.Write">書き込み中</string>

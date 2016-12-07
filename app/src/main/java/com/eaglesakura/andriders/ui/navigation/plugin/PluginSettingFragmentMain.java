@@ -48,16 +48,16 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
                     R.drawable.ic_single_module,
             };
             int[] TITLE_TABLE = {
-                    R.string.Extension_Category_Location,
-                    R.string.Extension_Category_Heartrate,
-                    R.string.Extension_Category_SpeedAndCadence,
-                    R.string.Extension_Category_Other,
+                    R.string.Title_PluginCategory_Location,
+                    R.string.Title_PluginCategory_Heartrate,
+                    R.string.Title_PluginCategory_SpeedAndCadence,
+                    R.string.Title_PluginCategory_Other,
             };
             int[] INFO_TABLE = {
-                    R.string.Extension_Category_Location_Information,
-                    R.string.Extension_Category_Heartrate_Information,
-                    R.string.Extension_Category_SpeedAndCadence_Information,
-                    R.string.Extension_Category_Other_Information,
+                    R.string.Message_PluginCategory_Location,
+                    R.string.Message_PluginCategory_Heartrate,
+                    R.string.Message_PluginCategory_SpeedAndCadence,
+                    R.string.Message_PluginCategory_Other,
             };
 
             Category[] CATEGORY_TABLE = {

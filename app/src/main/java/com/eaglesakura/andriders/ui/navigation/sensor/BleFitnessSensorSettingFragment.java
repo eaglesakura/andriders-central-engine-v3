@@ -101,7 +101,7 @@ public class BleFitnessSensorSettingFragment extends AppFragment {
                 .items(devices)
                 .title((index, it) -> {
                     if (it == null) {
-                        return getString(R.string.Setting_Gadgets_BleDevice_NotConnected);
+                        return getString(R.string.Word_Common_NoDevice);
                     } else {
                         return it.getDisplayName(getContext());
                     }

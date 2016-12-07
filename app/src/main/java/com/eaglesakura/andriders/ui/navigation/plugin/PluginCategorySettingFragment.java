@@ -150,7 +150,7 @@ public class PluginCategorySettingFragment extends AppFragment {
             Category pluginCategory = Category.fromName(mCategoryName);
             List<CentralPlugin> pluginList = mCentralPluginCollection.list(pluginCategory);
 
-            try (ProgressToken token = pushProgress(R.string.Common_Worning)) {
+            try (ProgressToken token = pushProgress(R.string.Common_Warning)) {
                 if (isChecked && pluginCategory.hasAttribute(Category.ATTRIBUTE_SINGLE_SELECT)) {
                     // 1つしか選択できないのなら、一旦全てを外す
                     for (CentralPlugin p : pluginList) {
