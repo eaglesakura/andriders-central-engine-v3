@@ -84,7 +84,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
         super.onResume();
         async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<CentralPluginCollection> task) -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
-            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
                 CentralPluginCollection pluginCollection = mPluginDataManager.listPlugins(PluginDataManager.PluginListingMode.All, cancelCallback);
 
                 CentralPlugin.ConnectOption option = new CentralPlugin.ConnectOption();
@@ -97,7 +97,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
-                    .positiveButton(R.string.Common_OK, null)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }).start();
 

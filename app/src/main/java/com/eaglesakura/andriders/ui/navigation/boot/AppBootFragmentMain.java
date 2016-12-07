@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
+import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
@@ -22,7 +23,6 @@ import com.eaglesakura.android.gms.error.SignInRequireException;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.saver.BundleState;
@@ -33,7 +33,6 @@ import com.eaglesakura.util.Timer;
 
 import android.content.Intent;
 import android.support.annotation.UiThread;
-import android.support.v7.app.AlertDialog;
 
 import java.util.Arrays;
 import java.util.List;
@@ -255,69 +254,30 @@ public class AppBootFragmentMain extends AppNavigationFragment {
      * 基本的なパーミッション取得に失敗した
      */
     void onFailedUserPermission() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.Common_Dialog_Title_Error);
-        builder.setMessage("アプリの実行に必要な権限を得られませんでした。\nアプリの権限を確認し、再起動してください。");
-        builder.setCancelable(false);
-        builder.setPositiveButton("権限を確認する", (dlg, which) -> {
-            startActivity(ContextUtil.getAppSettingIntent(getActivity()));
-        });
-        builder.show();
+        AppDialogBuilder.newAlert(getContext(), "アプリの実行に必要な権限を得られませんでした。\nアプリの権限を確認し、再起動してください。")
+                .cancelable(false)
+                .positiveButton("権限を確認", () -> startActivity(ContextUtil.getAppSettingIntent(getActivity())))
+                .show(mLifecycleDelegate);
     }
 
     /**
      * オーバーレイ表示に失敗した
      */
     void onFailedDrawOverlays() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.Common_Dialog_Title_Error);
-        builder.setMessage("サイコン表示を行うため、「他のアプリの上に重ねて表示」を許可してください。");
-        builder.setCancelable(false);
-        builder.setPositiveButton("設定を開く", (dlg, which) -> {
-            startActivity(ContextUtil.getAppOverlaySettingIntent(getActivity()));
-        });
-        builder.show();
+        AppDialogBuilder.newAlert(getContext(), "サイコン表示を行うため、「他のアプリの上に重ねて表示」を許可してください。")
+                .cancelable(false)
+                .positiveButton("設定", () -> startActivity(ContextUtil.getAppOverlaySettingIntent(getActivity())))
+                .show(mLifecycleDelegate);
     }
 
     /**
      * 最近のアプリアクセスに失敗した
      */
     void onFailedUsageStatus() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.Common_Dialog_Title_Error);
-        builder.setMessage("サイコン表示切り替えを有効化するため、「使用履歴へアクセス」を許可してください。");
-        builder.setCancelable(false);
-        builder.setPositiveButton("設定を開く", (dlg, which) -> {
-            startActivity(ContextUtil.getUsageStatusAcesss(getActivity()));
-        });
-        builder.show();
-    }
-
-    /**
-     * Google Authに失敗した
-     */
-    void onFailedGoogleAuth() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.Common_Dialog_Title_Error);
-        builder.setMessage("Googleサービスとの連携を行うため、Googleアカウントでログインする必要があります。");
-        builder.setCancelable(false);
-        builder.setPositiveButton("ログイン", (dlg, which) -> {
-            startGoogleSignIn();
-        });
-        builder.show();
-    }
-
-    /**
-     * Google Sign Inを開始する
-     */
-    void startGoogleSignIn() {
-        asyncUI((BackgroundTask<Intent> task) -> {
-            return PlayServiceUtil.newSignInIntent(AppUtil.newFullPermissionClient(getActivity()), () -> task.isCanceled());
-        }).completed((result, task) -> {
-            startActivityForResult(result, AppConstants.REQUEST_GOOGLE_AUTH);
-        }).failed((error, task) -> {
-            AppLog.printStackTrace(error);
-        }).start();
+        AppDialogBuilder.newAlert(getContext(), "サイコン表示切り替えを有効化するため、「使用履歴へアクセス」を許可してください。")
+                .cancelable(false)
+                .positiveButton("設定", () -> startActivity(ContextUtil.getUsageStatusAcesss(getActivity())))
+                .show(mLifecycleDelegate);
     }
 
     @OnActivityResult(AppConstants.REQUEST_GOOGLE_AUTH)

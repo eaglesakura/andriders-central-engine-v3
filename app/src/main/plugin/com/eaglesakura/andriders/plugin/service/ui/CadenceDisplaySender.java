@@ -24,7 +24,7 @@ public class CadenceDisplaySender extends DisplayDataSender {
     @NonNull
     private final ZoneColor mZoneColor;
 
-    @BindStringArray(R.array.Word_Display_Cadence_ZoneName)
+    @BindStringArray(R.array.Ace_Word_CadenceZone)
     @NonNull
     String[] mZoneTitles;
 

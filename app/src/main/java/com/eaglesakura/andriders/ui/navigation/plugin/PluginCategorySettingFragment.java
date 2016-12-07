@@ -150,7 +150,7 @@ public class PluginCategorySettingFragment extends AppFragment {
             Category pluginCategory = Category.fromName(mCategoryName);
             List<CentralPlugin> pluginList = mCentralPluginCollection.list(pluginCategory);
 
-            try (ProgressToken token = pushProgress(R.string.Common_Warning)) {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_Working)) {
                 if (isChecked && pluginCategory.hasAttribute(Category.ATTRIBUTE_SINGLE_SELECT)) {
                     // 1つしか選択できないのなら、一旦全てを外す
                     for (CentralPlugin p : pluginList) {
@@ -165,7 +165,7 @@ public class PluginCategorySettingFragment extends AppFragment {
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
-                    .positiveButton(R.string.Common_OK, null)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }).start();
     }

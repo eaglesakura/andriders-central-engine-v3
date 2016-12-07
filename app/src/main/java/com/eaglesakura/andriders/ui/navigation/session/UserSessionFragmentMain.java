@@ -54,7 +54,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
      */
     void connectSessionCentral() {
         asyncUI((BackgroundTask<SessionControlConnection> task) -> {
-            try (ProgressToken token = pushProgress(R.string.Word_Progress_ConnectACEs)) {
+            try (ProgressToken token = pushProgress(R.string.Word_Session_ConnectACEs)) {
                 CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
 
                 SessionControlConnection connection = new SessionControlConnection(getContext());
@@ -67,7 +67,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
-                    .positiveButton(R.string.Common_OK, null)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }).start();
     }
@@ -101,13 +101,13 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
     @UiThread
     void showSessionStartMessage() {
         AppDialogBuilder.newInformation(getContext(), R.string.Message_Session_SessionStart)
-                .positiveButton(R.string.Word_Session_SessionStart, () -> {
+                .positiveButton(R.string.Word_Session_Start, () -> {
                     mSessionControlBus.ifPresent(connection -> {
                         connection.getCentralSessionController().requestSessionStart();
                     });
                     syncSessionButtonState(true);
                 })
-                .negativeButton(R.string.Common_Cancel, null)
+                .negativeButton(R.string.Word_Common_Cancel, null)
                 .showOnce(mLifecycleDelegate, "sessionUI");
     }
 
@@ -117,13 +117,13 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
     @UiThread
     void showSessionStopMessage(RawSessionInfo info) {
         long sessionTimeMs = (System.currentTimeMillis() - info.sessionId);
-        String message = getString(R.string.Message_Session_SessionAbort, AppUtil.formatTimeMilliSecToString(sessionTimeMs));
+        String message = getString(R.string.Message_Session_SessionStart, AppUtil.formatTimeMilliSecToString(sessionTimeMs));
         AppDialogBuilder.newInformation(getContext(), message)
-                .positiveButton(R.string.Word_Session_SessionStop, () -> {
+                .positiveButton(R.string.Word_Session_Stop, () -> {
                     mSessionControlBus.getData().getCentralSessionController().requestSessionStop();
                     syncSessionButtonState(false);
                 })
-                .negativeButton(R.string.Common_Cancel, null)
+                .negativeButton(R.string.Word_Common_Cancel, null)
                 .showOnce(mLifecycleDelegate, "sessionUI");
     }
 
@@ -137,14 +137,14 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
         ToolbarBuilder toolbarBuilder = ToolbarBuilder.from(this);
         if (sessionStarted) {
             // 既にセッションが開始されている
-            toolbarBuilder.title(R.string.Word_Common_NowSessionStarted);
+            toolbarBuilder.title(R.string.Title_Session_Running);
             mSessionButton.setBackgroundTintList(ColorStateList.valueOf(ResourceUtil.argb(getContext(), R.color.App_Theme_Red)));
-            mSessionButton.setText(R.string.Word_Session_SessionStop);
+            mSessionButton.setText(R.string.Word_Session_SessionStopButton);
         } else {
             // セッションが開始されていない
-            toolbarBuilder.title(R.string.Word_App_AndridersCentralEngine);
+            toolbarBuilder.title(R.string.Word_Common_AndridersCentralEngine_Short);
             mSessionButton.setBackgroundTintList(ColorStateList.valueOf(ResourceUtil.argb(getContext(), R.color.App_Theme_Blue)));
-            mSessionButton.setText(R.string.Word_Session_SessionStart);
+            mSessionButton.setText(R.string.Word_Session_SessionStartButton);
         }
 
         mSessionButton.setVisibility(View.VISIBLE);

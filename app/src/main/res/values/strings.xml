@@ -1,9 +1,119 @@
 <resources>
 
     <!-- 共通単語 -->
+    <string name="EsMaterial.Title.Common.Alert">警告</string>
+    <string name="EsMaterial.Title.Common.Information">情報</string>
 
-    <!-- ロードバイク設定 -->
+    <string name="Word.Common.OK">OK</string>
+    <string name="Word.Common.Cancel">キャンセル</string>
+    <string name="Word.Common.Weight">体重</string>
+    <string name="Word.Common.Repeat">繰り返し</string>
+    <string name="Word.Common.TimeHM">%1$d 時間 %2$d 分</string>
+    <string name="Word.Common.TimeMS">%1$d 分 %2$d 秒</string>
+    <string name="Word.Common.TimeS">%1$d 秒</string>
+    <string name="Word.Common.Save">保存</string>
+    <string name="Word.Common.Delete">削除</string>
+    <string name="Word.Common.AndridersCentralEngine">Andriders Central Engine</string>
+    <string name="Word.Common.AndridersCentralEngine.Short">A.C.E.</string>
+    <string name="Word.Common.Default">デフォルト</string>
+    <string name="Word.Common.Working">処理中</string>
+    <string name="Word.Common.DataLoad">データ読込中</string>
+    <string name="Word.Common.DataWrite">データ書込中</string>
+    <string name="Word.Common.Roadbike">ロードバイク</string>
+    <string name="Word.Common.Install">インストール</string>
+
+    <!-- エラー関連 -->
+    <string name="Title.Error.Runtime">実行時エラー</string>
+    <string name="Title.Error.DatabaseIO">データベース処理エラー</string>
+    <string name="Message.Error.Runtime">処理中に問題が発生しました</string>
+
+    <!-- 起動画面 -->
+    <string name="Message.Boot">アプリ起動中</string>
+    <string name="Message.Boot.SkipEnabled">タップですぐに起動</string>
+
+    <!-- セッション画面 -->
+    <string name="Word.Session.ConnectACEs">ACEs接続...</string>
+    <string name="Title.Session.Dialog">セッション</string>
+    <string name="Title.Session.Running">走行中</string>
+    <string name="Message.Session.SessionStart">セッションを開始しますか？</string>
+    <string name="Message.Session.SessionStop">セッションを停止しますか？\n走行時間[%1$s]</string>
+    <string name="Word.Session.Start">セッション開始</string>
+    <string name="Word.Session.Stop">セッション停止</string>
+    <string name="Word.Session.SessionStopButton">セッションを終了</string>
+    <string name="Word.Session.SessionStartButton">セッションを開始</string>
+
+    <!-- プロファイル設定 -->
+    <string name="Title.Profile">プロファイル</string>
+    <string name="Word.Profile.WheelOuterLengthFormat">%2$d mm / %1$s</string>
+    <string name="Word.Profile.TireSetting">タイヤ規格</string>
     <string name="Title.Roadbike.WheelOuterLength">タイヤ外周サイズ</string>
+    <string name="Message.Profile.WeightSyncCompleted">体重データを同期しました</string>
+    <string name="Message.Profile.WeightSyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>
+    <string name="Word.Profile.WeightUnit">kg</string>
+    <string name="Word.Profile.GoogleFitNotInstalled">Google Fitアプリがインストールされていません。\n体重設定を行う場合、Google
+        Fitアプリをインストールしてください。
+    </string>
+
+    <!-- コマンド設定 -->
+    <string name="Title.Command">コマンド</string>
+    <string name="Title.Command.Edit">条件設定</string>
+    <string name="Title.Command.Distance">距離</string>
+    <string name="Title.Command.Proximity">近接</string>
+    <string name="Message.Command.InvalidValue">無効な設定値です</string>
+    <string name="Title.Command.Speed">スピード</string>
+    <string name="Title.Command.Timer">タイマー</string>
+    <string name="Word.Command.ActiveOnly">自走</string>
+    <string-array name="Message_Command_Distance">
+        <item>今日走行 : %.1f km</item>
+        <item>セッション走行 : %.1f km</item>
+    </string-array>
+    <string-array name="Selector_Command_Distance">
+        <item>今日の走行距離</item>
+        <item>セッションの走行距離</item>
+    </string-array>
+
+    <string-array name="Message_Command_Timer">
+        <item>時計 : %s</item>
+        <item>セッション時間 : %s</item>
+    </string-array>
+    <string-array name="Selector_Command_Timer">
+        <item>時計が基準</item>
+        <item>セッション時間が基準</item>
+    </string-array>
+    <string-array name="Message_Command_Speed">
+        <item>%dkm/hより高速</item>
+        <item>%dkm/hより低速</item>
+        <item>最高速の更新開始</item>
+        <item>最高速の記録更新</item>
+        <item>最高速の更新終了</item>
+        <item>今日最高速の更新開始</item>
+        <item>今日最高速の記録更新</item>
+        <item>今日最高速の更新終了</item>
+    </string-array>
+    <string-array name="Selector_Command_Speed">
+        <item>加速したら</item>
+        <item>減速したら</item>
+        <item>最高速の更新開始</item>
+        <item>最高速の記録更新</item>
+        <item>最高速の更新終了</item>
+        <item>今日最高速の更新開始</item>
+        <item>今日最高速の記録更新</item>
+        <item>今日最高速の更新終了</item>
+    </string-array>
+    <string-array name="Message_Command_Speed_Footer">
+        <item>km/hより高速</item>
+        <item>km/hより低速</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
+
+    <!-- コマンド起動 -->
+    <string name="Title.Command.ChooseApp">起動するアプリを選択</string>
 
     <!-- プラグイン -->
     <string name="Message.Plugin.Empty">プラグインがありません。</string>
@@ -18,8 +128,9 @@
     <string name="Title.PluginCategory.Other">その他</string>
     <string name="Message.PluginCategory.Other">インストールされたその他のモジュールの設定を行います。</string>
 
-
-    <!-- ディスプレイ情報 -->
+    <!-- ディスプレイ/サイコン情報 -->
+    <string name="Title.Display">サイコン表示</string>
+    <string name="Title.ChooseApp">アプリ選択</string>
     <string name="Word.Display.NoData">N/A</string>
     <string name="Word.Display.Heartrate">心拍</string>
     <string name="Word.Display.Cadence">ケイデンス</string>
@@ -29,134 +140,8 @@
     <string name="Word.Display.Speed.bySensor">速度(km/h)</string>
     <string name="Word.Display.FitnessCalories.Title">消費カロリー</string>
     <string name="Word.Display.Reconnect">取得中</string>
-
-
-    <!-- ケイデンス -->
-    <string-array name="Word_Display_Cadence_ZoneName">
-        <item>停止</item>
-        <item>低回転</item>
-        <item>標準</item>
-        <item>高回転</item>
-    </string-array>
-
-    <!-- 速度 -->
-    <string-array name="Word_Display_Speed_ZoneName">
-        <item>停止</item>
-        <item>低速</item>
-        <item>低速</item>
-        <item>高速</item>
-    </string-array>
-
-    <!-- フィットネス -->
-    <string name="Message.Profile.WeightSyncCompleted">体重データを同期しました</string>
-    <string name="Message.Profile.WeightSyncFailed">Google Fitから直近1週間の体重を取得できませんでした</string>
-    <string name="Word.Common.Weight">体重</string>
-    <string name="Word.Profile.WeightUnit">kg</string>
-
-    <!-- 内蔵拡張機能設定 -->
-    <string name="Extension.Inner.Location.Name">GPSから取得</string>
-    <string name="Extension.Inner.BleSensor.Name">BLEセンサーから取得</string>
-    <string name="Extension.Inner.Default.Name">ACE標準機能</string>
-    <string name="Extension.Inner.Remove">非表示</string>
-
-    <!-- アプリ情報 -->
-    <string name="Information.Build.Title">ビルド情報</string>
-    <string name="Information.App.Version">アプリバージョン</string>
-    <string name="Information.App.BuildDate">ビルド日時</string>
-    <string name="Information.App.SDKVersion">ACE-SDKバージョン</string>
-    <string name="Information.App.Licenses">オープンソースライセンス</string>
-    <string name="Information.Debug.Title">開発者用機能</string>
-    <string name="Information.Debug.Enabled">
-        開発用デバッグ機能を有効化します。\n開発者向けの機能であるため、バッテリーの消費量増大等の副作用があります。\nアプリ再起動後に有効化されます。
-    </string>
-
-    <!-- その他 -->
-    <string name="Common.BleDevice.HeartRateMonitor">BLE ハートレートモニター</string>
-    <string name="Common.BleDevice.SpeedAndCadenceSensor">BLE スピード＆ケイデンスセンサー</string>
-    <string name="Common.Gadget.BluetoothServer">Bluetoothサーバー</string>
-    <string name="Common.BleDevice.ScanTimeout">デバイス検索がタイムアウトしました</string>
-    <string name="Common.Dialog.Title.Error">エラー</string>
-    <string name="Common.Dialog.Title.Check">確認</string>
-    <string name="Common.OK">OK</string>
-    <string name="Common.Cancel">キャンセル</string>
-    <string name="Common.Reset">リセット</string>
-    <string name="Common.Warning">注意</string>
-    <string name="Common.File.Processing">処理中</string>
-    <string name="Common.File.Load">読み込み中</string>
-    <string name="Common.File.Write">書き込み中</string>
-    <string name="Common.File.NotFound">ファイルが見つかりませんでした</string>
-    <string name="Common.File.FormatError">正常なファイルではない、もしくはファイルが壊れています</string>
-    <string name="Common.Update.Migration">アプリケーション準備中</string>
-    <string name="Common.App.Finish">アプリを終了する</string>
-
-    <string name="Common.Delete">削除</string>
-    <string name="Common.Dialog.Title.Verification">確認</string>
-
-    <!-- 各種フォーマッタ -->
-    <string name="Common.Formatter.Time.HM">%1$d 時間 %2$d 分</string>
-    <string name="Common.Formatter.Time.MS">%1$d 分 %2$d 秒</string>
-    <string name="Common.Formatter.Time.S">%1$d 秒</string>
-    <string name="Main.Menu.Profile">プロファイル</string>
-    <string name="Main.Menu.CycleComputer">サイコン表示</string>
-    <string name="Main.Menu.Commands">コマンド</string>
-    <string name="Main.Menu.Plugins">プラグイン</string>
-    <string name="Main.Menu.Activity">走行ログ</string>
-    <string name="Main.Menu.Information">アプリについて</string>
-    <string name="UserLog.Import.GPX">GPX形式で読込</string>
-    <string name="Main.Menu.Gadgets">センサー・周辺機器</string>
-
-    <string name="Setting.CycleComputer.Target.Default">デフォルト</string>
-    <string name="Command.Flag.Repeat">繰り返し</string>
-    <string name="Command.Flag.Distance.ActiveOnly">自走</string>
     <string name="Word.Display.ErrorSlot">無効な表示内容</string>
-    <string name="Word.Central.SessionNow">セッション記録中</string>
-    <string name="Word.Central.SessionStart">セッション開始</string>
-    <string name="Title.Central.SessionFinish">セッション終了</string>
-    <string name="Message.Central.SessionFinish">走行セッションを終了しますか？</string>
-    <string name="Choose.Central.SessionFinish">セッション終了</string>
-    <string name="Title.Central.SessionStart">セッション開始</string>
-    <string name="Message.Central.SessionStart">走行セッションを開始しますか？</string>
-    <string name="Choose.Central.SessionStart">セッション開始</string>
-    <string name="Title.Launcher.ChooseApp">起動するアプリを選択</string>
-    <string name="Word.App.AndridersCentralEngine">Andriders Central Engine</string>
-    <string name="Title.Error.Runtime">実行時エラー</string>
-    <string name="Title.Error.DatabaseIO">データベース処理エラー</string>
-    <string name="Message.Error.Runtime">処理中に問題が発生しました</string>
-    <string name="Title.Plugin">プラグイン設定</string>
-    <string name="Message.LocationPlugin.PermissionError">GPS利用が許可されていません</string>
-    <string name="Message.Boot">アプリ起動中</string>
-    <string name="Message.Boot.SkipEnabled">タップですぐに起動</string>
-    <string name="Word.Progress.ConnectACEs">ACEs接続...</string>
-    <string name="Word.Common.NowSessionStarted">走行セッション中</string>
-    <string name="Word.Session.SessionStop">セッション停止</string>
-    <string name="Word.Session.SessionStart">セッション開始</string>
-    <string name="Message.Session.SessionAbort">セッションを停止しますか？\n走行時間[%1$s]</string>
-    <string name="Message.Session.SessionStart">走行セッションを開始しますか?</string>
-    <string name="Title.Info">アプリ情報</string>
-    <string name="Title.Command">コマンド</string>
-    <string name="Word.SelectLauncher">アプリ選択</string>
-    <string name="Title.Command.Edit">条件設定</string>
-    <string name="Word.Common.Save">保存</string>
-    <string name="Word.Common.Delete">削除</string>
-    <string name="Title.Command.Distance">距離</string>
-    <string name="Message.Command.InvalidValue">無効な設定値です</string>
-    <string name="Title.Command.Speed">スピード</string>
-    <string name="Title.Command.Timer">タイマー</string>
-    <string name="Title.Sensor">センサー・周辺機器</string>
-    <string name="Message.Sensor.Found">センサーを検出 [%1$s]</string>
-    <string name="Word.Common.Roadbike">ロードバイク</string>
-    <string name="Word.Profile.WheelOuterLengthFormat">%2$d mm / %1$s</string>
-    <string name="Title.Profile">プロファイル</string>
-    <string name="Word.Profile.TireSetting">タイヤ規格</string>
-    <string name="Word.Common.Install">インストール</string>
-    <string name="Word.Profile.GoogleFitNotInstalled">Google Fitアプリがインストールされていません。\n体重設定を行う場合、Google
-        Fitアプリをインストールしてください。
-    </string>
-    <string name="Title.Display">サイコン表示</string>
-    <string name="Word.Common.Default">デフォルト</string>
-    <string name="Word.Common.Working">処理中</string>
     <string name="Message.Display.PluginNotEnabled">プラグインが有効化されていません。\n使用するプラグインを選択してください。</string>
-    <string name="Title.Command.Proximity">近接</string>
     <string name="Title.Display.Choose">表示内容選択</string>
     <string name="Message.Display.HeartrateSummary">心拍を表示します。センサーに接続されていない場合は表示されません。</string>
     <string name="Message.Display.SpeedSummary">
@@ -169,57 +154,43 @@
         今日消費カロリーとセッション消費カロリーを表示します。\n心拍センサーを使用している場合のみ有効です。
     </string>
     <string name="Message.Display.CadenceSummary">ケイデンスを表示します。センサーに接続されていない場合は表示されません。</string>
-    <string name="Message.Sensor.HeartrateFinding">ハートレートモニター検索中...</string>
-    <string name="Message.Sensor.HeartrateDisconnected">ハートレートモニター切断</string>
-    <string name="Message.Sensor.HeartrateConnected">ハートレートモニター接続</string>
-    <string name="Message.Sensor.HeartrateBatteryInfo">"ハートレートモニター\nバッテリー残量 %1$d%%"</string>
-    <string-array name="Command_Distance_TypeInfo">
-        <item>今日走行 : %.1f km</item>
-        <item>セッション走行 : %.1f km</item>
-    </string-array>
-    <string-array name="Command_Distance_TypeSelector">
-        <item>今日の走行距離</item>
-        <item>セッションの走行距離</item>
-    </string-array>
 
-    <string-array name="Command_Timer_TypeInfo">
-        <item>時計 : %s</item>
-        <item>セッション時間 : %s</item>
-    </string-array>
-    <string-array name="Command_Timer_TypeSelector">
-        <item>時計が基準</item>
-        <item>セッション時間が基準</item>
-    </string-array>
+    <!-- 走行ログ -->
+    <string name="Title.Log">走行ログ</string>
+    <string name="Word.Log.ImportGPX">GPX形式で読込</string>
 
-    <string-array name="Command_Speed_TypeInfo">
-        <item>%dkm/hより高速</item>
-        <item>%dkm/hより低速</item>
-        <item>最高速の更新開始</item>
-        <item>最高速の記録更新</item>
-        <item>最高速の更新終了</item>
-        <item>今日最高速の更新開始</item>
-        <item>今日最高速の記録更新</item>
-        <item>今日最高速の更新終了</item>
-    </string-array>
-    <string-array name="Command_Speed_TypeSelector">
-        <item>加速したら</item>
-        <item>減速したら</item>
-        <item>最高速の更新開始</item>
-        <item>最高速の記録更新</item>
-        <item>最高速の更新終了</item>
-        <item>今日最高速の更新開始</item>
-        <item>今日最高速の記録更新</item>
-        <item>今日最高速の更新終了</item>
-    </string-array>
-    <string-array name="Command_Speed_TypeFooter">
-        <item>km/hより高速</item>
-        <item>km/hより低速</item>
-        <item></item>
-        <item></item>
-        <item></item>
-        <item></item>
-        <item></item>
-        <item></item>
-    </string-array>
+    <!-- 内蔵プラグイン -->
+    <string name="Title.Plugin">プラグイン設定</string>
+    <string name="Title.Plugin.Location">GPSから取得</string>
+    <string name="Message.Plugin.Location.PermissionError">GPS利用が許可されていません</string>
+    <string name="Title.Plugin.BleSpeedAndCadence">BLEセンサーから取得</string>
+    <string name="Title.Plugin.Basic">ACE標準機能</string>
+    <string name="Title.Plugin.BleHeartrate">BLEセンサーから取得</string>
+    <string name="Message.Plugin.BleHeartrate.Search">ハートレートモニター検索中...</string>
+    <string name="Message.Plugin.BleHeartrate.Connected">ハートレートモニター接続</string>
+    <string name="Message.Plugin.BleHeartrate.Disconnected">ハートレートモニター切断</string>
+    <string name="Message.Plugin.BleHeartrate.Battery">"ハートレートモニター\nバッテリー残量 %1$d%%"</string>
 
+    <!-- センサーー画面 -->
+    <string name="Title.Gadget">センサー・周辺機器</string>
+    <string name="Word.Gadget.NoDevice">非接続</string>
+    <string name="Word.Gadget.BleHeartrateMonitor">BLE ハートレートモニター</string>
+    <string name="Word.Gadget.BleSpeedAndCadenceSensor">BLE スピード＆ケイデンスセンサー</string>
+    <string name="Message.Gadget.Found">センサーを検出 [%1$s]</string>
+
+    <!-- アプリ情報 -->
+    <string name="Title.About">アプリについて</string>
+    <string name="Title.About.BuildInfo">ビルド情報</string>
+    <string name="Word.About.AppVersion">アプリバージョン</string>
+    <string name="Word.About.BuildDate">ビルド日時</string>
+    <string name="Word.About.SDKVersion">ACE-SDKバージョン</string>
+    <string name="Word.About.Licenses">オープンソースライセンス</string>
+    <string name="Title.Debug">開発者用機能</string>
+    <string name="Message.Debug.Enable">
+        開発用デバッグ機能を有効化します。\n開発者向けの機能であるため、バッテリーの消費量増大等の副作用があります。\nアプリ再起動後に有効化されます。
+    </string>
+
+    <!-- セントラル -->
+    <string name="Word.Central.SessionStart">セッション開始</string>
+    <string name="Word.Central.SessionRunning">セッション記録中</string>
 </resources>

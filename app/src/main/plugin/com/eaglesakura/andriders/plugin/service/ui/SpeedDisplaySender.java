@@ -29,7 +29,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
     @NonNull
     private final ZoneColor mZoneColor;
 
-    @BindStringArray(R.array.Word_Display_Speed_ZoneName)
+    @BindStringArray(R.array.Ace_Word_SpeedZone)
     @NonNull
     String[] mZoneTitles;
 

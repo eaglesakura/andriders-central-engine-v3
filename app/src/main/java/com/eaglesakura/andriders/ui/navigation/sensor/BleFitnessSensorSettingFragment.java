@@ -101,7 +101,7 @@ public class BleFitnessSensorSettingFragment extends AppFragment {
                 .items(devices)
                 .title((index, it) -> {
                     if (it == null) {
-                        return getString(R.string.Word_Common_NoDevice);
+                        return getString(R.string.Word_Gadget_NoDevice);
                     } else {
                         return it.getDisplayName(getContext());
                     }
@@ -174,7 +174,7 @@ public class BleFitnessSensorSettingFragment extends AppFragment {
 
         // 検出通知は行う
         SnackbarBuilder.from(this)
-                .message(R.string.Message_Sensor_Found, device.getName())
+                .message(R.string.Message_Gadget_Found, device.getName())
                 .show();
 
         for (int i = 0; i < mSpinnerAdapter.getCount(); ++i) {

@@ -34,7 +34,7 @@ import android.view.ViewGroup;
 public class TimerCommandFragment extends CommandBaseFragment implements FragmentPagerTitle {
     final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_TIMER;
 
-    @BindStringArray(R.array.Command_Timer_TypeInfo)
+    @BindStringArray(R.array.Message_Command_Timer)
     protected String[] mInfoFormats;
 
     public TimerCommandFragment() {
@@ -71,7 +71,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements Fragmen
                                 AppUtil.formatTimeMilliSecToString(item.getInternalExtra().timerIntervalSec * 1000)
                         );
                         if ((item.getInternalExtra().flags & CommandData.TIMER_FLAG_REPEAT) != 0) {
-                            text += (" / " + getString(R.string.Command_Flag_Repeat));
+                            text += (" / " + getString(R.string.Word_Common_Repeat));
                         }
                         return text;
                     }

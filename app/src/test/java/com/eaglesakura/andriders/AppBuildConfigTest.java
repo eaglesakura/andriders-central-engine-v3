@@ -9,7 +9,7 @@ public class AppBuildConfigTest extends AppUnitTestCase {
     public void 正しいClassがロードできている() throws Exception {
         assertNotNull(getContext());
         assertNotNull(getContext() instanceof AceApplication);
-        assertNotNull(getContext().getString(R.string.Common_File_Load));
+        assertNotNull(getContext().getString(R.string.EsMaterial_Word_Common_DataLoad));
         assertTrue(BuildConfig.DEBUG == BuildConfig.VERSION_NAME.endsWith(".debug"));
     }
 

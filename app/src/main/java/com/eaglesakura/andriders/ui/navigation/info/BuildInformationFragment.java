@@ -10,7 +10,7 @@ import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.ui.widget.AppKeyValueView;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.device.external.StorageInfo;
+import com.eaglesakura.android.device.external.Storage;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.license.LicenseViewActivity;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
@@ -85,8 +85,8 @@ public class BuildInformationFragment extends AppFragment {
         mAppSettings.commit();
 
         if (enabled) {
-            AppDialogBuilder.newAlert(getContext(), R.string.Information_Debug_Enabled)
-                    .positiveButton(R.string.Common_OK, null)
+            AppDialogBuilder.newAlert(getContext(), R.string.Message_Debug_Enable)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }
     }
@@ -97,8 +97,8 @@ public class BuildInformationFragment extends AppFragment {
     @OnClick(R.id.Debug_Data_Dump)
     void debugClickDataDump() {
         asyncUI(it -> {
-            try (ProgressToken token = pushProgress("pull")) {
-                File dst = new File(StorageInfo.getExternalStorageRoot(getActivity()), "/debug/" + StringUtil.toString(new Date()));
+            try (ProgressToken token = pushProgress(R.string.Word_Common_DataWrite)) {
+                File dst = new File(Storage.getExternalDataStorage(getActivity()).getPath(), "/debug/" + StringUtil.toString(new Date()));
                 PackageUtil.dumpPackageDataDirectory(getActivity(), dst);
             }
             return this;

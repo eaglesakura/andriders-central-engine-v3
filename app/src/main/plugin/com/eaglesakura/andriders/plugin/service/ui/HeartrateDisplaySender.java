@@ -23,7 +23,7 @@ public class HeartrateDisplaySender extends DisplayDataSender {
     @NonNull
     private final ZoneColor mZoneColor;
 
-    @BindStringArray(R.array.Word_Display_Heartrate_ZoneName)
+    @BindStringArray(R.array.Ace_Word_HeartrateZone)
     @NonNull
     String[] mZoneTitles;
 

@@ -29,7 +29,7 @@ public class UserSessionActivityTest extends AppScenarioTest<UserSessionActivity
 
         // UI経由でセッションを介し
         UiScenario.clickFromId(R.id.Button_SessionChange).step();
-        UiScenario.clickFromText(R.string.Word_Session_SessionStart).step();
+        UiScenario.clickFromText(R.string.Word_Central_SessionStart).step();
 
         // しばらくしたらセッションが開始されている
         Util.sleep(1000);

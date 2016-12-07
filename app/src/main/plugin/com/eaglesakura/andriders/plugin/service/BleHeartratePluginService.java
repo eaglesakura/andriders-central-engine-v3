@@ -115,7 +115,7 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
             @Override
             public void onSessionStart(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
                 NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
-                        .message(R.string.Message_Sensor_HeartrateFinding)
+                        .message(R.string.Message_Plugin_BleHeartrate_Search)
                         .icon(R.mipmap.ic_launcher)
                         .getNotification();
                 display.queueNotification(notification);
@@ -124,7 +124,7 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
             @Override
             public void onSessionFinished(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
                 NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
-                        .message(R.string.Message_Sensor_HeartrateDisconnected)
+                        .message(R.string.Message_Plugin_BleHeartrate_Disconnected)
                         .icon(R.mipmap.ic_launcher)
                         .getNotification();
                 display.queueNotification(notification);
@@ -138,7 +138,7 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
             public void onGattConnected(BleDeviceConnection self, BleGattController gatt) throws BluetoothException {
                 super.onGattConnected(self, gatt);
                 NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
-                        .message(R.string.Message_Sensor_HeartrateConnected)
+                        .message(R.string.Message_Plugin_BleHeartrate_Connected)
                         .icon(R.mipmap.ic_launcher)
                         .getNotification();
                 display.queueNotification(notification);
@@ -162,7 +162,7 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
                 // バッテリー残量通知を行う
                 if (mBatteryUpdated) {
                     NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
-                            .message(getString(R.string.Message_Sensor_HeartrateBatteryInfo, newLevel))
+                            .message(getString(R.string.Message_Plugin_BleHeartrate_Battery, newLevel))
                             .icon(R.mipmap.ic_launcher)
                             .getNotification();
                     display.queueNotification(notification);

@@ -36,7 +36,7 @@ public class LayoutAppSelectFragment extends AppFragment {
     @OnClick(R.id.Button_AppSelect)
     void clickAppSelect() {
         asyncUI(task -> {
-            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
                 mDisplayLayoutController.loadTargetApplications(AppSupportUtil.asCancelCallback(task));
                 return this;
             }
@@ -45,7 +45,7 @@ public class LayoutAppSelectFragment extends AppFragment {
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
-                    .positiveButton(R.string.Common_OK, null)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }).start();
 
@@ -57,7 +57,7 @@ public class LayoutAppSelectFragment extends AppFragment {
     @UiThread
     void onLoadApplicationList() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_appselect_dialog, null, false);
-        Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Launcher_ChooseApp), view)
+        Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Command_ChooseApp), view)
                 .fullScreen(true)
                 .show(mLifecycleDelegate);
 
