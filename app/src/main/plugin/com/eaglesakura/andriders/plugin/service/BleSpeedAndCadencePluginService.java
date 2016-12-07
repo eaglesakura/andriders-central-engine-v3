@@ -14,14 +14,16 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.bluetooth.error.BluetoothException;
 import com.eaglesakura.android.bluetooth.gatt.BleDeviceConnection;
 import com.eaglesakura.android.bluetooth.gatt.BleGattController;
-import com.eaglesakura.android.bluetooth.gatt.BleHeartrateMonitorCallback;
 import com.eaglesakura.android.bluetooth.gatt.BlePeripheralDeviceConnection;
+import com.eaglesakura.android.bluetooth.gatt.BleSpeedCadenceSensorCallback;
+import com.eaglesakura.android.bluetooth.gatt.scs.RawSensorValue;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.StringUtil;
+import com.eaglesakura.util.Timer;
 
 import android.app.Service;
 import android.content.Intent;
@@ -30,7 +32,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-public class BleHeartratePluginService extends Service implements AcePluginService {
+public class BleSpeedAndCadencePluginService extends Service implements AcePluginService {
     ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
 
     @Nullable
@@ -54,9 +56,9 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
 
     @Override
     public PluginInformation getExtensionInformation(PluginConnection connection) {
-        PluginInformation info = new PluginInformation(this, "ble_hr");
-        info.setSummary("Bluetooth LE対応センサーから心拍を取得します");
-        info.setCategory(Category.CATEGORY_HEARTRATEMONITOR);
+        PluginInformation info = new PluginInformation(this, "ble_sc");
+        info.setSummary("Bluetooth LE対応センサーから速度・ケイデンスを取得します");
+        info.setCategory(Category.CATEGORY_SPEED_AND_CADENCE);
         return info;
     }
 
@@ -68,8 +70,8 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
     @Override
     public void onAceServiceConnected(PluginConnection connection) {
         final CentralEngineSessionData centralData = connection.getCentralData();
-        String address = centralData.getGadgetAddress(SensorType.HeartrateMonitor);
-        AppLog.ble("BLE HeartrateSensor[%s]", address);
+        String address = centralData.getGadgetAddress(SensorType.CadenceSensor);
+        AppLog.ble("BLE SpeedAndCadenceSensor[%s]", address);
         if (StringUtil.isEmpty(address)) {
             return;
         }
@@ -114,8 +116,8 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
         BlePeripheralDeviceConnection.SessionCallback sessionCallback = new BlePeripheralDeviceConnection.SessionCallback() {
             @Override
             public void onSessionStart(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
-                NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_SEARCH)
-                        .message(R.string.Message_Plugin_BleHeartrate_Search)
+                NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_SPEED_CADENCE_SEARCH)
+                        .message(R.string.Message_Plugin_BleSpeedAndCadence_Search)
                         .icon(R.mipmap.ic_launcher)
                         .getNotification();
                 display.queueNotification(notification);
@@ -124,23 +126,25 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
             @Override
             public void onSessionFinished(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
                 if (session.isGattConnected()) {
-                    NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_DISCONNECT)
-                            .message(R.string.Message_Plugin_BleHeartrate_Disconnected)
+                    NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_SPEED_CADENCE_DISCONNECT)
+                            .message(R.string.Message_Plugin_BleSpeedAndCadence_Disconnected)
                             .icon(R.mipmap.ic_launcher)
                             .getNotification();
                     display.queueNotification(notification);
                 }
             }
         };
-        BleDeviceConnection.Callback dataCallback = new BleHeartrateMonitorCallback() {
+        BleDeviceConnection.Callback dataCallback = new BleSpeedCadenceSensorCallback() {
 
             boolean mBatteryUpdated = false;
+
+            Timer mValueCommitTimer = new Timer();
 
             @Override
             public void onGattConnected(BleDeviceConnection self, BleGattController gatt) throws BluetoothException {
                 super.onGattConnected(self, gatt);
-                NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
-                        .message(R.string.Message_Plugin_BleHeartrate_Connected)
+                NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_SPEED_CADENCE_CONNECT)
+                        .message(R.string.Message_Plugin_BleSpeedAndCadence_Connected)
                         .icon(R.mipmap.ic_launcher)
                         .getNotification();
                 display.queueNotification(notification);
@@ -151,20 +155,26 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
              */
             @Override
             public boolean onLoop(BleDeviceConnection self, BleGattController gatt) throws BluetoothException {
-                return false;
-            }
 
-            @Override
-            protected void onUpdateHeartrateBpm(int newBpm) {
-                centralData.setHeartrate(newBpm);
+                // 1秒おきにコミットする
+                if (mValueCommitTimer.end() > 1000) {
+                    RawSensorValue crankValue = getCrankValue();
+                    RawSensorValue wheelValue = getWheelValue();
+                    if (crankValue != null && wheelValue != null) {
+                        centralData.setSpeedAndCadence((float) getCrankRpm(), crankValue.getValueSum(), (float) getWheelRpm(), wheelValue.getValueSum());
+                    }
+                    mValueCommitTimer.start();
+                }
+
+                return false;
             }
 
             @Override
             protected void onUpdateBatteryLevel(int newLevel) {
                 // バッテリー残量通知を行う
                 if (!mBatteryUpdated) {
-                    NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_BATTERY)
-                            .message(getString(R.string.Message_Plugin_BleHeartrate_Battery, newLevel))
+                    NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_SPEED_CADENCE_BATTERY)
+                            .message(getString(R.string.Message_Plugin_BleSpeedAndCadence_Battery, newLevel))
                             .icon(R.mipmap.ic_launcher)
                             .getNotification();
                     display.queueNotification(notification);

@@ -108,6 +108,15 @@
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>
         </service>
+        <service
+                android:name="com.eaglesakura.andriders.plugin.service.BleSpeedAndCadencePluginService"
+                android:icon="@mipmap/ic_launcher"
+                android:label="@string/Title.Plugin.BleSpeedAndCadence"
+                android:process=":ace">
+            <intent-filter>
+                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+            </intent-filter>
+        </service>
         <!--&lt;!&ndash; 組み込み拡張機能 "BLE S&C" &ndash;&gt;-->
         <!--<service-->
         <!--android:name="com.eaglesakura.andriders.ble.service.BleSpeedCadenceExtensionService"-->
