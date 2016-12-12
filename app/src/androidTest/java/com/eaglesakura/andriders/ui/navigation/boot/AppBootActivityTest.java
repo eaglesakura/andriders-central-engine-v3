@@ -30,6 +30,6 @@ public class AppBootActivityTest extends AppScenarioTest<AppBootActivity> {
         Util.sleep(500);
 
         // エラーダイアログが表示されていない
-        assertNull(fromText(R.string.Common_OK).get());
+        assertNull(fromText(R.string.Word_Common_OK).get());
     }
 }

@@ -8,12 +8,15 @@ import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.squareup.otto.Subscribe;
+
+import android.support.annotation.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,9 +34,13 @@ public class SessionLogController {
     @Inject(AppDatabaseProvider.class)
     SessionLogDatabase mDatabase;
 
+    @NonNull
+    final ClockTimer mCommitTimer;
+
     private SessionLogController(CentralSession centralSession) {
         mLifecycleDelegate.onCreate();
         mLogger = new SessionLogger(centralSession.getSessionInfo());
+        mCommitTimer = new ClockTimer(centralSession.getSessionClock());
     }
 
     public void addListener(OnCommitListener listener) {
@@ -70,13 +77,19 @@ public class SessionLogController {
     }
 
     /**
+     * データコミットをかける時間インターバル
+     */
+    private static final long COMMIT_INTERVAL_TIME_SEC = 1000 * 5;
+
+    /**
      * データが更新された
      */
     @Subscribe
     private void onSessionDataChanged(SessionData.Bus data) {
         mLogger.onUpdate(data.getLatestData());
-        if (mLogger.hasPointCaches()) {
+        if (mCommitTimer.overTimeMs(COMMIT_INTERVAL_TIME_SEC) && mLogger.hasPointCaches()) {
             commitAsync();
+            mCommitTimer.start();
         }
     }
 
@@ -100,6 +113,10 @@ public class SessionLogController {
                     return 0;
                 });
             }
+
+            // 同タイミングでキャッシュ削除のGCをかける
+            System.gc();
+
             return this;
         }).completed((result, task) -> {
             for (OnCommitListener listener : mCommitListeners) {

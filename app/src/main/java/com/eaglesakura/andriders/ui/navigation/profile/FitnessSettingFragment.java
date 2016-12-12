@@ -114,7 +114,7 @@ public class FitnessSettingFragment extends AppFragment {
                     Intent installIntent = PlayServiceUtil.newGooglePlayInstallIntent(getContext(), componentName.getPackageName());
                     startActivity(installIntent);
                 })
-                .neutralButton(R.string.Common_OK, null)
+                .neutralButton(R.string.Word_Common_OK, null)
                 .show(mLifecycleDelegate);
     }
 

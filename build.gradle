@@ -2,13 +2,13 @@ buildscript {
     repositories {
         maven { url "http://eaglesakura.github.io/maven/" }
         maven { url "https://jitpack.io" }
-        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
+//        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
         jcenter()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'  // for AS 2.2.x
+        classpath 'com.android.tools.build:gradle:2.2.3'  // for AS 2.2.x
         classpath "com.eaglesakura:plugin-ci-support:1.0.47"
         classpath "com.eaglesakura:plugin-android-mipmap:1.0.114"
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
@@ -39,8 +39,8 @@ task clean(type: Delete) {
 
 // 各グローバル設定
 ext {
-    ANDROID_SUPPORT_LIB_VERSION = "25.0.+"
-    ANDROID_PLAYSERVICE_LIB_VERSION = "10.0.0"
+    ANDROID_SUPPORT_LIB_VERSION = "25.0.1"
+    ANDROID_PLAYSERVICE_LIB_VERSION = "10.0.1"
 }
 
 // APIキー等の隠蔽したいデータを配置

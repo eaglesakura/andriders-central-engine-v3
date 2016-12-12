@@ -98,6 +98,9 @@ public class CentralSessionService extends Service {
         if (mSession != null) {
             mSession.dispose();
             mSession = null;
+
+            // GCをかける
+            System.gc();
         }
     }
 

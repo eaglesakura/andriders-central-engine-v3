@@ -77,8 +77,8 @@ public class CentralStatusBar {
     @UiThread
     private void onStartSessionInitialize(Service service, CentralSession session) {
         mNotification = NotificationBuilder.from(service)
-                .ticker(R.string.Word_App_AndridersCentralEngine)
-                .title(R.string.Word_App_AndridersCentralEngine)
+                .ticker(R.string.Word_Common_AndridersCentralEngine)
+                .title(R.string.Word_Common_AndridersCentralEngine)
                 .icon(R.mipmap.ic_launcher)
                 .showForeground(NOTIFICATION_ID);
 

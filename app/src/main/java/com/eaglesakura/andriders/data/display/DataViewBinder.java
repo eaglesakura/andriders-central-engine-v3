@@ -1,6 +1,7 @@
-package com.eaglesakura.andriders.display.data;
+package com.eaglesakura.andriders.data.display;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.plugin.display.BasicValue;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.display.LineValue;
@@ -26,9 +27,16 @@ public class DataViewBinder {
     @NonNull
     final Context mContext;
 
-    public DataViewBinder(@NonNull Context context, @NonNull Clock clock) {
+    final ViewGroup mSlotRoot;
+
+    public DataViewBinder(@NonNull Context context, @NonNull ViewGroup slotRoot, @NonNull Clock clock) {
         mClock = clock;
         mContext = context.getApplicationContext();
+        mSlotRoot = slotRoot;
+    }
+
+    public ViewGroup getSlotRoot() {
+        return mSlotRoot;
     }
 
     public static final int BIND_RESULT_INFLATE = 0x1 << 0;
@@ -36,17 +44,17 @@ public class DataViewBinder {
     public static final int BIND_RESULT_LINEVALUE = 0x1 << 2;
     public static final int BIND_RESULT_NAVLUE = 0x1 << 3;
 
-    public int bind(@NonNull ViewGroup slotRoot, @Nullable DisplayData data, long dataTime) {
+    public int bind(@Nullable DisplayData data, long dataTime) {
         AndroidThreadUtil.assertUIThread();
 
         int result = 0;
-        if (slotRoot.getChildCount() == 0) {
+        if (mSlotRoot.getChildCount() == 0) {
             // 子を生成する
-            inflate(slotRoot);
+            inflate(mSlotRoot);
             result |= BIND_RESULT_INFLATE;
         }
 
-        AQuery q = new AQuery(slotRoot);
+        AQuery q = new AQuery(mSlotRoot);
         if (data == null || (data.hasTimeout() && mClock.absDiff(dataTime) > data.getTimeoutMs())) {
             // タイムアウトしている
             resetView(q, VISIBLE_NA_VALUE);
@@ -54,7 +62,7 @@ public class DataViewBinder {
         }
 
         if (data.getBasicValue() != null) {
-            bind(slotRoot.getId(), q, data.getBasicValue());
+            bind(mSlotRoot.getId(), q, data.getBasicValue());
             result |= BIND_RESULT_BASICVALUE;
         } else if (data.getLineValue() != null) {
             bind(q, data.getLineValue());
@@ -73,7 +81,7 @@ public class DataViewBinder {
     private void bind(AQuery q, LineValue value) {
         resetView(q, VISIBLE_LINE_VALUE);
 
-        LinearLayout root = q.id(R.id.Service_Central_Display_Lines_Root).getView(LinearLayout.class);
+        LinearLayout root = q.id(R.id.Container_KeyValue).getView(LinearLayout.class);
         for (int i = 0; i < root.getChildCount(); ++i) {
             View row = root.getChildAt(i);
             if (i < value.getLineNum()) {
@@ -94,31 +102,31 @@ public class DataViewBinder {
     private void bind(int slotId, AQuery q, BasicValue value) {
         resetView(q, VISIBLE_BASIC_VALUE);
 
-        updateOrGone(q.id(R.id.Service_Central_Display_Basic_Value).getTextView(), value.getValue());
-        updateOrGone(q.id(R.id.Service_Central_Display_Basic_Title).getTextView(), value.getTitle());
-        if (LayoutSlot.isLeft(slotId)) {
-            updateOrGone(q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Left).visible().getTextView(), value.getZoneText());
-            q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Right).gone();
+        updateOrGone(q.id(R.id.Item_Value).getTextView(), value.getValue());
+        updateOrGone(q.id(R.id.Item_Title).getTextView(), value.getTitle());
+        if (DisplayLayout.isLeft(slotId)) {
+            updateOrGone(q.id(R.id.Item_ZoneTitle_Left).visible().getTextView(), value.getZoneText());
+            q.id(R.id.Item_ZoneTitle_Right).gone();
 
             // ゾーンカラーを設定する
             if (value.hasZoneBar()) {
-                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).visible().backgroundColor(value.getBarColorARGB());
-                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+                q.id(R.id.Item_ZoneColorBar_Left).visible().backgroundColor(value.getBarColorARGB());
+                q.id(R.id.Item_ZoneColorBar_Right).gone();
             } else {
-                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
-                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+                q.id(R.id.Item_ZoneColorBar_Left).gone();
+                q.id(R.id.Item_ZoneColorBar_Right).gone();
             }
         } else {
-            q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Left).gone();
-            updateOrGone(q.id(R.id.Service_Central_Display_Basic_ZoneTitle_Right).visible().getTextView(), value.getZoneText());
+            q.id(R.id.Item_ZoneTitle_Left).gone();
+            updateOrGone(q.id(R.id.Item_ZoneTitle_Right).visible().getTextView(), value.getZoneText());
 
             // ゾーンカラーを設定する
             if (value.hasZoneBar()) {
-                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
-                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).visible().backgroundColor(value.getBarColorARGB());
+                q.id(R.id.Item_ZoneColorBar_Left).gone();
+                q.id(R.id.Item_ZoneColorBar_Right).visible().backgroundColor(value.getBarColorARGB());
             } else {
-                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Left).gone();
-                q.id(R.id.Service_Central_Display_Basic_ZoneColor_Right).gone();
+                q.id(R.id.Item_ZoneColorBar_Left).gone();
+                q.id(R.id.Item_ZoneColorBar_Right).gone();
             }
         }
     }
@@ -140,14 +148,14 @@ public class DataViewBinder {
         // 表示用のViewをInflate
         View root = View.inflate(mContext, R.layout.central_display_slot, null);
 
-        ViewGroup lineViewRoot = (ViewGroup) root.findViewById(R.id.Service_Central_Display_Lines_Root);
+        ViewGroup lineViewRoot = (ViewGroup) root.findViewById(R.id.Container_KeyValue);
 
         // 子を必要に応じて登録する
         while (lineViewRoot.getChildCount() < LineValue.MAX_LINES) {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             params.weight = 1.0f;
 
-            View view = View.inflate(mContext, R.layout.central_display_keyvalue_row, null);
+            View view = View.inflate(mContext, R.layout.central_display_slot_keyvalue_row, null);
             view.setVisibility(View.GONE);
             lineViewRoot.addView(view, params);
         }
@@ -173,20 +181,20 @@ public class DataViewBinder {
         }
 
         if ((visibleFlags & VISIBLE_BASIC_VALUE) != 0) {
-            q.id(R.id.Service_Central_Display_Basic_Root).visible();
+            q.id(R.id.Container_DisplayBasic).visible();
         } else {
-            q.id(R.id.Service_Central_Display_Basic_Root).gone();
+            q.id(R.id.Container_DisplayBasic).gone();
         }
         if ((visibleFlags & VISIBLE_LINE_VALUE) != 0) {
-            q.id(R.id.Service_Central_Display_Lines_Root).visible();
+            q.id(R.id.Container_KeyValue).visible();
         } else {
-            q.id(R.id.Service_Central_Display_Lines_Root).gone();
+            q.id(R.id.Container_KeyValue).gone();
         }
 
         if ((visibleFlags & VISIBLE_NA_VALUE) != 0) {
-            q.id(R.id.Service_Central_Display_NotConnected).visible();
+            q.id(R.id.Item_NotConnected).visible();
         } else {
-            q.id(R.id.Service_Central_Display_NotConnected).gone();
+            q.id(R.id.Item_NotConnected).gone();
         }
     }
 }

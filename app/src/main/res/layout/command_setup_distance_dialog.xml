@@ -9,7 +9,7 @@
             android:id="@+id/Selector.Type"
             android:layout_marginBottom="@dimen/EsMaterial.Button.Margin"
             android:minHeight="@dimen/EsMaterial.Button.MinHeight"
-            android:entries="@array/Command_Distance_TypeSelector"
+            android:entries="@array/Selector_Command_Distance"
             android:layout_gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

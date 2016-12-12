@@ -49,14 +49,14 @@ public class AppUtil {
         if (sessionTimeHour == 0) {
             if (sessionTimeMinute == 0) {
                 // 秒だけ
-                return FrameworkCentral.getApplication().getString(R.string.Common_Formatter_Time_S, sessionTimeSec);
+                return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeS, sessionTimeSec);
             } else {
                 // 分秒
-                return FrameworkCentral.getApplication().getString(R.string.Common_Formatter_Time_MS, sessionTimeMinute, sessionTimeSec);
+                return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeMS, sessionTimeMinute, sessionTimeSec);
             }
         } else {
             // 時分
-            return FrameworkCentral.getApplication().getString(R.string.Common_Formatter_Time_HM, sessionTimeHour, sessionTimeMinute);
+            return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeHM, sessionTimeHour, sessionTimeMinute);
         }
     }
 

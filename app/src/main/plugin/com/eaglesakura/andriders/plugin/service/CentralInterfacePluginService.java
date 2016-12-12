@@ -10,7 +10,9 @@ import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.service.ui.CadenceDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.DisplayDataSender;
+import com.eaglesakura.andriders.plugin.service.ui.FitnessDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.HeartrateDisplaySender;
+import com.eaglesakura.andriders.plugin.service.ui.MaxSpeedDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.SpeedDisplaySender;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.thread.loop.HandlerLoopController;
@@ -66,6 +68,8 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         result.add(HeartrateDisplaySender.newInformation(this));
         result.add(CadenceDisplaySender.newInformation(this));
         result.add(SpeedDisplaySender.newInformation(this));
+        result.add(MaxSpeedDisplaySender.newInformation(this));
+        result.add(FitnessDisplaySender.newInformation(this));
 
         if (connection.isDebuggable()) {
             {
@@ -92,6 +96,8 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         senders.add(new HeartrateDisplaySender(connection, zoneColor).bind());
         senders.add(new CadenceDisplaySender(connection, zoneColor).bind());
         senders.add(new SpeedDisplaySender(connection, zoneColor).bind());
+        senders.add(new MaxSpeedDisplaySender(connection).bind());
+        senders.add(new FitnessDisplaySender(connection).bind());
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override

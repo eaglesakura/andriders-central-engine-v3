@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:padding="2dp"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <View android:layout_width="match_parent"
+          android:background="@drawable/cyclecomputer_slot_background"
+          android:layout_height="match_parent"/>
+
+    <!-- Not Connected -->
+    <include layout="@layout/central_display_slot_not_connected"/>
+
+    <!-- 標準UI -->
+    <include layout="@layout/central_display_slot_basic"/>
+
+    <!-- Key-Value UI -->
+    <LinearLayout
+            android:id="@+id/Container.KeyValue"
+            android:layout_margin="@dimen/CycleComputer.Margin.Normal"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+    </LinearLayout>
+</FrameLayout>

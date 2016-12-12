@@ -51,13 +51,13 @@
                   android:label="@string/Title.Plugin"/>
         <activity android:name="com.eaglesakura.andriders.ui.navigation.InformationActivity"
                   android:screenOrientation="portrait"
-                  android:label="@string/Title.Info"/>
+                  android:label="@string/Title.About"/>
         <activity android:name="com.eaglesakura.andriders.ui.navigation.CommandSettingActivity"
                   android:screenOrientation="portrait"
                   android:label="@string/Title.Command"/>
         <activity android:name="com.eaglesakura.andriders.ui.navigation.SensorDeviceSettingActivity"
                   android:screenOrientation="portrait"
-                  android:label="@string/Title.Sensor"/>
+                  android:label="@string/Title.Gadget"/>
         <activity android:name="com.eaglesakura.andriders.ui.navigation.ProfileSettingActivity"
                   android:screenOrientation="portrait"
                   android:label="@string/Title.Profile"/>
@@ -72,7 +72,7 @@
         <!-- 指定のLauncherを起動する -->
         <activity android:name="com.eaglesakura.andriders.trigger.LauncherSelectActivity"
                   android:screenOrientation="portrait"
-                  android:label="@string/Word.SelectLauncher">
+                  android:label="@string/Title.ChooseApp">
             <intent-filter>
                 <!-- acetrigger://で起動する -->
                 <data android:scheme="acecommand"/>
@@ -81,26 +81,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <!--<activity-->
-        <!--android:name=".ui.navigation.NavigationActivity"-->
-        <!--android:screenOrientation="portrait">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.MAIN"/>-->
-        <!--&lt;!&ndash;<category android:name="android.intent.category.LAUNCHER"/>&ndash;&gt;-->
-        <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <!--&lt;!&ndash; ACE Service &ndash;&gt;-->
-        <!--<service-->
-        <!--android:name="com.eaglesakura.andriders.service.central.CentralService"-->
-        <!--android:process=":ace">-->
-        <!--</service>-->
-
         <!-- 組み込み拡張機能 "デフォルト表示" -->
         <service
                 android:name="com.eaglesakura.andriders.plugin.service.CentralInterfacePluginService"
                 android:icon="@mipmap/ic_launcher"
-                android:label="@string/Extension.Inner.Default.Name"
+                android:label="@string/Title.Plugin.Basic"
                 android:process=":ace">
             <intent-filter>
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
@@ -109,32 +94,29 @@
         <service
                 android:name="com.eaglesakura.andriders.plugin.service.GpsLocationPluginService"
                 android:icon="@mipmap/ic_launcher"
-                android:label="@string/Extension.Inner.Location.Name"
+                android:label="@string/Title.Plugin.Location"
                 android:process=":ace">
             <intent-filter>
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>
         </service>
-        <!--&lt;!&ndash; 組み込み拡張機能 "GPS連携" &ndash;&gt;-->
-        <!--<service-->
-        <!--android:name="com.eaglesakura.andriders.location.LocationExtensionService"-->
-        <!--android:icon="@drawable/ic_save"-->
-        <!--android:label="@string/Extension.Inner.Location.Name"-->
-        <!--android:process=":ace">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>-->
-        <!--</intent-filter>-->
-        <!--</service>-->
-        <!--&lt;!&ndash; 組み込み拡張機能 "BLE心拍" &ndash;&gt;-->
-        <!--<service-->
-        <!--android:name="com.eaglesakura.andriders.ble.service.BleHeartrateExtensionService"-->
-        <!--android:icon="@drawable/ic_heart_beats"-->
-        <!--android:label="@string/Extension.Inner.BleSensor.Name"-->
-        <!--android:process=":ace">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>-->
-        <!--</intent-filter>-->
-        <!--</service>-->
+        <service android:name="com.eaglesakura.andriders.plugin.service.BleHeartratePluginService"
+                 android:icon="@mipmap/ic_launcher"
+                 android:label="@string/Title.Plugin.BleHeartrate"
+                 android:process=":ace">
+            <intent-filter>
+                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+            </intent-filter>
+        </service>
+        <service
+                android:name="com.eaglesakura.andriders.plugin.service.BleSpeedAndCadencePluginService"
+                android:icon="@mipmap/ic_launcher"
+                android:label="@string/Title.Plugin.BleSpeedAndCadence"
+                android:process=":ace">
+            <intent-filter>
+                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+            </intent-filter>
+        </service>
         <!--&lt;!&ndash; 組み込み拡張機能 "BLE S&C" &ndash;&gt;-->
         <!--<service-->
         <!--android:name="com.eaglesakura.andriders.ble.service.BleSpeedCadenceExtensionService"-->

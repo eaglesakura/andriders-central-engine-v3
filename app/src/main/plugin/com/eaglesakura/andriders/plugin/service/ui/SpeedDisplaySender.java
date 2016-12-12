@@ -29,7 +29,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
     @NonNull
     private final ZoneColor mZoneColor;
 
-    @BindStringArray(R.array.Display_Speed_ZoneName)
+    @BindStringArray(R.array.Ace_Word_SpeedZone)
     @NonNull
     String[] mZoneTitles;
 
@@ -72,7 +72,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
 
         double speed = mSpeed.speedKmh;
         if ((mSpeed.flags & RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS) != 0) {
-            value.setTitle(context.getString(R.string.Display_Common_Speed_GPS));
+            value.setTitle(context.getString(R.string.Word_Display_Speed_byGPS));
 
             // GPSデータで、かつ最終取得からタイムアウトしていたら速度をリセットする
             if (mReceiveTimer.end() > BaseCalculator.DATA_TIMEOUT_MS) {
@@ -87,7 +87,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
                 }
             }
         } else {
-            value.setTitle(context.getString(R.string.Display_Common_Speed_Sensor));
+            value.setTitle(context.getString(R.string.Word_Display_Speed_bySensor));
         }
         value.setValue(StringUtil.format("%.01f", speed));
         value.setBarColorARGB(mZoneColor.getColor(mSpeed.zone));
@@ -116,8 +116,8 @@ public class SpeedDisplaySender extends DisplayDataSender {
             data.setTimeoutMs(1000 * 60);
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Display_Common_Speed));
-            value.setValue(context.getString(R.string.Display_Common_Reconnect));
+            value.setTitle(context.getString(R.string.Word_Display_Speed_Title));
+            value.setValue(context.getString(R.string.Word_Display_Reconnect));
             value.setBarColorARGB(0x00);
 
             data.setValue(value);
@@ -127,7 +127,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Display_Common_Speed));
+        result.setTitle(context.getString(R.string.Word_Display_Speed_Title));
         result.setSummary(context.getString(R.string.Message_Display_SpeedSummary));
         return result;
     }

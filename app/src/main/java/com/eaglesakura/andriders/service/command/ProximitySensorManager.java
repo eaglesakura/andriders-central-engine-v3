@@ -52,7 +52,7 @@ public class ProximitySensorManager {
         }
     }
 
-    public void disconnct() {
+    public void disconnect() {
         mScreenEventReceiver.disconnect();
         try {
             mSensorManager.unregisterListener(mProximityListener);

@@ -34,7 +34,7 @@ import android.view.ViewGroup;
 public class DistanceCommandFragment extends CommandBaseFragment implements FragmentPagerTitle {
     final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_DISTANCE;
 
-    @BindStringArray(R.array.Command_Distance_TypeInfo)
+    @BindStringArray(R.array.Message_Command_Distance)
     private String[] mInfoFormats;
 
     public DistanceCommandFragment() {
@@ -72,10 +72,10 @@ public class DistanceCommandFragment extends CommandBaseFragment implements Frag
                                 extra.distanceKm
                         );
                         if ((extra.flags & CommandData.DISTANCE_FLAG_REPEAT) != 0) {
-                            text += (" / " + getString(R.string.Command_Flag_Repeat));
+                            text += (" / " + getString(R.string.Word_Common_Repeat));
                         }
                         if ((extra.flags & CommandData.DISTANCE_FLAG_ACTIVE_ONLY) != 0) {
-                            text += (" / " + getString(R.string.Command_Flag_Distance_ActiveOnly));
+                            text += (" / " + getString(R.string.Word_Command_ActiveOnly));
                         }
                         return text;
                     }

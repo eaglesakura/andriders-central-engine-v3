@@ -30,10 +30,23 @@ public class BleHeartrateMonitor extends BleDevice {
      */
     public static final UUID BLE_UUID_SERVICE_HEARTRATE = BluetoothLeUtil.createUUIDFromAssignedNumber("0x180d");
 
+
     /**
      * 心拍値を示すUUID
      */
     public static final UUID BLE_UUID_HEARTRATE_MEASUREMENT = BluetoothLeUtil.createUUIDFromAssignedNumber("0x2a37");
+
+    /**
+     * バッテリーサービスを示すUUID
+     *
+     * 参考: http://stackoverflow.com/questions/19539535/how-to-get-the-battery-level-after-connect-to-the-ble-device
+     */
+    public static final UUID BLE_UUID_SERVICE_BATTERY = BluetoothLeUtil.createUUIDFromAssignedNumber("0x180f");
+
+    /**
+     * バッテリー残量を示すUUID
+     */
+    public static final UUID BLE_UUID_BATTERY_LEVEL = BluetoothLeUtil.createUUIDFromAssignedNumber("0x2a19");
 
     /**
      * 心拍リスナ
@@ -47,11 +60,6 @@ public class BleHeartrateMonitor extends BleDevice {
     @NonNull
     private final HeartrateSensorData mHeartrateData;
 
-    /**
-     * 心拍チェック用GATT
-     */
-    private BluetoothGatt mHeartrateGatt;
-
     @NonNull
     private final PendingCallbackQueue mCallbackQueue;
 
@@ -62,26 +70,69 @@ public class BleHeartrateMonitor extends BleDevice {
     }
 
     private final BluetoothGattCallback gattCallback = new BleDevice.BaseBluetoothGattCallback() {
+        BluetoothGattCharacteristic mBatteryCharacteristic;
+
+        BluetoothGattCharacteristic mHeartrateCharacteristic;
+
+        boolean mNotificationRequested;
+
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             AppLog.ble("onServicesDiscovered :: " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
 
-                if (notificationEnable(BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT)) {
-                    mHeartrateGatt = gatt;
-                    AppLog.ble("enable cadence notification");
-                    mCallbackQueue.run(CallbackTime.Alive, () -> {
-                        for (BleHeartrateListener listener : mListeners) {
-                            listener.onDeviceSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
-                        }
-                    });
+                // バッテリーステータスもリクエストしておく
+                mHeartrateCharacteristic = BluetoothLeUtil.findBluetoothGattCharacteristic(mBleGatt, BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT);
+                mBatteryCharacteristic = BluetoothLeUtil.findBluetoothGattCharacteristic(mBleGatt, BLE_UUID_SERVICE_BATTERY, BLE_UUID_BATTERY_LEVEL);
+                if (mBatteryCharacteristic != null) {
+                    AppLog.ble("Poll Heartrate Battery Notification");
+                    gatt.readCharacteristic(mBatteryCharacteristic);
                 } else {
-                    mCallbackQueue.run(CallbackTime.Alive, () -> {
-                        for (BleHeartrateListener listener : mListeners) {
-                            listener.onDeviceNotSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
-                        }
-                    });
+//                    AppLog.ble("Poll Heartrate BPM Notification");
+//                    gatt.readCharacteristic(mHeartrateCharacteristic);
                 }
+
+//                if (notificationEnable(BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT)) {
+//                    mHeartrateGatt = gatt;
+//                    AppLog.ble("Enable Heartrate notification");
+//                    mCallbackQueue.run(CallbackTime.Alive, () -> {
+//                        for (BleHeartrateListener listener : mListeners) {
+//                            listener.onDeviceSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
+//                        }
+//                    });
+//                } else {
+//                    mCallbackQueue.run(CallbackTime.Alive, () -> {
+//                        for (BleHeartrateListener listener : mListeners) {
+//                            listener.onDeviceNotSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
+//                        }
+//                    });
+//                }
+
+            }
+        }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicRead(gatt, characteristic, status);
+            AppLog.ble("onCharacteristicRead[%s]", characteristic.getUuid().toString());
+            if (characteristic.getUuid().equals(BLE_UUID_BATTERY_LEVEL)) {
+                int batteryLevel = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+                AppLog.ble("HR Monitor Battery[%d]", batteryLevel);
+            }
+
+            if (!mNotificationRequested && notificationEnable(BLE_UUID_SERVICE_HEARTRATE, BLE_UUID_HEARTRATE_MEASUREMENT)) {
+                mNotificationRequested = true;
+                AppLog.ble("Enable Heartrate notification");
+                mCallbackQueue.run(CallbackTime.Alive, () -> {
+                    for (BleHeartrateListener listener : mListeners) {
+                        listener.onDeviceSupportedHeartrate(BleHeartrateMonitor.this, mDevice);
+                    }
+                });
+            }
+
+            // HRを再取得リクエスト
+            if (isGattConnected()) {
+                mBleGatt.readCharacteristic(mBatteryCharacteristic);
             }
         }
 

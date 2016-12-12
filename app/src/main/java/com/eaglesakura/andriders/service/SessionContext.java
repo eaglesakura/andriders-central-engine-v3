@@ -6,10 +6,12 @@ import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.model.command.CommandData;
+import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.service.command.CentralCommandController;
+import com.eaglesakura.andriders.service.command.ProximityFeedbackManager;
 import com.eaglesakura.andriders.service.log.SessionLogController;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.service.ui.CentralDisplayWindow;
@@ -113,9 +115,9 @@ public class SessionContext {
         mAnimationController = ServiceAnimationController.attach(mLifecycleDelegate, centralSession, mAnimationCallback);
 
         mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession);
-        mCentralDisplayWindow.getCentralNotificationManager().addListener(mOnNotificationShowingListener);  // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
+        mCentralDisplayWindow.getCentralNotificationManager().addListener(mNotificationShowingListener);  // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
 
-        mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, centralSession, mCommandCallback);
+        mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession, mCommandCallback);
 
         mLifecycleDelegate.asyncUI((BackgroundTask<CentralSession> task) -> {
             centralSession.initialize(option, AppSupportUtil.asCancelCallback(task));
@@ -125,6 +127,7 @@ public class SessionContext {
             // プラグインの接続を行う
             mSession.getPluginCollection().safeEach(plugin -> {
                 plugin.setNotificationManager(() -> mCentralDisplayWindow.getCentralNotificationManager());
+                plugin.setDisplayBindManager(() -> mCentralDisplayWindow.getCentralDisplayBindManager());
                 plugin.setCentralDataManager(() -> mSession.getCentralDataManager());
 
                 // 起動完了を通知
@@ -182,6 +185,11 @@ public class SessionContext {
     }
 
     /**
+     * 最後にデータをBroadcastした時刻
+     */
+    private long mLastDataBroadcastTime = 0;
+
+    /**
      * データ更新をハンドリングする
      *
      * データの圧縮等、送出には20ms程度を要する。
@@ -194,6 +202,11 @@ public class SessionContext {
             AppLog.broadcast("RawCentralData == null");
             return;
         }
+
+        if ((raw.centralStatus.date - mLastDataBroadcastTime) < 1000) {
+            return;
+        }
+        mLastDataBroadcastTime = raw.centralStatus.date;
 
         AppLog.broadcast("RawCentralData date[%d]", raw.centralStatus.date);
 
@@ -210,7 +223,7 @@ public class SessionContext {
 
     }
 
-    private final CentralNotificationManager.OnNotificationShowingListener mOnNotificationShowingListener = new CentralNotificationManager.OnNotificationShowingListener() {
+    private final CentralNotificationManager.OnNotificationShowingListener mNotificationShowingListener = new CentralNotificationManager.OnNotificationShowingListener() {
         @Override
         public void onNotificationShowing(CentralNotificationManager self, NotificationData data) {
             try {
@@ -245,18 +258,21 @@ public class SessionContext {
      * アニメーションコントロール
      */
     private final ServiceAnimationController.Callback mAnimationCallback = new ServiceAnimationController.Callback() {
-        /**
-         * 前回のセッション更新からの経過時間
-         */
-        double mSessionUpdateDeltaSec;
+        private boolean mClockInitialSync;
+
+        private double mSessionDeltaSec;
 
         @Override
         public void onUpdate(ServiceAnimationController self, CentralSession session, double deltaSec) {
-            mSessionUpdateDeltaSec += deltaSec;
-            if (mSessionUpdateDeltaSec > 1.0) {
-                // 1秒以上経過したのでセッション情報を行進
-                mSession.onUpdate(mSessionUpdateDeltaSec);
-                mSessionUpdateDeltaSec = 0;
+            {
+                // セッション内部時間と現実時間とのズレを補正する
+                double centralDeltaSec = (double) (System.currentTimeMillis() - session.getSessionClock().now()) / 1000.0;
+                mSessionDeltaSec += centralDeltaSec;
+                if (mSessionDeltaSec > 0.5) {
+                    // 毎秒2回程度のアップデートに抑える
+                    mSession.onUpdate(centralDeltaSec);
+                    mSessionDeltaSec = 0;
+                }
             }
 
             // アニメーションを追加
@@ -265,9 +281,19 @@ public class SessionContext {
     };
 
     /**
-     * コマンド起動
+     * コマンド制御・起動
      */
     private final CentralCommandController.Callback mCommandCallback = new CentralCommandController.Callback() {
+
+        @Override
+        public void onCommandLoaded(CentralCommandController self, CommandDataCollection commands) {
+            ProximityFeedbackManager proximityFeedbackManager = self.getProximityFeedbackManager();
+            if (proximityFeedbackManager != null) {
+                // 近接コマンドフィードバックが行えるので、リンクする
+                mCentralDisplayWindow.getNotificationView().setProximityFeedbackManager(proximityFeedbackManager);
+            }
+        }
+
         @Override
         public void requestActivityCommand(CentralCommandController self, CommandData data, Intent commandIntent) {
             try {
