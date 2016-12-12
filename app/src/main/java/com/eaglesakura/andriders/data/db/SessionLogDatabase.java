@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.data.db;
 
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
+import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.dao.session.DaoMaster;
 import com.eaglesakura.andriders.dao.session.DaoSession;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
@@ -18,11 +19,13 @@ import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.sql.SupportCursor;
 import com.eaglesakura.collection.StringFlag;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.geo.GeohashGroup;
 import com.eaglesakura.json.JSON;
+import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Util;
 
@@ -35,8 +38,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
 
 /**
  * セッションごとのログを保持する
@@ -98,6 +104,49 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         return new SupportCursor(query(true, sql));
     }
 
+
+    /**
+     * startTime～endTimeまでに開始されたセッションのID一覧を取得する
+     * セッションが見つからない場合は空リストを返す
+     *
+     * @param startTime 開始時刻
+     * @param endTime   終了時刻
+     */
+    @NonNull
+    public List<SessionHeader> loadHeaders(long startTime, long endTime, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+
+        String whereTime = getDateRangeQuery(startTime, endTime);
+
+        StringBuilder query = new StringBuilder();
+        query.append(
+                "SELECT SESSION_ID" +
+                        " FROM DB_SESSION_POINT");
+
+        if (!StringUtil.isEmpty(whereTime)) {
+            query.append(" WHERE " + whereTime);
+        }
+        query.append(" GROUP BY SESSION_ID ORDER BY SORT_DATE ASC");
+
+        try (SupportCursor cursor = logQuery(query.toString())) {
+            if (!cursor.moveToFirst()) {
+                return new ArrayList<>();
+            }
+
+            List<SessionHeader> result = new ArrayList<>();
+
+            do {
+                long sessionId = cursor.nextLong();
+                result.add(new SessionHeader(sessionId));
+
+                assertNotCanceled(cancelCallback);
+            } while (cursor.moveToNext());
+
+            return result;
+        } catch (IOException e) {
+            throw new AppDatabaseException(e);
+        }
+    }
+
     /**
      * startTime～endTimeまでに開始されたセッションの統計情報を返却する
      *
@@ -106,7 +155,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      * @return 合計値 / セッションが存在しない場合はnullを返却
      */
     @Nullable
-    public LogStatistics loadTotal(long startTime, long endTime) throws AppException {
+    public LogStatistics loadTotal(long startTime, long endTime, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
 
         String whereTime = getDateRangeQuery(startTime, endTime);
 
@@ -170,6 +219,8 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
                 sumActiveDistanceKm += Util.getDouble(cursor.nextDouble(), 0.0);    // 自走距離を合計する
                 sumActiveTimeMs += Util.getLong(cursor.nextLong(), 0);              // 自走時間を合計する
+
+                assertNotCanceled(cancelCallback);
             } while (cursor.moveToNext());
         } catch (IOException e) {
             throw new AppDatabaseException(e);
