@@ -152,6 +152,14 @@ public class GpxImporterTest extends AppUnitTestCase {
             assertNotNull(sessionHeaderCollection);
             validate(sessionHeaderCollection.list()).notEmpty().each((index, header) -> {
                 AppLog.test("Session id[%d] date[%d]", header.getSessionId(), header.getDateId());
+
+                LogStatistics statistics = logManager.loadSessionStatistics(header, () -> false);
+                assertNotNull(statistics);
+                AppLog.test("  - Start[%s] End[%s] Speed[%.1f km/h] Distance[%.1f km] Alt[%d m]",
+                        statistics.getStartDate(), statistics.getEndDate(),
+                        statistics.getMaxSpeedKmh(),
+                        statistics.getSumDistanceKm(), (int) statistics.getSumAltitudeMeter()
+                );
             });
         }
     }

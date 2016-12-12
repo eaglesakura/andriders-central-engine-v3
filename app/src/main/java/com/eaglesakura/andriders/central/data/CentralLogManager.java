@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.central.data;
 
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
+import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.error.AppException;
@@ -53,6 +54,18 @@ public class CentralLogManager {
     public SessionHeaderCollection listAllHeaders(CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try (SessionLogDatabase db = openReadOnly()) {
             return new SessionHeaderCollection(db.loadHeaders(0, 0, cancelCallback));
+        }
+    }
+
+    /**
+     * セッション統計情報をロードする
+     *
+     * @param header         ヘッダ
+     * @param cancelCallback キャンセルチェック
+     */
+    public LogStatistics loadSessionStatistics(SessionHeader header, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+        try (SessionLogDatabase db = openReadOnly()) {
+            return db.loadTotal(header.getSessionId() - 1, header.getEndDate().getTime() + 1, cancelCallback);
         }
     }
 

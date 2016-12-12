@@ -113,6 +113,9 @@ task generateCentralLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) 
     DbSessionPoint.addFloatProperty("valueSensorSpeed").index();
     // センサー由来の速度(Max, Avgを取る) 採用された場合のみ書き込まれる
     DbSessionPoint.addFloatProperty("valueGpsSpeed").index();
+    DbSessionPoint.addFloatProperty("valueGpsLat").index();
+    DbSessionPoint.addFloatProperty("valueGpsLng").index();
+    DbSessionPoint.addFloatProperty("valueGpsAlt").index();
     // GPS由来の速度(Max, Avgを取る)    採用された場合のみ書き込まれる
     DbSessionPoint.addFloatProperty("valueFitCalories").index();       // セッション消費カロリー
     DbSessionPoint.addFloatProperty("valueFitExercise").index();       // セッション獲得エクササイズ

@@ -33,12 +33,17 @@ public class LogStatistics {
 
     float mMaxSpeedKmh;
 
+    /**
+     * 統計情報に含まれたセッション数
+     */
+    int mSessionCount;
+
     public LogStatistics(long startDate) {
         mStartDate = new Date(startDate);
         mEndDate = new Date(startDate);
     }
 
-    public LogStatistics(Date startDate, Date endDate, int activeTimeMs, float activeDistanceKm, float sumAltitudeMeter, float sumDistanceKm, float calories, float exercise, short maxCadence, short maxHeartrate, float maxSpeedKmh) {
+    public LogStatistics(Date startDate, Date endDate, int activeTimeMs, float activeDistanceKm, float sumAltitudeMeter, float sumDistanceKm, float calories, float exercise, short maxCadence, short maxHeartrate, float maxSpeedKmh, int sessionCount) {
         mStartDate = startDate;
         mEndDate = endDate;
         mActiveTimeMs = activeTimeMs;
@@ -50,6 +55,7 @@ public class LogStatistics {
         mMaxCadence = maxCadence;
         mMaxHeartrate = maxHeartrate;
         mMaxSpeedKmh = maxSpeedKmh;
+        mSessionCount = sessionCount;
     }
 
     public Date getStartDate() {
@@ -96,6 +102,10 @@ public class LogStatistics {
         return mMaxSpeedKmh;
     }
 
+    public int getSessionCount() {
+        return mSessionCount;
+    }
+
     /**
      * データを更新する
      *
@@ -123,5 +133,21 @@ public class LogStatistics {
         if (latest.sensor.speed != null) {
             mMaxSpeedKmh = Math.max(mMaxSpeedKmh, latest.sensor.speed.speedKmh);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LogStatistics that = (LogStatistics) o;
+
+        return mStartDate != null ? mStartDate.equals(that.mStartDate) : that.mStartDate == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return mStartDate != null ? mStartDate.hashCode() : 0;
     }
 }

@@ -193,6 +193,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         double maxSpeedKmh = 0;
         Date startDate = null;
         Date endDate = null;
+        int numSessions = 0;
 
         try (SupportCursor cursor = logQuery(query.toString())) {
             if (!cursor.moveToFirst()) {
@@ -222,6 +223,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                 sumActiveDistanceKm += Util.getDouble(cursor.nextDouble(), 0.0);    // 自走距離を合計する
                 sumActiveTimeMs += Util.getLong(cursor.nextLong(), 0);              // 自走時間を合計する
 
+                ++numSessions;
                 assertNotCanceled(cancelCallback);
             } while (cursor.moveToNext());
         } catch (IOException e) {
@@ -233,7 +235,8 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                 (int) sumActiveTimeMs, (float) sumActiveDistanceKm,
                 (float) sumAltitudeMeter, (float) sumDistanceKm,
                 (float) sumCalories, (float) sumExercise,
-                (short) maxCadence, (short) maxHeartrate, (float) maxSpeedKmh
+                (short) maxCadence, (short) maxHeartrate, (float) maxSpeedKmh,
+                numSessions
         );
     }
 
@@ -298,6 +301,11 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                     // 中央の詳細なハッシュ指定
                     pt.setValueGeohash10(Geohash.encode(location.latitude, location.longitude, 10));
                     pt.setValueGeohash7Peripherals(geoFlags.toString());
+
+                    // 座標を転転記
+                    pt.setValueGpsLat((float) location.latitude);
+                    pt.setValueGpsLng((float) location.longitude);
+                    pt.setValueGpsAlt((float) location.altitude);
 
                     // 信頼性チェック
                     if (!location.locationReliance) {

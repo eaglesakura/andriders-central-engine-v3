@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="value"
+                  type="com.eaglesakura.andriders.ui.navigation.log.LogSummaryBinding"/>
+    </data>
+
+    <android.support.v7.widget.CardView
+            style="@style/EsMaterial.Widget.CardView.Light"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                    app:headerIcon="@drawable/ic_calendar"
+                    app:headerText="総合記録"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                    style="@style/App.Theme.BasicSetting"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        app:keyText="合計走行距離"
+                        app:valueText="@{value.sumDistanceKmText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="合計獲得標高"
+                        app:valueText="@{value.sumAltitudeMeterText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:id="@+id/LongestDistance"
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="1日最長到達距離"
+                        app:valueText="@string/Word.Common.DataLoad"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="最高速度"
+                        app:valueText="@{value.maxSpeedKmhText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="最高ケイデンス"
+                        app:valueText="@{value.maxCadenceText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</layout>

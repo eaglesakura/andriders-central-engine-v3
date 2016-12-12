@@ -30,15 +30,18 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
         public final static Property ValueCadence = new Property(5, Integer.class, "valueCadence", false, "VALUE_CADENCE");
         public final static Property ValueSensorSpeed = new Property(6, Float.class, "valueSensorSpeed", false, "VALUE_SENSOR_SPEED");
         public final static Property ValueGpsSpeed = new Property(7, Float.class, "valueGpsSpeed", false, "VALUE_GPS_SPEED");
-        public final static Property ValueFitCalories = new Property(8, Float.class, "valueFitCalories", false, "VALUE_FIT_CALORIES");
-        public final static Property ValueFitExercise = new Property(9, Float.class, "valueFitExercise", false, "VALUE_FIT_EXERCISE");
-        public final static Property ValueRecordDistanceKm = new Property(10, Float.class, "valueRecordDistanceKm", false, "VALUE_RECORD_DISTANCE_KM");
-        public final static Property ValueRecordSumAltMeter = new Property(11, Float.class, "valueRecordSumAltMeter", false, "VALUE_RECORD_SUM_ALT_METER");
-        public final static Property ValueActiveDistanceKm = new Property(12, Float.class, "valueActiveDistanceKm", false, "VALUE_ACTIVE_DISTANCE_KM");
-        public final static Property ValueActiveTimeMs = new Property(13, Integer.class, "valueActiveTimeMs", false, "VALUE_ACTIVE_TIME_MS");
-        public final static Property ValueGeohash10 = new Property(14, String.class, "valueGeohash10", false, "VALUE_GEOHASH10");
-        public final static Property ValueGeohash7Peripherals = new Property(15, String.class, "valueGeohash7Peripherals", false, "VALUE_GEOHASH7_PERIPHERALS");
-        public final static Property ValueIntervalIndex = new Property(16, int.class, "valueIntervalIndex", false, "VALUE_INTERVAL_INDEX");
+        public final static Property ValueGpsLat = new Property(8, Float.class, "valueGpsLat", false, "VALUE_GPS_LAT");
+        public final static Property ValueGpsLng = new Property(9, Float.class, "valueGpsLng", false, "VALUE_GPS_LNG");
+        public final static Property ValueGpsAlt = new Property(10, Float.class, "valueGpsAlt", false, "VALUE_GPS_ALT");
+        public final static Property ValueFitCalories = new Property(11, Float.class, "valueFitCalories", false, "VALUE_FIT_CALORIES");
+        public final static Property ValueFitExercise = new Property(12, Float.class, "valueFitExercise", false, "VALUE_FIT_EXERCISE");
+        public final static Property ValueRecordDistanceKm = new Property(13, Float.class, "valueRecordDistanceKm", false, "VALUE_RECORD_DISTANCE_KM");
+        public final static Property ValueRecordSumAltMeter = new Property(14, Float.class, "valueRecordSumAltMeter", false, "VALUE_RECORD_SUM_ALT_METER");
+        public final static Property ValueActiveDistanceKm = new Property(15, Float.class, "valueActiveDistanceKm", false, "VALUE_ACTIVE_DISTANCE_KM");
+        public final static Property ValueActiveTimeMs = new Property(16, Integer.class, "valueActiveTimeMs", false, "VALUE_ACTIVE_TIME_MS");
+        public final static Property ValueGeohash10 = new Property(17, String.class, "valueGeohash10", false, "VALUE_GEOHASH10");
+        public final static Property ValueGeohash7Peripherals = new Property(18, String.class, "valueGeohash7Peripherals", false, "VALUE_GEOHASH7_PERIPHERALS");
+        public final static Property ValueIntervalIndex = new Property(19, int.class, "valueIntervalIndex", false, "VALUE_INTERVAL_INDEX");
     };
 
 
@@ -62,15 +65,18 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
                 "\"VALUE_CADENCE\" INTEGER," + // 5: valueCadence
                 "\"VALUE_SENSOR_SPEED\" REAL," + // 6: valueSensorSpeed
                 "\"VALUE_GPS_SPEED\" REAL," + // 7: valueGpsSpeed
-                "\"VALUE_FIT_CALORIES\" REAL," + // 8: valueFitCalories
-                "\"VALUE_FIT_EXERCISE\" REAL," + // 9: valueFitExercise
-                "\"VALUE_RECORD_DISTANCE_KM\" REAL," + // 10: valueRecordDistanceKm
-                "\"VALUE_RECORD_SUM_ALT_METER\" REAL," + // 11: valueRecordSumAltMeter
-                "\"VALUE_ACTIVE_DISTANCE_KM\" REAL," + // 12: valueActiveDistanceKm
-                "\"VALUE_ACTIVE_TIME_MS\" INTEGER," + // 13: valueActiveTimeMs
-                "\"VALUE_GEOHASH10\" TEXT," + // 14: valueGeohash10
-                "\"VALUE_GEOHASH7_PERIPHERALS\" TEXT," + // 15: valueGeohash7Peripherals
-                "\"VALUE_INTERVAL_INDEX\" INTEGER NOT NULL );"); // 16: valueIntervalIndex
+                "\"VALUE_GPS_LAT\" REAL," + // 8: valueGpsLat
+                "\"VALUE_GPS_LNG\" REAL," + // 9: valueGpsLng
+                "\"VALUE_GPS_ALT\" REAL," + // 10: valueGpsAlt
+                "\"VALUE_FIT_CALORIES\" REAL," + // 11: valueFitCalories
+                "\"VALUE_FIT_EXERCISE\" REAL," + // 12: valueFitExercise
+                "\"VALUE_RECORD_DISTANCE_KM\" REAL," + // 13: valueRecordDistanceKm
+                "\"VALUE_RECORD_SUM_ALT_METER\" REAL," + // 14: valueRecordSumAltMeter
+                "\"VALUE_ACTIVE_DISTANCE_KM\" REAL," + // 15: valueActiveDistanceKm
+                "\"VALUE_ACTIVE_TIME_MS\" INTEGER," + // 16: valueActiveTimeMs
+                "\"VALUE_GEOHASH10\" TEXT," + // 17: valueGeohash10
+                "\"VALUE_GEOHASH7_PERIPHERALS\" TEXT," + // 18: valueGeohash7Peripherals
+                "\"VALUE_INTERVAL_INDEX\" INTEGER NOT NULL );"); // 19: valueIntervalIndex
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_SESSION_ID ON DB_SESSION_POINT" +
                 " (\"SESSION_ID\");");
@@ -84,6 +90,24 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
                 " (\"VALUE_SENSOR_SPEED\");");
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_GPS_SPEED ON DB_SESSION_POINT" +
                 " (\"VALUE_GPS_SPEED\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_GPS_LAT ON DB_SESSION_POINT" +
+                " (\"VALUE_GPS_LAT\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_GPS_LNG ON DB_SESSION_POINT" +
+                " (\"VALUE_GPS_LNG\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_GPS_ALT ON DB_SESSION_POINT" +
+                " (\"VALUE_GPS_ALT\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_FIT_CALORIES ON DB_SESSION_POINT" +
+                " (\"VALUE_FIT_CALORIES\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_FIT_EXERCISE ON DB_SESSION_POINT" +
+                " (\"VALUE_FIT_EXERCISE\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_RECORD_DISTANCE_KM ON DB_SESSION_POINT" +
+                " (\"VALUE_RECORD_DISTANCE_KM\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_RECORD_SUM_ALT_METER ON DB_SESSION_POINT" +
+                " (\"VALUE_RECORD_SUM_ALT_METER\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_ACTIVE_DISTANCE_KM ON DB_SESSION_POINT" +
+                " (\"VALUE_ACTIVE_DISTANCE_KM\");");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_ACTIVE_TIME_MS ON DB_SESSION_POINT" +
+                " (\"VALUE_ACTIVE_TIME_MS\");");
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_GEOHASH10 ON DB_SESSION_POINT" +
                 " (\"VALUE_GEOHASH10\");");
         db.execSQL("CREATE INDEX " + constraint + "IDX_DB_SESSION_POINT_VALUE_GEOHASH7_PERIPHERALS ON DB_SESSION_POINT" +
@@ -126,46 +150,61 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
             stmt.bindDouble(8, valueGpsSpeed);
         }
  
+        Float valueGpsLat = entity.getValueGpsLat();
+        if (valueGpsLat != null) {
+            stmt.bindDouble(9, valueGpsLat);
+        }
+ 
+        Float valueGpsLng = entity.getValueGpsLng();
+        if (valueGpsLng != null) {
+            stmt.bindDouble(10, valueGpsLng);
+        }
+ 
+        Float valueGpsAlt = entity.getValueGpsAlt();
+        if (valueGpsAlt != null) {
+            stmt.bindDouble(11, valueGpsAlt);
+        }
+ 
         Float valueFitCalories = entity.getValueFitCalories();
         if (valueFitCalories != null) {
-            stmt.bindDouble(9, valueFitCalories);
+            stmt.bindDouble(12, valueFitCalories);
         }
  
         Float valueFitExercise = entity.getValueFitExercise();
         if (valueFitExercise != null) {
-            stmt.bindDouble(10, valueFitExercise);
+            stmt.bindDouble(13, valueFitExercise);
         }
  
         Float valueRecordDistanceKm = entity.getValueRecordDistanceKm();
         if (valueRecordDistanceKm != null) {
-            stmt.bindDouble(11, valueRecordDistanceKm);
+            stmt.bindDouble(14, valueRecordDistanceKm);
         }
  
         Float valueRecordSumAltMeter = entity.getValueRecordSumAltMeter();
         if (valueRecordSumAltMeter != null) {
-            stmt.bindDouble(12, valueRecordSumAltMeter);
+            stmt.bindDouble(15, valueRecordSumAltMeter);
         }
  
         Float valueActiveDistanceKm = entity.getValueActiveDistanceKm();
         if (valueActiveDistanceKm != null) {
-            stmt.bindDouble(13, valueActiveDistanceKm);
+            stmt.bindDouble(16, valueActiveDistanceKm);
         }
  
         Integer valueActiveTimeMs = entity.getValueActiveTimeMs();
         if (valueActiveTimeMs != null) {
-            stmt.bindLong(14, valueActiveTimeMs);
+            stmt.bindLong(17, valueActiveTimeMs);
         }
  
         String valueGeohash10 = entity.getValueGeohash10();
         if (valueGeohash10 != null) {
-            stmt.bindString(15, valueGeohash10);
+            stmt.bindString(18, valueGeohash10);
         }
  
         String valueGeohash7Peripherals = entity.getValueGeohash7Peripherals();
         if (valueGeohash7Peripherals != null) {
-            stmt.bindString(16, valueGeohash7Peripherals);
+            stmt.bindString(19, valueGeohash7Peripherals);
         }
-        stmt.bindLong(17, entity.getValueIntervalIndex());
+        stmt.bindLong(20, entity.getValueIntervalIndex());
     }
 
     @Override
@@ -196,46 +235,61 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
             stmt.bindDouble(8, valueGpsSpeed);
         }
  
+        Float valueGpsLat = entity.getValueGpsLat();
+        if (valueGpsLat != null) {
+            stmt.bindDouble(9, valueGpsLat);
+        }
+ 
+        Float valueGpsLng = entity.getValueGpsLng();
+        if (valueGpsLng != null) {
+            stmt.bindDouble(10, valueGpsLng);
+        }
+ 
+        Float valueGpsAlt = entity.getValueGpsAlt();
+        if (valueGpsAlt != null) {
+            stmt.bindDouble(11, valueGpsAlt);
+        }
+ 
         Float valueFitCalories = entity.getValueFitCalories();
         if (valueFitCalories != null) {
-            stmt.bindDouble(9, valueFitCalories);
+            stmt.bindDouble(12, valueFitCalories);
         }
  
         Float valueFitExercise = entity.getValueFitExercise();
         if (valueFitExercise != null) {
-            stmt.bindDouble(10, valueFitExercise);
+            stmt.bindDouble(13, valueFitExercise);
         }
  
         Float valueRecordDistanceKm = entity.getValueRecordDistanceKm();
         if (valueRecordDistanceKm != null) {
-            stmt.bindDouble(11, valueRecordDistanceKm);
+            stmt.bindDouble(14, valueRecordDistanceKm);
         }
  
         Float valueRecordSumAltMeter = entity.getValueRecordSumAltMeter();
         if (valueRecordSumAltMeter != null) {
-            stmt.bindDouble(12, valueRecordSumAltMeter);
+            stmt.bindDouble(15, valueRecordSumAltMeter);
         }
  
         Float valueActiveDistanceKm = entity.getValueActiveDistanceKm();
         if (valueActiveDistanceKm != null) {
-            stmt.bindDouble(13, valueActiveDistanceKm);
+            stmt.bindDouble(16, valueActiveDistanceKm);
         }
  
         Integer valueActiveTimeMs = entity.getValueActiveTimeMs();
         if (valueActiveTimeMs != null) {
-            stmt.bindLong(14, valueActiveTimeMs);
+            stmt.bindLong(17, valueActiveTimeMs);
         }
  
         String valueGeohash10 = entity.getValueGeohash10();
         if (valueGeohash10 != null) {
-            stmt.bindString(15, valueGeohash10);
+            stmt.bindString(18, valueGeohash10);
         }
  
         String valueGeohash7Peripherals = entity.getValueGeohash7Peripherals();
         if (valueGeohash7Peripherals != null) {
-            stmt.bindString(16, valueGeohash7Peripherals);
+            stmt.bindString(19, valueGeohash7Peripherals);
         }
-        stmt.bindLong(17, entity.getValueIntervalIndex());
+        stmt.bindLong(20, entity.getValueIntervalIndex());
     }
 
     @Override
@@ -254,15 +308,18 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
             cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // valueCadence
             cursor.isNull(offset + 6) ? null : cursor.getFloat(offset + 6), // valueSensorSpeed
             cursor.isNull(offset + 7) ? null : cursor.getFloat(offset + 7), // valueGpsSpeed
-            cursor.isNull(offset + 8) ? null : cursor.getFloat(offset + 8), // valueFitCalories
-            cursor.isNull(offset + 9) ? null : cursor.getFloat(offset + 9), // valueFitExercise
-            cursor.isNull(offset + 10) ? null : cursor.getFloat(offset + 10), // valueRecordDistanceKm
-            cursor.isNull(offset + 11) ? null : cursor.getFloat(offset + 11), // valueRecordSumAltMeter
-            cursor.isNull(offset + 12) ? null : cursor.getFloat(offset + 12), // valueActiveDistanceKm
-            cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13), // valueActiveTimeMs
-            cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14), // valueGeohash10
-            cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15), // valueGeohash7Peripherals
-            cursor.getInt(offset + 16) // valueIntervalIndex
+            cursor.isNull(offset + 8) ? null : cursor.getFloat(offset + 8), // valueGpsLat
+            cursor.isNull(offset + 9) ? null : cursor.getFloat(offset + 9), // valueGpsLng
+            cursor.isNull(offset + 10) ? null : cursor.getFloat(offset + 10), // valueGpsAlt
+            cursor.isNull(offset + 11) ? null : cursor.getFloat(offset + 11), // valueFitCalories
+            cursor.isNull(offset + 12) ? null : cursor.getFloat(offset + 12), // valueFitExercise
+            cursor.isNull(offset + 13) ? null : cursor.getFloat(offset + 13), // valueRecordDistanceKm
+            cursor.isNull(offset + 14) ? null : cursor.getFloat(offset + 14), // valueRecordSumAltMeter
+            cursor.isNull(offset + 15) ? null : cursor.getFloat(offset + 15), // valueActiveDistanceKm
+            cursor.isNull(offset + 16) ? null : cursor.getInt(offset + 16), // valueActiveTimeMs
+            cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17), // valueGeohash10
+            cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18), // valueGeohash7Peripherals
+            cursor.getInt(offset + 19) // valueIntervalIndex
         );
         return entity;
     }
@@ -277,15 +334,18 @@ public class DbSessionPointDao extends AbstractDao<DbSessionPoint, java.util.Dat
         entity.setValueCadence(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
         entity.setValueSensorSpeed(cursor.isNull(offset + 6) ? null : cursor.getFloat(offset + 6));
         entity.setValueGpsSpeed(cursor.isNull(offset + 7) ? null : cursor.getFloat(offset + 7));
-        entity.setValueFitCalories(cursor.isNull(offset + 8) ? null : cursor.getFloat(offset + 8));
-        entity.setValueFitExercise(cursor.isNull(offset + 9) ? null : cursor.getFloat(offset + 9));
-        entity.setValueRecordDistanceKm(cursor.isNull(offset + 10) ? null : cursor.getFloat(offset + 10));
-        entity.setValueRecordSumAltMeter(cursor.isNull(offset + 11) ? null : cursor.getFloat(offset + 11));
-        entity.setValueActiveDistanceKm(cursor.isNull(offset + 12) ? null : cursor.getFloat(offset + 12));
-        entity.setValueActiveTimeMs(cursor.isNull(offset + 13) ? null : cursor.getInt(offset + 13));
-        entity.setValueGeohash10(cursor.isNull(offset + 14) ? null : cursor.getString(offset + 14));
-        entity.setValueGeohash7Peripherals(cursor.isNull(offset + 15) ? null : cursor.getString(offset + 15));
-        entity.setValueIntervalIndex(cursor.getInt(offset + 16));
+        entity.setValueGpsLat(cursor.isNull(offset + 8) ? null : cursor.getFloat(offset + 8));
+        entity.setValueGpsLng(cursor.isNull(offset + 9) ? null : cursor.getFloat(offset + 9));
+        entity.setValueGpsAlt(cursor.isNull(offset + 10) ? null : cursor.getFloat(offset + 10));
+        entity.setValueFitCalories(cursor.isNull(offset + 11) ? null : cursor.getFloat(offset + 11));
+        entity.setValueFitExercise(cursor.isNull(offset + 12) ? null : cursor.getFloat(offset + 12));
+        entity.setValueRecordDistanceKm(cursor.isNull(offset + 13) ? null : cursor.getFloat(offset + 13));
+        entity.setValueRecordSumAltMeter(cursor.isNull(offset + 14) ? null : cursor.getFloat(offset + 14));
+        entity.setValueActiveDistanceKm(cursor.isNull(offset + 15) ? null : cursor.getFloat(offset + 15));
+        entity.setValueActiveTimeMs(cursor.isNull(offset + 16) ? null : cursor.getInt(offset + 16));
+        entity.setValueGeohash10(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
+        entity.setValueGeohash7Peripherals(cursor.isNull(offset + 18) ? null : cursor.getString(offset + 18));
+        entity.setValueIntervalIndex(cursor.getInt(offset + 19));
      }
     
     @Override
