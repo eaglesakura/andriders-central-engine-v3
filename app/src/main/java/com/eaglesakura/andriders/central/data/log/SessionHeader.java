@@ -10,7 +10,15 @@ import java.util.TimeZone;
  * セッションログのロード用ヘッダ情報
  */
 public class SessionHeader {
+    /**
+     * セッション管理ID
+     */
     final long mSessionId;
+
+    /**
+     * セッション終了時刻
+     */
+    final Date mEndDate;
 
     /**
      * 走行日管理ID
@@ -19,19 +27,27 @@ public class SessionHeader {
      */
     final long mDateId;
 
-    public SessionHeader(long sessionId) {
+    public SessionHeader(long sessionId, long endDate) {
         mSessionId = sessionId;
+        mEndDate = new Date(endDate);
 
         Date date = new Date(sessionId);
         TimeZone timeZone = TimeZone.getDefault();
         mDateId =
-                (long) DateUtil.getYear(date, timeZone) * 100000L +
+                (long) DateUtil.getYear(date, timeZone) * 10000L +
                         (long) DateUtil.getMonth(date, timeZone) * 100L +
                         (long) DateUtil.getDay(date, timeZone);
     }
 
     public long getSessionId() {
         return mSessionId;
+    }
+
+    /**
+     * セッション終了時刻を取得する
+     */
+    public Date getEndDate() {
+        return mEndDate;
     }
 
     /**

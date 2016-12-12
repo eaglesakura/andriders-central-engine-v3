@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.central.data.CentralDataManagerTest;
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
+import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.error.AppException;
@@ -143,6 +144,15 @@ public class GpxImporterTest extends AppUnitTestCase {
             validate(log.getSumDistanceKm()).delta(10.0).eq(160.0);   // AACR走行距離
             validate(log.getCalories()).from(2000); // 160bpm以上で動き続けるため、2000kcal以上は最低限動いている
             validate(log.getExercise()).from(20.0);   // 20EX以上経過している
+        }
+
+        // ログヘッダを生成する
+        {
+            SessionHeaderCollection sessionHeaderCollection = logManager.listAllHeaders(() -> false);
+            assertNotNull(sessionHeaderCollection);
+            validate(sessionHeaderCollection.list()).notEmpty().each((index, header) -> {
+                AppLog.test("Session id[%d] date[%d]", header.getSessionId(), header.getDateId());
+            });
         }
     }
 }

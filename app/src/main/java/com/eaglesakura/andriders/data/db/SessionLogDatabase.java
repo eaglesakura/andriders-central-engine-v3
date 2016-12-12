@@ -104,7 +104,6 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         return new SupportCursor(query(true, sql));
     }
 
-
     /**
      * startTime～endTimeまでに開始されたセッションのID一覧を取得する
      * セッションが見つからない場合は空リストを返す
@@ -119,7 +118,8 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
         StringBuilder query = new StringBuilder();
         query.append(
-                "SELECT SESSION_ID" +
+                "SELECT SESSION_ID, " +
+                        " MIN(DATE) AS SORT_DATE, MAX(DATE)" +
                         " FROM DB_SESSION_POINT");
 
         if (!StringUtil.isEmpty(whereTime)) {
@@ -136,7 +136,9 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
             do {
                 long sessionId = cursor.nextLong();
-                result.add(new SessionHeader(sessionId));
+                long sortDate = cursor.nextLong();
+                long endDate = cursor.nextLong();
+                result.add(new SessionHeader(sessionId, endDate));
 
                 assertNotCanceled(cancelCallback);
             } while (cursor.moveToNext());
@@ -233,49 +235,6 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                 (float) sumCalories, (float) sumExercise,
                 (short) maxCadence, (short) maxHeartrate, (float) maxSpeedKmh
         );
-
-//        CloseableListIterator<DbSessionPoint> iterator = session.getDbSessionPointDao().queryBuilder()
-//                .where(DbSessionPointDao.Properties.Date.ge(startTime), DbSessionPointDao.Properties.Date.le(endTime))
-//                .orderAsc(DbSessionPointDao.Properties.Date)
-//                .listIterator();
-//
-//
-//        try {
-//
-//            int count = 0;
-//            while (iterator.hasNext()) {
-//                DbSessionPoint pt = iterator.next();
-//                if (startDate == null) {
-//                    startDate = pt.getDate();
-//                }
-//                endDate = pt.getDate();
-//                activeTimeMs = Util.getInt(pt.getValueActiveTimeMs(), activeTimeMs);
-//                activeDistanceKm = Util.getFloat(pt.getValueActiveDistanceKm(), activeDistanceKm);
-//                sumAltitudeMeter = Util.getFloat(pt.getValueRecordSumAltMeter(), sumAltitudeMeter);
-//                sumDistanceKm = Util.getFloat(pt.getValueRecordDistanceKm(), sumDistanceKm);
-//                calories = Util.getFloat(pt.getValueFitCalories(), calories);
-//                exercise = Util.getFloat(pt.getValueFitExercise(), exercise);
-//                maxCadence = Math.max(maxCadence, Util.getInt(pt.getValueCadence(), 0));
-//                maxHeartrate = (short) Math.max(maxHeartrate, Util.getInt(pt.getValueHeartrate(), 0));
-//
-//                if (pt.getValueSensorSpeed() != null) {
-//                    maxSpeedKmh = Math.max(maxSpeedKmh, pt.getValueSensorSpeed());
-//                } else if (pt.getValueGpsSpeed() != null) {
-//                    maxSpeedKmh = Math.max(maxSpeedKmh, pt.getValueGpsSpeed());
-//                }
-//                ++count;
-//            }
-//
-//            // ゼロポイントであれば、null返却
-//            if (count == 0) {
-//                return null;
-//            }
-//        } finally {
-//            IOUtil.close(iterator);
-//        }
-//
-//        return new LogStatistics(startDate, endDate, activeTimeMs, activeDistanceKm, sumAltitudeMeter, sumDistanceKm, calories, exercise, maxCadence, maxHeartrate, maxSpeedKmh);
-
     }
 
     /**

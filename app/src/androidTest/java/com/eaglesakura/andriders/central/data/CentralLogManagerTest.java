@@ -14,5 +14,8 @@ public class CentralLogManagerTest extends AppDeviceTestCase {
         CentralLogManager logManager = Garnet.instance(AppManagerProvider.class, CentralLogManager.class);
         assertNull(logManager.loadAllStatistics(() -> false));
         assertNull(logManager.loadTodayStatistics(System.currentTimeMillis(), () -> false));
+
+        // 空リストが返却される
+        validate(logManager.listAllHeaders(() -> false).list()).sizeIs(0);
     }
 }

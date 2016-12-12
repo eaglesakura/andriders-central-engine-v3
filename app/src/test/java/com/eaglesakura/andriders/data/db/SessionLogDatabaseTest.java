@@ -18,6 +18,7 @@ public class SessionLogDatabaseTest extends AppUnitTestCase {
             validate(token.getSession().getDbSessionPointDao().loadAll()).sizeIs(0);
             // 初回はnullが取得できる
             assertNull(token.loadTotal(0, 0, () -> false));
+            validate(db.loadHeaders(0, 0, () -> false)).sizeIs(0);
         }
     }
 }
