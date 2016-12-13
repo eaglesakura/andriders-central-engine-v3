@@ -141,6 +141,12 @@ public class UserSessionActivity extends AppNavigationActivity {
         }
 
         @Override
+        public void requrestShowLogs(MenuController self) {
+            Intent intent = new Intent(self(), TotalLogActivity.class);
+            startActivity(intent);
+        }
+
+        @Override
         public void requestShowSensorDevices(MenuController self) {
             Intent intent = new Intent(self(), SensorDeviceSettingActivity.class);
             startActivity(intent);

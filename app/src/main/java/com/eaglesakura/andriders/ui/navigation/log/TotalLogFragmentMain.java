@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.databinding.UserLogTotalRowBinding;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
@@ -45,6 +46,12 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
     Callback mCallback;
 
     @Override
+    public void onAfterViews(SupportFragmentDelegate self, int flags) {
+        super.onAfterViews(self, flags);
+        mSessionDateList.setAdapter(mLogAdapter, false);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadAllLogs();
@@ -70,12 +77,13 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
 
     @UiThread
     void onLoadHeaders(SessionHeaderCollection sessionHeaders) {
+        mSessionDateList.setProgressVisibly(false, sessionHeaders.size());
+
         if (sessionHeaders.isEmpty()) {
             mCallback.onSessionNotFound(this);
-            return;
+        } else {
+            mLogAdapter.getCollection().addAll(sessionHeaders.listSessionDates().getSource());
         }
-
-        mLogAdapter.getCollection().addAllAnimated(sessionHeaders.listSessionDates().getSource());
     }
 
     /**
