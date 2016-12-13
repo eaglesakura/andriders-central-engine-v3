@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
@@ -32,6 +33,11 @@ import android.view.ViewGroup;
  */
 @FragmentLayout(R.layout.user_log)
 public class TotalLogFragmentMain extends AppNavigationFragment {
+
+    /**
+     * メニュー
+     */
+    FragmentHolder<GpxImportMenuFragment> mGpxImportMenu = FragmentHolder.newInstance(this, GpxImportMenuFragment.class, 0).bind(mLifecycleDelegate);
 
     /**
      * セッション情報表示

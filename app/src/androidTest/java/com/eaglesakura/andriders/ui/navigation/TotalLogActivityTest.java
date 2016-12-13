@@ -14,5 +14,7 @@ public class TotalLogActivityTest extends AppScenarioTest<TotalLogActivity> {
     @Test
     public void Activityが開ける() throws Throwable {
         assertTopActivity(TotalLogActivity.class);
+
+
     }
 }
