@@ -197,4 +197,5 @@
     <!-- セントラル -->
     <string name="Word.Central.SessionStart">セッション開始</string>
     <string name="Word.Central.SessionRunning">セッション記録中</string>
+    <string name="Word.Common.Import">インポート</string>
 </resources>

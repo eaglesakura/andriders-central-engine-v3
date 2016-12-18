@@ -112,7 +112,7 @@ public class CentralSession {
 
         // 既存のログを読み込む
         LogStatistics allStatistics = mCentralLogManager.loadAllStatistics(cancelCallback);
-        LogStatistics todayStatistics = mCentralLogManager.loadTodayStatistics(getSessionClock().now(), cancelCallback);
+        LogStatistics todayStatistics = mCentralLogManager.loadDailyStatistics(getSessionClock().now(), cancelCallback);
 
         // Centralモードで接続する
         {

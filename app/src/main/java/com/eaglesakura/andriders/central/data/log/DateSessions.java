@@ -15,6 +15,12 @@ public class DateSessions {
         mDateId = dateId;
     }
 
+    /**
+     * その日の初セッション開始時刻を取得する
+     */
+    public long getStartTime() {
+        return mHeaders.get(0).getSessionId();
+    }
 
     /**
      * 同じ日の走行であればデータを追加してtrueを返却する。

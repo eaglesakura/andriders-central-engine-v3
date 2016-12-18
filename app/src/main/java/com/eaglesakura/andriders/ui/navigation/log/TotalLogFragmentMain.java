@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.ui.navigation.log;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.DateSessions;
+import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.databinding.UserLogDailyRowBinding;
 import com.eaglesakura.andriders.databinding.UserLogTotalRowBinding;
@@ -20,6 +21,7 @@ import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
+import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
 
 import android.os.Bundle;
@@ -83,13 +85,14 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
 
     @UiThread
     void onLoadHeaders(SessionHeaderCollection sessionHeaders) {
-        mSessionDateList.setProgressVisibly(false, sessionHeaders.size());
 
         if (sessionHeaders.isEmpty()) {
             mCallback.onSessionNotFound(this);
         } else {
+            mLogAdapter.getCollection().add(null);  // 先頭はトータル値
             mLogAdapter.getCollection().addAll(sessionHeaders.listSessionDates().getSource());
         }
+        mSessionDateList.setProgressVisibly(false, sessionHeaders.size());
     }
 
     /**
@@ -107,12 +110,13 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
             }
         }
 
+
         @Override
         protected View onCreateCard(ViewGroup parent, int viewType) {
             if (viewType == UserLogTotalRowBinding.class.hashCode()) {
-                return UserLogTotalRowBinding.inflate(LayoutInflater.from(getContext()), null, false).getRoot();
+                return UserLogTotalRowBinding.inflate(LayoutInflater.from(getContext()), parent, false).getRoot();
             } else {
-                return UserLogDailyRowBinding.inflate(LayoutInflater.from(getContext()), null, false).getRoot();
+                return UserLogDailyRowBinding.inflate(LayoutInflater.from(getContext()), parent, false).getRoot();
             }
         }
 
@@ -120,11 +124,42 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
         protected void onBindCard(CardBind<DateSessions> bind, int position) {
             if (position == 0) {
                 // トータル設定
+                UserLogTotalRowBinding binding = bind.getBinding();
+                binding.setItem(new LogSummaryBinding(getContext(), null));
             } else {
                 // 日次表示
+                UserLogDailyRowBinding binding = bind.getBinding();
+                binding.setItem(new LogSummaryBinding(getContext(), null));
             }
         }
     };
+
+    /**
+     * 日次ログをロードする
+     */
+    @UiThread
+    void loadDailySessions(DateSessions daily, CardAdapter.CardBind<DateSessions> bind) {
+        asyncUI((BackgroundTask<LogStatistics> task) -> {
+            SupportCancelCallbackBuilder.CancelChecker cancelChecker = SupportCancelCallbackBuilder
+                    .from(task)
+                    .or(bind)
+                    .build();
+            return mCentralLogManager.loadDailyStatistics(daily.getStartTime(), cancelChecker);
+        }).completed((result, task) -> {
+            UserLogDailyRowBinding binding = bind.getBinding();
+            binding.setItem(new LogSummaryBinding(getContext(), result));
+        }).failed((error, task) -> {
+            AppLog.report(error);
+        }).start();
+    }
+
+    /**
+     * トータルログをロードする
+     */
+    @UiThread
+    void loadTotalSessions(CardAdapter.CardBind<DateSessions> bind) {
+
+    }
 
     public interface Callback {
         /**

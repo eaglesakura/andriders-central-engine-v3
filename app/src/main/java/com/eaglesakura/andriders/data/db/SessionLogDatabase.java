@@ -193,15 +193,25 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         double maxSpeedKmh = 0;
         Date startDate = null;
         Date endDate = null;
-        int numSessions = 0;
+
+        int numSessions = 0;    // 含まれるセッション数
+        int numDates = 0;   // 含まれる日次数
+        double longestDateDistanceKm = 0;   // 最長到達距離
+        double maxDateAltitudeMeter = 0;    // 最大ヒルクライム高度
+
 
         try (SupportCursor cursor = logQuery(query.toString())) {
             if (!cursor.moveToFirst()) {
                 return null;
             }
 
+            // 現在チェック日のテンポラリ
+            long currentDateId = 0;
+            double currentDateDistance = 0;
+            double currentDateAltitude = 0;
             do {
                 long sessionId = cursor.nextLong();
+                long dateId = SessionHeader.toDateId(sessionId);
                 long sessionStartDate = cursor.nextLong();
                 long sessionEndDate = cursor.nextLong();
                 if (startDate == null) {
@@ -217,12 +227,29 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                 sumCalories += Util.getInt(cursor.nextInt(), 0);    // セッション単位の合計消費カロリーを更に足し込む
                 sumExercise += Util.getInt(cursor.nextInt(), 0);    // セッション単位の合計エクササイズを更に足し込む
 
-                sumDistanceKm += Util.getDouble(cursor.nextDouble(), 0.0);  // セッション単位の走行距離を合計する
-                sumAltitudeMeter += Util.getDouble(cursor.nextDouble(), 0.0);   // セッション単位の獲得標高を合計する
+                final double sessionDistance = Util.getDouble(cursor.nextDouble(), 0.0);  // セッション単位の走行距離
+                final double sessionAltitudeMeter = Util.getDouble(cursor.nextDouble(), 0.0);   // セッション単位の獲得標高
+                sumDistanceKm += sessionDistance; // セッション距離を加算する
+                sumAltitudeMeter += sessionAltitudeMeter; // セッション獲得標高を加算する
 
                 sumActiveDistanceKm += Util.getDouble(cursor.nextDouble(), 0.0);    // 自走距離を合計する
                 sumActiveTimeMs += Util.getLong(cursor.nextLong(), 0);              // 自走時間を合計する
 
+                if (dateId != currentDateId) {
+                    // 情報をリセットする
+                    ++numDates;
+                    currentDateId = dateId;
+                    currentDateDistance = 0;
+                    currentDateAltitude = 0;
+                }
+
+                // セッション日の走行距離を足し込む
+                currentDateDistance += sessionDistance;
+                currentDateAltitude += sessionAltitudeMeter;
+
+                // 日毎最大値をチェックする
+                longestDateDistanceKm = Math.max(longestDateDistanceKm, currentDateDistance);
+                maxDateAltitudeMeter = Math.max(maxDateAltitudeMeter, currentDateAltitude);
                 ++numSessions;
                 assertNotCanceled(cancelCallback);
             } while (cursor.moveToNext());
@@ -236,7 +263,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                 (float) sumAltitudeMeter, (float) sumDistanceKm,
                 (float) sumCalories, (float) sumExercise,
                 (short) maxCadence, (short) maxHeartrate, (float) maxSpeedKmh,
-                numSessions
+                numSessions, numDates, (float) longestDateDistanceKm, (float) maxDateAltitudeMeter
         );
     }
 

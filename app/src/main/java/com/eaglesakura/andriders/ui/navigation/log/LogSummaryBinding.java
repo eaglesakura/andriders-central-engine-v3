@@ -27,20 +27,20 @@ public class LogSummaryBinding {
         return mContext.getString(R.string.Word_Common_DataLoad);
     }
 
-    private static final SimpleDateFormat DEFAULT_FORMATTER = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    private static final SimpleDateFormat DEFAULT_DATE_FORMATTER = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
     public String getStartDateText() {
         if (mLogStatistics == null) {
             return getLoadingText();
         }
-        return DEFAULT_FORMATTER.format(mLogStatistics.getStartDate());
+        return DEFAULT_DATE_FORMATTER.format(mLogStatistics.getStartDate());
     }
 
     public String getEndDateText() {
         if (mLogStatistics == null) {
             return getLoadingText();
         }
-        return DEFAULT_FORMATTER.format(mLogStatistics.getEndDate());
+        return DEFAULT_DATE_FORMATTER.format(mLogStatistics.getEndDate());
     }
 
     /**
@@ -60,11 +60,18 @@ public class LogSummaryBinding {
         return String.valueOf(mLogStatistics.getSessionCount());
     }
 
+    public String getLongestDateDistanceText() {
+        if (mLogStatistics == null) {
+            return getLoadingText();
+        }
+        return StringUtil.format("%.1f km", mLogStatistics.getLongestDateDistanceKm());
+    }
+
     public String getSumAltitudeMeterText() {
         if (mLogStatistics == null) {
             return getLoadingText();
         }
-        return String.format("%d m", (int) mLogStatistics.getSumAltitudeMeter());
+        return StringUtil.format("%d m", (int) mLogStatistics.getSumAltitudeMeter());
     }
 
     public String getActiveTimeText() {

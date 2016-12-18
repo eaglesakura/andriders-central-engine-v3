@@ -30,14 +30,20 @@ public class SessionHeader {
     public SessionHeader(long sessionId, long endDate) {
         mSessionId = sessionId;
         mEndDate = new Date(endDate);
+        mDateId = toDateId(sessionId);
+    }
 
+    /**
+     * セッションIDを日付のIDに変換する
+     */
+    public static long toDateId(long sessionId) {
         Date date = new Date(sessionId);
         TimeZone timeZone = TimeZone.getDefault();
-        mDateId =
-                (long) DateUtil.getYear(date, timeZone) * 10000L +
-                        (long) DateUtil.getMonth(date, timeZone) * 100L +
-                        (long) DateUtil.getDay(date, timeZone);
+        return (long) DateUtil.getYear(date, timeZone) * 10000L +
+                (long) DateUtil.getMonth(date, timeZone) * 100L +
+                (long) DateUtil.getDay(date, timeZone);
     }
+
 
     public long getSessionId() {
         return mSessionId;

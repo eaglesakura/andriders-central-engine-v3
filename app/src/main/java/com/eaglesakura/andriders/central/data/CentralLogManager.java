@@ -72,7 +72,7 @@ public class CentralLogManager {
     /**
      * 指定した日の記録を生成する
      */
-    public LogStatistics loadTodayStatistics(long now, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+    public LogStatistics loadDailyStatistics(long now, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try (SessionLogDatabase db = openReadOnly()) {
             Date dateStart = DateUtil.getDateStart(new Date(now), mTimeZone);
             return db.loadTotal(dateStart.getTime(), dateStart.getTime() + Timer.toMilliSec(1, 0, 0, 0, 0) - 1, cancelCallback);

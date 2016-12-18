@@ -38,12 +38,28 @@ public class LogStatistics {
      */
     int mSessionCount;
 
+    /**
+     * 統計情報に含まれた日数
+     */
+    int mDateCount;
+
+    /**
+     * 統計情報に含まれた最長到達距離
+     */
+    float mLongestDateDistanceKm;
+
+    /**
+     * 統計情報に含まれた最大獲得標高
+     */
+    float mMaxDateAltitudeMeter;
+
     public LogStatistics(long startDate) {
         mStartDate = new Date(startDate);
         mEndDate = new Date(startDate);
     }
 
-    public LogStatistics(Date startDate, Date endDate, int activeTimeMs, float activeDistanceKm, float sumAltitudeMeter, float sumDistanceKm, float calories, float exercise, short maxCadence, short maxHeartrate, float maxSpeedKmh, int sessionCount) {
+    public LogStatistics(Date startDate, Date endDate, int activeTimeMs, float activeDistanceKm, float sumAltitudeMeter, float sumDistanceKm, float calories, float exercise, short maxCadence, short maxHeartrate, float maxSpeedKmh,
+                         int sessionCount, int dateCount, float longestDateDistanceKm, float maxDateAltitudeMeter) {
         mStartDate = startDate;
         mEndDate = endDate;
         mActiveTimeMs = activeTimeMs;
@@ -56,6 +72,9 @@ public class LogStatistics {
         mMaxHeartrate = maxHeartrate;
         mMaxSpeedKmh = maxSpeedKmh;
         mSessionCount = sessionCount;
+        mDateCount = dateCount;
+        mLongestDateDistanceKm = longestDateDistanceKm;
+        mMaxDateAltitudeMeter = maxDateAltitudeMeter;
     }
 
     public Date getStartDate() {
@@ -106,6 +125,18 @@ public class LogStatistics {
         return mSessionCount;
     }
 
+    public float getLongestDateDistanceKm() {
+        return mLongestDateDistanceKm;
+    }
+
+    public float getMaxDateAltitudeMeter() {
+        return mMaxDateAltitudeMeter;
+    }
+
+    public int getDateCount() {
+        return mDateCount;
+    }
+
     /**
      * データを更新する
      *
@@ -120,6 +151,8 @@ public class LogStatistics {
         mActiveDistanceKm = latest.session.activeDistanceKm;
         mSumAltitudeMeter = latest.session.sumAltitudeMeter;
         mSumDistanceKm = latest.session.distanceKm;
+        mLongestDateDistanceKm = Math.max(mLongestDateDistanceKm, latest.session.distanceKm);
+
         mCalories = latest.session.fitness.calorie;
         mExercise = latest.session.fitness.exercise;
         if (latest.sensor.cadence != null) {

@@ -21,13 +21,9 @@ public class SessionHeaderCollection extends DataCollection<SessionHeader> {
         DateSessions current = null;
         for (SessionHeader header : list()) {
             if (current == null || !current.add(header)) {
-                if (current != null) {
-                    // セッション一覧に追加する
-                    sessions.add(current);
-                }
-
                 // 新しいグループを追加する
                 current = new DateSessions(header.getDateId());
+                sessions.add(current);
                 current.add(header);
             }
         }

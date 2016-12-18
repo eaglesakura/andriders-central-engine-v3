@@ -135,13 +135,94 @@ public class GpxImporterTest extends AppUnitTestCase {
         // 1日分のデータしか無いので、両者は合致するはずである
         LogStatistics[] testStatisticses = {
                 logManager.loadAllStatistics(() -> false),
-                logManager.loadTodayStatistics(DateUtil.getTime(TimeZone.getDefault(), 2015, 5, 24).getTime(), () -> false)
+                logManager.loadDailyStatistics(DateUtil.getTime(TimeZone.getDefault(), 2015, 5, 24).getTime(), () -> false)
         };
 
         for (LogStatistics log : testStatisticses) {
             assertNotNull(log);
             validate(log.getMaxSpeedKmh()).delta(10.0).eq(60.0);   // AACR最高速度
             validate(log.getSumDistanceKm()).delta(10.0).eq(160.0);   // AACR走行距離
+            validate(log.getLongestDateDistanceKm()).eq(log.getSumDistanceKm()); // AACR走行距離が、そのまま最長到達距離となるはずである
+            validate(log.getMaxDateAltitudeMeter()).eq(log.getSumAltitudeMeter()); // 最大獲得標高は同じである
+            validate(log.getDateCount()).eq(1); // セッションは1日だけのはずである
+            validate(log.getCalories()).from(2000); // 160bpm以上で動き続けるため、2000kcal以上は最低限動いている
+            validate(log.getExercise()).from(20.0);   // 20EX以上経過している
+        }
+
+        // ログヘッダを生成する
+        {
+            SessionHeaderCollection sessionHeaderCollection = logManager.listAllHeaders(() -> false);
+            assertNotNull(sessionHeaderCollection);
+            validate(sessionHeaderCollection.list()).notEmpty().each((index, header) -> {
+                AppLog.test("Session id[%d] date[%d]", header.getSessionId(), header.getDateId());
+
+                LogStatistics statistics = logManager.loadSessionStatistics(header, () -> false);
+                assertNotNull(statistics);
+                AppLog.test("  - Start[%s] End[%s] Speed[%.1f km/h] Distance[%.1f km] Alt[%d m]",
+                        statistics.getStartDate(), statistics.getEndDate(),
+                        statistics.getMaxSpeedKmh(),
+                        statistics.getSumDistanceKm(), (int) statistics.getSumAltitudeMeter()
+                );
+            });
+        }
+    }
+
+    @Test
+    public void GPXのサンプルデータを書き込める_AACR2016() throws Throwable {
+        GpxImporter build = new GpxImporter.Builder(getContext())
+                .parser(GpxParser.DateOption.AddTimeZone)
+                .file(new File("../sdk/src/test/assets/gpx/sample-aacr2016.gpx").getAbsoluteFile())
+                .build();
+
+        SessionImportCommitter committer = new SessionImportCommitter(getContext()) {
+            @Override
+            public void onPointInsert(SessionImporter self, CentralDataManager dataManager, RawCentralData latest) throws AppException {
+                // CentralをValidate
+                try {
+                    CentralDataManagerTest.assertCentralData(dataManager, latest);
+                } catch (Error e) {
+                    throw e;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    fail();
+                }
+
+                // 心拍を適当に設定する
+                dataManager.setHeartrate((int) (160.0 + 30.0 * Math.random()));
+
+                // 半分の時間自走する
+                long diffTimeMs = dataManager.getSessionInfo().getSessionClock().absDiff(dataManager.getSessionId());
+                if ((diffTimeMs / (1000 * 60)) % 2 == 0) {
+                    dataManager.setSpeedAndCadence((float) (70.0 + (30 * Math.random())), 0, -1, -1);
+                }
+
+                super.onPointInsert(self, dataManager, latest);
+            }
+        };
+        try (SessionLogDatabase db = committer.openDatabase()) {
+            db.runInTx(() -> {
+                build.install(committer, () -> false);
+                return 0;
+            });
+        }
+
+        CentralLogManager logManager = Garnet.instance(AppManagerProvider.class, CentralLogManager.class);
+        assertNotNull(logManager);
+
+        // 今日とトータルを取得する
+        // 1日分のデータしか無いので、両者は合致するはずである
+        LogStatistics[] testStatisticses = {
+                logManager.loadAllStatistics(() -> false),
+                logManager.loadDailyStatistics(DateUtil.getTime(TimeZone.getDefault(), 2016, 5, 22).getTime(), () -> false)
+        };
+
+        for (LogStatistics log : testStatisticses) {
+            assertNotNull(log);
+            validate(log.getMaxSpeedKmh()).delta(10.0).eq(70.0);   // AACR最高速度
+            validate(log.getSumDistanceKm()).delta(10.0).eq(160.0);   // AACR走行距離
+            validate(log.getLongestDateDistanceKm()).eq(log.getSumDistanceKm()); // AACR走行距離が、そのまま最長到達距離となるはずである
+            validate(log.getMaxDateAltitudeMeter()).eq(log.getSumAltitudeMeter()); // 最大獲得標高は同じである
+            validate(log.getDateCount()).eq(1); // セッションは1日だけのはずである
             validate(log.getCalories()).from(2000); // 160bpm以上で動き続けるため、2000kcal以上は最低限動いている
             validate(log.getExercise()).from(20.0);   // 20EX以上経過している
         }
