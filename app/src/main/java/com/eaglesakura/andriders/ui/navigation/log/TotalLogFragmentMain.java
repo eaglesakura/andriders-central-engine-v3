@@ -19,6 +19,8 @@ import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
@@ -90,7 +92,7 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
             mCallback.onSessionNotFound(this);
         } else {
             mLogAdapter.getCollection().add(null);  // 先頭はトータル値
-            mLogAdapter.getCollection().addAll(sessionHeaders.listSessionDates().getSource());
+            mLogAdapter.getCollection().addAll(sessionHeaders.listSessionDates().list());
         }
         mSessionDateList.setProgressVisibly(false, sessionHeaders.size());
     }
@@ -122,14 +124,16 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
 
         @Override
         protected void onBindCard(CardBind<DateSessions> bind, int position) {
-            if (position == 0) {
+            if (bind.getItem() == null) {
                 // トータル設定
                 UserLogTotalRowBinding binding = bind.getBinding();
                 binding.setItem(new LogSummaryBinding(getContext(), null));
+                loadTotalSessions(bind);
             } else {
                 // 日次表示
                 UserLogDailyRowBinding binding = bind.getBinding();
                 binding.setItem(new LogSummaryBinding(getContext(), null));
+                loadDailySessions(bind.getItem(), bind);
             }
         }
     };
@@ -139,7 +143,7 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
      */
     @UiThread
     void loadDailySessions(DateSessions daily, CardAdapter.CardBind<DateSessions> bind) {
-        asyncUI((BackgroundTask<LogStatistics> task) -> {
+        async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
             SupportCancelCallbackBuilder.CancelChecker cancelChecker = SupportCancelCallbackBuilder
                     .from(task)
                     .or(bind)
@@ -158,7 +162,18 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
      */
     @UiThread
     void loadTotalSessions(CardAdapter.CardBind<DateSessions> bind) {
-
+        async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
+            SupportCancelCallbackBuilder.CancelChecker cancelChecker = SupportCancelCallbackBuilder
+                    .from(task)
+                    .or(bind)
+                    .build();
+            return mCentralLogManager.loadAllStatistics(cancelChecker);
+        }).completed((result, task) -> {
+            UserLogTotalRowBinding binding = bind.getBinding();
+            binding.setItem(new LogSummaryBinding(getContext(), result));
+        }).failed((error, task) -> {
+            AppLog.report(error);
+        }).start();
     }
 
     public interface Callback {

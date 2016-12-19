@@ -28,6 +28,8 @@ public class SessionHeaderCollection extends DataCollection<SessionHeader> {
             }
         }
 
-        return new DataCollection<>(sessions);
+        DataCollection<DateSessions> result = new DataCollection<>(sessions);
+        result.setComparator(DateSessions.COMPARATOR_DESC);
+        return result;
     }
 }

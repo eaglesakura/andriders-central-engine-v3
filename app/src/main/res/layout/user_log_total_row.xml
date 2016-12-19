@@ -46,7 +46,15 @@
                         android:id="@+id/LongestDistance"
                         android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                         app:keyText="1日最長到達距離"
-                        app:valueText="@string/Word.Common.DataLoad"
+                        app:valueText="@{item.longestDateDistanceText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:id="@+id/LongestDistance"
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="1日最大獲得標高"
+                        app:valueText="@{item.maxDateAltitudeText}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
@@ -54,13 +62,6 @@
                         android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                         app:keyText="最高速度"
                         app:valueText="@{item.maxSpeedKmhText}"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
-                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
-                        app:keyText="最高ケイデンス"
-                        app:valueText="@{item.maxCadenceText}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
             </LinearLayout>

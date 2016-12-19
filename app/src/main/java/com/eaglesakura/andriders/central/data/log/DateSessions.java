@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.central.data.log;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -35,4 +36,6 @@ public class DateSessions {
             return false;
         }
     }
+
+    public static final Comparator<DateSessions> COMPARATOR_DESC = (a, b) -> Long.compare(b.mDateId, a.mDateId);
 }

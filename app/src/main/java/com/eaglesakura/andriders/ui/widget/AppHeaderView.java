@@ -4,7 +4,9 @@ import com.eaglesakura.andriders.R;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
@@ -57,5 +59,13 @@ public class AppHeaderView extends FrameLayout {
             mIcon.setImageResource(resId);
         }
         mTitle.setText(typedArray.getString(1));
+    }
+
+    public void setIcon(Drawable drawable) {
+        mIcon.setImageDrawable(drawable);
+    }
+
+    public void setTitle(@NonNull CharSequence title) {
+        mTitle.setText(title);
     }
 }

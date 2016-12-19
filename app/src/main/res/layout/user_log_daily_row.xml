@@ -16,7 +16,7 @@
                 android:layout_height="wrap_content">
             <com.eaglesakura.andriders.ui.widget.AppHeaderView
                     app:headerIcon="@drawable/ic_record"
-                    app:headerText="走行日"
+                    app:headerText="@{item.sessionDayText}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -56,6 +56,20 @@
                         android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                         app:keyText="最高速度"
                         app:valueText="@{item.maxSpeedKmhText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="消費カロリー"
+                        app:valueText="@{item.caloriesText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="エクササイズ値"
+                        app:valueText="@{item.exerciseText}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
             </LinearLayout>

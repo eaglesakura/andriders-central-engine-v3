@@ -29,6 +29,15 @@ public class LogSummaryBinding {
 
     private static final SimpleDateFormat DEFAULT_DATE_FORMATTER = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
+    private static final SimpleDateFormat DEFAULT_DAY_FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
+
+    public String getSessionDayText() {
+        if (mLogStatistics == null) {
+            return getLoadingText();
+        }
+        return DEFAULT_DAY_FORMATTER.format(mLogStatistics.getStartDate());
+    }
+
     public String getStartDateText() {
         if (mLogStatistics == null) {
             return getLoadingText();
@@ -65,6 +74,13 @@ public class LogSummaryBinding {
             return getLoadingText();
         }
         return StringUtil.format("%.1f km", mLogStatistics.getLongestDateDistanceKm());
+    }
+
+    public String getMaxDateAltitudeText() {
+        if (mLogStatistics == null) {
+            return getLoadingText();
+        }
+        return StringUtil.format("%d m", (int) mLogStatistics.getMaxDateAltitudeMeter());
     }
 
     public String getSumAltitudeMeterText() {
