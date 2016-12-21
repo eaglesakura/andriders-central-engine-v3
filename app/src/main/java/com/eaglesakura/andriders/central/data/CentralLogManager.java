@@ -58,6 +58,18 @@ public class CentralLogManager {
     }
 
     /**
+     * 指定した日のセッション情報をロードする
+     */
+    public SessionHeaderCollection listDailyHeaders(long now, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+        try (SessionLogDatabase db = openReadOnly()) {
+            Date dateStart = DateUtil.getDateStart(new Date(now), mTimeZone);
+            return new SessionHeaderCollection(
+                    db.loadHeaders(dateStart.getTime(), dateStart.getTime() + Timer.toMilliSec(1, 0, 0, 0, 0) - 1, cancelCallback)
+            );
+        }
+    }
+
+    /**
      * セッション統計情報をロードする
      *
      * @param header         ヘッダ

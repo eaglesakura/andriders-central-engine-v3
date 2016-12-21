@@ -16,7 +16,7 @@
                 android:layout_height="wrap_content">
             <com.eaglesakura.andriders.ui.widget.AppHeaderView
                     app:headerIcon="@drawable/ic_record"
-                    app:headerText="@{item.sessionDayText}"
+                    app:headerText="@{item.sessionTimeRangeText}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -26,11 +26,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
-                        app:keyText="セッション数"
-                        app:valueText="@{item.sessionCountText}"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
                 <com.eaglesakura.andriders.ui.widget.AppKeyValueView
                         android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                         app:keyText="走行距離"
@@ -56,6 +51,44 @@
                         android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                         app:keyText="消費カロリー"
                         app:valueText="@{item.caloriesText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <include layout="@layout/esm_material_separator"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="自走時間"
+                        app:valueText="@{item.activeTimeText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="自走距離"
+                        app:valueText="@{item.activeDistanceKmText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="最高速度"
+                        app:valueText="@{item.maxSpeedKmhText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                <include layout="@layout/esm_material_separator"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="最高心拍"
+                        app:valueText="@{item.maxHeartrateText}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+                        android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+                        app:keyText="最高ケイデンス"
+                        app:valueText="@{item.maxCadenceText}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
             </LinearLayout>

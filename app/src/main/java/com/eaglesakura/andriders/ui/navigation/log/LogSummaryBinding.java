@@ -29,6 +29,8 @@ public class LogSummaryBinding {
 
     private static final SimpleDateFormat DEFAULT_DATE_FORMATTER = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
+    private static final SimpleDateFormat DEFAULT_TIME_FORMATTER = new SimpleDateFormat("HH:mm");
+
     private static final SimpleDateFormat DEFAULT_DAY_FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
 
     public String getSessionDayText() {
@@ -36,6 +38,19 @@ public class LogSummaryBinding {
             return getLoadingText();
         }
         return DEFAULT_DAY_FORMATTER.format(mLogStatistics.getStartDate());
+    }
+
+    /**
+     * 走行時刻のRangeを取得する
+     */
+    public String getSessionTimeRangeText() {
+        if (mLogStatistics == null) {
+            return getLoadingText();
+        }
+
+        return DEFAULT_TIME_FORMATTER.format(mLogStatistics.getStartDate())
+                + " - "
+                + DEFAULT_TIME_FORMATTER.format(mLogStatistics.getEndDate());
     }
 
     public String getStartDateText() {
