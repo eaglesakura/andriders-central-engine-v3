@@ -55,5 +55,21 @@ public class DateSessions {
         return CollectionUtil.safeEachRemove(mHeaders, header -> header.getSessionId() == sessionId) > 0;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DateSessions that = (DateSessions) o;
+
+        return mDateId == that.mDateId;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (mDateId ^ (mDateId >>> 32));
+    }
+
     public static final Comparator<DateSessions> COMPARATOR_DESC = (a, b) -> Long.compare(b.mDateId, a.mDateId);
 }

@@ -15,6 +15,7 @@ import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentMenu;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.margarine.OnMenuClick;
@@ -40,6 +41,9 @@ import java.util.List;
  */
 @FragmentMenu(R.menu.user_log_gpx)
 public class GpxImportMenuFragment extends AppFragment {
+
+    @BindInterface
+    Callback mCallback;
 
     /**
      * GPXの読み込みを開始する
@@ -137,6 +141,7 @@ public class GpxImportMenuFragment extends AppFragment {
             AppLog.report(error);
         }).completed((result, task) -> {
             AppLog.db("Completed :: %d sessions", result.size());
+            mCallback.onGpxImportCompleted(this, result);
         }).start();
     }
 

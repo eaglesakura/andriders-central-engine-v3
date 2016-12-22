@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.central.data.log.DateSessions;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
+import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.databinding.UserLogDailyRowBinding;
 import com.eaglesakura.andriders.databinding.UserLogTotalRowBinding;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
@@ -22,6 +23,7 @@ import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
@@ -40,7 +42,7 @@ import java.util.List;
  * ログ表示画面のメインFragment
  */
 @FragmentLayout(R.layout.user_log)
-public class TotalLogFragmentMain extends AppNavigationFragment implements SessionModifyListener {
+public class TotalLogFragmentMain extends AppNavigationFragment implements SessionModifyListener, GpxImportMenuFragment.Callback {
 
     /**
      * メニュー
@@ -94,9 +96,12 @@ public class TotalLogFragmentMain extends AppNavigationFragment implements Sessi
 
         if (sessionHeaders.isEmpty()) {
             mCallback.onSessionNotFound(this);
+            mLogAdapter.getCollection().clear();
         } else {
+            mLogAdapter.getCollection().clear();
             mLogAdapter.getCollection().add(null);  // 先頭はトータル値
             mLogAdapter.getCollection().addAll(sessionHeaders.listSessionDates().list());
+            mLogAdapter.notifyDataSetChanged();
         }
         mSessionDateList.setProgressVisibly(false, sessionHeaders.size());
     }
@@ -209,6 +214,12 @@ public class TotalLogFragmentMain extends AppNavigationFragment implements Sessi
             // まだ残ってるのでInvalidate
             mLogAdapter.notifyItemChanged(mLogAdapter.getCollection().indexOf(dateSessions));
         }
+    }
+
+    @Override
+    public void onGpxImportCompleted(GpxImportMenuFragment self, DataCollection<SessionInfo> sessions) {
+        // 再度ログをロードする
+        loadAllLogs();
     }
 
     public interface Callback {
