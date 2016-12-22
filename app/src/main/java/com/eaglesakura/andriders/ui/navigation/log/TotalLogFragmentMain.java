@@ -4,11 +4,11 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.DateSessions;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
+import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.databinding.UserLogDailyRowBinding;
 import com.eaglesakura.andriders.databinding.UserLogTotalRowBinding;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
-import com.eaglesakura.andriders.ui.navigation.LogDetailActivity;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
@@ -26,20 +26,21 @@ import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
+import com.eaglesakura.util.CollectionUtil;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 /**
  * ログ表示画面のメインFragment
  */
 @FragmentLayout(R.layout.user_log)
-public class TotalLogFragmentMain extends AppNavigationFragment {
+public class TotalLogFragmentMain extends AppNavigationFragment implements SessionModifyListener {
 
     /**
      * メニュー
@@ -156,21 +157,12 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
         }).completed((result, task) -> {
             UserLogDailyRowBinding binding = bind.getBinding();
             binding.setItem(new LogSummaryBinding(getContext(), result));
-            binding.Item.setOnClickListener(view -> onClickItem(bind.getItem()));
+            binding.Item.setOnClickListener(view -> {
+                mCallback.requestShowDetail(this, bind.getItem());
+            });
         }).failed((error, task) -> {
             AppLog.report(error);
         }).start();
-    }
-
-    /**
-     * セッションがクリックされた
-     */
-    @UiThread
-    void onClickItem(@Nullable DateSessions sessions) {
-        Intent intent = LogDetailActivity.Builder.from(getContext())
-                .session(sessions)
-                .build();
-        startActivity(intent);
     }
 
     /**
@@ -193,6 +185,32 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
         }).start();
     }
 
+    @Override
+    public void onDeleteSession(List<Long> sessions) {
+        if (CollectionUtil.isEmpty(sessions)) {
+            return;
+        }
+        // 日をチェックする
+        final long DATE_ID = SessionHeader.toDateId(sessions.get(0));
+        DateSessions dateSessions = mLogAdapter.getCollection().find(it -> it != null && it.getDateId() == DATE_ID);
+        if (dateSessions == null) {
+            return;
+        }
+
+        // 関連セッションを削除する
+        for (long sessionId : sessions) {
+            dateSessions.remove(sessionId);
+        }
+
+        if (dateSessions.isEmpty()) {
+            // セッションが全て消えてしまった
+            mLogAdapter.getCollection().remove(dateSessions);
+        } else {
+            // まだ残ってるのでInvalidate
+            mLogAdapter.notifyItemChanged(mLogAdapter.getCollection().indexOf(dateSessions));
+        }
+    }
+
     public interface Callback {
         /**
          * セッションが見つからなかった
@@ -203,5 +221,12 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
          * セッション情報ロードに失敗した
          */
         void onSessionLoadFailed(TotalLogFragmentMain self, Throwable error);
+
+        /**
+         * 詳細閲覧のリクエストを行う
+         *
+         * @param sessions 閲覧対象
+         */
+        void requestShowDetail(TotalLogFragmentMain self, DateSessions sessions);
     }
 }

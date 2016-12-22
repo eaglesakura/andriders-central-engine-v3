@@ -1,5 +1,7 @@
 package com.eaglesakura.andriders.central.data.log;
 
+import com.eaglesakura.util.CollectionUtil;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +25,10 @@ public class DateSessions {
         return mHeaders.get(0).getSessionId();
     }
 
+    public long getDateId() {
+        return mDateId;
+    }
+
     /**
      * 同じ日の走行であればデータを追加してtrueを返却する。
      *
@@ -35,6 +41,18 @@ public class DateSessions {
         } else {
             return false;
         }
+    }
+
+    public int size() {
+        return mHeaders.size();
+    }
+
+    public boolean isEmpty() {
+        return mHeaders.isEmpty();
+    }
+
+    public boolean remove(long sessionId) {
+        return CollectionUtil.safeEachRemove(mHeaders, header -> header.getSessionId() == sessionId) > 0;
     }
 
     public static final Comparator<DateSessions> COMPARATOR_DESC = (a, b) -> Long.compare(b.mDateId, a.mDateId);

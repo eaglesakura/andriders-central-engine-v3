@@ -163,6 +163,11 @@ public class GpxImporterTest extends AppUnitTestCase {
                         statistics.getMaxSpeedKmh(),
                         statistics.getSumDistanceKm(), (int) statistics.getSumAltitudeMeter()
                 );
+
+                // 削除ができることを確認
+                logManager.delete(header);
+                // 削除が完了していることを確認
+                assertNull(logManager.listAllHeaders(() -> false).find(it -> it.getSessionId() == header.getSessionId()));
             });
         }
     }
@@ -243,5 +248,6 @@ public class GpxImporterTest extends AppUnitTestCase {
                 );
             });
         }
+
     }
 }

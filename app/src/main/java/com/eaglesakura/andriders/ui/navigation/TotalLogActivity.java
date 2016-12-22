@@ -1,20 +1,30 @@
 package com.eaglesakura.andriders.ui.navigation;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.central.data.log.DateSessions;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationActivity;
+import com.eaglesakura.andriders.ui.navigation.log.SessionModifyListener;
 import com.eaglesakura.andriders.ui.navigation.log.TotalLogFragmentMain;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
+import com.eaglesakura.android.framework.util.FragmentUtil;
+import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.material.widget.support.SupportProgressFragment;
+import com.eaglesakura.util.CollectionUtil;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+
+import java.util.List;
 
 /**
  * 全体ログサマリ表示用Activity
  */
 public class TotalLogActivity extends AppNavigationActivity implements TotalLogFragmentMain.Callback {
+
+    static final int REQUEST_SHOW_SESSIONS = 0x1200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,5 +51,29 @@ public class TotalLogActivity extends AppNavigationActivity implements TotalLogF
                 .positiveButton(R.string.Word_Common_OK, () -> finish())
                 .cancelable(false)
                 .show(mLifecycleDelegate);
+    }
+
+    @Override
+    public void requestShowDetail(TotalLogFragmentMain self, DateSessions sessions) {
+        Intent intent = LogDetailActivity.Builder.from(this)
+                .session(sessions)
+                .build();
+        startActivityForResult(intent, REQUEST_SHOW_SESSIONS);
+    }
+
+    /**
+     * セッション詳細の表示を完了した
+     */
+    @OnActivityResult(REQUEST_SHOW_SESSIONS)
+    void resultShowSessions(int result, Intent data) {
+        List<Long> deletedSessions = LogDetailActivity.getDeletedSessions(data);
+        if (CollectionUtil.isEmpty(deletedSessions)) {
+            return;
+        }
+
+        // 削除命令を伝える
+        for (SessionModifyListener listener : FragmentUtil.listInterfaces(getSupportFragmentManager(), SessionModifyListener.class)) {
+            listener.onDeleteSession(deletedSessions);
+        }
     }
 }

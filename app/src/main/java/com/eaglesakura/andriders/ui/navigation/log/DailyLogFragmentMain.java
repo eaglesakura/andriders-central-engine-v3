@@ -153,6 +153,12 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
                     .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
             mAdapter.getCollection().remove(session);
+
+            // 親に動作を伝える
+            mCallback.onSessionDeleted(this, session);
+            if (mAdapter.getCollection().isEmpty()) {
+                mCallback.onAllSessionDeleted(this);
+            }
         }).start();
     }
 
@@ -174,9 +180,14 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
 
     public interface Callback {
         /**
-         * 表示可能なセッションすべてが削除されてしまった
+         * セッションを削除した
          */
-        void onSessionDeleted(DailyLogFragmentMain self);
+        void onSessionDeleted(DailyLogFragmentMain self, SessionHeader header);
+
+        /**
+         * 表示可能なセッションがすべて削除された
+         */
+        void onAllSessionDeleted(DailyLogFragmentMain self);
 
         /**
          * ロードに失敗した
