@@ -46,14 +46,14 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
     protected void onResume() {
         super.onResume();
         // タイトルを再設定
-        setTitle(LogSummaryBinding.DEFAULT_DAY_FORMATTER.format(new Date(getSessionId())));
+        getSupportActionBar().setTitle(LogSummaryBinding.DEFAULT_DAY_FORMATTER.format(new Date(getSessionId())));
     }
 
     @NonNull
     @Override
     public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
         DailyLogFragmentMain fragmentMain = new DailyLogFragmentMain();
-        fragmentMain.setSampleSessionId(getIntent().getLongExtra(EXTRA_SESSION_ID, 0));
+        fragmentMain.setSampleSessionId(getSessionId());
         return fragmentMain;
     }
 
