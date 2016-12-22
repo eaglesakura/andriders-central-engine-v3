@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.dao.session.DaoMaster;
 import com.eaglesakura.andriders.dao.session.DaoSession;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
+import com.eaglesakura.andriders.dao.session.DbSessionPointDao;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
 import com.eaglesakura.andriders.error.io.AppDatabaseException;
@@ -281,6 +282,18 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      * 信頼できないGPS座標である
      */
     static final int POINT_FLAG_NO_REALIANCE = 2;
+
+    /**
+     * 指定したセッションをすべて削除する
+     *
+     * @param sessionId セッションID
+     */
+    public void deleteSession(long sessionId) throws AppException {
+        getSession().getDbSessionPointDao().queryBuilder()
+                .where(DbSessionPointDao.Properties.SessionId.eq(sessionId))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
+    }
 
     /**
      * データを挿入する

@@ -19,6 +19,7 @@
     <string name="Word.Common.Working">処理中</string>
     <string name="Word.Common.DataLoad">データ読込中</string>
     <string name="Word.Common.DataWrite">データ書込中</string>
+    <string name="Word.Common.DataDelete">データ削除中</string>
     <string name="Word.Common.Roadbike">ロードバイク</string>
     <string name="Word.Common.Install">インストール</string>
 
@@ -199,4 +200,6 @@
     <string name="Word.Central.SessionStart">セッション開始</string>
     <string name="Word.Central.SessionRunning">セッション記録中</string>
     <string name="Word.Common.Import">インポート</string>
+    <string name="Message.Log.DeleteThisSession">このセッションを削除しますか？\n削除されたセッションは元に戻せません。</string>
+    <string name="Message.Log.SessionDeleted">セッションを削除しました</string>
 </resources>

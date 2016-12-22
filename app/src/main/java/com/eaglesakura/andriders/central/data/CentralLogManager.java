@@ -48,6 +48,24 @@ public class CentralLogManager {
         return mSessionLogDatabaseRead.openReadOnly(SessionLogDatabase.class);
     }
 
+    SessionLogDatabase openWrite() {
+        return mSessionLogDatabaseRead.openReadOnly(SessionLogDatabase.class);
+    }
+
+    /**
+     * セッションを削除する
+     *
+     * @param session 削除対象セッション
+     */
+    public void delete(SessionHeader session) throws AppException {
+        try (SessionLogDatabase db = openWrite()) {
+            db.runInTx(() -> {
+                db.deleteSession(session.getSessionId());
+                return 0;
+            });
+        }
+    }
+
     /**
      * 全てのセッション情報を返却する
      */

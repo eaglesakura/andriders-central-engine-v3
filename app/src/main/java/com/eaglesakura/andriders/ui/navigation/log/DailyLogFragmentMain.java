@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.databinding.UserDailyLogSessionRowBinding;
 import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
+import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
@@ -31,6 +32,8 @@ import android.support.annotation.UiThread;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.Date;
 
 /**
  * 日次ログ表示Fragment
@@ -94,7 +97,6 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
 
     @UiThread
     void onLoadHeaders(SessionHeaderCollection sessionHeaders) {
-
         if (sessionHeaders.isEmpty()) {
             mCallback.onLogLoadFailed(this, new AppDataNotFoundException());
         } else {
@@ -114,10 +116,45 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
         protected void onBindCard(CardBind<SessionHeader> bind, int position) {
             UserDailyLogSessionRowBinding binding = bind.getBinding();
             binding.setItem(new LogSummaryBinding(getContext(), null));
+            binding.Item.setOnClickListener(view -> clickSession(bind.getItem()));
             // 1アイテムをロード
             loadSession(bind);
         }
     };
+
+    /**
+     * セッションカードをクリックした
+     */
+    @UiThread
+    void clickSession(SessionHeader session) {
+        AppDialogBuilder.newAlert(getContext(), R.string.Message_Log_DeleteThisSession)
+                .title(LogSummaryBinding.DEFAULT_TIME_FORMATTER.format(new Date(session.getSessionId())))
+                .positiveButton(R.string.Word_Common_Delete, () -> {
+                    deleteSession(session);
+                })
+                .negativeButton(R.string.Word_Common_Cancel, null)
+                .show(mLifecycleDelegate);
+    }
+
+    /**
+     * 指定セッションを削除する
+     */
+    @UiThread
+    void deleteSession(SessionHeader session) {
+        async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_DataDelete)) {
+                mCentralLogManager.delete(session);
+                return this;
+            }
+        }).failed((error, task) -> {
+            AppLog.report(error);
+        }).finalized(task -> {
+            AppDialogBuilder.newInformation(getContext(), R.string.Message_Log_SessionDeleted)
+                    .positiveButton(R.string.Word_Common_OK, null)
+                    .show(mLifecycleDelegate);
+            mAdapter.getCollection().remove(session);
+        }).start();
+    }
 
     /**
      * 1アイテムを読み込み、カードへ反映する
