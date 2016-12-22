@@ -6,14 +6,17 @@ import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.databinding.UserDailyLogSessionRowBinding;
+import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
+import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
@@ -21,7 +24,9 @@ import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
+import com.eaglesakura.material.widget.support.SupportRecyclerView;
 
+import android.os.Bundle;
 import android.support.annotation.UiThread;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +49,12 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
     @Inject(AppManagerProvider.class)
     CentralLogManager mCentralLogManager;
 
+    @BindInterface
+    Callback mCallback;
+
+    @Bind(R.id.Content_List)
+    SupportRecyclerView mListView;
+
     /**
      * 起点となるセッションを指定する
      */
@@ -54,6 +65,13 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
+        mListView.setAdapter(mAdapter, false);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        loadAllLogs();
     }
 
     /**
@@ -70,6 +88,7 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
             onLoadHeaders(result);
         }).failed((error, task) -> {
             AppLog.report(error);
+            mCallback.onLogLoadFailed(this, error);
         }).start();
     }
 
@@ -77,12 +96,11 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
     void onLoadHeaders(SessionHeaderCollection sessionHeaders) {
 
         if (sessionHeaders.isEmpty()) {
-            mCallback.onSessionNotFound(this);
+            mCallback.onLogLoadFailed(this, new AppDataNotFoundException());
         } else {
-            mLogAdapter.getCollection().add(null);  // 先頭はトータル値
-            mLogAdapter.getCollection().addAll(sessionHeaders.listSessionDates().list());
+            mAdapter.getCollection().addAll(sessionHeaders.list());
         }
-        mSessionDateList.setProgressVisibly(false, sessionHeaders.size());
+        mListView.setProgressVisibly(false, sessionHeaders.size());
     }
 
 
@@ -108,14 +126,24 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
     void loadSession(CardAdapter.CardBind<SessionHeader> bind) {
         async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
             CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).or(bind).build();
-            try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
-                return mCentralLogManager.loadSessionStatistics(bind.getItem(), cancelCallback);
-            }
+            return mCentralLogManager.loadSessionStatistics(bind.getItem(), cancelCallback);
         }).completed((result, task) -> {
             UserDailyLogSessionRowBinding binding = bind.getBinding();
             binding.setItem(new LogSummaryBinding(getContext(), result));
         }).failed((error, task) -> {
             AppLog.report(error);
         }).start();
+    }
+
+    public interface Callback {
+        /**
+         * 表示可能なセッションすべてが削除されてしまった
+         */
+        void onSessionDeleted(DailyLogFragmentMain self);
+
+        /**
+         * ロードに失敗した
+         */
+        void onLogLoadFailed(DailyLogFragmentMain self, Throwable error);
     }
 }

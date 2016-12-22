@@ -27,11 +27,11 @@ public class LogSummaryBinding {
         return mContext.getString(R.string.Word_Common_DataLoad);
     }
 
-    private static final SimpleDateFormat DEFAULT_DATE_FORMATTER = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    public static final SimpleDateFormat DEFAULT_DATE_FORMATTER = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
-    private static final SimpleDateFormat DEFAULT_TIME_FORMATTER = new SimpleDateFormat("HH:mm");
+    public static final SimpleDateFormat DEFAULT_TIME_FORMATTER = new SimpleDateFormat("HH:mm");
 
-    private static final SimpleDateFormat DEFAULT_DAY_FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
+    public static final SimpleDateFormat DEFAULT_DAY_FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
 
     public String getSessionDayText() {
         if (mLogStatistics == null) {

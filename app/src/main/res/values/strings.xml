@@ -111,7 +111,6 @@
         <item></item>
     </string-array>
 
-
     <!-- コマンド起動 -->
     <string name="Title.Command.ChooseApp">起動するアプリを選択</string>
 
@@ -158,6 +157,7 @@
     <!-- 走行ログ -->
     <string name="Title.Log">走行ログ</string>
     <string name="Word.Log.ImportGPX">GPX形式で読込</string>
+    <string name="Message.Log.AllSessionDeleted">セッションがすべて削除されました</string>
 
     <!-- 内蔵プラグイン -->
     <string name="Title.Plugin">プラグイン設定</string>
@@ -173,7 +173,8 @@
     <string name="Message.Plugin.BleSpeedAndCadence.Search">スピード・ケイデンスセンサー検索中...</string>
     <string name="Message.Plugin.BleSpeedAndCadence.Connected">スピード・ケイデンスセンサー接続</string>
     <string name="Message.Plugin.BleSpeedAndCadence.Disconnected">スピード・ケイデンスセンサー切断</string>
-    <string name="Message.Plugin.BleSpeedAndCadence.Battery">"スピード・ケイデンスセンサー\nバッテリー残量 %1$d%%"</string>
+    <string name="Message.Plugin.BleSpeedAndCadence.Battery">"スピード・ケイデンスセンサー\nバッテリー残量 %1$d%%"
+    </string>
 
     <!-- センサーー画面 -->
     <string name="Title.Gadget">センサー・周辺機器</string>

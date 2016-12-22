@@ -43,7 +43,6 @@
                         android:layout_height="wrap_content"/>
 
                 <com.eaglesakura.andriders.ui.widget.AppKeyValueView
-                        android:id="@+id/LongestDistance"
                         android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
                         app:keyText="1日最長到達距離"
                         app:valueText="@{item.longestDateDistanceText}"

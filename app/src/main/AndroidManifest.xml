@@ -68,6 +68,10 @@
         <activity android:name="com.eaglesakura.andriders.ui.navigation.TotalLogActivity"
                   android:screenOrientation="portrait"
                   android:label="@string/Title.Log"/>
+        <activity android:name="com.eaglesakura.andriders.ui.navigation.LogDetailActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/Title.Log">
+        </activity>
         <service android:name="com.eaglesakura.andriders.service.CentralSessionService">
         </service>
 

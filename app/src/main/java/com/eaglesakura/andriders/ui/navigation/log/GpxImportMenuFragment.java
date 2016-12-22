@@ -139,4 +139,11 @@ public class GpxImportMenuFragment extends AppFragment {
             AppLog.db("Completed :: %d sessions", result.size());
         }).start();
     }
+
+    public interface Callback {
+        /**
+         * セッションが読み込み終わった
+         */
+        void onGpxImportCompleted(GpxImportMenuFragment self, DataCollection<SessionInfo> sessions);
+    }
 }

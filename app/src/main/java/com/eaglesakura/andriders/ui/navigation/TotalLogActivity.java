@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 /**
- * サイコンディスプレイ表示内容セットアップ
+ * 全体ログサマリ表示用Activity
  */
 public class TotalLogActivity extends AppNavigationActivity implements TotalLogFragmentMain.Callback {
 
@@ -39,6 +39,7 @@ public class TotalLogActivity extends AppNavigationActivity implements TotalLogF
     public void onSessionLoadFailed(TotalLogFragmentMain self, Throwable error) {
         AppDialogBuilder.newError(this, error)
                 .positiveButton(R.string.Word_Common_OK, () -> finish())
+                .cancelable(false)
                 .show(mLifecycleDelegate);
     }
 }

@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.databinding.UserLogDailyRowBinding;
 import com.eaglesakura.andriders.databinding.UserLogTotalRowBinding;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.ui.navigation.LogDetailActivity;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
@@ -26,7 +27,9 @@ import com.eaglesakura.material.widget.adapter.CardAdapter;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
 import com.eaglesakura.material.widget.support.SupportRecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -133,6 +136,7 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
                 // 日次表示
                 UserLogDailyRowBinding binding = bind.getBinding();
                 binding.setItem(new LogSummaryBinding(getContext(), null));
+                binding.Item.setOnClickListener(null);
                 loadDailySessions(bind.getItem(), bind);
             }
         }
@@ -152,9 +156,21 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
         }).completed((result, task) -> {
             UserLogDailyRowBinding binding = bind.getBinding();
             binding.setItem(new LogSummaryBinding(getContext(), result));
+            binding.Item.setOnClickListener(view -> onClickItem(bind.getItem()));
         }).failed((error, task) -> {
             AppLog.report(error);
         }).start();
+    }
+
+    /**
+     * セッションがクリックされた
+     */
+    @UiThread
+    void onClickItem(@Nullable DateSessions sessions) {
+        Intent intent = LogDetailActivity.Builder.from(getContext())
+                .session(sessions)
+                .build();
+        startActivity(intent);
     }
 
     /**
@@ -173,6 +189,7 @@ public class TotalLogFragmentMain extends AppNavigationFragment {
             binding.setItem(new LogSummaryBinding(getContext(), result));
         }).failed((error, task) -> {
             AppLog.report(error);
+            // エラーは捨てる
         }).start();
     }
 
