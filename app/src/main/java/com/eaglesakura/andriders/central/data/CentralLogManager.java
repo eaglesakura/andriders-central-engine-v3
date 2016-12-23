@@ -6,10 +6,12 @@ import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
+import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.lambda.Action1;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.Timer;
@@ -115,6 +117,23 @@ public class CentralLogManager {
     public LogStatistics loadAllStatistics(CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try (SessionLogDatabase db = openReadOnly()) {
             return db.loadTotal(0, 0, cancelCallback);
+        }
+    }
+
+    /**
+     * 指定した日のセッションを列挙する
+     *
+     * @param action 実行内容
+     * @return チェックされたポイント数
+     */
+    public int eachDailySessionPoints(long now, Action1<RawCentralData> action, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+        Date dateStart = DateUtil.getDateStart(new Date(now), mTimeZone);
+        long dateEnd = dateStart.getTime() + Timer.toMilliSec(1, 0, 0, 0, 0) - 1;
+        try (SessionLogDatabase db = openReadOnly()) {
+            return db.runInTx(() -> db.eachSessionPoints(dateStart.getTime(), dateEnd, action, cancelCallback));
+        } catch (Throwable e) {
+            AppException.throwAppExceptionOrTaskCanceled(e);
+            return 0;
         }
     }
 }

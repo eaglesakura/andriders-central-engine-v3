@@ -26,6 +26,7 @@ import com.eaglesakura.collection.StringFlag;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.geo.GeohashGroup;
 import com.eaglesakura.json.JSON;
+import com.eaglesakura.lambda.Action1;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Util;
@@ -147,6 +148,46 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
             return result;
         } catch (IOException e) {
             throw new AppDatabaseException(e);
+        }
+    }
+
+    /**
+     * 指定した範囲のログ打刻点を列挙する
+     *
+     * @param action 実行内容
+     * @return チェックされたポイント数
+     */
+    public int eachSessionPoints(long startTime, long endTime, Action1<RawCentralData> action, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+
+        String whereTime = getDateRangeQuery(startTime, endTime);
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT CENTRAL_JSON, DATE\n" +
+                "FROM DB_SESSION_POINT\n");
+
+        if (!StringUtil.isEmpty(whereTime)) {
+            query.append("WHERE " + whereTime);
+        }
+        query.append(" ORDER BY DATE ASC");
+
+        try (SupportCursor cursor = logQuery(query.toString())) {
+            if (!cursor.moveToFirst()) {
+                return 0;
+            }
+
+            assertNotCanceled(cancelCallback);
+
+            int count = cursor.getCount();
+            do {
+                String json = cursor.nextString();
+                RawCentralData raw = JSON.decode(json, RawCentralData.class);
+                action.action(raw);
+            } while (cursor.moveToNext());
+            return count;
+        } catch (IOException e) {
+            throw new AppDatabaseException(e);
+        } catch (Throwable e) {
+            AppException.throwAppException(e);
+            return 0;
         }
     }
 

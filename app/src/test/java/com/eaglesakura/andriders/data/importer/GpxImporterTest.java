@@ -164,6 +164,17 @@ public class GpxImporterTest extends AppUnitTestCase {
                         statistics.getSumDistanceKm(), (int) statistics.getSumAltitudeMeter()
                 );
 
+                // すべてのポイントが列挙できることを確認
+                int points = logManager.eachDailySessionPoints(header.getSessionId(), point -> {
+                    assertNotNull(point);
+                    assertNotNull(point.centralStatus);
+                    assertNotNull(point.record);
+                    assertNotNull(point.session);
+                    assertNotNull(point.specs);
+                }, () -> false);
+                validate(points).from(10);
+                AppLog.test("Each Points num[%d]", points);
+
                 // 削除ができることを確認
                 logManager.delete(header);
                 // 削除が完了していることを確認

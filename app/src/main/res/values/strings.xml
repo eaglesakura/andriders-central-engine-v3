@@ -202,4 +202,5 @@
     <string name="Word.Common.Import">インポート</string>
     <string name="Message.Log.DeleteThisSession">このセッションを削除しますか？\n削除されたセッションは元に戻せません。</string>
     <string name="Message.Log.SessionDeleted">セッションを削除しました</string>
+    <string name="Message.Log.UploadToGoogleFit">Google Fitへ保存</string>
 </resources>
