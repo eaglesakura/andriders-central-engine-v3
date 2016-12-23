@@ -68,12 +68,13 @@ public class GoogleFitUploader {
      * @param cancelCallback キャンセルチェック
      * @return アップロードしたセッション数
      */
-    public int uploadDaily(CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+    public int uploadDaily(UploadCallback callback, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(mContext), cancelCallback)) {
 
             // 統計情報をアップロードする
             SessionHeaderCollection sessionHeaderCollection = mCentralLogManager.listDailyHeaders(mSessionId, cancelCallback);
             for (SessionHeader header : sessionHeaderCollection.list()) {
+                callback.onUploadStart(this, header);
                 // セッションごとにアップロードする
                 LogStatistics logStatistics = mCentralLogManager.loadSessionStatistics(header, cancelCallback);
 
@@ -82,6 +83,8 @@ public class GoogleFitUploader {
 
                 // セッション統計をアップロードする
                 uploadConnection.commit(logStatistics, cancelCallback);
+
+                callback.onUploadCompleted(this, header);
             }
 
             return sessionHeaderCollection.size();
@@ -283,5 +286,17 @@ public class GoogleFitUploader {
                     .inject();
             return result;
         }
+    }
+
+    public interface UploadCallback {
+        /**
+         * セッションのアップロードを開始した
+         */
+        void onUploadStart(GoogleFitUploader self, SessionHeader session);
+
+        /**
+         * セッションのアップロードが完了した
+         */
+        void onUploadCompleted(GoogleFitUploader self, SessionHeader session);
     }
 }
