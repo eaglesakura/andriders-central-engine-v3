@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.model.display.DisplayLayoutGroup;
 import com.eaglesakura.andriders.plugin.CentralPlugin;
 import com.eaglesakura.andriders.plugin.CentralPluginCollection;
+import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.plugin.service.CentralInterfacePluginService;
@@ -83,14 +84,14 @@ public class DataMigrationManager {
         // 左上に速度
         {
             DisplayLayout layout = new DisplayLayout.Builder(DisplayLayout.getSlotId(0, 0))
-                    .bind(PLUGIN_ID, SpeedDisplaySender.DISPLAY_ID)
+                    .bind(PLUGIN_ID, new DisplayKey(mContext, SpeedDisplaySender.DISPLAY_ID).getId())
                     .build();
             layoutGroup.insertOrReplace(layout);
         }
         // 右上に最高速度
         {
             DisplayLayout layout = new DisplayLayout.Builder(DisplayLayout.getSlotId(1, 0))
-                    .bind(PLUGIN_ID, MaxSpeedDisplaySender.DISPLAY_ID)
+                    .bind(PLUGIN_ID, new DisplayKey(mContext, MaxSpeedDisplaySender.DISPLAY_ID).getId())
                     .build();
             layoutGroup.insertOrReplace(layout);
         }
