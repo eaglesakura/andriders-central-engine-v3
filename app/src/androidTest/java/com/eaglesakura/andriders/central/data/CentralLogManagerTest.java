@@ -12,7 +12,10 @@ public class CentralLogManagerTest extends AppDeviceTestCase {
     @Test
     public void 初回ロードは必ずnullとなる() throws Throwable {
         CentralLogManager logManager = Garnet.instance(AppManagerProvider.class, CentralLogManager.class);
-        assertNull(logManager.loadAllStatistics());
-        assertNull(logManager.loadTodayStatistics(System.currentTimeMillis()));
+        assertNull(logManager.loadAllStatistics(() -> false));
+        assertNull(logManager.loadDailyStatistics(System.currentTimeMillis(), () -> false));
+
+        // 空リストが返却される
+        validate(logManager.listAllHeaders(() -> false).list()).sizeIs(0);
     }
 }

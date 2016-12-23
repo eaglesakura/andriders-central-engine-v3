@@ -23,10 +23,11 @@
             android:icon="@drawable/ic_heart_beats"
             android:title="@string/Title.Gadget"/>
 
-    <!--<item-->
-            <!--android:id="@+id/Main.Menu.UserLog"-->
-            <!--android:icon="@drawable/ic_calendar"-->
-            <!--android:title="@string/Main.Menu.Activity"/>-->
+    <item
+            android:id="@+id/Menu.Log"
+            android:icon="@drawable/ic_calendar"
+            android:title="@string/Title.Log"/>
+
     <item
             android:id="@+id/Menu.Information"
             android:icon="@drawable/ic_info"

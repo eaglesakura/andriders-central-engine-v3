@@ -33,11 +33,6 @@ import java.util.TimeZone;
 public class AppUtil {
 
     /**
-     * ホイールの長さ設定
-     */
-    public static final int WHEEL_LENGTH_MAX = 2350;
-
-    /**
      * ミリ秒単位の時間を適当なフォーマットにかけて文字列として返す
      *
      * @param milliSeconds 時刻のミリ秒

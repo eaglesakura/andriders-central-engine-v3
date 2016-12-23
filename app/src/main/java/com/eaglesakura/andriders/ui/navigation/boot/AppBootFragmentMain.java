@@ -7,7 +7,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.data.migration.DataMigrationManager;
 import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
@@ -69,6 +71,9 @@ public class AppBootFragmentMain extends AppNavigationFragment {
 
     @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
+
+    @Inject(AppManagerProvider.class)
+    DataMigrationManager mMigrationManager;
 
     FirebaseAuthorizeManager mFirebaseAuthorizeManager = FirebaseAuthorizeManager.getInstance();
 
@@ -182,7 +187,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
 
             task.throwIfCanceled();
 
-            if (!mAppSettings.getConfig().requireFetch()) {
+            if (!mAppSettings.getConfig().requireFetch() && !mMigrationManager.requireMigration()) {
                 // Fetchが必須でない場合、起動をスキップできる
                 setBootSkipEnabled(true);
             }
@@ -201,6 +206,9 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             } finally {
                 AppLog.system("Config SyncTime[%d ms]", timer.end());
             }
+
+            // データマイグレーション
+            mMigrationManager.migration();
 
             AppLog.system("Boot Success");
             return this;

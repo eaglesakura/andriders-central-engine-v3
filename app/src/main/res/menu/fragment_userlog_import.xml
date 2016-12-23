@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item
-            android:id="@+id/UserLog.Import.GPX"
-            android:icon="@android:drawable/ic_dialog_info"
-            android:title="@string/Word.Log.ImportGPX"/>
-</menu>

@@ -53,9 +53,11 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         return super.onUnbind(intent);
     }
 
+    public static final String PLUGIN_ID = "basic_extension";
+
     @Override
     public PluginInformation getExtensionInformation(PluginConnection connection) {
-        PluginInformation info = new PluginInformation(this, "basic_extension");
+        PluginInformation info = new PluginInformation(this, PLUGIN_ID);
         info.setSummary("Andriders Central Engine 標準機能");
         info.setCategory(Category.CATEGORY_OTHERS);
         return info;

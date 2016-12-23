@@ -18,9 +18,6 @@ import com.squareup.otto.Subscribe;
 
 import android.support.annotation.NonNull;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * セッションログの書き込み管理コントローラ
  */
@@ -29,9 +26,7 @@ public class SessionLogController {
 
     SessionLogger mLogger;
 
-    Set<OnCommitListener> mCommitListeners = new HashSet<>();
-
-    @Inject(AppDatabaseProvider.class)
+    @Inject(value = AppDatabaseProvider.class, name = AppDatabaseProvider.NAME_WRITEABLE)
     SessionLogDatabase mDatabase;
 
     @NonNull
@@ -41,10 +36,6 @@ public class SessionLogController {
         mLifecycleDelegate.onCreate();
         mLogger = new SessionLogger(centralSession.getSessionInfo());
         mCommitTimer = new ClockTimer(centralSession.getSessionClock());
-    }
-
-    public void addListener(OnCommitListener listener) {
-        mCommitListeners.add(listener);
     }
 
     public static SessionLogController attach(ServiceLifecycleDelegate lifecycleDelegate, CentralSession session) {
@@ -93,13 +84,6 @@ public class SessionLogController {
         }
     }
 
-    public interface OnCommitListener {
-        /**
-         * データのコミットが行われた場合に呼び出される
-         */
-        void onCommit(SessionLogController self);
-    }
-
     private void commitAsync() {
         // コミット対象のキャッシュを持っていない
         if (!mLogger.hasPointCaches()) {
@@ -118,10 +102,6 @@ public class SessionLogController {
             System.gc();
 
             return this;
-        }).completed((result, task) -> {
-            for (OnCommitListener listener : mCommitListeners) {
-                listener.onCommit(this);
-            }
         }).start();
     }
 }

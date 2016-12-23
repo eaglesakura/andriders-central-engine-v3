@@ -111,8 +111,8 @@ public class CentralSession {
         CentralPluginCollection pluginCollection;
 
         // 既存のログを読み込む
-        LogStatistics allStatistics = mCentralLogManager.loadAllStatistics();
-        LogStatistics todayStatistics = mCentralLogManager.loadTodayStatistics(getSessionClock().now());
+        LogStatistics allStatistics = mCentralLogManager.loadAllStatistics(cancelCallback);
+        LogStatistics todayStatistics = mCentralLogManager.loadDailyStatistics(getSessionClock().now(), cancelCallback);
 
         // Centralモードで接続する
         {

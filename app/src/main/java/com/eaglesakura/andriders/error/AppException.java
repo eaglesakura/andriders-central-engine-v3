@@ -28,10 +28,21 @@ public class AppException extends AceException {
     }
 
     public static void throwAppException(Throwable e) throws AppException {
+
+        // RuntimeExceptionでラップされている場合、内部を確認する
+        if (e instanceof RuntimeException) {
+            while (e.getCause() != null && !(e.getCause() instanceof RuntimeException)) {
+                e = e.getCause();
+            }
+        }
+
         if (e instanceof AppException) {
             throw (AppException) e;
         } else {
-            if (e instanceof IOException) {
+            if (e instanceof Error) {
+                // Errorのハンドリングはそれに任せる
+                throw (Error) e;
+            } else if (e instanceof IOException) {
                 throw new AppIOException(e);
             } else if (e instanceof RemoteException) {
                 throw new PluginException(e);
