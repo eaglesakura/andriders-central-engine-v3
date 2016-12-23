@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/EsMaterial.Red.Window.Dark"
+              android:orientation="vertical">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="@dimen/EsMaterial.Button.Margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:orientation="horizontal"
+                      android:layout_height="wrap_content">
+
+            <ImageView android:layout_width="@dimen/App.Icon.Small"
+                       android:layout_height="@dimen/App.Icon.Small"
+                       android:layout_gravity="center"
+                       android:src="@mipmap/ic_launcher"/>
+            <ImageView android:layout_width="@dimen/App.Icon.Small"
+                       android:layout_height="@dimen/App.Icon.Small"
+                       android:layout_gravity="center"
+                       android:layout_marginLeft="@dimen/EsMaterial.Widget.Margin"
+                       android:src="@mipmap/ic_google_fit"/>
+            <TextView
+                    android:layout_marginLeft="@dimen/EsMaterial.Widget.Margin"
+                    android:textColor="@color/EsMaterial.Grey.750"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/Message.Log.UploadToGoogleFit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <TextView
+                android:textColor="@color/EsMaterial.Grey.750"
+                android:id="@+id/Item.Message"
+                android:textSize="@dimen/App.Font.Title"
+                android:layout_marginLeft="@dimen/EsMaterial.Widget.Margin"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+</LinearLayout>

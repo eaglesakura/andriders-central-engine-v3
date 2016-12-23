@@ -202,7 +202,7 @@
     <string name="Word.Common.Import">インポート</string>
     <string name="Message.Log.DeleteThisSession">このセッションを削除しますか？\n削除されたセッションは元に戻せません。</string>
     <string name="Message.Log.SessionDeleted">セッションを削除しました</string>
-    <string name="Message.Log.UploadToGoogleFit">Google Fitへ保存</string>
+    <string name="Message.Log.UploadToGoogleFit">Google Fitへアップロード中</string>
     <string name="Word.Fit.HeartrateName">A.C.E./Heartrate</string>
     <string name="Word.Fit.CadenceName">A.C.E./Cadence</string>
     <string name="Word.Fit.WheelRpmName">A.C.E./WheelRpm</string>
@@ -210,4 +210,8 @@
     <string name="Word.Fit.SessionIdentifier">A.C.E./Session/%1$d</string>
     <string name="Word.Fit.SessionDescription">"Session Andriders Central Engine %1$s"</string>
     <string name="Word.Fit.CaloriesName">A.C.E./Calories</string>
+    <string name="Message.Fit.UploadFailed">Google Fitへのアップロードに失敗しました。しばらく経ってから再度実行してください。</string>
+    <string name="Title.Fit.Service">GoogleFitアップロード</string>
+    <string name="Message.Fit.Completed">アップロード完了 %1$s</string>
+    <string name="Message.Fit.Notification">"セッション %1$s %2$s - %3$s"</string>
 </resources>

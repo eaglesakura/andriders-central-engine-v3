@@ -1,23 +1,25 @@
 package com.eaglesakura.andriders.service;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.central.data.CentralLogManager;
-import com.eaglesakura.andriders.provider.AppManagerProvider;
+import com.eaglesakura.andriders.central.data.log.SessionHeader;
+import com.eaglesakura.andriders.google.GoogleFitUploader;
 import com.eaglesakura.andriders.ui.navigation.log.LogSummaryBinding;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.material.widget.RemoteViewsBuilder;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
+import com.eaglesakura.material.widget.support.SupportRemoteViews;
 
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 
 import java.util.Date;
@@ -29,9 +31,6 @@ import java.util.concurrent.TimeUnit;
 public class FitnessCommitService extends IntentService {
     static final int NOTIFICATION_ID = 0x1212;
 
-    @Inject(AppManagerProvider.class)
-    CentralLogManager mCentralLogManager;
-
     /**
      * サンプリング対象のセッションID
      * これを含んだセッションをすべてアップロードする
@@ -41,6 +40,9 @@ public class FitnessCommitService extends IntentService {
     Notification mNotification;
 
     NotificationManager mNotificationManager;
+
+    PowerManager.WakeLock mCpuLock;
+    private SupportRemoteViews mNotificationView;
 
     public FitnessCommitService() {
         super("GoogleFitUpload");
@@ -53,23 +55,24 @@ public class FitnessCommitService extends IntentService {
 
         Garnet.inject(this);
 
+        mNotificationView = RemoteViewsBuilder.from(this, R.layout.upload_notification).build();
+
         // notificationを表示する
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setAutoCancel(true);
         builder.setTicker(getString(R.string.Env_AppName));
+        builder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_google_fit));
         builder.setSmallIcon(R.mipmap.ic_google_fit);
         builder.setWhen(System.currentTimeMillis());
-        builder.setContentText(getString(R.string.Message_Log_UploadToGoogleFit));
-
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_google_fit));
+        builder.setContent(mNotificationView.getRemoteViews());
         mNotification = builder.build();
-
         startForeground(NOTIFICATION_ID, mNotification);
+        mCpuLock = ContextUtil.cpuWakeLock(this, this);
     }
 
     @Override
     public void onDestroy() {
+        mCpuLock.release();
         stopForeground(true);
         super.onDestroy();
     }
@@ -78,34 +81,99 @@ public class FitnessCommitService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             // タイムアウト付きでキャンセルチェック
+            // 1時間以内に更新する
             CancelCallback cancelCallback =
                     SupportCancelCallbackBuilder.from(() -> false)
-                            .orTimeout(1000 * 60 * 30, TimeUnit.MILLISECONDS).build();
+                            .orTimeout(1000 * 60 * 60, TimeUnit.MILLISECONDS).build();
 
             long sessionId = intent.getLongExtra(EXTRA_SESSION_ID, 0);
-            UIHandler.await(() -> {
-                updateNotification(sessionId);
-                return 0;
-            });
+            GoogleFitUploader uploader = GoogleFitUploader.Builder.from(this)
+                    .session(sessionId)
+                    .build();
 
-            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(this), cancelCallback)) {
-                mCentralLogManager.eachDailySessionPoints(sessionId, centralData -> {
-                }, cancelCallback);
-            }
+            uploader.uploadDaily(new GoogleFitUploader.UploadCallback() {
+                @Override
+                public void onUploadStart(GoogleFitUploader self, SessionHeader session) {
+                    AppLog.system("GoogleFit upload completed [%d]", session.getSessionId());
+                    UIHandler.await(() -> {
+                        Date startDate = new Date(session.getSessionId());
+                        Date endDate = session.getEndDate();
+
+                        String message =
+                                getString(R.string.Message_Fit_Notification,
+                                        LogSummaryBinding.DEFAULT_DAY_FORMATTER.format(startDate),
+                                        LogSummaryBinding.DEFAULT_TIME_FORMATTER.format(startDate),
+                                        LogSummaryBinding.DEFAULT_TIME_FORMATTER.format(endDate)
+                                );
+                        updateNotification(message);
+                        return 0;
+                    });
+                }
+
+                @Override
+                public void onUploadCompleted(GoogleFitUploader self, SessionHeader session) {
+                    AppLog.system("GoogleFit upload completed [%d]", session.getSessionId());
+                }
+            }, cancelCallback);
+
+            String uploadedDay = LogSummaryBinding.DEFAULT_DAY_FORMATTER.format(new Date(sessionId));
+
+            // アップロード成功メッセージ
+            UIHandler.postUI(() -> addNotification(getString(R.string.Message_Fit_Completed, uploadedDay)));
         } catch (Exception e) {
             AppLog.report(e);
-        } finally {
-
+            // アップロード失敗メッセージ
+            UIHandler.postUI(() -> addNotification(getString(R.string.Message_Fit_UploadFailed)));
         }
+    }
+
+    /**
+     * アップロード失敗時のメッセージを流す
+     */
+    void addNotification(String message) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setAutoCancel(true);
+        builder.setTicker(getString(R.string.Env_AppName));
+        builder.setSmallIcon(R.mipmap.ic_google_fit);
+        builder.setWhen(System.currentTimeMillis());
+        builder.setContentText(message);
+        // 通知を表示する
+        mNotificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 
     /**
      * 通知を更新する
      */
-    void updateNotification(long sessionId) {
-        mNotification.tickerText = getString(R.string.Message_Log_UploadToGoogleFit)
-                + " " + LogSummaryBinding.DEFAULT_DAY_FORMATTER.format(new Date(sessionId));
+    void updateNotification(String message) {
+        AppLog.system("New Message[%s]", message);
+        mNotificationView.getRemoteViews().setTextViewText(R.id.Item_Message, message);
         mNotificationManager.notify(NOTIFICATION_ID, mNotification);
     }
 
+    public static class Builder {
+        Intent mIntent;
+
+        long mSessionId;
+
+        public static Builder from(Context context) {
+            Builder builder = new Builder();
+            builder.mIntent = new Intent(context, FitnessCommitService.class);
+            return builder;
+        }
+
+        public Builder session(SessionHeader session) {
+            mSessionId = session.getSessionId();
+            return this;
+        }
+
+        public Builder session(long sessionId) {
+            mSessionId = sessionId;
+            return this;
+        }
+
+        public Intent build() {
+            mIntent.putExtra(EXTRA_SESSION_ID, mSessionId);
+            return mIntent;
+        }
+    }
 }

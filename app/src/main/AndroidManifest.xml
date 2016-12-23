@@ -124,6 +124,9 @@
                 <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
             </intent-filter>
         </service>
+        <service android:name="com.eaglesakura.andriders.service.FitnessCommitService"
+                 android:process=":fit"
+                 android:label="@string/Title.Fit.Service"/>
     </application>
 
 </manifest>
