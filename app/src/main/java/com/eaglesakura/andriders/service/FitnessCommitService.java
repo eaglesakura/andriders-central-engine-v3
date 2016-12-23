@@ -73,6 +73,7 @@ public class FitnessCommitService extends IntentService {
     @Override
     public void onDestroy() {
         mCpuLock.release();
+        mNotificationView.dispose();
         stopForeground(true);
         super.onDestroy();
     }
@@ -94,7 +95,7 @@ public class FitnessCommitService extends IntentService {
             uploader.uploadDaily(new GoogleFitUploader.UploadCallback() {
                 @Override
                 public void onUploadStart(GoogleFitUploader self, SessionHeader session) {
-                    AppLog.system("GoogleFit upload completed [%d]", session.getSessionId());
+                    AppLog.system("GoogleFit upload start [%d]", session.getSessionId());
                     UIHandler.await(() -> {
                         Date startDate = new Date(session.getSessionId());
                         Date endDate = session.getEndDate();

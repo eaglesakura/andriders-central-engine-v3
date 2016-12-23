@@ -12,6 +12,7 @@ import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
@@ -39,7 +40,13 @@ import java.util.Date;
  * 日次ログ表示Fragment
  */
 @FragmentLayout(R.layout.user_daily_log)
-public class DailyLogFragmentMain extends AppNavigationFragment {
+public class DailyLogFragmentMain extends AppNavigationFragment implements GoogleFitUploadMenuFragment.Callback {
+
+    /**
+     * Google Fitアップロードメニュー
+     */
+    FragmentHolder<GoogleFitUploadMenuFragment> mFitUploadMenuFragment
+            = FragmentHolder.newInstance(this, GoogleFitUploadMenuFragment.class, 0).bind(mLifecycleDelegate);
 
     /**
      * 起点となるセッション
@@ -176,6 +183,11 @@ public class DailyLogFragmentMain extends AppNavigationFragment {
         }).failed((error, task) -> {
             AppLog.report(error);
         }).start();
+    }
+
+    @Override
+    public long getUploadTargetSessionId(GoogleFitUploadMenuFragment self) {
+        return mSampleSessionId;
     }
 
     public interface Callback {

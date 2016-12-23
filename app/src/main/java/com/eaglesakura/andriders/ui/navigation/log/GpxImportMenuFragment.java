@@ -50,7 +50,7 @@ public class GpxImportMenuFragment extends AppFragment {
      */
     @OnMenuClick(R.id.Menu_Import_Gpx)
     void clickImportGpx() {
-        AppDialogBuilder.newInformation(getContext(), "GPXファイルをインポートしますか？")
+        AppDialogBuilder.newInformation(getContext(), R.string.Message_Log_ImportGpx)
                 .positiveButton(R.string.Word_Common_OK, () -> {
                     AppLog.widget("Pick GPX File");
 
