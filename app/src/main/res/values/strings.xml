@@ -203,4 +203,11 @@
     <string name="Message.Log.DeleteThisSession">このセッションを削除しますか？\n削除されたセッションは元に戻せません。</string>
     <string name="Message.Log.SessionDeleted">セッションを削除しました</string>
     <string name="Message.Log.UploadToGoogleFit">Google Fitへ保存</string>
+    <string name="Word.Fit.HeartrateName">A.C.E./Heartrate</string>
+    <string name="Word.Fit.CadenceName">A.C.E./Cadence</string>
+    <string name="Word.Fit.WheelRpmName">A.C.E./WheelRpm</string>
+    <string name="Word.Fit.SessionName">A.C.E./Session</string>
+    <string name="Word.Fit.SessionIdentifier">A.C.E./Session/%1$d</string>
+    <string name="Word.Fit.SessionDescription">"Session Andriders Central Engine %1$s"</string>
+    <string name="Word.Fit.CaloriesName">A.C.E./Calories</string>
 </resources>
