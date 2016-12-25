@@ -256,6 +256,7 @@ public class SessionContext {
         @Override
         public void onClickToggleDisplay(CentralStatusBar self) {
             AppLog.system("Click ToogleDisplay");
+            mCentralDisplayWindow.toggleVisible();
         }
     };
 

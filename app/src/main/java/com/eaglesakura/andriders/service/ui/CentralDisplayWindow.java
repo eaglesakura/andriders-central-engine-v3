@@ -29,6 +29,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
@@ -117,8 +118,27 @@ public class CentralDisplayWindow {
         return mCentralDisplayBindManager;
     }
 
+    /**
+     * 通知用ウィンドウを取得する
+     */
     public CentralNotificationView getNotificationView() {
         return mNotificationView;
+    }
+
+    /**
+     * 表示をトグルする
+     * トグル対象はサイコンのみで、通知はレンダリングする
+     */
+    @UiThread
+    public void toggleVisible() {
+        if (mDataDisplay == null) {
+            return;
+        }
+        if (mDataDisplay.getVisibility() == View.VISIBLE) {
+            mDataDisplay.setVisibility(View.INVISIBLE);
+        } else {
+            mDataDisplay.setVisibility(View.VISIBLE);
+        }
     }
 
 
