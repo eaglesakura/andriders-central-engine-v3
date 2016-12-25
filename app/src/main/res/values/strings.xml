@@ -217,4 +217,5 @@
     <string name="Message.Fit.Notification">"セッション %1$s %2$s - %3$s"</string>
     <string name="Word.Log.UploadToGoogleFit">GoogleFitへアップロード</string>
     <string name="Message.Log.ImportGpx">GPXファイルをインポートしますか？</string>
+    <string name="Title.Sensor.Support">センサー補助機能</string>
 </resources>
