@@ -27,7 +27,7 @@ import java.util.List;
  * セッション制御のテスト
  */
 public class SessionControlConnectionTest extends AppDeviceTestCase {
-    
+
     List<RawCentralData> mReceivedDataList = new ArrayList<>();
 
     List<NotificationProtocol.RawNotification> mReceivedNotifications = new ArrayList<>();
