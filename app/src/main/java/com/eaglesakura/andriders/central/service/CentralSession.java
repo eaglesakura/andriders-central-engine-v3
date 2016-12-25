@@ -19,6 +19,7 @@ import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.Timer;
 
 import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -127,6 +128,16 @@ public class CentralSession {
 
         // State切り替えを通知する
         mStateBus.modified(new SessionState(SessionState.State.Running, this));
+
+        // 必要であればWi-Fiを切断する
+        if (mSessionInfo.getCentralServiceSettings().isWifiDisable()) {
+            try {
+                WifiManager wifiManager = (WifiManager) mSessionInfo.getContext().getSystemService(Context.WIFI_SERVICE);
+                wifiManager.setWifiEnabled(false);
+            } catch (Exception e) {
+                AppLog.report(e);
+            }
+        }
     }
 
     /**
