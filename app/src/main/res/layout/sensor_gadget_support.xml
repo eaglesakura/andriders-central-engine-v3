@@ -37,7 +37,7 @@
                         android:layout_height="wrap_content"/>
 
                 <android.support.v7.widget.SwitchCompat
-                        android:id="@+id/Button.GpsSupportEnable"
+                        android:id="@+id/Button.GpsSpeedEnable"
                         android:text="GPS速度を補助として利用する"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>

@@ -25,17 +25,28 @@ public class SensorSupportSettingFragment extends AppFragment {
 
         AQuery q = new AQuery(self.getView());
         q.id(R.id.Button_KillWiFi).checked(mAppSettings.getCentralSettings().isWifiDisable());
-
+        q.id(R.id.Button_GpsSpeedEnable).checked(mAppSettings.getCentralSettings().isGpsSpeedEnable());
     }
 
     /**
      * Wi-Fi強制OFFオプションが変更された
      *
-     * @param checked 強制OFFにする場合tru
+     * @param checked 強制OFFにする場合true
      */
     @OnCheckedChanged(R.id.Button_KillWiFi)
     void checkedKillWiFi(boolean checked) {
         mAppSettings.getCentralSettings().setWifiDisable(checked);
+        mAppSettings.commit();
+    }
+
+    /**
+     * GPS速度オプションが変更された
+     *
+     * @param checked GPS速度を有効化する場合true
+     */
+    @OnCheckedChanged(R.id.Button_GpsSpeedEnable)
+    void checkedGpsSpeed(boolean checked) {
+        mAppSettings.getCentralSettings().setGpsSpeedEnable(checked);
         mAppSettings.commit();
     }
 }

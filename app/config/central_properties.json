@@ -127,6 +127,12 @@
           "type": "float",
           "name": "gpsAccuracy",
           "value": "50"
+        },
+        {
+          "comment": "GPS速度を補助として利用する",
+          "type": "boolean",
+          "name": "gpsSpeedEnable",
+          "value": "true"
         }
       ]
     }
