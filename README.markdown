@@ -9,7 +9,7 @@
 | master | 最新ビルド（Nightly Build対象） |  [![Circle CI](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/master.svg?style=svg)](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/master) |
 | develop | 最新の開発版, DEBUG版デプロイ用 | [![Circle CI](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/develop.svg?style=svg)](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/develop) |
 | feature/id/{issue num} | issue対応 | - |
-| v3.0.x | リリースビルド（予定） | - |
+| v3.0.x | リリースビルド ver 3.0 | [![CircleCI](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/v3.0.x.svg?style=svg)](https://circleci.com/gh/eaglesakura/andriders-central-engine-v3/tree/v3.0.x) |
 
 ## 開発版インストール
 
