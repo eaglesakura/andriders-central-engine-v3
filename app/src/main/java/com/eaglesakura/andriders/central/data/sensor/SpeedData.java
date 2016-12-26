@@ -59,7 +59,7 @@ public class SpeedData extends BaseCalculator {
     public SpeedSource getSource() {
         if (mSensorSpeedCalculator.valid()) {
             return SpeedSource.Sensor;
-        } else if (mLocationSpeedCalculator.valid()) {
+        } else if (mLocationSpeedCalculator.validSpeed()) {
             return SpeedSource.GPS;
         } else {
             return SpeedSource.None;
@@ -72,7 +72,7 @@ public class SpeedData extends BaseCalculator {
     public double getSpeedKmh() {
         if (mSensorSpeedCalculator.valid()) {
             return mSensorSpeedCalculator.getSpeedKmh();
-        } else if (mLocationSpeedCalculator.valid()) {
+        } else if (mLocationSpeedCalculator.validSpeed()) {
             return mLocationSpeedCalculator.getSpeedKmh();
         } else {
             return 0;
@@ -86,7 +86,7 @@ public class SpeedData extends BaseCalculator {
      * ユースケースとしてはGPS OFFで室内トレーニングが考えられるため、センサーが反応しないかつGPSが有効のみGPS最高速度を取り出すことになる。
      */
     public double getMaxSpeedKmh() {
-        if (!mSensorSpeedCalculator.valid() && mLocationSpeedCalculator.valid()) {
+        if (!mSensorSpeedCalculator.valid() && mLocationSpeedCalculator.validSpeed()) {
             return mLocationSpeedCalculator.getMaxSpeedKmh();
         } else {
             return mSensorSpeedCalculator.getMaxSpeedKmh();
