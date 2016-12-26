@@ -21,7 +21,7 @@ public class SessionImportCommitter implements SessionImporter.Listener {
     @NonNull
     final Context mContext;
 
-    @Inject(AppDatabaseProvider.class)
+    @Inject(value = AppDatabaseProvider.class, name = AppDatabaseProvider.NAME_WRITEABLE)
     SessionLogDatabase mDatabase;
 
     /**

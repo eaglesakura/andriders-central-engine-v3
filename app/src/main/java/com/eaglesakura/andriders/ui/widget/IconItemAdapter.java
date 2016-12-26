@@ -5,6 +5,7 @@ import com.eaglesakura.android.framework.delegate.lifecycle.LifecycleDelegate;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.android.rx.ResultCollection;
 import com.eaglesakura.material.widget.adapter.CardAdapter;
 
 import android.content.Context;
@@ -43,12 +44,16 @@ public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends Ca
         binding.Icon.setVisibility(View.INVISIBLE);
 
         // 非同期でいアコンを処理する
-        mLifecycleDelegate.async(ExecuteTarget.LocalParallel, CallbackTime.Foreground,  (BackgroundTask<Drawable> task) -> bind.getItem().getIcon())
-                .completed((result, task) -> {
-                    binding.Icon.setImageDrawable(result);
-                    binding.Icon.setVisibility(View.VISIBLE);
-                })
-                .cancelSignal(task -> !bind.isBinded())
+        mLifecycleDelegate.async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<ResultCollection> task) -> {
+            return new ResultCollection()
+                    .put("main", bind.getItem().getIcon())
+                    .put("sub", bind.getItem().getSubIcon())
+                    ;
+        }).completed((result, task) -> {
+            binding.Icon.setImageDrawable(((Drawable) result.get("main")));
+            binding.SubIcon.setImageDrawable((Drawable) result.get("sub"));
+            binding.Icon.setVisibility(View.VISIBLE);
+        }).cancelSignal(task -> !bind.isBinded())
                 .start();
     }
 
@@ -66,6 +71,11 @@ public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends Ca
          * アイコン
          */
         Drawable getIcon();
+
+        /**
+         * 補助表記を行う
+         */
+        Drawable getSubIcon();
 
         /**
          * 表示タイトル
@@ -89,6 +99,11 @@ public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends Ca
         @Override
         public Drawable getIcon() {
             return mInfo.loadIcon(mContext.getPackageManager());
+        }
+
+        @Override
+        public Drawable getSubIcon() {
+            return null;
         }
 
         @Override

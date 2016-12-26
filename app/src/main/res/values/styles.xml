@@ -47,7 +47,10 @@
     <style name="App.Theme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColor">@color/EsMaterial.Red.50</item>
     </style>
-    <style name="App.Theme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="App.Theme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColor">@color/EsMaterial.Grey.800</item>
+    </style>
 
     <item name="Tag.SlotId" type="id"/>
+    <item name="Tag.SlotViewBinder" type="id"/>
 </resources>

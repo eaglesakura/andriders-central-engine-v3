@@ -18,12 +18,12 @@ import android.support.annotation.NonNull;
  * 心拍更新を行う
  */
 public class HeartrateDisplaySender extends DisplayDataSender {
-    public static final String DISPLAY_ID = "DISPLAY_ID_HEARTRATE";
+    public static final String DISPLAY_ID = "HEARTRATE";
 
     @NonNull
     private final ZoneColor mZoneColor;
 
-    @BindStringArray(R.array.Display_Heartrate_ZoneName)
+    @BindStringArray(R.array.Ace_Word_HeartrateZone)
     @NonNull
     String[] mZoneTitles;
 
@@ -51,7 +51,7 @@ public class HeartrateDisplaySender extends DisplayDataSender {
             data.setTimeoutMs(1000 * 5);   // 5秒心拍がなければ切断されている
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Display_Common_Heartrate));
+            value.setTitle(context.getString(R.string.Word_Display_Heartrate));
             value.setValue(String.valueOf(sensor.bpm));
             value.setBarColorARGB(mZoneColor.getColor(sensor.zone));
             value.setZoneText(mZoneTitles[sensor.zone.ordinal()]);
@@ -68,8 +68,8 @@ public class HeartrateDisplaySender extends DisplayDataSender {
             data.setTimeoutMs(1000 * 60);   // 5秒心拍がなければ切断されている
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Display_Common_Heartrate));
-            value.setValue(context.getString(R.string.Display_Common_Reconnect));
+            value.setTitle(context.getString(R.string.Word_Display_Heartrate));
+            value.setValue(context.getString(R.string.Word_Display_Reconnect));
             value.setBarColorARGB(0x00);
 
             data.setValue(value);
@@ -79,7 +79,7 @@ public class HeartrateDisplaySender extends DisplayDataSender {
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Display_Common_Heartrate));
+        result.setTitle(context.getString(R.string.Word_Display_Heartrate));
         result.setSummary(context.getString(R.string.Message_Display_HeartrateSummary));
         return result;
     }

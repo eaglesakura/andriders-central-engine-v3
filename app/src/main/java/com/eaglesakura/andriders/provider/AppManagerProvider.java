@@ -2,11 +2,11 @@ package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.data.display.DisplayLayoutManager;
+import com.eaglesakura.andriders.data.migration.DataMigrationManager;
 import com.eaglesakura.andriders.data.sensor.SensorDataManager;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
-import com.eaglesakura.andriders.service.command.ProximitySensorManager;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.provider.ContextProvider;
@@ -63,12 +63,11 @@ public class AppManagerProvider extends ContextProvider {
     }
 
     @Provide
-    public ProximitySensorManager provideProximitySensorManager() {
-        return new ProximitySensorManager(getContext());
+    public DataMigrationManager provideMigrationManager() {
+        return new DataMigrationManager(getApplication());
     }
 
     @Override
     public void onInjectCompleted(Object inject) {
-
     }
 }

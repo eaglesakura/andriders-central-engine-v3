@@ -48,12 +48,27 @@ public class DisplayLayoutManager extends CentralSettingManager {
     }
 
     /**
-     * 指定したpackageのレイアウトすべてを
+     * 指定したpackageのレイアウトすべてのレイアウトを列挙する
      */
     @NonNull
     public DisplayLayoutCollection list(@Nullable String packageName) {
         try (CentralSettingDatabase db = open()) {
             return db.listLayouts(wrapPackageName(packageName));
+        }
+    }
+
+    /**
+     * 指定したpackageのレイアウトすべてのレイアウトを列挙する
+     *
+     * レイアウトが空であれば、デフォルト構成を返す。
+     */
+    @NonNull
+    public DisplayLayoutCollection listOrDefault(@Nullable String packageName) {
+        DisplayLayoutCollection items = list(packageName);
+        if (items.isEmpty()) {
+            return list(null);
+        } else {
+            return items;
         }
     }
 

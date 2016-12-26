@@ -33,11 +33,6 @@ import java.util.TimeZone;
 public class AppUtil {
 
     /**
-     * ホイールの長さ設定
-     */
-    public static final int WHEEL_LENGTH_MAX = 2350;
-
-    /**
      * ミリ秒単位の時間を適当なフォーマットにかけて文字列として返す
      *
      * @param milliSeconds 時刻のミリ秒
@@ -49,14 +44,14 @@ public class AppUtil {
         if (sessionTimeHour == 0) {
             if (sessionTimeMinute == 0) {
                 // 秒だけ
-                return FrameworkCentral.getApplication().getString(R.string.Common_Formatter_Time_S, sessionTimeSec);
+                return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeS, sessionTimeSec);
             } else {
                 // 分秒
-                return FrameworkCentral.getApplication().getString(R.string.Common_Formatter_Time_MS, sessionTimeMinute, sessionTimeSec);
+                return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeMS, sessionTimeMinute, sessionTimeSec);
             }
         } else {
             // 時分
-            return FrameworkCentral.getApplication().getString(R.string.Common_Formatter_Time_HM, sessionTimeHour, sessionTimeMinute);
+            return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeHM, sessionTimeHour, sessionTimeMinute);
         }
     }
 
@@ -74,14 +69,6 @@ public class AppUtil {
         return moveLength;
     }
 
-
-//    public static LatLng toLatLng(RawGeoPoint geo) {
-//        if (geo == null) {
-//            return null;
-//        }
-//        return new LatLng(geo.latitude, geo.longitude);
-//    }
-//
 
     /**
      * コマンド設定を行うためのIntentを投げる

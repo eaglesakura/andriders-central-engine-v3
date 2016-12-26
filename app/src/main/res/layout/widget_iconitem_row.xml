@@ -18,12 +18,23 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <android.support.v7.widget.AppCompatImageView
-                        android:id="@+id/Icon"
-                        android:layout_gravity="center"
-                        android:layout_margin="@dimen/App.Icon.Large.Margin"
-                        android:layout_width="58dp"
-                        android:layout_height="58dp"/>
+                <FrameLayout android:layout_width="match_parent"
+                             android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/Icon"
+                            android:layout_gravity="center"
+                            android:layout_margin="@dimen/App.Icon.Large.Margin"
+                            android:layout_width="58dp"
+                            android:layout_height="58dp"/>
+
+                    <android.support.v7.widget.AppCompatImageView
+                            android:id="@+id/SubIcon"
+                            android:layout_gravity="right|bottom"
+                            android:layout_margin="@dimen/App.Icon.Large.Margin"
+                            android:layout_width="@dimen/App.Icon.Normal"
+                            android:layout_height="@dimen/App.Icon.Normal"/>
+                </FrameLayout>
 
                 <android.support.v7.widget.AppCompatTextView
                         android:text="@{item.title}"

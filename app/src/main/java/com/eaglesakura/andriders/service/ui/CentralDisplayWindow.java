@@ -3,19 +3,33 @@ package com.eaglesakura.andriders.service.ui;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
+import com.eaglesakura.andriders.data.display.DisplayBindManager;
+import com.eaglesakura.andriders.data.display.DisplayLayoutManager;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
+import com.eaglesakura.andriders.model.display.DisplayLayout;
+import com.eaglesakura.andriders.model.display.DisplayLayoutCollection;
+import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.provider.SessionManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.rx.BackgroundTask;
+import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.android.rx.ResultCollection;
+import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.android.util.ViewUtil;
+import com.eaglesakura.util.Timer;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
@@ -44,13 +58,33 @@ public class CentralDisplayWindow {
     private ViewGroup mDataDisplay;
 
     @NonNull
-    final Context mContext;
+    private final Context mContext;
 
     @NonNull
-    final WindowManager mWindowManager;
+    private final WindowManager mWindowManager;
 
     @Inject(SessionManagerProvider.class)
-    CentralNotificationManager mCentralNotificationManager;
+    private CentralNotificationManager mCentralNotificationManager;
+
+    @Inject(SessionManagerProvider.class)
+    private DisplayBindManager mCentralDisplayBindManager;
+
+    @Inject(AppManagerProvider.class)
+    private DisplayLayoutManager mDisplayLayoutManager;
+
+    /**
+     * 現在のレイアウト状態
+     */
+    @Nullable
+    private DisplayLayoutCollection mCurrentDisplayLayout;
+
+    @NonNull
+    private final ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
+
+    /**
+     * 最後にチェックした際のアプリケーションID
+     */
+    String mLastTopApplication;
 
     CentralDisplayWindow(@NonNull Context context) {
         mContext = context;
@@ -70,9 +104,43 @@ public class CentralDisplayWindow {
         return result;
     }
 
+    /**
+     * 通知レンダリング用のマネージャを取得する
+     */
     public CentralNotificationManager getCentralNotificationManager() {
         return mCentralNotificationManager;
     }
+
+    /**
+     * ディスプレイとの関連付けマネージャを取得する
+     */
+    public DisplayBindManager getCentralDisplayBindManager() {
+        return mCentralDisplayBindManager;
+    }
+
+    /**
+     * 通知用ウィンドウを取得する
+     */
+    public CentralNotificationView getNotificationView() {
+        return mNotificationView;
+    }
+
+    /**
+     * 表示をトグルする
+     * トグル対象はサイコンのみで、通知はレンダリングする
+     */
+    @UiThread
+    public void toggleVisible() {
+        if (mDataDisplay == null) {
+            return;
+        }
+        if (mDataDisplay.getVisibility() == View.VISIBLE) {
+            mDataDisplay.setVisibility(View.INVISIBLE);
+        } else {
+            mDataDisplay.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     /**
      * Sessionのステート変更通知をハンドリングする
@@ -84,6 +152,9 @@ public class CentralDisplayWindow {
             // ウィンドウを登録する
             initDisplayView();
             initNotificationDisplay();
+            refreshDeviceContext();
+
+            mLifecycleDelegate.onCreate();
         } else if (state.getState() == SessionState.State.Stopping) {
             // ウィンドウを削除する
             mWindowManager.removeView(mDataDisplay);
@@ -92,11 +163,18 @@ public class CentralDisplayWindow {
             mNotificationDisplay = null;
             mNotificationView = null;
             mDataDisplay = null;
+
+            mLifecycleDelegate.onDestroy();
         }
     }
 
+    /**
+     * サイコン用のViewを構築する
+     */
     private void initDisplayView() {
         mDataDisplay = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.central_display, null, false);
+        ((ViewGroup) mDataDisplay.findViewById(R.id.Container_DisplayRoot)).addView(DisplayLayoutManager.newStubLayout(mContext));
+
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
                 // レイアウトの幅 / 高さ設定
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
@@ -120,6 +198,9 @@ public class CentralDisplayWindow {
         mWindowManager.addView(mDataDisplay, layoutParams);
     }
 
+    /**
+     * フィードバック用のViewを構築する
+     */
     private void initNotificationDisplay() {
         mNotificationDisplay = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.central_notification, null);
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
@@ -148,6 +229,16 @@ public class CentralDisplayWindow {
         mNotificationView.setNotificationManager(mCentralNotificationManager);
     }
 
+    /**
+     * 前回のディスプレイ更新時間からの時間
+     */
+    private double mDisplayDeltaSec;
+
+    /**
+     * 前回のデバイス状態チェックからの時間
+     */
+    private double mDeviceCheckDeltaSec;
+
     @Subscribe
     private void onAnimationFrame(AnimationFrame.Bus frame) {
 //        AppLog.system("onAnimationFrame frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
@@ -157,5 +248,50 @@ public class CentralDisplayWindow {
         if (mNotificationView != null) {
             mNotificationView.invalidate();
         }
+
+        mDisplayDeltaSec += frame.getDeltaSec();
+        mDeviceCheckDeltaSec += frame.getDeltaSec();
+
+        if (mDisplayDeltaSec > 1.0 && mCurrentDisplayLayout != null) {
+            for (DisplayLayout layout : mCurrentDisplayLayout.getSource()) {
+                mCentralDisplayBindManager.bind(layout, mDataDisplay);
+            }
+            mDisplayDeltaSec = 0;
+        }
+
+        if (mDeviceCheckDeltaSec > 0.5) {
+            // データをリフレッシュ
+            refreshDeviceContext();
+            mDeviceCheckDeltaSec = 0;
+        }
+    }
+
+    /**
+     * デバイス状態を更新する
+     */
+    @UiThread
+    void refreshDeviceContext() {
+        Timer timer = new Timer();
+        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<ResultCollection> task) -> {
+            String currentAppPackage = PackageUtil.getTopApplicationPackage(mContext);
+            DisplayLayoutCollection collection = mCurrentDisplayLayout;
+            if (!currentAppPackage.equals(mLastTopApplication)) {
+                // レイアウト構成をリロードする
+                collection = mDisplayLayoutManager.listOrDefault(currentAppPackage);
+            }
+            return new ResultCollection()
+                    .put("list", collection)
+                    .put("package", currentAppPackage);
+        }).completed((result, task) -> {
+            mCurrentDisplayLayout = result.get("list");
+
+            String packageName = result.get("package");
+            if (mLastTopApplication == null || !mLastTopApplication.equals(packageName)) {
+                AppLog.system("Loaded package[%s] Layout[%d] LoadTime[%d ms]", packageName, mCurrentDisplayLayout.size(), timer.end());
+            }
+            mLastTopApplication = packageName;
+        }).failed((error, task) -> {
+            AppLog.printStackTrace(error);
+        }).start();
     }
 }

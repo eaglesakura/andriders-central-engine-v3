@@ -3,33 +3,34 @@
     <item
             android:id="@+id/Menu.Profile"
             android:icon="@drawable/ic_bicycle"
-            android:title="@string/Main.Menu.Profile"/>
+            android:title="@string/Title.Profile"/>
 
     <item
             android:id="@+id/Menu.CycleComputer"
             android:icon="@drawable/ic_cycle_computer"
-            android:title="@string/Main.Menu.CycleComputer"/>
+            android:title="@string/Title.Display"/>
     <item
             android:id="@+id/Menu.Commands"
             android:icon="@drawable/ic_command"
-            android:title="@string/Main.Menu.Commands"/>
+            android:title="@string/Title.Command"/>
 
     <item
             android:id="@+id/Menu.Plugins"
             android:icon="@drawable/ic_plugins"
-            android:title="@string/Main.Menu.Plugins"/>
+            android:title="@string/Title.Plugin"/>
     <item
             android:id="@+id/Menu.Gadgets"
             android:icon="@drawable/ic_heart_beats"
-            android:title="@string/Main.Menu.Gadgets"/>
+            android:title="@string/Title.Gadget"/>
 
-    <!--<item-->
-            <!--android:id="@+id/Main.Menu.UserLog"-->
-            <!--android:icon="@drawable/ic_calendar"-->
-            <!--android:title="@string/Main.Menu.Activity"/>-->
+    <item
+            android:id="@+id/Menu.Log"
+            android:icon="@drawable/ic_calendar"
+            android:title="@string/Title.Log"/>
+
     <item
             android:id="@+id/Menu.Information"
             android:icon="@drawable/ic_info"
-            android:title="@string/Main.Menu.Information"/>
+            android:title="@string/Title.About"/>
 
 </menu>

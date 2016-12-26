@@ -9,8 +9,10 @@ import com.eaglesakura.andriders.data.gpx.GpxSegment;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.error.io.AppDataNotSupportedException;
 import com.eaglesakura.andriders.error.io.AppIOException;
+import com.eaglesakura.andriders.gen.prop.CentralServiceSettings;
 import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.property.PropertyStore;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.io.CancelableInputStream;
 import com.eaglesakura.lambda.CancelCallback;
@@ -76,6 +78,30 @@ public class GpxImporter implements SessionImporter {
         }
     }
 
+    /**
+     * 新規にセッションを生成する
+     */
+    SessionInfo newSession(Clock clock) {
+        return new SessionInfo.Builder(mContext, clock) {
+            @Override
+            protected CentralServiceSettings newCentralServiceSettings(PropertyStore store) {
+                return new CentralServiceSettings(store) {
+                    @Override
+                    public boolean isGpsSpeedEnable() {
+                        // GPS Importでは常にGPS速度である
+                        return true;
+                    }
+
+                    @Override
+                    public float getGpsAccuracy() {
+                        // すべてを信頼する精度レベル
+                        return 50.0f;
+                    }
+                };
+            }
+        }.build();
+    }
+
 
     @Override
     public void install(@NonNull Listener listener, @Nullable CancelCallback cancelCallback) throws AppException, TaskCanceledException {
@@ -104,8 +130,7 @@ public class GpxImporter implements SessionImporter {
 
             Clock clock = new Clock(segment.getFirstPoint().getTime().getTime());
             // Import用のセッションを生成する
-            SessionInfo info = new SessionInfo.Builder(mContext, clock)
-                    .build();
+            SessionInfo info = newSession(clock);
             CentralDataManager centralDataManager = new CentralDataManager(info, null, null);
 
             // import開始を通知
@@ -120,7 +145,7 @@ public class GpxImporter implements SessionImporter {
                 RawGeoPoint location = pt.getLocation();
                 if (location != null) {
                     // 位置を書き込む
-                    centralDataManager.setLocation(location.latitude, location.longitude, location.altitude, 10.0);
+                    centralDataManager.setLocation(location.latitude, location.longitude, location.altitude, 1.0);
                 }
 
                 if (centralDataManager.onUpdate()) {

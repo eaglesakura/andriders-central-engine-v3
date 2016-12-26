@@ -4,7 +4,6 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.lifecycle.UiLifecycleDelegate;
-import com.eaglesakura.android.ui.spinner.BasicSpinnerAdapter;
 import com.eaglesakura.material.widget.SpinnerAdapterBuilder;
 import com.eaglesakura.util.StringUtil;
 
@@ -75,8 +74,8 @@ public class CommandEditDialogBuilder {
         AQuery q = new AQuery(view);
         q.id(R.id.Item_Value).text(String.valueOf(Math.max(extra.speedKmh, 1f)));
 
-        String[] footers = view.getResources().getStringArray(R.array.Command_Speed_TypeFooter);
-        SpinnerAdapterBuilder.fromStringArray(q.id(R.id.Selector_Type).getSpinner(), context, R.array.Command_Speed_TypeSelector)
+        String[] footers = view.getResources().getStringArray(R.array.Message_Command_Speed_Footer);
+        SpinnerAdapterBuilder.fromStringArray(q.id(R.id.Selector_Type).getSpinner(), context, R.array.Selector_Command_Speed)
                 .selected((position, text) -> {
                     String footer = footers[position];
                     if (StringUtil.isEmpty(footer)) {
@@ -100,7 +99,7 @@ public class CommandEditDialogBuilder {
         AQuery q = new AQuery(view);
 
 
-        SpinnerAdapterBuilder.fromStringArray(q.id(R.id.Selector_Type).getSpinner(), context, R.array.Command_Timer_TypeSelector).build();
+        SpinnerAdapterBuilder.fromStringArray(q.id(R.id.Selector_Type).getSpinner(), context, R.array.Selector_Command_Timer).build();
         q
                 .id(R.id.Selector_Type).setSelection(data.getInternalExtra().timerType)
                 .id(R.id.Item_Value).text(String.valueOf(extra.timerIntervalSec))

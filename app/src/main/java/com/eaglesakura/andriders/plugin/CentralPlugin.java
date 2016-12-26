@@ -2,11 +2,13 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.central.CentralDataUtil;
 import com.eaglesakura.andriders.central.data.CentralDataManager;
+import com.eaglesakura.andriders.data.display.DisplayBindManager;
 import com.eaglesakura.andriders.data.display.DisplayKeyCollection;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.notification.NotificationData;
+import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.internal.CentralDataCommand;
 import com.eaglesakura.andriders.plugin.internal.DisplayCommand;
 import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
@@ -72,6 +74,8 @@ public class CentralPlugin {
 
     private CentralNotificationManager.Holder mNotificationManagerHolder;
 
+    private DisplayBindManager.Holder mDisplayBindManagerHolder;
+
     @NonNull
     private final UserProfiles mUserProfiles;
 
@@ -96,6 +100,10 @@ public class CentralPlugin {
 
     public void setNotificationManager(CentralNotificationManager.Holder notificationManagerHolder) {
         mNotificationManagerHolder = notificationManagerHolder;
+    }
+
+    public void setDisplayBindManager(DisplayBindManager.Holder displayBindManagerHolder) {
+        mDisplayBindManagerHolder = displayBindManagerHolder;
     }
 
     public ComponentName getComponentName() {
@@ -304,15 +312,15 @@ public class CentralPlugin {
     }
 
     private void buildDisplayCommands() {
-//        /**
-//         * ディスプレイ情報を更新する
-//         */
-//        mCmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
-//            List<DisplayData> listCommands = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
-//            // 表示内容を更新する
-//            mDataDisplayManagerWorker.request(it -> it.putValue(PluginConnector.this, listCommands));
-//            return null;
-//        });
+        /**
+         * ディスプレイ情報を更新する
+         */
+        mCmdMap.addAction(DisplayCommand.CMD_setDisplayValue, (Object sender, String cmd, Payload payload) -> {
+            List<DisplayData> listCommands = DisplayData.deserialize(payload.getBuffer(), DisplayData.class);
+            // 表示内容を更新する
+            CentralDataUtil.execute(mDisplayBindManagerHolder, it -> it.putValue(listCommands));
+            return null;
+        });
 //
         /**
          * 通知を行う

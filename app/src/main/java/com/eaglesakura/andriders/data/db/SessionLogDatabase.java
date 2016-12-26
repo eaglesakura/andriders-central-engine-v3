@@ -1,9 +1,11 @@
 package com.eaglesakura.andriders.data.db;
 
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
+import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.dao.session.DaoMaster;
 import com.eaglesakura.andriders.dao.session.DaoSession;
 import com.eaglesakura.andriders.dao.session.DbSessionPoint;
+import com.eaglesakura.andriders.dao.session.DbSessionPointDao;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
 import com.eaglesakura.andriders.error.io.AppDatabaseException;
@@ -18,11 +20,14 @@ import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.sql.SupportCursor;
 import com.eaglesakura.collection.StringFlag;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.geo.GeohashGroup;
 import com.eaglesakura.json.JSON;
+import com.eaglesakura.lambda.Action1;
+import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Util;
 
@@ -35,8 +40,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
 
 /**
  * セッションごとのログを保持する
@@ -99,6 +107,91 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     }
 
     /**
+     * startTime～endTimeまでに開始されたセッションのID一覧を取得する
+     * セッションが見つからない場合は空リストを返す
+     *
+     * @param startTime 開始時刻
+     * @param endTime   終了時刻
+     */
+    @NonNull
+    public List<SessionHeader> loadHeaders(long startTime, long endTime, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+
+        String whereTime = getDateRangeQuery(startTime, endTime);
+
+        StringBuilder query = new StringBuilder();
+        query.append(
+                "SELECT SESSION_ID, " +
+                        " MIN(DATE) AS SORT_DATE, MAX(DATE)" +
+                        " FROM DB_SESSION_POINT");
+
+        if (!StringUtil.isEmpty(whereTime)) {
+            query.append(" WHERE " + whereTime);
+        }
+        query.append(" GROUP BY SESSION_ID ORDER BY SORT_DATE ASC");
+
+        try (SupportCursor cursor = logQuery(query.toString())) {
+            if (!cursor.moveToFirst()) {
+                return new ArrayList<>();
+            }
+
+            List<SessionHeader> result = new ArrayList<>();
+
+            do {
+                long sessionId = cursor.nextLong();
+                long sortDate = cursor.nextLong();
+                long endDate = cursor.nextLong();
+                result.add(new SessionHeader(sessionId, endDate));
+
+                assertNotCanceled(cancelCallback);
+            } while (cursor.moveToNext());
+
+            return result;
+        } catch (IOException e) {
+            throw new AppDatabaseException(e);
+        }
+    }
+
+    /**
+     * 指定した範囲のログ打刻点を列挙する
+     *
+     * @param action 実行内容
+     * @return チェックされたポイント数
+     */
+    public int eachSessionPoints(long startTime, long endTime, Action1<RawCentralData> action, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+
+        String whereTime = getDateRangeQuery(startTime, endTime);
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT CENTRAL_JSON, DATE\n" +
+                "FROM DB_SESSION_POINT\n");
+
+        if (!StringUtil.isEmpty(whereTime)) {
+            query.append("WHERE " + whereTime);
+        }
+        query.append(" ORDER BY DATE ASC");
+
+        try (SupportCursor cursor = logQuery(query.toString())) {
+            if (!cursor.moveToFirst()) {
+                return 0;
+            }
+
+            assertNotCanceled(cancelCallback);
+
+            int count = cursor.getCount();
+            do {
+                String json = cursor.nextString();
+                RawCentralData raw = JSON.decode(json, RawCentralData.class);
+                action.action(raw);
+            } while (cursor.moveToNext());
+            return count;
+        } catch (IOException e) {
+            throw new AppDatabaseException(e);
+        } catch (Throwable e) {
+            AppException.throwAppException(e);
+            return 0;
+        }
+    }
+
+    /**
      * startTime～endTimeまでに開始されたセッションの統計情報を返却する
      *
      * @param startTime 開始時刻, 0の場合はユーザーの全ログ探索
@@ -106,7 +199,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      * @return 合計値 / セッションが存在しない場合はnullを返却
      */
     @Nullable
-    public LogStatistics loadTotal(long startTime, long endTime) throws AppException {
+    public LogStatistics loadTotal(long startTime, long endTime, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
 
         String whereTime = getDateRangeQuery(startTime, endTime);
 
@@ -143,13 +236,24 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
         Date startDate = null;
         Date endDate = null;
 
+        int numSessions = 0;    // 含まれるセッション数
+        int numDates = 0;   // 含まれる日次数
+        double longestDateDistanceKm = 0;   // 最長到達距離
+        double maxDateAltitudeMeter = 0;    // 最大ヒルクライム高度
+
+
         try (SupportCursor cursor = logQuery(query.toString())) {
             if (!cursor.moveToFirst()) {
                 return null;
             }
 
+            // 現在チェック日のテンポラリ
+            long currentDateId = 0;
+            double currentDateDistance = 0;
+            double currentDateAltitude = 0;
             do {
                 long sessionId = cursor.nextLong();
+                long dateId = SessionHeader.toDateId(sessionId);
                 long sessionStartDate = cursor.nextLong();
                 long sessionEndDate = cursor.nextLong();
                 if (startDate == null) {
@@ -165,11 +269,31 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                 sumCalories += Util.getInt(cursor.nextInt(), 0);    // セッション単位の合計消費カロリーを更に足し込む
                 sumExercise += Util.getInt(cursor.nextInt(), 0);    // セッション単位の合計エクササイズを更に足し込む
 
-                sumDistanceKm += Util.getDouble(cursor.nextDouble(), 0.0);  // セッション単位の走行距離を合計する
-                sumAltitudeMeter += Util.getDouble(cursor.nextDouble(), 0.0);   // セッション単位の獲得標高を合計する
+                final double sessionDistance = Util.getDouble(cursor.nextDouble(), 0.0);  // セッション単位の走行距離
+                final double sessionAltitudeMeter = Util.getDouble(cursor.nextDouble(), 0.0);   // セッション単位の獲得標高
+                sumDistanceKm += sessionDistance; // セッション距離を加算する
+                sumAltitudeMeter += sessionAltitudeMeter; // セッション獲得標高を加算する
 
                 sumActiveDistanceKm += Util.getDouble(cursor.nextDouble(), 0.0);    // 自走距離を合計する
                 sumActiveTimeMs += Util.getLong(cursor.nextLong(), 0);              // 自走時間を合計する
+
+                if (dateId != currentDateId) {
+                    // 情報をリセットする
+                    ++numDates;
+                    currentDateId = dateId;
+                    currentDateDistance = 0;
+                    currentDateAltitude = 0;
+                }
+
+                // セッション日の走行距離を足し込む
+                currentDateDistance += sessionDistance;
+                currentDateAltitude += sessionAltitudeMeter;
+
+                // 日毎最大値をチェックする
+                longestDateDistanceKm = Math.max(longestDateDistanceKm, currentDateDistance);
+                maxDateAltitudeMeter = Math.max(maxDateAltitudeMeter, currentDateAltitude);
+                ++numSessions;
+                assertNotCanceled(cancelCallback);
             } while (cursor.moveToNext());
         } catch (IOException e) {
             throw new AppDatabaseException(e);
@@ -180,51 +304,9 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                 (int) sumActiveTimeMs, (float) sumActiveDistanceKm,
                 (float) sumAltitudeMeter, (float) sumDistanceKm,
                 (float) sumCalories, (float) sumExercise,
-                (short) maxCadence, (short) maxHeartrate, (float) maxSpeedKmh
+                (short) maxCadence, (short) maxHeartrate, (float) maxSpeedKmh,
+                numSessions, numDates, (float) longestDateDistanceKm, (float) maxDateAltitudeMeter
         );
-
-//        CloseableListIterator<DbSessionPoint> iterator = session.getDbSessionPointDao().queryBuilder()
-//                .where(DbSessionPointDao.Properties.Date.ge(startTime), DbSessionPointDao.Properties.Date.le(endTime))
-//                .orderAsc(DbSessionPointDao.Properties.Date)
-//                .listIterator();
-//
-//
-//        try {
-//
-//            int count = 0;
-//            while (iterator.hasNext()) {
-//                DbSessionPoint pt = iterator.next();
-//                if (startDate == null) {
-//                    startDate = pt.getDate();
-//                }
-//                endDate = pt.getDate();
-//                activeTimeMs = Util.getInt(pt.getValueActiveTimeMs(), activeTimeMs);
-//                activeDistanceKm = Util.getFloat(pt.getValueActiveDistanceKm(), activeDistanceKm);
-//                sumAltitudeMeter = Util.getFloat(pt.getValueRecordSumAltMeter(), sumAltitudeMeter);
-//                sumDistanceKm = Util.getFloat(pt.getValueRecordDistanceKm(), sumDistanceKm);
-//                calories = Util.getFloat(pt.getValueFitCalories(), calories);
-//                exercise = Util.getFloat(pt.getValueFitExercise(), exercise);
-//                maxCadence = Math.max(maxCadence, Util.getInt(pt.getValueCadence(), 0));
-//                maxHeartrate = (short) Math.max(maxHeartrate, Util.getInt(pt.getValueHeartrate(), 0));
-//
-//                if (pt.getValueSensorSpeed() != null) {
-//                    maxSpeedKmh = Math.max(maxSpeedKmh, pt.getValueSensorSpeed());
-//                } else if (pt.getValueGpsSpeed() != null) {
-//                    maxSpeedKmh = Math.max(maxSpeedKmh, pt.getValueGpsSpeed());
-//                }
-//                ++count;
-//            }
-//
-//            // ゼロポイントであれば、null返却
-//            if (count == 0) {
-//                return null;
-//            }
-//        } finally {
-//            IOUtil.close(iterator);
-//        }
-//
-//        return new LogStatistics(startDate, endDate, activeTimeMs, activeDistanceKm, sumAltitudeMeter, sumDistanceKm, calories, exercise, maxCadence, maxHeartrate, maxSpeedKmh);
-
     }
 
     /**
@@ -241,6 +323,18 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      * 信頼できないGPS座標である
      */
     static final int POINT_FLAG_NO_REALIANCE = 2;
+
+    /**
+     * 指定したセッションをすべて削除する
+     *
+     * @param sessionId セッションID
+     */
+    public void deleteSession(long sessionId) throws AppException {
+        getSession().getDbSessionPointDao().queryBuilder()
+                .where(DbSessionPointDao.Properties.SessionId.eq(sessionId))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
+    }
 
     /**
      * データを挿入する
@@ -288,6 +382,11 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                     // 中央の詳細なハッシュ指定
                     pt.setValueGeohash10(Geohash.encode(location.latitude, location.longitude, 10));
                     pt.setValueGeohash7Peripherals(geoFlags.toString());
+
+                    // 座標を転転記
+                    pt.setValueGpsLat((float) location.latitude);
+                    pt.setValueGpsLng((float) location.longitude);
+                    pt.setValueGpsAlt((float) location.altitude);
 
                     // 信頼性チェック
                     if (!location.locationReliance) {

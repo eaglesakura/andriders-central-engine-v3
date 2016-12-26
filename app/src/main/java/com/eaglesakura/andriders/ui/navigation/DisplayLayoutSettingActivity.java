@@ -35,7 +35,7 @@ public class DisplayLayoutSettingActivity extends AppNavigationActivity implemen
     @Override
     public void onPluginNotEnabled(DisplaySettingFragmentMain self) {
         AppDialogBuilder.newAlert(this, R.string.Message_Display_PluginNotEnabled)
-                .positiveButton(R.string.Common_OK, () -> {
+                .positiveButton(R.string.Word_Common_OK, () -> {
                     Intent intent = new Intent(this, PluginSettingActivity.class);
                     startActivity(intent);
                 })

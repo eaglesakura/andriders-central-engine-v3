@@ -109,51 +109,52 @@ public class DistanceCommandControllerTest extends AppUnitTestCase {
         dummyData.today.distanceKm = 50.0f;
 
         // セッション合計
+        final float INTERVAL_DISTANCE = 10.0f;
         {
             DistanceCommandController controller =
-                    new DistanceCommandController(getContext(), newCommand(10.0f, CommandData.DISTANCE_TYPE_SESSION, 0x00));
+                    new DistanceCommandController(getContext(), newCommand(INTERVAL_DISTANCE, CommandData.DISTANCE_TYPE_SESSION, 0x00));
             // 指定した距離が設定されている
-            validate(controller.mNextTriggerDistance).eq(10.0f);
+            validate(controller.mNextTriggerDistance).eq(INTERVAL_DISTANCE);
 
             // ダミーデータを受信させる
             controller.mDataHandler.onReceived(dummyData);
-            validate(controller.mCurrentDistance).eq(dummyData.session.distanceKm);
+            validate(controller.mNextTriggerDistance).eq(dummyData.session.distanceKm + INTERVAL_DISTANCE);
         }
 
         // セッションアクティブ
         {
             DistanceCommandController controller =
-                    new DistanceCommandController(getContext(), newCommand(10.0f, CommandData.DISTANCE_TYPE_SESSION, CommandData.DISTANCE_FLAG_ACTIVE_ONLY));
+                    new DistanceCommandController(getContext(), newCommand(INTERVAL_DISTANCE, CommandData.DISTANCE_TYPE_SESSION, CommandData.DISTANCE_FLAG_ACTIVE_ONLY));
             // 指定した距離が設定されている
-            validate(controller.mNextTriggerDistance).eq(10.0f);
+            validate(controller.mNextTriggerDistance).eq(INTERVAL_DISTANCE);
 
             // ダミーデータを受信させる
             controller.mDataHandler.onReceived(dummyData);
-            validate(controller.mCurrentDistance).eq(dummyData.session.activeDistanceKm);
+            validate(controller.mNextTriggerDistance).eq(dummyData.session.activeDistanceKm + INTERVAL_DISTANCE);
         }
 
         // 今日合計
         {
             DistanceCommandController controller =
-                    new DistanceCommandController(getContext(), newCommand(10.0f, CommandData.DISTANCE_TYPE_TODAY, 0x00));
+                    new DistanceCommandController(getContext(), newCommand(INTERVAL_DISTANCE, CommandData.DISTANCE_TYPE_TODAY, 0x00));
             // 指定した距離が設定されている
-            validate(controller.mNextTriggerDistance).eq(10.0f);
+            validate(controller.mNextTriggerDistance).eq(INTERVAL_DISTANCE);
 
             // ダミーデータを受信させる
             controller.mDataHandler.onReceived(dummyData);
-            validate(controller.mCurrentDistance).eq(dummyData.today.distanceKm);
+            validate(controller.mNextTriggerDistance).eq(dummyData.today.distanceKm + INTERVAL_DISTANCE);
         }
 
         // 今日アクティブ
         {
             DistanceCommandController controller =
-                    new DistanceCommandController(getContext(), newCommand(10.0f, CommandData.DISTANCE_TYPE_TODAY, CommandData.DISTANCE_FLAG_ACTIVE_ONLY));
+                    new DistanceCommandController(getContext(), newCommand(INTERVAL_DISTANCE, CommandData.DISTANCE_TYPE_TODAY, CommandData.DISTANCE_FLAG_ACTIVE_ONLY));
             // 指定した距離が設定されている
-            validate(controller.mNextTriggerDistance).eq(10.0f);
+            validate(controller.mNextTriggerDistance).eq(INTERVAL_DISTANCE);
 
             // ダミーデータを受信させる
             controller.mDataHandler.onReceived(dummyData);
-            validate(controller.mCurrentDistance).eq(dummyData.today.activeDistanceKm);
+            validate(controller.mNextTriggerDistance).eq(dummyData.today.activeDistanceKm + INTERVAL_DISTANCE);
         }
     }
 

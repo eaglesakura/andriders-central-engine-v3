@@ -77,8 +77,8 @@ public class CentralStatusBar {
     @UiThread
     private void onStartSessionInitialize(Service service, CentralSession session) {
         mNotification = NotificationBuilder.from(service)
-                .ticker(R.string.Word_App_AndridersCentralEngine)
-                .title(R.string.Word_App_AndridersCentralEngine)
+                .ticker(R.string.Word_Common_AndridersCentralEngine)
+                .title(R.string.Word_Common_AndridersCentralEngine)
                 .icon(R.mipmap.ic_launcher)
                 .showForeground(NOTIFICATION_ID);
 
@@ -100,7 +100,11 @@ public class CentralStatusBar {
                 .build()
                 .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
                     mCallback.onClickNotification(CentralStatusBar.this);
-                }));
+                })
+                .setOnClickListener(R.id.Button_ViewToggle, (self, viewId) -> {
+                    mCallback.onClickToggleDisplay(CentralStatusBar.this);
+                })
+        );
     }
 
     /**
@@ -146,5 +150,10 @@ public class CentralStatusBar {
          * 通知をクリックされた
          */
         void onClickNotification(CentralStatusBar self);
+
+        /**
+         * 表示・非表示のトグルが実行された
+         */
+        void onClickToggleDisplay(CentralStatusBar self);
     }
 }

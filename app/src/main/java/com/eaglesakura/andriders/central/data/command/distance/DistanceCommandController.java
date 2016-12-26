@@ -22,11 +22,6 @@ public class DistanceCommandController extends CommandController {
     float mNextTriggerDistance;
 
     /**
-     * 現在の走行距離
-     */
-    float mCurrentDistance;
-
-    /**
      * 距離情報を初期化済み
      */
     boolean mInitialized;
@@ -82,22 +77,24 @@ public class DistanceCommandController extends CommandController {
                 target = newData.today;
             }
 
+            double currentDistance;
+
             if ((internalExtra.flags & CommandData.DISTANCE_FLAG_ACTIVE_ONLY) != 0) {
                 // アクティブ距離をチェック
-                mCurrentDistance = target.activeDistanceKm;
+                currentDistance = target.activeDistanceKm;
             } else {
                 // 合計距離をチェック
-                mCurrentDistance = target.distanceKm;
+                currentDistance = target.distanceKm;
             }
 
             if (!mInitialized) {
                 // 例えば、既に100km走っている場合、すぐにトリガーが実行されてしまう。
                 // それを避けるため、初回受信時には反応距離を加算して次回実行距離を正しく扱う
-                mNextTriggerDistance += mCurrentDistance;
+                mNextTriggerDistance += currentDistance;
                 mInitialized = true;
             }
 
-            if (mCurrentDistance >= mNextTriggerDistance) {
+            if (currentDistance >= mNextTriggerDistance) {
                 // トリガーを実行
                 onTriggerTime();
 

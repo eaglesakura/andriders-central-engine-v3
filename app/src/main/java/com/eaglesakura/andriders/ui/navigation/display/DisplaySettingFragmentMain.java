@@ -51,7 +51,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
     void loadDisplayController() {
         asyncUI(task -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
-            try (ProgressToken token = pushProgress(R.string.Widget_Common_Load)) {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
                 mDisplayLayoutController.load(cancelCallback);
             }
             return this;
@@ -84,7 +84,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
         }).failed((error, task) -> {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
-                    .positiveButton(R.string.Common_OK, null)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }).start();
     }
@@ -103,7 +103,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
         }).failed((error, task) -> {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
-                    .positiveButton(R.string.Common_OK, null)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }).start();
     }
@@ -119,7 +119,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
         }).failed((error, task) -> {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
-                    .positiveButton(R.string.Common_OK, null)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }).start();
     }

@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.central.data.log;
 
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
+import com.eaglesakura.andriders.sensor.SpeedZone;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.ClockTimer;
@@ -73,10 +74,14 @@ public class SessionLogger {
      */
     private boolean isKeyPoint(RawCentralData data) {
         if (mInsertLogCount == 0) {
+            // 初回データは認める
             return true;
         }
 
-        if (data.sensor.speed != null && data.sensor.speed.speedKmh == data.record.maxSpeedKmh) {
+        // 速度があり、停止以外のステータスで、かつ速度が最高地点にあるならばコミット
+        if (data.sensor.speed != null
+                && data.sensor.speed.zone != SpeedZone.Stop
+                && data.sensor.speed.speedKmh == data.record.maxSpeedKmhSession) {
             // 速度が最高点に達している場合は強制的にコミットする
             return true;
         }
@@ -130,7 +135,7 @@ public class SessionLogger {
             if (mPointTimer.getClock().absDiff(mSessionInfo.getSessionId()) < (1000 * 30)) {
                 // 規定時間に満たない場合は保存しない
                 // BLEの接続不良で何度もセッションを立ち上げる可能性があるため、それを考慮する
-                AppLog.db("Session Write Canceled");
+                AppLog.db("Session Write Canceled / cache.num[%d]", mPoints.size());
                 return;
             }
 

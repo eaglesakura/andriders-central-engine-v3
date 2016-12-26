@@ -61,7 +61,7 @@ public class LayoutEditFragment extends AppFragment {
 
     @UiThread
     void updateLayout(DisplayLayout layout) {
-        ViewGroup stub = ViewUtil.findViewByMatcher(getView(), view -> Integer.valueOf(layout.getSlotId()).equals(view.getTag(R.id.Tag_SlotId)));
+        ViewGroup stub = (ViewGroup) getView().findViewById(layout.getSlotId());
 
         // 一旦個をすべて削除する
         AppCompatButton button;

@@ -33,7 +33,7 @@ public class SpeedCommandFragment extends CommandBaseFragment implements Fragmen
 
     final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_SPEED;
 
-    @BindStringArray(R.array.Command_Speed_TypeInfo)
+    @BindStringArray(R.array.Message_Command_Speed)
     protected String[] mInfoFormats;
 
     @Override

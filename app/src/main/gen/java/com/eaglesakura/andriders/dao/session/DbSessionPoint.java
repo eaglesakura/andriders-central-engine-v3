@@ -35,11 +35,32 @@ public class DbSessionPoint {
 
     @Index
     private Float valueGpsSpeed;
+
+    @Index
+    private Float valueGpsLat;
+
+    @Index
+    private Float valueGpsLng;
+
+    @Index
+    private Float valueGpsAlt;
+
+    @Index
     private Float valueFitCalories;
+
+    @Index
     private Float valueFitExercise;
+
+    @Index
     private Float valueRecordDistanceKm;
+
+    @Index
     private Float valueRecordSumAltMeter;
+
+    @Index
     private Float valueActiveDistanceKm;
+
+    @Index
     private Integer valueActiveTimeMs;
 
     @Index
@@ -60,7 +81,7 @@ public class DbSessionPoint {
     }
 
     @Generated
-    public DbSessionPoint(java.util.Date date, long sessionId, String centralJson, String valueFlags, Integer valueHeartrate, Integer valueCadence, Float valueSensorSpeed, Float valueGpsSpeed, Float valueFitCalories, Float valueFitExercise, Float valueRecordDistanceKm, Float valueRecordSumAltMeter, Float valueActiveDistanceKm, Integer valueActiveTimeMs, String valueGeohash10, String valueGeohash7Peripherals, int valueIntervalIndex) {
+    public DbSessionPoint(java.util.Date date, long sessionId, String centralJson, String valueFlags, Integer valueHeartrate, Integer valueCadence, Float valueSensorSpeed, Float valueGpsSpeed, Float valueGpsLat, Float valueGpsLng, Float valueGpsAlt, Float valueFitCalories, Float valueFitExercise, Float valueRecordDistanceKm, Float valueRecordSumAltMeter, Float valueActiveDistanceKm, Integer valueActiveTimeMs, String valueGeohash10, String valueGeohash7Peripherals, int valueIntervalIndex) {
         this.date = date;
         this.sessionId = sessionId;
         this.centralJson = centralJson;
@@ -69,6 +90,9 @@ public class DbSessionPoint {
         this.valueCadence = valueCadence;
         this.valueSensorSpeed = valueSensorSpeed;
         this.valueGpsSpeed = valueGpsSpeed;
+        this.valueGpsLat = valueGpsLat;
+        this.valueGpsLng = valueGpsLng;
+        this.valueGpsAlt = valueGpsAlt;
         this.valueFitCalories = valueFitCalories;
         this.valueFitExercise = valueFitExercise;
         this.valueRecordDistanceKm = valueRecordDistanceKm;
@@ -148,6 +172,30 @@ public class DbSessionPoint {
 
     public void setValueGpsSpeed(Float valueGpsSpeed) {
         this.valueGpsSpeed = valueGpsSpeed;
+    }
+
+    public Float getValueGpsLat() {
+        return valueGpsLat;
+    }
+
+    public void setValueGpsLat(Float valueGpsLat) {
+        this.valueGpsLat = valueGpsLat;
+    }
+
+    public Float getValueGpsLng() {
+        return valueGpsLng;
+    }
+
+    public void setValueGpsLng(Float valueGpsLng) {
+        this.valueGpsLng = valueGpsLng;
+    }
+
+    public Float getValueGpsAlt() {
+        return valueGpsAlt;
+    }
+
+    public void setValueGpsAlt(Float valueGpsAlt) {
+        this.valueGpsAlt = valueGpsAlt;
     }
 
     public Float getValueFitCalories() {

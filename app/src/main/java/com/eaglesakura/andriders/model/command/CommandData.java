@@ -151,6 +151,13 @@ public class CommandData extends DaoModel<DbCommand> {
         return mRaw.getPackageName();
     }
 
+    /**
+     * アイコンを読み込む
+     */
+    public Bitmap loadIcon() {
+        return ImageUtil.decode(mRaw.getIconPng());
+    }
+
     @Override
     @NonNull
     public DbCommand getRaw() {

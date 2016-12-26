@@ -19,12 +19,12 @@ import android.support.annotation.NonNull;
  * ケイデンス更新を行う
  */
 public class CadenceDisplaySender extends DisplayDataSender {
-    public static final String DISPLAY_ID = "DISPLAY_ID_CADENCE";
+    public static final String DISPLAY_ID = "CADENCE";
 
     @NonNull
     private final ZoneColor mZoneColor;
 
-    @BindStringArray(R.array.Display_Cadence_ZoneName)
+    @BindStringArray(R.array.Ace_Word_CadenceZone)
     @NonNull
     String[] mZoneTitles;
 
@@ -50,7 +50,7 @@ public class CadenceDisplaySender extends DisplayDataSender {
             DisplayData data = new DisplayData(context, DISPLAY_ID);
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Display_Common_Cadence));
+            value.setTitle(context.getString(R.string.Word_Display_Cadence));
             value.setValue(String.valueOf(sensor.rpm));
             value.setBarColorARGB(mZoneColor.getColor(sensor.zone));
             value.setZoneText(mZoneTitles[sensor.zone.ordinal()]);
@@ -67,8 +67,8 @@ public class CadenceDisplaySender extends DisplayDataSender {
             data.setTimeoutMs(1000 * 60);
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Display_Common_Cadence));
-            value.setValue(context.getString(R.string.Display_Common_Reconnect));
+            value.setTitle(context.getString(R.string.Word_Display_Cadence));
+            value.setValue(context.getString(R.string.Word_Display_Reconnect));
             value.setBarColorARGB(0x00);
 
             data.setValue(value);
@@ -78,7 +78,7 @@ public class CadenceDisplaySender extends DisplayDataSender {
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Display_Common_Cadence));
+        result.setTitle(context.getString(R.string.Word_Display_Cadence));
         result.setSummary(context.getString(R.string.Message_Display_CadenceSummary));
         return result;
     }

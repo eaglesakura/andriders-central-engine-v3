@@ -11,6 +11,7 @@ public class CentralServiceSettings extends com.eaglesakura.android.property.int
     public static final String ID_SPEEDCOMMANDENABLE = "CentralServiceSettings.speedCommandEnable";
     public static final String ID_DISTANCECOMMANDENABLE = "CentralServiceSettings.distanceCommandEnable";
     public static final String ID_GPSACCURACY = "CentralServiceSettings.gpsAccuracy";
+    public static final String ID_GPSSPEEDENABLE = "CentralServiceSettings.gpsSpeedEnable";
     
     public CentralServiceSettings(){ }
     public CentralServiceSettings(com.eaglesakura.android.property.PropertyStore store) { setPropertyStore(store); }
@@ -30,5 +31,7 @@ public class CentralServiceSettings extends com.eaglesakura.android.property.int
     public boolean isDistanceCommandEnable(){ return getBooleanProperty("CentralServiceSettings.distanceCommandEnable"); }
     public void setGpsAccuracy(float set){ setProperty("CentralServiceSettings.gpsAccuracy", set); }
     public float getGpsAccuracy(){ return getFloatProperty("CentralServiceSettings.gpsAccuracy"); }
+    public void setGpsSpeedEnable(boolean set){ setProperty("CentralServiceSettings.gpsSpeedEnable", set); }
+    public boolean isGpsSpeedEnable(){ return getBooleanProperty("CentralServiceSettings.gpsSpeedEnable"); }
     
 }

@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
@@ -15,8 +16,7 @@ import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
 import com.squareup.otto.Subscribe;
 
-import java.util.HashSet;
-import java.util.Set;
+import android.support.annotation.NonNull;
 
 /**
  * セッションログの書き込み管理コントローラ
@@ -26,18 +26,16 @@ public class SessionLogController {
 
     SessionLogger mLogger;
 
-    Set<OnCommitListener> mCommitListeners = new HashSet<>();
-
-    @Inject(AppDatabaseProvider.class)
+    @Inject(value = AppDatabaseProvider.class, name = AppDatabaseProvider.NAME_WRITEABLE)
     SessionLogDatabase mDatabase;
+
+    @NonNull
+    final ClockTimer mCommitTimer;
 
     private SessionLogController(CentralSession centralSession) {
         mLifecycleDelegate.onCreate();
         mLogger = new SessionLogger(centralSession.getSessionInfo());
-    }
-
-    public void addListener(OnCommitListener listener) {
-        mCommitListeners.add(listener);
+        mCommitTimer = new ClockTimer(centralSession.getSessionClock());
     }
 
     public static SessionLogController attach(ServiceLifecycleDelegate lifecycleDelegate, CentralSession session) {
@@ -70,21 +68,20 @@ public class SessionLogController {
     }
 
     /**
+     * データコミットをかける時間インターバル
+     */
+    private static final long COMMIT_INTERVAL_TIME_SEC = 1000 * 5;
+
+    /**
      * データが更新された
      */
     @Subscribe
     private void onSessionDataChanged(SessionData.Bus data) {
         mLogger.onUpdate(data.getLatestData());
-        if (mLogger.hasPointCaches()) {
+        if (mCommitTimer.overTimeMs(COMMIT_INTERVAL_TIME_SEC) && mLogger.hasPointCaches()) {
             commitAsync();
+            mCommitTimer.start();
         }
-    }
-
-    public interface OnCommitListener {
-        /**
-         * データのコミットが行われた場合に呼び出される
-         */
-        void onCommit(SessionLogController self);
     }
 
     private void commitAsync() {
@@ -100,11 +97,11 @@ public class SessionLogController {
                     return 0;
                 });
             }
+
+            // 同タイミングでキャッシュ削除のGCをかける
+            System.gc();
+
             return this;
-        }).completed((result, task) -> {
-            for (OnCommitListener listener : mCommitListeners) {
-                listener.onCommit(this);
-            }
         }).start();
     }
 }

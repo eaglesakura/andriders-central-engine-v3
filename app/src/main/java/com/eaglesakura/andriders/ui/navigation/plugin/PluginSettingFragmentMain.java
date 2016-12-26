@@ -48,16 +48,16 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
                     R.drawable.ic_single_module,
             };
             int[] TITLE_TABLE = {
-                    R.string.Extension_Category_Location,
-                    R.string.Extension_Category_Heartrate,
-                    R.string.Extension_Category_SpeedAndCadence,
-                    R.string.Extension_Category_Other,
+                    R.string.Title_PluginCategory_Location,
+                    R.string.Title_PluginCategory_Heartrate,
+                    R.string.Title_PluginCategory_SpeedAndCadence,
+                    R.string.Title_PluginCategory_Other,
             };
             int[] INFO_TABLE = {
-                    R.string.Extension_Category_Location_Information,
-                    R.string.Extension_Category_Heartrate_Information,
-                    R.string.Extension_Category_SpeedAndCadence_Information,
-                    R.string.Extension_Category_Other_Information,
+                    R.string.Message_PluginCategory_Location,
+                    R.string.Message_PluginCategory_Heartrate,
+                    R.string.Message_PluginCategory_SpeedAndCadence,
+                    R.string.Message_PluginCategory_Other,
             };
 
             Category[] CATEGORY_TABLE = {
@@ -84,7 +84,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
         super.onResume();
         async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<CentralPluginCollection> task) -> {
             CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
-            try (ProgressToken token = pushProgress(R.string.Common_File_Load)) {
+            try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
                 CentralPluginCollection pluginCollection = mPluginDataManager.listPlugins(PluginDataManager.PluginListingMode.All, cancelCallback);
 
                 CentralPlugin.ConnectOption option = new CentralPlugin.ConnectOption();
@@ -97,7 +97,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
-                    .positiveButton(R.string.Common_OK, null)
+                    .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
         }).start();
 

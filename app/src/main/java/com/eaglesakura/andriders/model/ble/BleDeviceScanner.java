@@ -178,7 +178,7 @@ public class BleDeviceScanner {
             if (oldDeviceNum == newDeviceNum) {
                 return;
             }
-            AppLog.ble("onDeviceFound name(%s)", bleDevice.getName());
+            AppLog.ble("onDeviceFound name(%s) address(%s)", bleDevice.getName(), bleDevice.getAddress());
 
             // 接続対象が限定されている場合
             if (!StringUtil.isEmpty(mTargetFitnessDeviceAddress)) {

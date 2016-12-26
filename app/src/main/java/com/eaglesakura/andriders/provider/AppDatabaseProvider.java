@@ -13,7 +13,9 @@ import android.content.Context;
 public class AppDatabaseProvider extends ContextProvider {
     static CentralSettingDatabase sCentralSettingDatabase;
 
-    static SessionLogDatabase sSessionLogDatabase;
+    static SessionLogDatabase sSessionLogDatabaseWrite;
+
+    static SessionLogDatabase sSessionLogDatabaseRead;
 
     synchronized static CentralSettingDatabase getCentralSettingDatabase(Context context) {
         if (sCentralSettingDatabase == null) {
@@ -22,12 +24,29 @@ public class AppDatabaseProvider extends ContextProvider {
         return sCentralSettingDatabase;
     }
 
-    synchronized static SessionLogDatabase getSessionLogDatabase(Context context) {
-        if (sSessionLogDatabase == null) {
-            sSessionLogDatabase = new SessionLogDatabase(context);
+    synchronized static SessionLogDatabase getSessionLogDatabaseWritable(Context context) {
+        if (sSessionLogDatabaseWrite == null) {
+            sSessionLogDatabaseWrite = new SessionLogDatabase(context);
         }
-        return sSessionLogDatabase;
+        return sSessionLogDatabaseWrite;
     }
+
+    synchronized static SessionLogDatabase getSessionLogDatabaseReadable(Context context) {
+        if (sSessionLogDatabaseRead == null) {
+            sSessionLogDatabaseRead = new SessionLogDatabase(context);
+        }
+        return sSessionLogDatabaseRead;
+    }
+
+    /**
+     * 読み込みのみのモードで開く
+     */
+    public static final String NAME_READ_ONLY = "NAME_READ_ONLY";
+
+    /**
+     * 書き込み可能モードで取得
+     */
+    public static final String NAME_WRITEABLE = "NAME_WRITEABLE";
 
     @Override
     public void onDependsCompleted(Object inject) {
@@ -42,9 +61,14 @@ public class AppDatabaseProvider extends ContextProvider {
         return getCentralSettingDatabase(getApplication());
     }
 
-    @Provide
-    public SessionLogDatabase proviSessionLogDatabase() {
-        return getSessionLogDatabase(getApplication());
+    @Provide(name = NAME_WRITEABLE)
+    public SessionLogDatabase proviSessionLogDatabaseWritable() {
+        return getSessionLogDatabaseWritable(getApplication());
+    }
+
+    @Provide(name = NAME_READ_ONLY)
+    public SessionLogDatabase proviSessionLogDatabaseReadable() {
+        return getSessionLogDatabaseReadable(getApplication());
     }
 
     @Override

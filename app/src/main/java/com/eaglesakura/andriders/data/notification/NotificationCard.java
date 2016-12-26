@@ -18,7 +18,7 @@ import java.util.Date;
  * 通知用カード
  */
 public class NotificationCard {
-    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("HH:mm.ss");
 
     /**
      * 通知カード

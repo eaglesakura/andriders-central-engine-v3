@@ -18,16 +18,21 @@ import android.support.annotation.Nullable;
 public class SensorDeviceSettingFragmentMain extends AppNavigationFragment {
 
     /**
+     * センサー補助
+     */
+    FragmentHolder<SensorSupportSettingFragment> mSensorSupportSettingFragment = FragmentHolder.newInstance(this, SensorSupportSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+
+    /**
      * BLE心拍センサー設定画面
      */
-    FragmentHolder<BleFitnessSensorSettingFragment> mBleHeartrateScanner = new FragmentHolder<BleFitnessSensorSettingFragment>(this, R.id.Content_List_Root, "BLE.HR") {
+    FragmentHolder<BleFitnessSensorSettingFragment> mBleHeartrateScanner = new FragmentHolder<BleFitnessSensorSettingFragment>(this, R.id.Content_List_Root, "BLE.Heartrate") {
         @NonNull
         @Override
         protected BleFitnessSensorSettingFragment newFragmentInstance(@Nullable Bundle savedInstanceState) throws Exception {
             BleFitnessSensorSettingFragment fragment = new BleFitnessSensorSettingFragment();
             fragment.initialize(
                     BleDeviceType.HEARTRATE_MONITOR,
-                    R.drawable.ic_heart_beats, R.string.Setting_Gadgets_Heartrate,
+                    R.drawable.ic_heart_beats, R.string.Word_Gadget_BleHeartrateMonitor,
                     UserProfiles.ID_BLEHEARTRATEMONITORADDRESS
             );
             return fragment;
@@ -37,14 +42,14 @@ public class SensorDeviceSettingFragmentMain extends AppNavigationFragment {
     /**
      * BLEスピードセンサー設定画面
      */
-    FragmentHolder<BleFitnessSensorSettingFragment> mBleSpeedCadenceScanner = new FragmentHolder<BleFitnessSensorSettingFragment>(this, R.id.Content_List_Root, "BLE.HR") {
+    FragmentHolder<BleFitnessSensorSettingFragment> mBleSpeedCadenceScanner = new FragmentHolder<BleFitnessSensorSettingFragment>(this, R.id.Content_List_Root, "BLE.SpeedCadence") {
         @NonNull
         @Override
         protected BleFitnessSensorSettingFragment newFragmentInstance(@Nullable Bundle savedInstanceState) throws Exception {
             BleFitnessSensorSettingFragment fragment = new BleFitnessSensorSettingFragment();
             fragment.initialize(
                     BleDeviceType.SPEED_CADENCE_SENSOR,
-                    R.drawable.ic_speed, R.string.Setting_Gadgets_SpeedAndCadence,
+                    R.drawable.ic_speed, R.string.Word_Gadget_BleSpeedAndCadenceSensor,
                     UserProfiles.ID_BLESPEEDCADENCESENSORADDRESS
 
             );

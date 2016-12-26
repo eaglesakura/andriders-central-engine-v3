@@ -118,7 +118,7 @@ public class GpsLocationPluginService extends Service implements AcePluginServic
             AppLog.system("Not Granted GPS!!");
             NotificationData notification =
                     new NotificationData.Builder(this)
-                            .message(getString(R.string.Message_LocationPlugin_PermissionError))
+                            .message(getString(R.string.Message_Plugin_Location_PermissionError))
                             .getNotification();
             connection.getDisplay().queueNotification(notification);
             return;
