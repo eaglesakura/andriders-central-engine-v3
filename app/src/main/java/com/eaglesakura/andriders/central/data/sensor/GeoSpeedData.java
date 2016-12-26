@@ -35,8 +35,14 @@ public class GeoSpeedData extends BaseCalculator {
      */
     private double mMaxSpeedKmh;
 
-    public GeoSpeedData(Clock clock) {
+    /**
+     * GPS速度を採用する場合tru
+     */
+    private final boolean mGpsSpeedEnabled;
+
+    public GeoSpeedData(Clock clock, boolean gpsSpeedEnabled) {
         super(clock);
+        mGpsSpeedEnabled = gpsSpeedEnabled;
     }
 
     public double getLatitude() {
@@ -54,6 +60,13 @@ public class GeoSpeedData extends BaseCalculator {
         return (now() - mUpdatedTime) < DATA_TIMEOUT_MS;
     }
 
+    /**
+     * 速度が使用可能である場合はtrue
+     */
+    public boolean validSpeed() {
+        return mGpsSpeedEnabled && valid();
+    }
+
     public long getUpdatedTime() {
         return mUpdatedTime;
     }
@@ -62,7 +75,7 @@ public class GeoSpeedData extends BaseCalculator {
      * GPS由来の速度情報
      */
     public double getSpeedKmh() {
-        if (valid()) {
+        if (validSpeed()) {
             return mSpeedKmh;
         } else {
             return 0;

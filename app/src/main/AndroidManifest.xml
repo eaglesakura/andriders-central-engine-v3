@@ -26,6 +26,10 @@
 
     <!-- Vibrate -->
     <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <!-- GPS Support(Wi-Fi KILL) -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <application
             android:name="com.eaglesakura.andriders.AceApplication"
             android:allowBackup="true"

@@ -22,15 +22,18 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
     @Nullable
     private final ApplicationInfo mAppInfo;
 
+    Drawable mSubIcon;
+
     Date mUpdatedDate;
 
     Drawable mIcon;
 
     String mTitle;
 
-    public DisplayLayoutApplication(Context context, @Nullable ApplicationInfo packageInfo) {
+    public DisplayLayoutApplication(Context context, @Nullable ApplicationInfo packageInfo, @Nullable Drawable subIcon) {
         mContext = context;
         mAppInfo = packageInfo;
+        mSubIcon = subIcon;
         if (mAppInfo != null) {
             mTitle = packageInfo.loadLabel(context.getPackageManager()).toString();
         } else {
@@ -65,6 +68,11 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
             }
         }
         return mIcon;
+    }
+
+    @Override
+    public Drawable getSubIcon() {
+        return mUpdatedDate != null ? mSubIcon : null;
     }
 
     /**

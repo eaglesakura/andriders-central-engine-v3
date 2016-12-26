@@ -252,6 +252,12 @@ public class SessionContext {
         public void onClickNotification(CentralStatusBar self) {
             AppLog.system("Click Notification");
         }
+
+        @Override
+        public void onClickToggleDisplay(CentralStatusBar self) {
+            AppLog.system("Click ToogleDisplay");
+            mCentralDisplayWindow.toggleVisible();
+        }
     };
 
     /**

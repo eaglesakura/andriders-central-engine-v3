@@ -6,13 +6,18 @@ import com.eaglesakura.andriders.central.data.CentralDataManagerTest;
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
+import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.error.AppException;
+import com.eaglesakura.andriders.gen.prop.CentralServiceSettings;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.android.property.PropertyStore;
 import com.eaglesakura.thread.Holder;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.DateUtil;
@@ -259,6 +264,60 @@ public class GpxImporterTest extends AppUnitTestCase {
                 );
             });
         }
+    }
 
+    @Test
+    public void GPS速度を無効化した場合速度は常に0である() throws Throwable {
+        GpxImporter build = new GpxImporter.Builder(getContext()) {
+            @Override
+            public GpxImporter build() {
+                if (mParser == null) {
+                    parser(GpxParser.DateOption.AddTimeZone);
+                }
+                return new GpxImporter(this) {
+                    @Override
+                    SessionInfo newSession(Clock clock) {
+                        return new SessionInfo.Builder(mContext, clock) {
+                            @Override
+                            protected CentralServiceSettings newCentralServiceSettings(PropertyStore store) {
+                                return new CentralServiceSettings(store) {
+                                    @Override
+                                    public boolean isGpsSpeedEnable() {
+                                        // テストのためGPS速度を無効化する
+                                        return false;
+                                    }
+                                };
+                            }
+                        }.build();
+                    }
+                };
+            }
+        }.parser(GpxParser.DateOption.AddTimeZone)
+                .file(new File("../sdk/src/test/assets/gpx/sample-aacr2016.gpx").getAbsoluteFile())
+                .build();
+
+        build.install(new SessionImporter.Listener() {
+            @Override
+            public void onSessionStart(SessionImporter self, CentralDataManager dataManager) throws AppException {
+
+            }
+
+            // 速度は常に0である
+            @Override
+            public void onPointInsert(SessionImporter self, CentralDataManager dataManager, RawCentralData latest) throws AppException {
+                if (latest.sensor.speed != null) {
+                    validate(latest.sensor.speed.speedKmh).eq(0.0);
+                    assertEquals(latest.sensor.speed.flags & RawSensorData.RawSpeed.SPEEDSENSOR_TYPE_GPS, 0x00);
+                }
+                validate(latest.record.maxSpeedKmh).eq(0.0);
+                validate(latest.record.maxSpeedKmhSession).eq(0.0);
+                validate(latest.record.maxSpeedKmhToday).eq(0.0);
+            }
+
+            @Override
+            public void onSessionFinished(SessionImporter self, CentralDataManager dataManager) throws AppException {
+
+            }
+        }, () -> false);
     }
 }

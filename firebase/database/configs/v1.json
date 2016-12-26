@@ -5,6 +5,28 @@
       "packageName": "com.google.android.apps.fitness",
       "className": "com.google.android.apps.fitness.welcome.WelcomeActivity"
     },
+    "gps": {
+      "accuracyMeter": [
+        10.0,
+        50.0,
+        100.0,
+        250.0
+      ]
+    },
+    "developer": {
+      "link": [
+        {
+          "title": "@eaglesakura",
+          "linkUrl": "https://twitter.com/eaglesakura",
+          "iconUrl": "https://pbs.twimg.com/profile_images/378800000395299270/7a7d8899101f2ceb32368b1b6ba4aad1.jpeg"
+        },
+        {
+          "title": "@kassy_kz",
+          "linkUrl": "https://twitter.com/kassy_kz",
+          "iconUrl": "https://pbs.twimg.com/profile_images/641979881270579201/niwsqyRU_400x400.png"
+        }
+      ]
+    },
     "wheel": [
       {
         "title": "700x18C",

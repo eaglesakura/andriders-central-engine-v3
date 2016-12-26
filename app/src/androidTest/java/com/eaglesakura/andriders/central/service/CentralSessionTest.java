@@ -9,6 +9,9 @@ import com.eaglesakura.util.Util;
 
 import org.junit.Test;
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
+
 /**
  * セッション実行テスト
  */

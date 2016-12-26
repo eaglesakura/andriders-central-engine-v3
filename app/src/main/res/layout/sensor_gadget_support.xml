@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_marginTop="@dimen/EsMaterial.Widget.Margin"
+        style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                app:headerIcon="@drawable/ic_info"
+                app:headerText="@string/Title.Sensor.Support"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <LinearLayout
+                style="@style/App.Theme.BasicSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical">
+                <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/Button.KillWiFi"
+                        android:text="セッション開始時にWi-Fiを無効化する"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                <android.support.v7.widget.AppCompatTextView
+                        style="@style/App.Theme.Font.Caption"
+                        android:layout_marginLeft="@dimen/App.Margin.Indent"
+                        android:text="Wi-Fiを遮断することで、屋外走行でのGPSやBluetooth接続の信頼性を向上させます。"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <include layout="@layout/esm_material_separator"/>
+                <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/Button.GpsSpeedEnable"
+                        android:text="GPS速度を補助として利用する"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                <android.support.v7.widget.AppCompatTextView
+                        style="@style/App.Theme.Font.Caption"
+                        android:layout_marginLeft="@dimen/App.Margin.Indent"
+                        android:text="スピードセンサーが利用できない場合、自動的にGPSから速度を計算します。室内トレーニングの場合や、センサーのみを信頼する場合、無効化してください。"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                <include layout="@layout/esm_material_separator"/>
+                <android.support.v7.widget.AppCompatTextView
+                        android:text="GPS精度指定"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/Selector.GpsAccuracy"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
+                <android.support.v7.widget.AppCompatTextView
+                        style="@style/App.Theme.Font.Caption"
+                        android:layout_marginLeft="@dimen/App.Margin.Indent"
+                        android:text="信頼できるGPS精度を指定します。信頼できない精度のGPS情報はサイクルコンピューターで使用されません。"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

@@ -2,18 +2,22 @@ package com.eaglesakura.andriders.plugin.connection;
 
 import com.eaglesakura.andriders.AppDeviceTestCase;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
+import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.serialize.NotificationProtocol;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawSessionInfo;
 import com.eaglesakura.andriders.service.CentralSessionService;
+import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
 
 import org.junit.Test;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -62,6 +66,12 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
         getApplication().stopService(new Intent(getContext(), CentralSessionService.class));
 
         mCentralDataReceiver.disconnect();
+    }
+
+    @Test
+    public void WiFiをオフにできる() throws Throwable {
+        WifiManager wifiManager = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
+        assertTrue(wifiManager.setWifiEnabled(false));
     }
 
     @Test(timeout = 1000 * 5)
@@ -134,6 +144,12 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
 
         // 通知等をチェックする
         Util.sleep(1000 * 10);
+
+        // Wi-Fiが連動している
+        assertEquals(
+                Garnet.instance(AppContextProvider.class, AppSettings.class).getCentralSettings().isWifiDisable(),
+                !((WifiManager) getContext().getSystemService(Context.WIFI_SERVICE)).isWifiEnabled()
+        );
 
         // Broadcastが発生している
         validate(mReceivedDataList).sizeFrom(1).sizeTo(20).allNotNull();

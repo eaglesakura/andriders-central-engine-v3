@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.ui.navigation.display;
 
+import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.data.display.DisplayLayoutManager;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.model.display.DisplayLayout;
@@ -17,6 +18,7 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.PackageUtil;
+import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.CollectionUtil;
@@ -24,6 +26,7 @@ import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -73,9 +76,15 @@ public class DisplayLayoutController {
     @NonNull
     DisplayLayoutApplication mSelectedApp;
 
+    /**
+     * ACE上でレイアウト設定されているアプリにつけるサブアイコン
+     */
+    @NonNull
+    Drawable mSubIcon;
+
     public DisplayLayoutController(Context context) {
         mContext = context;
-
+        mSubIcon = ResourceUtil.vectorDrawable(context, R.drawable.ic_cycle_computer, R.color.App_Icon_Grey);
         Garnet.create(this)
                 .depend(Context.class, context)
                 .inject();
@@ -157,7 +166,7 @@ public class DisplayLayoutController {
             group.insertOrReplace(layout);
         }
 
-        mDefaultApplication = new DisplayLayoutApplication(mContext, null);
+        mDefaultApplication = new DisplayLayoutApplication(mContext, null, mSubIcon);
         mSelectedApp = mDefaultApplication;
     }
 
@@ -172,7 +181,7 @@ public class DisplayLayoutController {
         }
 
         if (mApplications != null && !mApplications.isEmpty()) {
-            // キャッシュっがある
+            // キャッシュがある
             return;
         }
 
@@ -185,7 +194,7 @@ public class DisplayLayoutController {
         for (ApplicationInfo info : PackageUtil.listInstallApplications(mContext)) {
             if (existPackageNames.contains(info.packageName)) {
                 AppLog.system("Load TargetLauncher package[%s]", info.packageName);
-                result.add(new DisplayLayoutApplication(mContext, info));
+                result.add(new DisplayLayoutApplication(mContext, info, mSubIcon));
             }
 
             assertNotCanceled(cancelCallback);

@@ -156,6 +156,10 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
 
             @Override
             protected void onUpdateHeartrateBpm(int newBpm) {
+                if (newBpm < 50) {
+                    // 心拍値に明らかな異常があるのでdropする
+                    return;
+                }
                 centralData.setHeartrate(newBpm);
             }
 

@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.property.ImmutableTextPropertyStore;
+import com.eaglesakura.android.property.PropertyStore;
 import com.eaglesakura.android.property.model.PropertySource;
 import com.eaglesakura.json.JSON;
 
@@ -133,9 +134,17 @@ public class SessionInfo {
             PropertySource propertySource = AppSupportUtil.loadPropertySource(mContext, R.raw.central_properties);
             ImmutableTextPropertyStore kvs = new ImmutableTextPropertyStore(propertySource, profileMap);
 
-            mUserProfiles = new UserProfiles(kvs);
-            mCentralServiceSettings = new CentralServiceSettings(kvs);
+            mUserProfiles = newUserProfiles(kvs);
+            mCentralServiceSettings = newCentralServiceSettings(kvs);
             return this;
+        }
+
+        protected UserProfiles newUserProfiles(PropertyStore store) {
+            return new UserProfiles(store);
+        }
+
+        protected CentralServiceSettings newCentralServiceSettings(PropertyStore store) {
+            return new CentralServiceSettings(store);
         }
 
         public Builder debuggable(boolean debug) {

@@ -18,6 +18,11 @@ import android.support.annotation.Nullable;
 public class SensorDeviceSettingFragmentMain extends AppNavigationFragment {
 
     /**
+     * センサー補助
+     */
+    FragmentHolder<SensorSupportSettingFragment> mSensorSupportSettingFragment = FragmentHolder.newInstance(this, SensorSupportSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+
+    /**
      * BLE心拍センサー設定画面
      */
     FragmentHolder<BleFitnessSensorSettingFragment> mBleHeartrateScanner = new FragmentHolder<BleFitnessSensorSettingFragment>(this, R.id.Content_List_Root, "BLE.Heartrate") {
