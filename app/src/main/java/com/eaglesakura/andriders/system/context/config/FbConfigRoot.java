@@ -8,4 +8,10 @@ import android.support.annotation.NonNull;
 public class FbConfigRoot {
     @NonNull
     public FbProfile profile;
+
+    @NonNull
+    public FbSenor sensor;
+
+    @NonNull
+    public FbAboutInfo aboutInfo;
 }

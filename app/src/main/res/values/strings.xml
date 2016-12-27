@@ -183,6 +183,8 @@
     <string name="Word.Gadget.BleHeartrateMonitor">BLE ハートレートモニター</string>
     <string name="Word.Gadget.BleSpeedAndCadenceSensor">BLE スピード＆ケイデンスセンサー</string>
     <string name="Message.Gadget.Found">センサーを検出 [%1$s]</string>
+    <string name="Title.Gadget.SensorSupport">センサー補助機能</string>
+    <string name="Word.Gadget.GpsAccuracySelector">%1$d メートル</string>
 
     <!-- アプリ情報 -->
     <string name="Title.About">アプリについて</string>
@@ -217,5 +219,4 @@
     <string name="Message.Fit.Notification">"セッション %1$s %2$s - %3$s"</string>
     <string name="Word.Log.UploadToGoogleFit">GoogleFitへアップロード</string>
     <string name="Message.Log.ImportGpx">GPXファイルをインポートしますか？</string>
-    <string name="Title.Sensor.Support">センサー補助機能</string>
 </resources>

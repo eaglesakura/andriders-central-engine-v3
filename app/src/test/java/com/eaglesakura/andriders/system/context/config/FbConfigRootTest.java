@@ -15,7 +15,6 @@ public class FbConfigRootTest extends AppUnitTestCase {
         try (InputStream is = new FileInputStream("../firebase/database/configs/v1.json")) {
             FbConfigRoot root = JSON.decode(is, FbConfigRoot.class);
             assertNotNull(root);
-            assertNotNull(root.profile);
             validate(root.profile.wheel).sizeFrom(1).allNotNull().each(item -> {
                 assertNotEmpty(item.title);
                 validate(item.length).from(1000).to(3000);
@@ -24,6 +23,15 @@ public class FbConfigRootTest extends AppUnitTestCase {
                 assertNotEmpty(item.title);
                 assertNotEmpty(item.packageName);
                 assertNotEmpty(item.className);
+            });
+            validate(root.sensor.gps.accuracyMeter).allNotNull().notEmpty().each(accuracy -> {
+                validate((int) accuracy).from(1);
+            });
+            assertNotNull(root.aboutInfo.developer);
+            validate(root.aboutInfo.developer.link).allNotNull().notEmpty().each(link -> {
+                assertNotEmpty(link.title);
+                assertNotEmpty(link.linkUrl);
+                assertNotEmpty(link.iconUrl);
             });
         }
     }
