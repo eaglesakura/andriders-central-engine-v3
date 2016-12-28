@@ -32,6 +32,7 @@
         <android.support.v7.widget.AppCompatTextView
                 style="@style/App.Theme.Font.Caption"
                 android:id="@+id/Item.Summary"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/App.Margin.Indent"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
@@ -44,6 +45,7 @@
                 android:layout_height="wrap_content">
             <android.support.v7.widget.AppCompatImageView
                     app:srcCompat="@drawable/ic_setting"
+                    android:tint="@color/App.Icon.Grey"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/App.Icon.Normal.Margin"/>
