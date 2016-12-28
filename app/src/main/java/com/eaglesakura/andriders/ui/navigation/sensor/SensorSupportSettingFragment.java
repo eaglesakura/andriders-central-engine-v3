@@ -8,7 +8,11 @@ import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnCheckedChanged;
+import com.eaglesakura.material.widget.SpinnerAdapterBuilder;
+
+import android.widget.Spinner;
 
 /**
  * センサーの補助設定用Fragment
@@ -19,6 +23,12 @@ public class SensorSupportSettingFragment extends AppFragment {
     @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
 
+    /**
+     * GPS精度設定
+     */
+    @Bind(R.id.Selector_GpsAccuracy)
+    Spinner mGpsAccuracy;
+
     @Override
     public void onAfterViews(SupportFragmentDelegate self, int flags) {
         super.onAfterViews(self, flags);
@@ -26,6 +36,17 @@ public class SensorSupportSettingFragment extends AppFragment {
         AQuery q = new AQuery(self.getView());
         q.id(R.id.Button_KillWiFi).checked(mAppSettings.getCentralSettings().isWifiDisable());
         q.id(R.id.Button_GpsSpeedEnable).checked(mAppSettings.getCentralSettings().isGpsSpeedEnable());
+
+        // GPS精度選択を行う
+        SpinnerAdapterBuilder.from(getContext(), mGpsAccuracy, Integer.class)
+                .items(mAppSettings.getConfig().getSensor().getGpsAccuracyMeterList())
+                .title((index, value) -> getString(R.string.Word_Gadget_GpsAccuracySelector, value))
+                .selection(value -> Math.abs(value - (int) mAppSettings.getCentralSettings().getGpsAccuracy()) < 5)
+                .selected(value -> {
+                    mAppSettings.getCentralSettings().setGpsAccuracy(value);
+                    mAppSettings.commit();
+                })
+                .build();
     }
 
     /**

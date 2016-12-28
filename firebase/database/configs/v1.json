@@ -1,18 +1,15 @@
 {
-  "profile": {
-    "googleFitPackage": {
-      "title": "Google Fit",
-      "packageName": "com.google.android.apps.fitness",
-      "className": "com.google.android.apps.fitness.welcome.WelcomeActivity"
-    },
+  "sensor": {
     "gps": {
       "accuracyMeter": [
-        10.0,
+        25.0,
         50.0,
         100.0,
         250.0
       ]
-    },
+    }
+  },
+  "aboutInfo": {
     "developer": {
       "link": [
         {
@@ -26,6 +23,13 @@
           "iconUrl": "https://pbs.twimg.com/profile_images/641979881270579201/niwsqyRU_400x400.png"
         }
       ]
+    }
+  },
+  "profile": {
+    "googleFitPackage": {
+      "title": "Google Fit",
+      "packageName": "com.google.android.apps.fitness",
+      "className": "com.google.android.apps.fitness.welcome.WelcomeActivity"
     },
     "wheel": [
       {

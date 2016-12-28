@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.system.context;
 
 import com.eaglesakura.andriders.model.profile.RoadbikeWheelLength;
+import com.eaglesakura.andriders.model.sensor.SensorConfig;
 import com.eaglesakura.andriders.system.context.config.AppConfigManager;
 import com.eaglesakura.andriders.system.context.config.FbConfigRoot;
 import com.eaglesakura.andriders.system.context.config.FbPackageInfo;
@@ -56,6 +57,13 @@ public class AppConfig {
     public DataCollection<RoadbikeWheelLength> listWheelLength() {
         List<RoadbikeWheelLength> roadbikeWheelLengthList = CollectionUtil.asOtherList(getRaw().profile.wheel, it -> new RoadbikeWheelLength(it));
         return new DataCollection<>(roadbikeWheelLengthList);
+    }
+
+    /**
+     * センサー設定値を取得する
+     */
+    public SensorConfig getSensor() {
+        return new SensorConfig(getRaw().sensor);
     }
 
     /**

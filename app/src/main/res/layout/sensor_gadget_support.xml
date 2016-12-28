@@ -12,7 +12,7 @@
             android:layout_height="wrap_content">
         <com.eaglesakura.andriders.ui.widget.AppHeaderView
                 app:headerIcon="@drawable/ic_info"
-                app:headerText="@string/Title.Sensor.Support"
+                app:headerText="@string/Title.Gadget.SensorSupport"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         <LinearLayout
@@ -61,7 +61,7 @@
                 <android.support.v7.widget.AppCompatTextView
                         style="@style/App.Theme.Font.Caption"
                         android:layout_marginLeft="@dimen/App.Margin.Indent"
-                        android:text="信頼できるGPS精度を指定します。信頼できない精度のGPS情報はサイクルコンピューターで使用されません。"
+                        android:text="信頼できるGPS精度を指定します。A.C.E.は、信頼度の高いGPS情報のみを使用します。"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
             </LinearLayout>
