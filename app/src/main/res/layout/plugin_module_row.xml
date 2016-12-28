@@ -1,24 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:orientation="horizontal">
-
-    <ImageView
-            android:layout_gravity="center"
-            android:id="@+id/Extension.Module.Icon"
-            android:layout_width="@dimen/App.Icon.Normal"
-            android:layout_height="@dimen/App.Icon.Normal"
-            android:layout_margin="@dimen/App.Icon.Normal.Margin"
-            android:src="@mipmap/ic_launcher"/>
-
-    <android.support.v7.widget.SwitchCompat
-            android:id="@+id/Extension.Module.Switch"
+              android:orientation="vertical">
+    <include layout="@layout/esm_material_separator"/>
+    <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/EsMaterial.Button.MinHeight"
-            android:clickable="true"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:lines="1"
-            android:text="service name"/>
+            android:layout_height="match_parent">
+        <android.support.v7.widget.AppCompatImageView
+                android:layout_gravity="center"
+                android:id="@+id/Extension.Module.Icon"
+                android:layout_width="@dimen/App.Icon.Normal"
+                android:layout_height="@dimen/App.Icon.Normal"
+                android:layout_margin="@dimen/App.Icon.Normal.Margin"/>
+
+        <android.support.v7.widget.SwitchCompat
+                android:id="@+id/Extension.Module.Switch"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/EsMaterial.Button.MinHeight"
+                android:clickable="true"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:lines="1"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <android.support.v7.widget.AppCompatTextView
+                style="@style/App.Theme.Font.Caption"
+                android:id="@+id/Item.Summary"
+                android:layout_marginLeft="@dimen/App.Margin.Indent"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <com.eaglesakura.material.widget.TransparentButton
+                android:id="@+id/Button.Setting"
+                android:visibility="gone"
+                android:padding="@dimen/EsMaterial.Button.Margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatImageView
+                    app:srcCompat="@drawable/ic_setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/App.Icon.Normal.Margin"/>
+        </com.eaglesakura.material.widget.TransparentButton>
+    </LinearLayout>
+    <android.support.v7.widget.AppCompatTextView
+            style="@style/App.Theme.Font.Caption"
+            android:id="@+id/Item.AceSDKVersion"
+            android:layout_margin="@dimen/EsMaterial.Widget.Margin"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 </LinearLayout>

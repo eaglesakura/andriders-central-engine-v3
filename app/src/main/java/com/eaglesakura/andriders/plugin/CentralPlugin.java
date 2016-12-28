@@ -284,6 +284,7 @@ public class CentralPlugin {
 
     /**
      * 設定画面を開かせる
+     * ハンドリングに成功した場合はtrueを返却する。
      */
     public boolean startSettings() {
         try {
