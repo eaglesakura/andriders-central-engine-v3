@@ -37,10 +37,16 @@ public class LocationData extends BaseCalculator {
      */
     private long mUpdatedTime;
 
-    public LocationData(Clock clock, GeoSpeedData geoSpeedData) {
+    /**
+     * ユーザーが設定した信頼精度
+     */
+    private final float mUserAccuracyMeter;
+
+    public LocationData(Clock clock, GeoSpeedData geoSpeedData, float userAccuracyMeter) {
         super(clock);
         mAltitudeData = new AltitudeData(clock);
         mGeoSpeedData = geoSpeedData;
+        mUserAccuracyMeter = userAccuracyMeter;
     }
 
     /**
@@ -119,8 +125,11 @@ public class LocationData extends BaseCalculator {
         return isReliance(mAccuracy);
     }
 
-    boolean isReliance(double accuracyMeter) {
-        return accuracyMeter < 150;
+    /**
+     * 事前指定された信頼度よりも高精度であればtrue
+     */
+    private boolean isReliance(double accuracyMeter) {
+        return accuracyMeter <= mUserAccuracyMeter;
     }
 
     /**

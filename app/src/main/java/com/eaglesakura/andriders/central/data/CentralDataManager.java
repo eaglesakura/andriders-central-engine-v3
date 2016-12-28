@@ -144,7 +144,7 @@ public class CentralDataManager {
         mSessionRecord = new SessionRecord(info, allStatistics, todayStatistics);
         {
             GeoSpeedData geoSpeedData = new GeoSpeedData(clock, info.getCentralServiceSettings().isGpsSpeedEnable()); // 位置センサー由来の速度計
-            mLocationData = new LocationData(clock, geoSpeedData);
+            mLocationData = new LocationData(clock, geoSpeedData, info.getCentralServiceSettings().getGpsAccuracy());
             mSpeedData = new SpeedData(clock, info.getUserProfiles(), geoSpeedData, mSensorSpeedData);
         }
     }
