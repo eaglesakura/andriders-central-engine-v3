@@ -134,11 +134,12 @@
     <string name="Word.Display.NoData">N/A</string>
     <string name="Word.Display.Heartrate">心拍</string>
     <string name="Word.Display.Cadence">ケイデンス</string>
-    <string name="Word.Display.Speed.Title">速度</string>
+    <string name="Title.Display.Speed">速度</string>
     <string name="Word.Display.Speed.Max">最高速度</string>
     <string name="Word.Display.Speed.byGPS">GPS速度(km/h)</string>
     <string name="Word.Display.Speed.bySensor">速度(km/h)</string>
-    <string name="Word.Display.FitnessCalories.Title">消費カロリー</string>
+    <string name="Title.Display.FitnessCalories">消費カロリー</string>
+
     <string name="Word.Display.Reconnect">取得中</string>
     <string name="Word.Display.ErrorSlot">無効な表示内容</string>
     <string name="Message.Display.PluginNotEnabled">プラグインが有効化されていません。\n使用するプラグインを選択してください。</string>
@@ -220,4 +221,12 @@
     <string name="Word.Log.UploadToGoogleFit">GoogleFitへアップロード</string>
     <string name="Message.Log.ImportGpx">GPXファイルをインポートしますか？</string>
     <string name="Title.About.Developer">開発者</string>
+    <string name="Title.Display.Distance">走行距離</string>
+    <string name="Message.Display.DistanceSummary">今日の走行距離とセッションと走行距離をそれぞれ表示します。</string>
+    <string name="Title.Display.ActiveDistance">自走距離</string>
+    <string name="Message.Display.ActiveDistanceSummary">
+        今日の自走距離とセッションの自走距離をそれぞれ表示します。クランクを回して自走した距離のみがカウントされます。
+    </string>
+    <string name="Title.Display.NowTime">現在時刻</string>
+    <string name="Message.Display.NowTimeSummary">現在時刻を表示します。</string>
 </resources>

@@ -116,7 +116,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
             data.setTimeoutMs(1000 * 60);
 
             BasicValue value = new BasicValue();
-            value.setTitle(context.getString(R.string.Word_Display_Speed_Title));
+            value.setTitle(context.getString(R.string.Title_Display_Speed));
             value.setValue(context.getString(R.string.Word_Display_Reconnect));
             value.setBarColorARGB(0x00);
 
@@ -127,7 +127,7 @@ public class SpeedDisplaySender extends DisplayDataSender {
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Word_Display_Speed_Title));
+        result.setTitle(context.getString(R.string.Title_Display_Speed));
         result.setSummary(context.getString(R.string.Message_Display_SpeedSummary));
         return result;
     }
