@@ -1,1 +1,1 @@
-{"groups":[{"properties":[{"value":"0","name":"initializeReleased","type":"int"}],"name":"UpdateCheckProps"},{"properties":[{"value":"false","name":"debugEnable","type":"boolean"}],"name":"DebugSettings"}]}
+{"groups":[{"properties":[{"value":"0","name":"initializeReleased","type":"int"}],"name":"UpdateCheckProps"}]}

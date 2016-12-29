@@ -4,6 +4,7 @@ import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.data.display.DisplayLayoutManager;
 import com.eaglesakura.andriders.data.migration.DataMigrationManager;
 import com.eaglesakura.andriders.data.sensor.SensorDataManager;
+import com.eaglesakura.andriders.gen.prop.DebugSettings;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
@@ -20,6 +21,8 @@ import com.eaglesakura.android.garnet.Provide;
 public class AppManagerProvider extends ContextProvider {
 
     UserProfiles mUserProfiles;
+
+    DebugSettings mDebugSettings;
 
     @Override
     public void onDependsCompleted(Object inject) {
@@ -39,7 +42,14 @@ public class AppManagerProvider extends ContextProvider {
         } else {
             AppLog.system("Plugin UserProfile from Depend");
         }
-        return new PluginDataManager(getApplication(), mUserProfiles);
+
+        if (mDebugSettings == null) {
+            AppLog.system("Plugin DebugSetting from AppSettings");
+            mDebugSettings = Garnet.instance(AppContextProvider.class, AppSettings.class).getDebugSettings();
+        } else {
+            AppLog.system("Plugin DebugSetting from Depend");
+        }
+        return new PluginDataManager(getApplication(), mUserProfiles, mDebugSettings);
     }
 
     @Provide
