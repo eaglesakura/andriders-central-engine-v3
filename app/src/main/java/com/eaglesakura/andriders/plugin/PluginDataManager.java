@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.data.db.CentralSettingDatabase;
 import com.eaglesakura.andriders.error.AppException;
+import com.eaglesakura.andriders.gen.prop.DebugSettings;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.model.plugin.ActivePluginCollection;
 import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
@@ -26,10 +27,13 @@ import java.util.List;
 public class PluginDataManager extends CentralSettingManager {
     UserProfiles mUserProfiles;
 
-    public PluginDataManager(Context context, UserProfiles userProfiles) {
+    DebugSettings mDebugSettings;
+
+    public PluginDataManager(Context context, UserProfiles userProfiles, DebugSettings debugSettings) {
         super(context);
         mUserProfiles = userProfiles;
-        if (mUserProfiles == null) {
+        mDebugSettings = debugSettings;
+        if (mUserProfiles == null || mDebugSettings == null) {
             throw new NullPointerException("userProfiles == null");
         }
     }
@@ -109,7 +113,7 @@ public class PluginDataManager extends CentralSettingManager {
         List<CentralPlugin> plugins = new ArrayList<>();
 
         for (ResolveInfo info : resolveInfoList) {
-            CentralPlugin plugin = new CentralPlugin(mContext, info, mUserProfiles);
+            CentralPlugin plugin = new CentralPlugin(mContext, info, mUserProfiles, mDebugSettings);
             plugins.add(plugin);
         }
 

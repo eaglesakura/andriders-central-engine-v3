@@ -29,7 +29,6 @@ import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ImageUtil;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
@@ -91,7 +90,6 @@ public class NavigationMapFragment extends AppFragment {
     /**
      * 座標の初期化を行っていたら、二度目は必要ない
      */
-    @BundleState
     boolean mLocationInitialized;
 
     private static final float MAP_ZOOM_DEFAULT = 16;

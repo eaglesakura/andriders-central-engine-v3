@@ -5,6 +5,7 @@ import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.error.AppException;
+import com.eaglesakura.andriders.gen.prop.DebugSettings;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.plugin.CentralPlugin;
 import com.eaglesakura.andriders.plugin.CentralPluginCollection;
@@ -198,6 +199,7 @@ public class CentralSession {
         Garnet.create(result)
                 .depend(Context.class, info.getContext())
                 .depend(UserProfiles.class, info.getUserProfiles())
+                .depend(DebugSettings.class, info.getDebugSettings())
                 .inject();
 
         return result;
