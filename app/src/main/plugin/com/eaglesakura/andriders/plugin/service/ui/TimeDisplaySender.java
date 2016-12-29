@@ -18,7 +18,7 @@ import java.util.Date;
 public class TimeDisplaySender extends DisplayDataSender {
     public static final String DISPLAY_ID = "TIME_NOW";
 
-    private static final SimpleDateFormat DEFAULT_FORMATTER = new SimpleDateFormat("HH:mm.ss");
+    private static final SimpleDateFormat DEFAULT_FORMATTER = new SimpleDateFormat("HH:mm");
 
     public TimeDisplaySender(@NonNull PluginConnection session) {
         super(session);
@@ -39,6 +39,7 @@ public class TimeDisplaySender extends DisplayDataSender {
         // 最高速度
         value.setTitle("現在時刻");
         value.setValue(DEFAULT_FORMATTER.format(new Date()));
+        value.setBarColorARGB(0x00);    // バーは非表示
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);

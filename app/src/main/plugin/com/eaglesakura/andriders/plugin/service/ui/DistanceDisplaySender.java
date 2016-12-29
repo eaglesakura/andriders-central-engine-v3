@@ -47,8 +47,8 @@ public class DistanceDisplaySender extends DisplayDataSender {
         LineValue value = new LineValue(2);
 
         // 最高速度
-        value.setLine(0, "今日走行距離", StringUtil.format("%.1 km", mTodayDistanceKm));
-        value.setLine(1, "セッション距離", StringUtil.format("%.1 km", mSessionDistanceKm));
+        value.setLine(0, "今日走行距離", StringUtil.format("%.1f km", mTodayDistanceKm));
+        value.setLine(1, "セッション距離", StringUtil.format("%.1f km", mSessionDistanceKm));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);
