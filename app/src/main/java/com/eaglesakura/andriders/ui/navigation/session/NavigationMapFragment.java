@@ -1,5 +1,7 @@
 package com.eaglesakura.andriders.ui.navigation.session;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -16,22 +18,28 @@ import com.eaglesakura.andriders.central.SensorDataReceiver;
 import com.eaglesakura.andriders.data.res.AppImageLoader;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawLocation;
+import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.firebase.auth.FirebaseAuthorizeManager;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.framework.util.AppSupportUtil;
+import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
+import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ImageUtil;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -74,7 +82,19 @@ public class NavigationMapFragment extends AppFragment {
     @NonNull
     AppImageLoader mImageLoader;
 
-    private static final float MAP_ZOOM_DEFAULT = 10;
+    /**
+     * 受信したユーザーデータ
+     */
+    @Nullable
+    RawCentralData mCentralData;
+
+    /**
+     * 座標の初期化を行っていたら、二度目は必要ない
+     */
+    @BundleState
+    boolean mLocationInitialized;
+
+    private static final float MAP_ZOOM_DEFAULT = 16;
 
     @Override
     public void onAttach(Context context) {
@@ -123,9 +143,25 @@ public class NavigationMapFragment extends AppFragment {
     /**
      * GoogleMap準備完了したタイミングでCentralに接続する
      */
+    @SuppressWarnings("MissingPermission")
     @UiThread
     protected void onGoogleMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        if (!mLocationInitialized) {
+            async(ExecuteTarget.LocalParallel, CallbackTime.CurrentForeground, (BackgroundTask<Location> task) -> {
+                CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).build();
+                try (PlayServiceConnection connection = PlayServiceConnection.newInstance(newLocationClient(getContext()), cancelCallback)) {
+                    return LocationServices.FusedLocationApi.getLastLocation(connection.getClient());
+                }
+            }).completed((result, task) -> {
+                // 最後の座標でチェックする
+                if (result != null) {
+                    onReceivedUserPosition(result.getLatitude(), result.getLongitude());
+                    requesteMoveCamera(result.getLatitude(), result.getLongitude(), MAP_ZOOM_DEFAULT);
+                }
+                mLocationInitialized = true;
+            }).start();
+        }
         if (!mCentralDataReceiver.isConnected()) {
             mCentralDataReceiver.connect();
         }
@@ -173,12 +209,65 @@ public class NavigationMapFragment extends AppFragment {
     SensorDataReceiver.LocationHandler mLocationHandlerImpl = new SensorDataReceiver.LocationHandler() {
         @Override
         public void onReceived(@NonNull RawCentralData master, @NonNull RawLocation sensor) {
-            LatLng latLng = new LatLng(sensor.latitude, sensor.longitude);
-            if (mUserMarker == null) {
-                mUserMarker = newMarker(mUserIcon, latLng);
+            mCentralData = master;
+            onReceivedUserPosition(sensor.latitude, sensor.longitude);
+            if (isLookingUser()) {
+                // ズームを固定で、カラメラに移動する
+                requesteMoveCamera(sensor.latitude, sensor.longitude, mGoogleMap.getCameraPosition().zoom);
             }
-            mUserMarker.setPosition(latLng);
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         }
     };
+
+    /**
+     * ユーザーを注視する場合はtrue
+     */
+    public boolean isLookingUser() {
+        if (mCentralData == null) {
+            return false;
+        }
+
+        // 速度情報を持ってないならば、チェックしない
+        if (mCentralData.sensor.speed == null) {
+            return false;
+        }
+
+        RawSensorData.RawSpeed speed = mCentralData.sensor.speed;
+        // 動いてるならば強制的にロックする
+        if (speed.speedKmh > 5) {
+            return true;
+        }
+
+        // 注視条件を満たさない
+        return false;
+    }
+
+    /**
+     * ユーザー座標を受け取った
+     *
+     * @param lat 緯度
+     * @param lng 経度
+     */
+    @UiThread
+    void onReceivedUserPosition(double lat, double lng) {
+        LatLng latLng = new LatLng(lat, lng);
+        if (mUserMarker == null) {
+            mUserMarker = newMarker(mUserIcon, latLng);
+        }
+        mUserMarker.setPosition(latLng);
+    }
+
+    /**
+     * カメラの移動をリクエストする
+     */
+    @UiThread
+    void requesteMoveCamera(double lat, double lng, float zoom) {
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), zoom));
+    }
+
+    public static GoogleApiClient.Builder newLocationClient(Context context) {
+        return new GoogleApiClient.Builder(context)
+                // GPS
+                .addApiIfAvailable(LocationServices.API)
+                ;
+    }
 }
