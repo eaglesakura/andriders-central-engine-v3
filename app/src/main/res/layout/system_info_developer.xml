@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@style/EsMaterial.Widget.CardView.Light.NoHorizontalMargin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <com.eaglesakura.andriders.ui.widget.AppHeaderView
+                app:headerIcon="@drawable/ic_info"
+                app:headerText="@string/Title.About.Developer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <LinearLayout
+                style="@style/App.Theme.BasicSetting"
+                android:id="@+id/Content.List.Root"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>
