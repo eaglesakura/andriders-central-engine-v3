@@ -229,4 +229,13 @@
     </string>
     <string name="Title.Display.NowTime">現在時刻</string>
     <string name="Message.Display.NowTimeSummary">現在時刻を表示します。</string>
+    <string name="Title.Display.SessionDuration">走行時間</string>
+    <string name="Message.Display.SessionDurationSummary">今日のセッション合計時間とセッションの経過時間をそれぞれ表示します。
+    </string>
+    <string name="Title.Display.ActiveDuration">自走時間</string>
+    <string name="Message.Display.ActiveDurationSummary">
+        今日の自走時間とセッションの自走時間をそれぞれ表示します。クランクを回して自走した時間のみがカウントされます。
+    </string>
+    <string name="Title.Display.SessionTimeDistance">セッション時間と距離</string>
+    <string name="Message.Display.SessionTimeDistanceSummary">セッションの経過時間と走行距離を表示します。</string>
 </resources>

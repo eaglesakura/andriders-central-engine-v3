@@ -7,28 +7,29 @@ import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.display.LineValue;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
- * 最高速度更新を行う
- *
- * 表示は今日とセッションの走行距離を表示する
+ * セッションの走行時間・距離を表示する
  */
-public class DistanceDisplaySender extends DisplayDataSender {
-    public static final String DISPLAY_ID = "DISTANCE_TODAY_SESSION";
+public class SessionDistanceTimeClimbDisplaySender extends DisplayDataSender {
+    public static final String DISPLAY_ID = "SESSION_DURATION_DISTANCE_CLIMB";
 
-    private Float mTodayDistanceKm;
+    private Integer mSessionTime;
 
     private Float mSessionDistanceKm;
 
-    public DistanceDisplaySender(@NonNull PluginConnection session) {
+    private Float mSessionClimbMeter;
+
+    public SessionDistanceTimeClimbDisplaySender(@NonNull PluginConnection session) {
         super(session);
     }
 
-    public DistanceDisplaySender bind() {
+    public SessionDistanceTimeClimbDisplaySender bind() {
         if (mDataReceiver != null) {
             mDataReceiver.addHandler(mDataHandler);
         }
@@ -37,7 +38,7 @@ public class DistanceDisplaySender extends DisplayDataSender {
 
     @Override
     public void onUpdate(double deltaSec) {
-        if (mTodayDistanceKm == null || mSessionDistanceKm == null) {
+        if (mSessionDistanceKm == null || mSessionTime == null || mSessionClimbMeter == null) {
             return;
         }
 
@@ -47,9 +48,9 @@ public class DistanceDisplaySender extends DisplayDataSender {
         LineValue value = new LineValue(3);
 
         // 最高速度
-        value.setLine(0, "走行距離", "");
-        value.setLine(1, "今日", StringUtil.format("%.1f km", mTodayDistanceKm));
-        value.setLine(2, "セッション", StringUtil.format("%.1f km", mSessionDistanceKm));
+        value.setLine(0, "セッション", "");
+        value.setLine(1, "経過時間", AppUtil.formatTimeMilliSecToString(mSessionTime));
+        value.setLine(2, "走行距離", StringUtil.format("%.1f km", mSessionDistanceKm));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);
@@ -59,15 +60,16 @@ public class DistanceDisplaySender extends DisplayDataSender {
     private CentralDataHandler mDataHandler = new CentralDataHandler() {
         @Override
         public void onReceived(RawCentralData newData) {
-            mTodayDistanceKm = newData.today.distanceKm;
+            mSessionTime = newData.session.durationTimeMs;
             mSessionDistanceKm = newData.session.distanceKm;
+            mSessionClimbMeter = newData.session.sumAltitudeMeter;
         }
     };
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Title_Display_Distance));
-        result.setSummary(context.getString(R.string.Message_Display_DistanceSummary));
+        result.setTitle(context.getString(R.string.Title_Display_SessionTimeDistance));
+        result.setSummary(context.getString(R.string.Message_Display_SessionTimeDistanceSummary));
         return result;
     }
 }

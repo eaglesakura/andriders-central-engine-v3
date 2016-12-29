@@ -9,12 +9,15 @@ import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.service.ui.ActiveDistanceDisplaySender;
+import com.eaglesakura.andriders.plugin.service.ui.ActiveSessionTimeDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.CadenceDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.DisplayDataSender;
 import com.eaglesakura.andriders.plugin.service.ui.DistanceDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.FitnessDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.HeartrateDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.MaxSpeedDisplaySender;
+import com.eaglesakura.andriders.plugin.service.ui.SessionDistanceTimeClimbDisplaySender;
+import com.eaglesakura.andriders.plugin.service.ui.SessionTimeDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.SpeedDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.TimeDisplaySender;
 import com.eaglesakura.andriders.util.AppLog;
@@ -78,6 +81,9 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         result.add(DistanceDisplaySender.newInformation(this));
         result.add(ActiveDistanceDisplaySender.newInformation(this));
         result.add(TimeDisplaySender.newInformation(this));
+        result.add(SessionDistanceTimeClimbDisplaySender.newInformation(this));
+        result.add(ActiveSessionTimeDisplaySender.newInformation(this));
+        result.add(SessionTimeDisplaySender.newInformation(this));
 
         if (connection.isDebuggable()) {
             {
@@ -109,6 +115,9 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         senders.add(new DistanceDisplaySender(connection).bind());
         senders.add(new ActiveDistanceDisplaySender(connection).bind());
         senders.add(new TimeDisplaySender(connection).bind());
+        senders.add(new SessionDistanceTimeClimbDisplaySender(connection).bind());
+        senders.add(new ActiveSessionTimeDisplaySender(connection).bind());
+        senders.add(new SessionTimeDisplaySender(connection).bind());
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override

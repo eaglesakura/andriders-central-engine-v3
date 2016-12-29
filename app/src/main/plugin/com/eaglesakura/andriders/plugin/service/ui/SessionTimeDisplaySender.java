@@ -42,11 +42,12 @@ public class SessionTimeDisplaySender extends DisplayDataSender {
         Context context = getContext();
 
         DisplayData data = new DisplayData(context, DISPLAY_ID);
-        LineValue value = new LineValue(2);
+        LineValue value = new LineValue(3);
 
         // 最高速度
-        value.setLine(0, "今日合計時間", AppUtil.formatTimeMilliSecToString(mTodayTime));
-        value.setLine(1, "セッション時間", AppUtil.formatTimeMilliSecToString(mSessionTime));
+        value.setLine(0, "走行時間", "");
+        value.setLine(1, "今日合計", AppUtil.formatTimeMilliSecToString(mTodayTime));
+        value.setLine(2, "セッション", AppUtil.formatTimeMilliSecToString(mSessionTime));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);
@@ -63,8 +64,8 @@ public class SessionTimeDisplaySender extends DisplayDataSender {
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Title_Display_Distance));
-        result.setSummary(context.getString(R.string.Message_Display_DistanceSummary));
+        result.setTitle(context.getString(R.string.Title_Display_SessionDuration));
+        result.setSummary(context.getString(R.string.Message_Display_SessionDurationSummary));
         return result;
     }
 }

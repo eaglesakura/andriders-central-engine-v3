@@ -7,28 +7,26 @@ import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.display.LineValue;
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.util.StringUtil;
+import com.eaglesakura.andriders.util.AppUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
- * 最高速度更新を行う
- *
- * 表示は今日とセッションの走行距離を表示する
+ * 走行時間表示
  */
-public class DistanceDisplaySender extends DisplayDataSender {
-    public static final String DISPLAY_ID = "DISTANCE_TODAY_SESSION";
+public class ActiveSessionTimeDisplaySender extends DisplayDataSender {
+    public static final String DISPLAY_ID = "ACTIVE_SESSION_TIME_TODAY_SESSION";
 
-    private Float mTodayDistanceKm;
+    private Integer mTodayTime;
 
-    private Float mSessionDistanceKm;
+    private Integer mSessionTime;
 
-    public DistanceDisplaySender(@NonNull PluginConnection session) {
+    public ActiveSessionTimeDisplaySender(@NonNull PluginConnection session) {
         super(session);
     }
 
-    public DistanceDisplaySender bind() {
+    public ActiveSessionTimeDisplaySender bind() {
         if (mDataReceiver != null) {
             mDataReceiver.addHandler(mDataHandler);
         }
@@ -37,7 +35,7 @@ public class DistanceDisplaySender extends DisplayDataSender {
 
     @Override
     public void onUpdate(double deltaSec) {
-        if (mTodayDistanceKm == null || mSessionDistanceKm == null) {
+        if (mTodayTime == null || mSessionTime == null) {
             return;
         }
 
@@ -47,9 +45,9 @@ public class DistanceDisplaySender extends DisplayDataSender {
         LineValue value = new LineValue(3);
 
         // 最高速度
-        value.setLine(0, "走行距離", "");
-        value.setLine(1, "今日", StringUtil.format("%.1f km", mTodayDistanceKm));
-        value.setLine(2, "セッション", StringUtil.format("%.1f km", mSessionDistanceKm));
+        value.setLine(0, "自走時間", "");
+        value.setLine(1, "今日", AppUtil.formatTimeMilliSecToString(mTodayTime));
+        value.setLine(2, "セッション", AppUtil.formatTimeMilliSecToString(mSessionTime));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);
@@ -59,15 +57,15 @@ public class DistanceDisplaySender extends DisplayDataSender {
     private CentralDataHandler mDataHandler = new CentralDataHandler() {
         @Override
         public void onReceived(RawCentralData newData) {
-            mTodayDistanceKm = newData.today.distanceKm;
-            mSessionDistanceKm = newData.session.distanceKm;
+            mTodayTime = newData.today.activeTimeMs;
+            mSessionTime = newData.session.activeTimeMs;
         }
     };
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Title_Display_Distance));
-        result.setSummary(context.getString(R.string.Message_Display_DistanceSummary));
+        result.setTitle(context.getString(R.string.Title_Display_ActiveDuration));
+        result.setSummary(context.getString(R.string.Message_Display_ActiveDurationSummary));
         return result;
     }
 }

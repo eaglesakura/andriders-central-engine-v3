@@ -44,11 +44,12 @@ public class ActiveDistanceDisplaySender extends DisplayDataSender {
         Context context = getContext();
 
         DisplayData data = new DisplayData(context, DISPLAY_ID);
-        LineValue value = new LineValue(2);
+        LineValue value = new LineValue(3);
 
         // 最高速度
-        value.setLine(0, "今日走行距離", StringUtil.format("%.1f km", mTodayDistanceKm));
-        value.setLine(1, "セッション距離", StringUtil.format("%.1f km", mSessionDistanceKm));
+        value.setLine(0, "自走距離", "");
+        value.setLine(1, "今日", StringUtil.format("%.1f km", mTodayDistanceKm));
+        value.setLine(2, "セッション", StringUtil.format("%.1f km", mSessionDistanceKm));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);

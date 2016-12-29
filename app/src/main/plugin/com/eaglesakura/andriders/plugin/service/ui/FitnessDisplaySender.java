@@ -43,11 +43,12 @@ public class FitnessDisplaySender extends DisplayDataSender {
         Context context = getContext();
 
         DisplayData data = new DisplayData(context, DISPLAY_ID);
-        LineValue value = new LineValue(2);
+        LineValue value = new LineValue(3);
 
         // 最高速度
-        value.setLine(0, "今日消費", StringUtil.format("%.1f kcal", mTodayFitnessStatus.calorie));
-        value.setLine(1, "セッション消費", StringUtil.format("%.1f kcal", mSessionFitnessStatus.calorie));
+        value.setLine(0, "カロリー消費", "");
+        value.setLine(1, "今日合計", StringUtil.format("%.1f kcal", mTodayFitnessStatus.calorie));
+        value.setLine(2, "セッション", StringUtil.format("%.1f kcal", mSessionFitnessStatus.calorie));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);
