@@ -7,27 +7,26 @@ import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.display.LineValue;
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.andriders.serialize.RawSessionData;
-import com.eaglesakura.util.StringUtil;
+import com.eaglesakura.andriders.util.AppUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
- * フィットネス情報を送信する
+ * 走行時間表示
  */
-public class FitnessDisplaySender extends DisplayDataSender {
-    public static final String DISPLAY_ID = "FITNESS_ALL";
+public class SessionTimeDisplaySender extends DisplayDataSender {
+    public static final String DISPLAY_ID = "SESSION_TIME_TODAY_SESSION";
 
-    RawSessionData.RawFitnessStatus mSessionFitnessStatus;
+    private Integer mTodayTime;
 
-    RawSessionData.RawFitnessStatus mTodayFitnessStatus;
+    private Integer mSessionTime;
 
-    public FitnessDisplaySender(@NonNull PluginConnection session) {
+    public SessionTimeDisplaySender(@NonNull PluginConnection session) {
         super(session);
     }
 
-    public FitnessDisplaySender bind() {
+    public SessionTimeDisplaySender bind() {
         if (mDataReceiver != null) {
             mDataReceiver.addHandler(mDataHandler);
         }
@@ -36,7 +35,7 @@ public class FitnessDisplaySender extends DisplayDataSender {
 
     @Override
     public void onUpdate(double deltaSec) {
-        if (mTodayFitnessStatus == null || mSessionFitnessStatus == null) {
+        if (mTodayTime == null || mSessionTime == null) {
             return;
         }
 
@@ -46,9 +45,9 @@ public class FitnessDisplaySender extends DisplayDataSender {
         LineValue value = new LineValue(3);
 
         // 最高速度
-        value.setLine(0, "カロリー消費", "");
-        value.setLine(1, "今日合計", StringUtil.format("%.1f kcal", mTodayFitnessStatus.calorie));
-        value.setLine(2, "セッション", StringUtil.format("%.1f kcal", mSessionFitnessStatus.calorie));
+        value.setLine(0, "走行時間", "");
+        value.setLine(1, "今日合計", AppUtil.formatTimeMilliSecToString(mTodayTime));
+        value.setLine(2, "セッション", AppUtil.formatTimeMilliSecToString(mSessionTime));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);
@@ -58,15 +57,15 @@ public class FitnessDisplaySender extends DisplayDataSender {
     private CentralDataHandler mDataHandler = new CentralDataHandler() {
         @Override
         public void onReceived(RawCentralData newData) {
-            mTodayFitnessStatus = newData.today.fitness;
-            mSessionFitnessStatus = newData.session.fitness;
+            mTodayTime = newData.today.durationTimeMs;
+            mSessionTime = newData.session.durationTimeMs;
         }
     };
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Title_Display_FitnessCalories));
-        result.setSummary(context.getString(R.string.Message_Display_FitnessCaloriesSummary));
+        result.setTitle(context.getString(R.string.Title_Display_SessionDuration));
+        result.setSummary(context.getString(R.string.Message_Display_SessionDurationSummary));
         return result;
     }
 }

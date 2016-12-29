@@ -7,27 +7,29 @@ import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.display.LineValue;
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.andriders.serialize.RawSessionData;
+import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
- * フィットネス情報を送信する
+ * セッションの走行時間・距離を表示する
  */
-public class FitnessDisplaySender extends DisplayDataSender {
-    public static final String DISPLAY_ID = "FITNESS_ALL";
+public class SessionDistanceTimeClimbDisplaySender extends DisplayDataSender {
+    public static final String DISPLAY_ID = "SESSION_DURATION_DISTANCE_CLIMB";
 
-    RawSessionData.RawFitnessStatus mSessionFitnessStatus;
+    private Integer mSessionTime;
 
-    RawSessionData.RawFitnessStatus mTodayFitnessStatus;
+    private Float mSessionDistanceKm;
 
-    public FitnessDisplaySender(@NonNull PluginConnection session) {
+    private Float mSessionClimbMeter;
+
+    public SessionDistanceTimeClimbDisplaySender(@NonNull PluginConnection session) {
         super(session);
     }
 
-    public FitnessDisplaySender bind() {
+    public SessionDistanceTimeClimbDisplaySender bind() {
         if (mDataReceiver != null) {
             mDataReceiver.addHandler(mDataHandler);
         }
@@ -36,7 +38,7 @@ public class FitnessDisplaySender extends DisplayDataSender {
 
     @Override
     public void onUpdate(double deltaSec) {
-        if (mTodayFitnessStatus == null || mSessionFitnessStatus == null) {
+        if (mSessionDistanceKm == null || mSessionTime == null || mSessionClimbMeter == null) {
             return;
         }
 
@@ -46,9 +48,9 @@ public class FitnessDisplaySender extends DisplayDataSender {
         LineValue value = new LineValue(3);
 
         // 最高速度
-        value.setLine(0, "カロリー消費", "");
-        value.setLine(1, "今日合計", StringUtil.format("%.1f kcal", mTodayFitnessStatus.calorie));
-        value.setLine(2, "セッション", StringUtil.format("%.1f kcal", mSessionFitnessStatus.calorie));
+        value.setLine(0, "セッション", "");
+        value.setLine(1, "経過時間", AppUtil.formatTimeMilliSecToString(mSessionTime));
+        value.setLine(2, "走行距離", StringUtil.format("%.1f km", mSessionDistanceKm));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);
@@ -58,15 +60,16 @@ public class FitnessDisplaySender extends DisplayDataSender {
     private CentralDataHandler mDataHandler = new CentralDataHandler() {
         @Override
         public void onReceived(RawCentralData newData) {
-            mTodayFitnessStatus = newData.today.fitness;
-            mSessionFitnessStatus = newData.session.fitness;
+            mSessionTime = newData.session.durationTimeMs;
+            mSessionDistanceKm = newData.session.distanceKm;
+            mSessionClimbMeter = newData.session.sumAltitudeMeter;
         }
     };
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Title_Display_FitnessCalories));
-        result.setSummary(context.getString(R.string.Message_Display_FitnessCaloriesSummary));
+        result.setTitle(context.getString(R.string.Title_Display_SessionTimeDistance));
+        result.setSummary(context.getString(R.string.Message_Display_SessionTimeDistanceSummary));
         return result;
     }
 }
