@@ -16,7 +16,7 @@ public class AceApplication extends Application implements FrameworkCentral.Fram
         AppLog.inject(this);
 
         // ACE環境の初期化を行う
-        AcesEnvironment.initialize(this);
+        AceEnvironment.initialize(this);
 
         // Central & DeploygateRemote
         FrameworkCentral.onApplicationCreate(this);
