@@ -238,4 +238,11 @@
     </string>
     <string name="Title.Display.SessionTimeDistance">セッション時間と距離</string>
     <string name="Message.Display.SessionTimeDistanceSummary">セッションの経過時間と走行距離を表示します。</string>
+    <string name="Title.Display.Climb">ヒルクライム</string>
+    <string name="Message.Display.ClimbSummary">
+        現在地点の標高とセッションの獲得標高を表示します。標高はGPS情報を元にしているため、実際の情報との誤差があります。
+    </string>
+    <string name="Title.Display.HillInfo">斜度情報</string>
+    <string name="Message.Display.HillInfoSummary">斜度情報を表示します。斜度はGPS情報から計算されるため、実際の値とは誤差があります。
+    </string>
 </resources>

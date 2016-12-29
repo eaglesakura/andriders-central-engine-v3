@@ -11,10 +11,12 @@ import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.service.ui.ActiveDistanceDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.ActiveSessionTimeDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.CadenceDisplaySender;
+import com.eaglesakura.andriders.plugin.service.ui.ClimbDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.DisplayDataSender;
 import com.eaglesakura.andriders.plugin.service.ui.DistanceDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.FitnessDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.HeartrateDisplaySender;
+import com.eaglesakura.andriders.plugin.service.ui.HillDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.MaxSpeedDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.SessionDistanceTimeClimbDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.SessionTimeDisplaySender;
@@ -84,6 +86,8 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         result.add(SessionDistanceTimeClimbDisplaySender.newInformation(this));
         result.add(ActiveSessionTimeDisplaySender.newInformation(this));
         result.add(SessionTimeDisplaySender.newInformation(this));
+        result.add(ClimbDisplaySender.newInformation(this));
+        result.add(HillDisplaySender.newInformation(this));
 
         if (connection.isDebuggable()) {
             {
@@ -118,6 +122,8 @@ public class CentralInterfacePluginService extends Service implements AcePluginS
         senders.add(new SessionDistanceTimeClimbDisplaySender(connection).bind());
         senders.add(new ActiveSessionTimeDisplaySender(connection).bind());
         senders.add(new SessionTimeDisplaySender(connection).bind());
+        senders.add(new ClimbDisplaySender(connection).bind());
+        senders.add(new HillDisplaySender(connection).bind());
 
         mDisplayCommitLoop = new HandlerLoopController(UIHandler.getInstance()) {
             @Override
