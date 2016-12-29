@@ -270,6 +270,11 @@ public class SessionContext {
 
         @Override
         public void onUpdate(ServiceAnimationController self, CentralSession session, double deltaSec) {
+            // セッションが初期化されていないなら無視する
+            if (mSession == null) {
+                return;
+            }
+
             {
                 // セッション内部時間と現実時間とのズレを補正する
                 double centralDeltaSec = (double) (System.currentTimeMillis() - session.getSessionClock().now()) / 1000.0;
