@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.plugin.display.LineValue;
 import com.eaglesakura.andriders.sensor.InclinationType;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.android.margarine.BindStringArray;
+import com.eaglesakura.android.margarine.MargarineKnife;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -36,6 +37,7 @@ public class HillDisplaySender extends DisplayDataSender {
         if (mDataReceiver != null) {
             mDataReceiver.addHandler(mDataHandler);
         }
+        MargarineKnife.bind(this, this);
         return this;
     }
 
