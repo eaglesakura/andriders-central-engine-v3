@@ -40,8 +40,8 @@
     <string name="Message.Session.SessionStop">セッションを停止しますか？\n走行時間[%1$s]</string>
     <string name="Word.Session.Start">セッション開始</string>
     <string name="Word.Session.Stop">セッション停止</string>
-    <string name="Word.Session.SessionStopButton">セッションを終了</string>
-    <string name="Word.Session.SessionStartButton">セッションを開始</string>
+    <!--<string name="Word.Session.SessionStopButton">セッションを終了</string>-->
+    <!--<string name="Word.Session.SessionStartButton">セッションを開始</string>-->
 
     <!-- プロファイル設定 -->
     <string name="Title.Profile">プロファイル</string>
