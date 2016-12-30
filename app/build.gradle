@@ -170,8 +170,9 @@ android {
 
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
-//        buildConfigField "String", "DEFAULT_PACKAGE_NAME", "\"com.eaglesakura.andriders\""
 
+        // 日本語と英語リソースのみを残す
+        resConfigs "en", "ja"
 
         manifestPlaceholders = [google_api_key: "@string/google_api_key"]
 
