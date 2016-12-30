@@ -22,6 +22,7 @@
                     android:layout_height="wrap_content"/>
 
             <FrameLayout
+                    android:layout_marginLeft="@dimen/App.Margin.Indent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <android.support.v7.widget.AppCompatSpinner
@@ -29,6 +30,27 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
             </FrameLayout>
+
+            <com.eaglesakura.material.widget.TransparentButton
+                    android:id="@+id/Button.Testing"
+                    android:layout_marginLeft="@dimen/App.Margin.Indent"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/EsMaterial.Button.MinHeight">
+                <android.support.v7.widget.AppCompatImageView
+                        android:layout_gravity="right|center_vertical"
+                        app:srcCompat="@drawable/ic_setting"
+                        android:tint="@color/App.Icon.Grey"
+                        android:layout_width="@dimen/App.Icon.Large"
+                        android:layout_height="@dimen/App.Icon.Large"
+                        android:layout_margin="@dimen/App.Icon.Large.Margin"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                        android:layout_marginLeft="@dimen/EsMaterial.Widget.Margin"
+                        android:text="@string/Word.Sensor.Testing"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+            </com.eaglesakura.material.widget.TransparentButton>
         </LinearLayout>
     </LinearLayout>
 

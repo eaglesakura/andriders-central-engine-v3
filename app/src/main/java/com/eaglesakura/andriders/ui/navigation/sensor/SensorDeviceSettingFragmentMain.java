@@ -20,24 +20,14 @@ public class SensorDeviceSettingFragmentMain extends AppNavigationFragment {
     /**
      * センサー補助
      */
-    FragmentHolder<SensorSupportSettingFragment> mSensorSupportSettingFragment = FragmentHolder.newInstance(this, SensorSupportSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+    FragmentHolder<SensorSupportSettingFragment> mSensorSupportSettingFragment =
+            FragmentHolder.newInstance(this, SensorSupportSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
 
     /**
      * BLE心拍センサー設定画面
      */
-    FragmentHolder<BleFitnessSensorSettingFragment> mBleHeartrateScanner = new FragmentHolder<BleFitnessSensorSettingFragment>(this, R.id.Content_List_Root, "BLE.Heartrate") {
-        @NonNull
-        @Override
-        protected BleFitnessSensorSettingFragment newFragmentInstance(@Nullable Bundle savedInstanceState) throws Exception {
-            BleFitnessSensorSettingFragment fragment = new BleFitnessSensorSettingFragment();
-            fragment.initialize(
-                    BleDeviceType.HEARTRATE_MONITOR,
-                    R.drawable.ic_heart_beats, R.string.Word_Gadget_BleHeartrateMonitor,
-                    UserProfiles.ID_BLEHEARTRATEMONITORADDRESS
-            );
-            return fragment;
-        }
-    }.bind(mLifecycleDelegate);
+    FragmentHolder<BleHeartrateSettingFragment> mBleHeartrateScanner =
+            FragmentHolder.newInstance(this, BleHeartrateSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
 
     /**
      * BLEスピードセンサー設定画面
