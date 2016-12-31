@@ -12,19 +12,19 @@
                 android:id="@+id/Item.TimeAdd"
                 android:layout_width="match_parent"
                 android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                android:checked="true"
-                android:text="時差を加算する"
+                android:text="@string/Word.Gpx.AddTime"
                 android:layout_height="wrap_content"/>
         <android.support.v7.widget.AppCompatRadioButton
                 android:id="@+id/Item.TimeNoChange"
                 android:layout_width="match_parent"
                 android:layout_margin="@dimen/EsMaterial.Button.Margin"
-                android:text="時差調整しない"
+                android:checked="true"
+                android:text="@string/Word.Gpx.NoAddTime"
                 android:layout_height="wrap_content"/>
         <android.support.v7.widget.AppCompatRadioButton
                 android:id="@+id/Item.TimeSub"
                 android:layout_width="match_parent"
-                android:text="時差を減算する"
+                android:text="@string/Word.Gpx.SubTime"
                 android:layout_margin="@dimen/EsMaterial.Button.Margin"
                 android:layout_height="wrap_content"/>
 
