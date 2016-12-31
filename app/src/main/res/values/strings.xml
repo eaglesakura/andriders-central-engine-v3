@@ -245,4 +245,8 @@
     <string name="Title.Display.HillInfo">斜度情報</string>
     <string name="Message.Display.HillInfoSummary">斜度情報を表示します。斜度はGPS情報から計算されるため、実際の値とは誤差があります。
     </string>
+    <string name="Word.Gpx.AddTime">時差を加算する</string>
+    <string name="Word.Gpx.NoAddTime">時差修正なし</string>
+    <string name="Word.Gpx.SubTime">時差を減算する</string>
+    <string name="Message.Gpx.ImportTimeSelect">時差補正</string>
 </resources>
