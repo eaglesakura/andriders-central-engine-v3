@@ -23,6 +23,7 @@ import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Util;
 
 import android.app.Dialog;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -51,22 +52,23 @@ public class BleHeartrateSettingFragment extends BleFitnessSensorSettingFragment
             return;
         }
 
+        super.mScanner.disconnect();
         View content = LayoutInflater.from(getContext()).inflate(R.layout.sensor_gadgets_ble_heartrate_testing, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Word_Sensor_Testing), content)
                 .positiveButton(R.string.EsMaterial_Dialog_Close, null)
                 .show(mLifecycleDelegate);
-        async(ExecuteTarget.LocalParallel, CallbackTime.Alive, task -> {
-            CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).or(dialog).build();
+        async(ExecuteTarget.LocalQueue, CallbackTime.Foreground, task -> {
+            CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).build();
             BlePeripheralDeviceConnection connection = new BlePeripheralDeviceConnection(getContext(), BLE_ADDRESS);
             connection.alwaysConnect(new BlePeripheralDeviceConnection.SessionCallback() {
                 @Override
                 public void onSessionStart(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
-                    updateDeviceValue(content, -1, -1);
+                    updateDeviceValue(content, R.string.Word_Sensor_StateConnecting, -1, -1);
                 }
 
                 @Override
                 public void onSessionFinished(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
-                    updateDeviceValue(content, -1, -1);
+                    updateDeviceValue(content, R.string.Word_Sensor_StateConnecting, -1, -1);
                 }
             }, new BleHeartrateMonitorCallback() {
                 @Override
@@ -75,13 +77,20 @@ public class BleHeartrateSettingFragment extends BleFitnessSensorSettingFragment
                 }
 
                 @Override
+                protected void onUpdateBatteryLevel(int newLevel) {
+                    updateDeviceValue(content, R.string.Word_Sensor_StateConnect, newLevel, Util.getInt(getHeartrateBpm(), -1));
+                }
+
+                @Override
                 protected void onUpdateHeartrateBpm(int newBpm) {
-                    updateDeviceValue(content, Util.getInt(getBatteryLevel(), -1), newBpm);
+                    updateDeviceValue(content, R.string.Word_Sensor_StateConnect, Util.getInt(getBatteryLevel(), -1), newBpm);
                 }
             }, cancelCallback);
             return this;
         }).failed((error, task) -> {
             AppLog.report(error);
+        }).completed((result, task) -> {
+            AppLog.test("No!!");
         }).cancelSignal(dialog)
                 .start();
     }
@@ -89,11 +98,12 @@ public class BleHeartrateSettingFragment extends BleFitnessSensorSettingFragment
     /**
      * ダイアログの表示を更新する
      */
-    void updateDeviceValue(View content, int battery, int heartrate) {
+    void updateDeviceValue(View content, @StringRes int statusText, int battery, int heartrate) {
         String BATTERY_TEXT = battery > 0 ? StringUtil.format("%d %%", battery) : getString(R.string.Word_Display_NoData);
         String HEARTRATE_TEXT = heartrate > 0 ? StringUtil.format("%d bpm", heartrate) : getString(R.string.Word_Display_NoData);
         UIHandler.postUIorRun(() -> {
             new AQuery(content)
+                    .id(R.id.Item_Status).ifPresent(AppKeyValueView.class, view -> view.setValueText(getString(statusText)))
                     .id(R.id.Item_Battery).ifPresent(AppKeyValueView.class, view -> view.setValueText(BATTERY_TEXT))
                     .id(R.id.Item_Heartrate).ifPresent(AppKeyValueView.class, view -> view.setValueText(HEARTRATE_TEXT));
         });

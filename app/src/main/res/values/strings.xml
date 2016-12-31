@@ -246,4 +246,7 @@
     <string name="Word.Sensor.Testing">接続テスト</string>
     <string name="Message.Sensor.BleDeviceNotSelected">BLE機器が選択されていません。</string>
     <string name="Word.Sensor.BatteryAmount">バッテリー残量</string>
+    <string name="Word.Sensor.ConnectState">接続状態</string>
+    <string name="Word.Sensor.StateConnect">接続</string>
+    <string name="Word.Sensor.StateConnecting">検索中</string>
 </resources>
