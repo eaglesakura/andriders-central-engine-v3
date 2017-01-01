@@ -18,6 +18,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.property.PropertyStore;
+import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.thread.Holder;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.DateUtil;
@@ -179,6 +180,11 @@ public class GpxImporterTest extends AppUnitTestCase {
                 }, () -> false);
                 validate(points).from(10);
                 AppLog.test("Each Points num[%d]", points);
+
+                // 全てのCentral Pointがロードできることを確認
+                DataCollection<RawCentralData> centralDataCollection = logManager.listSessionPoints(header.getSessionId(), () -> false);
+                assertNotNull(centralDataCollection);
+                validate(centralDataCollection.list()).notEmpty().allNotNull().sizeFrom(10).sizeTo(points);
 
                 // 削除ができることを確認
                 logManager.delete(header);

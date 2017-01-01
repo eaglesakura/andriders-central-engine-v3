@@ -11,6 +11,7 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.Action1;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.DateUtil;
@@ -86,6 +87,12 @@ public class CentralLogManager {
             return new SessionHeaderCollection(
                     db.loadHeaders(dateStart.getTime(), dateStart.getTime() + Timer.toMilliSec(1, 0, 0, 0, 0) - 1, cancelCallback)
             );
+        }
+    }
+
+    public DataCollection<RawCentralData> listSessionPoints(long sessionId, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+        try (SessionLogDatabase db = openReadOnly()) {
+            return new DataCollection<>(db.listCentralData(sessionId, cancelCallback));
         }
     }
 

@@ -107,6 +107,44 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     }
 
     /**
+     * 指定したセッションのCentralDataを全て列挙する
+     *
+     * @param sessionId      セッションID
+     * @param cancelCallback キャンセルチェック
+     */
+    @NonNull
+    public List<RawCentralData> listCentralData(long sessionId, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+        StringBuilder query = new StringBuilder();
+        query.append(
+                "SELECT SESSION_ID, DATE, CENTRAL_JSON" +
+                        " FROM DB_SESSION_POINT" +
+                        " WHERE SESSION_ID = " + sessionId +
+                        " ORDER BY DATE ASC"
+        );
+
+        try (SupportCursor cursor = logQuery(query.toString())) {
+            if (!cursor.moveToFirst() || cursor.getCount() == 0) {
+                throw new AppDataNotFoundException("Query Error :: " + sessionId);
+            }
+
+            List<RawCentralData> result = new ArrayList<>(cursor.getCount());
+            do {
+                assertNotCanceled(cancelCallback);
+
+                cursor.nextLong(); // skip session id;
+                cursor.nextLong(); // skip date
+                String central = cursor.nextString();
+                RawCentralData data = JSON.decode(central, RawCentralData.class);
+                result.add(data);
+            } while (cursor.moveToNext());
+
+            return result;
+        } catch (IOException e) {
+            throw new AppDatabaseException(e);
+        }
+    }
+
+    /**
      * startTime～endTimeまでに開始されたセッションのID一覧を取得する
      * セッションが見つからない場合は空リストを返す
      *
