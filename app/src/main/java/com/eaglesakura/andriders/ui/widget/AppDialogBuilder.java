@@ -6,6 +6,8 @@ import com.eaglesakura.material.widget.DialogBuilder;
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
 
+import java.io.Closeable;
+
 /**
  * アプリ用のDialog生成
  */
@@ -20,4 +22,6 @@ public class AppDialogBuilder extends DialogBuilder {
         builder.mBuilder.setMessage(AppUtil.getErrorMessage(error));
         return builder;
     }
+
+
 }

@@ -13,6 +13,7 @@ import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
+import com.eaglesakura.android.framework.ui.progress.DialogToken;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
@@ -148,8 +149,9 @@ public class DailyLogFragmentMain extends AppNavigationFragment implements Googl
      */
     @UiThread
     void deleteSession(SessionHeader session) {
-        async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
-            try (ProgressToken token = pushProgress(R.string.Word_Common_DataDelete)) {
+        mCallback.onSessionDeleteStart(this, session);
+        asyncUI(task -> {
+            try (DialogToken token = showProgress(R.string.Word_Common_DataDelete)) {
                 mCentralLogManager.delete(session);
                 return this;
             }
@@ -191,6 +193,11 @@ public class DailyLogFragmentMain extends AppNavigationFragment implements Googl
     }
 
     public interface Callback {
+        /**
+         * セッションを削除した
+         */
+        void onSessionDeleteStart(DailyLogFragmentMain self, SessionHeader header);
+
         /**
          * セッションを削除した
          */
