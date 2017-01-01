@@ -88,7 +88,7 @@ public class GpxImportMenuFragment extends AppFragment {
     @UiThread
     void showImportSettingDialog(Uri gpxFileSource) {
         View content = LayoutInflater.from(getContext()).inflate(R.layout.user_log_gpx_options, null, false);
-        AppDialogBuilder.newCustomContent(getContext(), "時差補正方法を選択してください", content)
+        AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Message_Gpx_ImportTimeSelect), content)
                 .positiveButton(R.string.Word_Common_Import, () -> {
                     GpxImporter.Builder builder = new GpxImporter.Builder(getContext());
                     builder.uri(gpxFileSource);
