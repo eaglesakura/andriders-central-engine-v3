@@ -40,7 +40,7 @@ public class GpxImporterTest extends AppUnitTestCase {
     @Test
     public void GPXのサンプルファイルからパースを行える_AACR2015() throws Throwable {
         GpxImporter build = new GpxImporter.Builder(getContext())
-                .parser(GpxParser.DateOption.AddTimeZone)
+                .parser(GpxParser.DateOption.None)
                 .file(new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
                 .build();
 
@@ -97,7 +97,7 @@ public class GpxImporterTest extends AppUnitTestCase {
     @Test
     public void GPXのサンプルデータを書き込める_AACR2015() throws Throwable {
         GpxImporter build = new GpxImporter.Builder(getContext())
-                .parser(GpxParser.DateOption.AddTimeZone)
+                .parser(GpxParser.DateOption.None)
                 .file(new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
                 .build();
 
@@ -191,7 +191,7 @@ public class GpxImporterTest extends AppUnitTestCase {
     @Test
     public void GPXのサンプルデータを書き込める_AACR2016() throws Throwable {
         GpxImporter build = new GpxImporter.Builder(getContext())
-                .parser(GpxParser.DateOption.AddTimeZone)
+                .parser(GpxParser.DateOption.None)
                 .file(new File("../sdk/src/test/assets/gpx/sample-aacr2016.gpx").getAbsoluteFile())
                 .build();
 
@@ -272,7 +272,7 @@ public class GpxImporterTest extends AppUnitTestCase {
             @Override
             public GpxImporter build() {
                 if (mParser == null) {
-                    parser(GpxParser.DateOption.AddTimeZone);
+                    parser(GpxParser.DateOption.None);
                 }
                 return new GpxImporter(this) {
                     @Override
@@ -292,7 +292,7 @@ public class GpxImporterTest extends AppUnitTestCase {
                     }
                 };
             }
-        }.parser(GpxParser.DateOption.AddTimeZone)
+        }.parser(GpxParser.DateOption.None)
                 .file(new File("../sdk/src/test/assets/gpx/sample-aacr2016.gpx").getAbsoluteFile())
                 .build();
 
