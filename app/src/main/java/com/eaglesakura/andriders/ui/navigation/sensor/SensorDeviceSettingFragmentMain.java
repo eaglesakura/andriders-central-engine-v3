@@ -1,15 +1,9 @@
 package com.eaglesakura.andriders.ui.navigation.sensor;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.andriders.gen.prop.UserProfiles;
-import com.eaglesakura.andriders.model.ble.BleDeviceType;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.android.framework.ui.FragmentHolder;
 import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 /**
  * BLEデバイス等の設定を行う
@@ -32,18 +26,6 @@ public class SensorDeviceSettingFragmentMain extends AppNavigationFragment {
     /**
      * BLEスピードセンサー設定画面
      */
-    FragmentHolder<BleFitnessSensorSettingFragment> mBleSpeedCadenceScanner = new FragmentHolder<BleFitnessSensorSettingFragment>(this, R.id.Content_List_Root, "BLE.SpeedCadence") {
-        @NonNull
-        @Override
-        protected BleFitnessSensorSettingFragment newFragmentInstance(@Nullable Bundle savedInstanceState) throws Exception {
-            BleFitnessSensorSettingFragment fragment = new BleFitnessSensorSettingFragment();
-            fragment.initialize(
-                    BleDeviceType.SPEED_CADENCE_SENSOR,
-                    R.drawable.ic_speed, R.string.Word_Gadget_BleSpeedAndCadenceSensor,
-                    UserProfiles.ID_BLESPEEDCADENCESENSORADDRESS
-
-            );
-            return fragment;
-        }
-    }.bind(mLifecycleDelegate);
+    FragmentHolder<BleSpeedCadenceSettingFragment> mBleSpeedCadenceScanner =
+            FragmentHolder.newInstance(this, BleSpeedCadenceSettingFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
 }
