@@ -249,4 +249,5 @@
     <string name="Word.Sensor.ConnectState">接続状態</string>
     <string name="Word.Sensor.StateConnect">接続</string>
     <string name="Word.Sensor.StateConnecting">検索中</string>
+    <string name="Word.Display.UpdatedDate">更新時刻</string>
 </resources>

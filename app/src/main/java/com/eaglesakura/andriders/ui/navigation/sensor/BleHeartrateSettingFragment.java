@@ -27,6 +27,8 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import java.util.Date;
+
 /**
  * BLE心拍計設定と接続テストを行なう
  */
@@ -52,7 +54,6 @@ public class BleHeartrateSettingFragment extends BleFitnessSensorSettingFragment
             return;
         }
 
-        super.mScanner.disconnect();
         View content = LayoutInflater.from(getContext()).inflate(R.layout.sensor_gadgets_ble_heartrate_testing, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Word_Sensor_Testing), content)
                 .positiveButton(R.string.EsMaterial_Dialog_Close, null)
@@ -89,8 +90,6 @@ public class BleHeartrateSettingFragment extends BleFitnessSensorSettingFragment
             return this;
         }).failed((error, task) -> {
             AppLog.report(error);
-        }).completed((result, task) -> {
-            AppLog.test("No!!");
         }).cancelSignal(dialog)
                 .start();
     }
@@ -104,6 +103,7 @@ public class BleHeartrateSettingFragment extends BleFitnessSensorSettingFragment
         UIHandler.postUIorRun(() -> {
             new AQuery(content)
                     .id(R.id.Item_Status).ifPresent(AppKeyValueView.class, view -> view.setValueText(getString(statusText)))
+                    .id(R.id.Item_Updated).ifPresent(AppKeyValueView.class, view -> view.setValueText(TIME_FORMATTER.format(new Date())))
                     .id(R.id.Item_Battery).ifPresent(AppKeyValueView.class, view -> view.setValueText(BATTERY_TEXT))
                     .id(R.id.Item_Heartrate).ifPresent(AppKeyValueView.class, view -> view.setValueText(HEARTRATE_TEXT));
         });
