@@ -162,8 +162,9 @@ public class GpxImporterTest extends AppUnitTestCase {
             File exportFile = new File(getContext().getFilesDir(), "export.zip");
             AppLog.test("Export Path[%s]", exportFile.getAbsolutePath());
             Uri export = Uri.fromFile(exportFile);
+
+            // ログをエクスポートできる
             logManager.exportDailySessions(firstSession.value, export, () -> false);
-            assertTrue(exportFile.isFile());
         }
 
         for (LogStatistics log : testStatisticses) {

@@ -17,6 +17,8 @@ import com.eaglesakura.util.IOUtil;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,8 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -39,8 +39,6 @@ public class CentralBackupExporter {
     Context mContext;
 
     BackupInformation mBackupInformation = new BackupInformation();
-
-    List<SessionBackup> mSessions = new ArrayList<>();
 
     /**
      * バックアップ情報の拡張子
@@ -71,13 +69,6 @@ public class CentralBackupExporter {
     }
 
     /**
-     * バックアップ対象のセッションを追加する
-     */
-    public void addSession(SessionBackup session) {
-        mSessions.add(session);
-    }
-
-    /**
      * データを圧縮する
      *
      * @param stream   書込み先ストリーム
@@ -98,17 +89,18 @@ public class CentralBackupExporter {
      * @param cancelCallback キャンセルチェック
      * @return タスクが正常終了した場合true
      */
-    public void export(Uri uri, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+    public void export(@NonNull Callback callback, @NonNull Uri uri, @Nullable CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         // 一時的なファイルに書き込む
         boolean writeCompleted = false;
         File tempFile = Garnet.instance(AppStorageProvider.class, AppStorageManager.class).newTemporaryFile();
-        AppLog.system("write cache[%s]", tempFile.getAbsolutePath());
+        AppLog.system("write -> temp[%s]", tempFile.getAbsolutePath());
         try (OutputStream stream = new FileOutputStream(tempFile)) {
             try (ZipOutputStream zipStream = new ZipOutputStream(stream, Charset.forName("UTF-8"))) {
                 compress(zipStream, FILE_BACKUP_INFORMATION, JSON.encode(mBackupInformation));
                 assertNotCanceled(cancelCallback);
 
-                for (SessionBackup session : mSessions) {
+                SessionBackup session;
+                while ((session = callback.nextSession(this, cancelCallback)) != null) {
                     // セッションをJSON化
                     String json = JSON.encode(session);
                     assertNotCanceled(cancelCallback);
@@ -143,5 +135,14 @@ public class CentralBackupExporter {
             // 必ず一時ファイルは削除する
             tempFile.delete();
         }
+    }
+
+    public interface Callback {
+
+        /**
+         * 次のセッションを列挙する
+         */
+        @Nullable
+        SessionBackup nextSession(CentralBackupExporter self, CancelCallback cancelCallback) throws AppException, TaskCanceledException;
     }
 }

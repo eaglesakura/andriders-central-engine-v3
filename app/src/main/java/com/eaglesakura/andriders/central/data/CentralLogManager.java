@@ -25,8 +25,10 @@ import org.greenrobot.greendao.annotation.NotNull;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -159,22 +161,40 @@ public class CentralLogManager {
      */
     public void exportDailySessions(long now, Uri dstFile, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try (SessionLogDatabase batch = openReadOnly()) {
-            CentralBackupExporter exporter = new CentralBackupExporter(mContext);
 
             // この日を含んだセッションを列挙する
             SessionHeaderCollection dailySessions = listDailyHeaders(now, cancelCallback);
             if (dailySessions.isEmpty()) {
                 throw new AppDataNotFoundException("Date Error");
             }
-            for (SessionHeader header : dailySessions.list()) {
-                List<RawCentralData> centralDataList = batch.listCentralData(header.getSessionId(), cancelCallback);
-                if (centralDataList.isEmpty()) {
-                    throw new AppDatabaseException("Session Data Error");
-                }
-                exporter.addSession(SessionBackup.newInstance(centralDataList));
-            }
 
-            exporter.export(dstFile, cancelCallback);
+            exportSessions(dailySessions.list(), dstFile, cancelCallback);
+        }
+    }
+
+    void exportSessions(List<SessionHeader> headers, Uri dstFile, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+        try (SessionLogDatabase batch = openReadOnly()) {
+            CentralBackupExporter exporter = new CentralBackupExporter(mContext);
+            exporter.export(new CentralBackupExporter.Callback() {
+                Iterator<SessionHeader> mIterator = headers.iterator();
+
+                @Nullable
+                @Override
+                public SessionBackup nextSession(CentralBackupExporter self, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+                    if (!mIterator.hasNext()) {
+                        return null;
+                    }
+
+                    SessionHeader header = mIterator.next();
+                    List<RawCentralData> centralDataList = batch.listCentralData(header.getSessionId(), cancelCallback);
+                    if (centralDataList.isEmpty()) {
+                        throw new AppDatabaseException("Session Data Error");
+                    }
+
+                    return SessionBackup.newInstance(centralDataList);
+                }
+
+            }, dstFile, cancelCallback);
         }
     }
 }
