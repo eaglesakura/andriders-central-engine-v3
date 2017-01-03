@@ -377,9 +377,18 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
     /**
      * データを挿入する
      */
-    public void insert(Iterable<RawCentralData> dataList) throws AppIOException {
+    public void insert(Iterable<RawCentralData> dataList) throws AppException, TaskCanceledException {
+        insert(dataList, null);
+    }
+
+    /**
+     * データを挿入する
+     */
+    public void insert(Iterable<RawCentralData> dataList, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try {
             for (RawCentralData data : dataList) {
+                assertNotCanceled(cancelCallback);
+
                 DbSessionPoint pt = new DbSessionPoint();
                 pt.setSessionId(data.session.sessionId);
                 pt.setDate(new Date(data.centralStatus.date));
@@ -452,10 +461,8 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
                 // 挿入
                 session.insertOrReplace(pt);
             }
-        } catch (IOException e) {
-            throw new AppIOException(e);
-        } catch (Exception e) {
-            throw new AppDatabaseException(e);
+        } catch (Throwable e) {
+            AppException.throwAppExceptionOrTaskCanceled(e);
         }
     }
 

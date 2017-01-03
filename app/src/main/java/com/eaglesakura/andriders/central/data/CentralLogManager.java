@@ -255,7 +255,7 @@ public class CentralLogManager {
                     @Override
                     public void onLoadSession(@NonNull CentralBackupImporter self, @NonNull SessionBackup session, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
                         callback.onInsertStart(CentralLogManager.this, session);
-                        db.insert(session.points);
+                        db.insert(session.points, cancelCallback);
                         SessionHeader header = new SessionHeader(session.points.get(session.points.size() - 1));
                         result.add(header);
                     }

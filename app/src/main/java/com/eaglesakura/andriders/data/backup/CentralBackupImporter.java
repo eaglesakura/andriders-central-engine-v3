@@ -3,12 +3,12 @@ package com.eaglesakura.andriders.data.backup;
 import com.eaglesakura.andriders.data.backup.serialize.BackupInformation;
 import com.eaglesakura.andriders.data.backup.serialize.SessionBackup;
 import com.eaglesakura.andriders.error.AppException;
-import com.eaglesakura.andriders.error.io.AppDataNotSupportedException;
 import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.storage.AppStorageManager;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.io.CancelableInputStream;
 import com.eaglesakura.json.JSON;
 import com.eaglesakura.lambda.CallbackUtils;
 import com.eaglesakura.lambda.CancelCallback;
@@ -92,14 +92,15 @@ public class CentralBackupImporter {
 
                 // セッション情報を見つけた
                 AppLog.db("Found Session[%s]", file.getAbsolutePath());
-                try (InputStream stream = new FileInputStream(file)) {
+                try (InputStream stream = new CancelableInputStream(new FileInputStream(file), cancelCallback)) {
                     SessionBackup session = JSON.decode(stream, SessionBackup.class);
                     assertNotCanceled(cancelCallback);
                     callback.onLoadSession(this, session, cancelCallback);
                 }
             }
-        } catch (IOException e) {
-            throw new AppDataNotSupportedException(e);
+        } catch (Throwable e) {
+            AppException.throwAppExceptionOrTaskCanceled(e);
+            return;
         } finally {
             // キャッシュディレクトリを削除
             if (directory != null) {
