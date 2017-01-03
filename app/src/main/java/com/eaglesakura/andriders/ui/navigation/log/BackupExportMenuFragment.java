@@ -19,6 +19,7 @@ import com.eaglesakura.android.margarine.OnMenuClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.thread.ui.UIHandler;
 import com.eaglesakura.material.widget.DialogBuilder;
+import com.eaglesakura.material.widget.SnackbarBuilder;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
 import com.eaglesakura.util.StringUtil;
 
@@ -82,6 +83,7 @@ public class BackupExportMenuFragment extends AppFragment {
             DialogBuilder builder = AppDialogBuilder.newProgress(getContext(), getString(R.string.Word_Common_DataWrite))
                     .title(R.string.Title_Log_Backup)
                     .cancelable(true)
+                    .canceledOnTouchOutside(false)
                     .positiveButton(R.string.EsMaterial_Dialog_Cancel, null);
             try (DialogToken token = DialogBuilder.showAsToken(builder, mLifecycleDelegate)) {
 
@@ -105,6 +107,10 @@ public class BackupExportMenuFragment extends AppFragment {
             }
         }).canceled(task -> {
             AppLog.db("Cancel Backup");
+        }).completed((result, task) -> {
+            SnackbarBuilder.from(getActivity())
+                    .message(R.string.Message_Log_BackupCompleted)
+                    .show();
         }).start();
     }
 

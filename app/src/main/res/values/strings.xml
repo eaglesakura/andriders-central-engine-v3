@@ -259,4 +259,5 @@
     <string name="Message.Log.ExportBackup">この日のログを完全にバックアップしますか?</string>
     <string name="Title.Log.Backup">完全なバックアップ</string>
     <string name="Message.Log.ExportSession">セッション %1$s</string>
+    <string name="Message.Log.BackupCompleted">バックアップ完了</string>
 </resources>
