@@ -46,5 +46,10 @@ public interface AppConstants {
      * MEMO: 別なFragmentが勝手にハンドリングするのを防ぐため、別々のREQUESTが必要
      */
     int REQUEST_COMMAND_SETUP_DISTANCE = 0x3706;
+
+    /**
+     * バックアップファイルの選択
+     */
+    int REQUEST_PICK_BACKUP_FILE = 0x3707;
 }
 

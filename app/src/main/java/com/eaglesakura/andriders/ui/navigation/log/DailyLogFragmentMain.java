@@ -41,13 +41,20 @@ import java.util.Date;
  * 日次ログ表示Fragment
  */
 @FragmentLayout(R.layout.user_daily_log)
-public class DailyLogFragmentMain extends AppNavigationFragment implements GoogleFitUploadMenuFragment.Callback {
+public class DailyLogFragmentMain extends AppNavigationFragment
+        implements GoogleFitUploadMenuFragment.Callback, BackupExportMenuFragment.Callback {
 
     /**
      * Google Fitアップロードメニュー
      */
     FragmentHolder<GoogleFitUploadMenuFragment> mFitUploadMenuFragment
             = FragmentHolder.newInstance(this, GoogleFitUploadMenuFragment.class, 0).bind(mLifecycleDelegate);
+
+    /**
+     * 完全なバックアップメニュー
+     */
+    FragmentHolder<BackupExportMenuFragment> mBackupMenuFragment
+            = FragmentHolder.newInstance(this, BackupExportMenuFragment.class, 0).bind(mLifecycleDelegate);
 
     /**
      * 起点となるセッション
@@ -189,6 +196,11 @@ public class DailyLogFragmentMain extends AppNavigationFragment implements Googl
 
     @Override
     public long getUploadTargetSessionId(GoogleFitUploadMenuFragment self) {
+        return mSampleSessionId;
+    }
+
+    @Override
+    public long getBackupTargetSessionId(BackupExportMenuFragment self) {
         return mSampleSessionId;
     }
 

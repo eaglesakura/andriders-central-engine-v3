@@ -55,6 +55,11 @@ public class CentralBackupExporter {
     static final String PATH_SESSION_DATA = "sessions/";
 
     /**
+     * バックアップファイルの拡張子
+     */
+    public static final String EXT_BACKUP_FILE = ".ace3.zip";
+
+    /**
      * バックアップ対象のバージョン
      */
     static final int SUPPORT_BACKUP_VERSION = 1;

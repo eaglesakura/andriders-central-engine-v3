@@ -52,4 +52,5 @@ public class AppFragment extends SupportFragment {
         builder.cancelable(false);
         return DialogBuilder.showAsToken(builder, mLifecycleDelegate);
     }
+
 }
