@@ -7,6 +7,9 @@ import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
+import com.eaglesakura.andriders.data.backup.CentralBackupImporter;
+import com.eaglesakura.andriders.data.backup.serialize.BackupInformation;
+import com.eaglesakura.andriders.data.backup.serialize.SessionBackup;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.error.AppException;
@@ -18,7 +21,9 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.property.PropertyStore;
+import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.collection.DataCollection;
+import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.thread.Holder;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.thread.LongHolder;
@@ -28,6 +33,7 @@ import com.eaglesakura.util.LogUtil;
 import org.junit.Test;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.Date;
@@ -165,6 +171,29 @@ public class GpxImporterTest extends AppUnitTestCase {
 
             // ログをエクスポートできる
             logManager.exportDailySessions(firstSession.value, export, () -> false);
+
+            // エクスポートしたログを取得できる
+            CentralBackupImporter centralBackupImporter = new CentralBackupImporter(getContext());
+
+            IntHolder sessionCount = new IntHolder();
+
+            centralBackupImporter.parse(new CentralBackupImporter.Callback() {
+                @Override
+                public void onLoadInformation(@NonNull CentralBackupImporter self, @NonNull BackupInformation info, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+                    assertNotNull(info);
+                    assertNotEmpty(info.appVersionName);
+                }
+
+                @Override
+                public void onLoadSession(@NonNull CentralBackupImporter self, @NonNull SessionBackup session, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+                    validate(session.points).notEmpty().allNotNull().each(pt -> {
+                        assertNotNull(pt.centralStatus);
+                    });
+
+                    sessionCount.add(1);
+                }
+            }, export, () -> false);
+            assertNotEquals(sessionCount.value, 0);
         }
 
         for (LogStatistics log : testStatisticses) {

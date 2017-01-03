@@ -25,6 +25,7 @@ import org.greenrobot.greendao.annotation.NotNull;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Date;
@@ -150,6 +151,18 @@ public class CentralLogManager {
             AppException.throwAppExceptionOrTaskCanceled(e);
             return 0;
         }
+    }
+
+    public interface ExportCallback {
+        /**
+         * セッションの書込みを開始する
+         */
+        void onStart(CentralLogManager self, @NonNull SessionHeader header);
+
+        /**
+         * バックアップ情報の書込みを開始する
+         */
+        void onStartCompless(CentralLogManager self, @NonNull SessionHeader session, SessionBackup backup);
     }
 
     /**

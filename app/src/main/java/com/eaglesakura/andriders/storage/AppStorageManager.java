@@ -53,9 +53,20 @@ public class AppStorageManager {
      * 新たなキャッシュファイルを生成する。
      * このファイルは内部領域に作られ、次回起動時に削除される。
      */
-    @Nullable
+    @NonNull
     public File newTemporaryFile() {
         File cacheDir = mContext.getCacheDir();
         return new File(cacheDir, "" + System.currentTimeMillis() + "-" + RandomUtil.randShortString() + ".bin");
+    }
+
+    /**
+     * 新たなキャッシュディレクトリを生成する
+     */
+    @NonNull
+    public File newTemporaryDir() {
+        File cacheDir = mContext.getCacheDir();
+        File result = new File(cacheDir, "" + System.currentTimeMillis() + "-" + RandomUtil.randShortString());
+        result.mkdirs();
+        return result;
     }
 }

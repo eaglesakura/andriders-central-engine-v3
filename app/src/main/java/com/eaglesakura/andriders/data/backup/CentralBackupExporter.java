@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -95,7 +94,7 @@ public class CentralBackupExporter {
         File tempFile = Garnet.instance(AppStorageProvider.class, AppStorageManager.class).newTemporaryFile();
         AppLog.system("write -> temp[%s]", tempFile.getAbsolutePath());
         try (OutputStream stream = new FileOutputStream(tempFile)) {
-            try (ZipOutputStream zipStream = new ZipOutputStream(stream, Charset.forName("UTF-8"))) {
+            try (ZipOutputStream zipStream = new ZipOutputStream(stream)) {
                 compress(zipStream, FILE_BACKUP_INFORMATION, JSON.encode(mBackupInformation));
                 assertNotCanceled(cancelCallback);
 
