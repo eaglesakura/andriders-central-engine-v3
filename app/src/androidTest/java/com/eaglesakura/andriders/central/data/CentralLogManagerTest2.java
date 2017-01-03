@@ -8,6 +8,7 @@ import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.device.external.Storage;
 import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.collection.DataCollection;
 
 import org.junit.Test;
 
@@ -42,7 +43,7 @@ public class CentralLogManagerTest2 extends AppDeviceTestCase {
             output.delete();
             assertFalse(output.isFile());
 
-            logManager.exportDailySessions(SESSION_ID, new CentralLogManager.ExportCallback() {
+            DataCollection<SessionHeader> sessions = logManager.exportDailySessions(SESSION_ID, new CentralLogManager.ExportCallback() {
                 @Override
                 public void onStart(CentralLogManager self, @NonNull SessionHeader header) {
                     assertNotNull(header);
@@ -57,6 +58,20 @@ public class CentralLogManagerTest2 extends AppDeviceTestCase {
                 }
             }, Uri.fromFile(output), () -> false);
             assertTrue(output.isFile());
+            validate(sessions.list()).sizeIs(8).allNotNull();
+        }
+
+        // バックアップを復元する
+        {
+            DataCollection<SessionHeader> sessions = logManager.importFromBackup(new CentralLogManager.ImportCallback() {
+                @Override
+                public void onInsertStart(CentralLogManager self, @NonNull SessionBackup backup) {
+                    SessionHeader header = new SessionHeader(backup.points.get(backup.points.size() - 1));
+                    AppLog.test("onInsertStart session[%d] %d points", header.getSessionId(), backup.points.size());
+                }
+            }, Uri.fromFile(output), () -> false);
+
+            validate(sessions.list()).sizeIs(8).allNotNull();
         }
     }
 }

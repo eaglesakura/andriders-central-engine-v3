@@ -5,8 +5,10 @@ import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.central.data.CentralDataManagerTest;
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
+import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
+import com.eaglesakura.andriders.data.backup.serialize.SessionBackup;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.error.AppException;
@@ -28,6 +30,7 @@ import com.eaglesakura.util.LogUtil;
 import org.junit.Test;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.Date;
@@ -164,7 +167,17 @@ public class GpxImporterTest extends AppUnitTestCase {
             Uri export = Uri.fromFile(exportFile);
 
             // ログをエクスポートできる
-            logManager.exportDailySessions(firstSession.value, export, () -> false);
+            logManager.exportDailySessions(firstSession.value, new CentralLogManager.ExportCallback() {
+                @Override
+                public void onStart(CentralLogManager self, @NonNull SessionHeader header) {
+
+                }
+
+                @Override
+                public void onStartCompress(CentralLogManager self, @NonNull SessionHeader session, SessionBackup backup) {
+
+                }
+            }, export, () -> false);
         }
 
         for (LogStatistics log : testStatisticses) {
