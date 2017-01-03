@@ -162,7 +162,7 @@ public class CentralLogManager {
         /**
          * バックアップ情報の書込みを開始する
          */
-        void onStartCompless(CentralLogManager self, @NonNull SessionHeader session, SessionBackup backup);
+        void onStartCompress(CentralLogManager self, @NonNull SessionHeader session, SessionBackup backup);
     }
 
     /**
@@ -172,7 +172,7 @@ public class CentralLogManager {
      * @param dstFile        書込み先ファイル
      * @param cancelCallback キャンセルチェック
      */
-    public void exportDailySessions(long now, Uri dstFile, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+    public void exportDailySessions(long now, ExportCallback exportCallback, Uri dstFile, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try (SessionLogDatabase batch = openReadOnly()) {
 
             // この日を含んだセッションを列挙する
@@ -181,11 +181,11 @@ public class CentralLogManager {
                 throw new AppDataNotFoundException("Date Error");
             }
 
-            exportSessions(dailySessions.list(), dstFile, cancelCallback);
+            exportSessions(dailySessions.list(), exportCallback, dstFile, cancelCallback);
         }
     }
 
-    void exportSessions(List<SessionHeader> headers, Uri dstFile, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+    void exportSessions(List<SessionHeader> headers, ExportCallback exportCallback, Uri dstFile, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try (SessionLogDatabase batch = openReadOnly()) {
             CentralBackupExporter exporter = new CentralBackupExporter(mContext);
             exporter.export(new CentralBackupExporter.Callback() {
@@ -199,12 +199,15 @@ public class CentralLogManager {
                     }
 
                     SessionHeader header = mIterator.next();
+                    exportCallback.onStart(CentralLogManager.this, header);
                     List<RawCentralData> centralDataList = batch.listCentralData(header.getSessionId(), cancelCallback);
                     if (centralDataList.isEmpty()) {
                         throw new AppDatabaseException("Session Data Error");
                     }
 
-                    return SessionBackup.newInstance(centralDataList);
+                    SessionBackup sessionBackup = SessionBackup.newInstance(centralDataList);
+                    exportCallback.onStartCompress(CentralLogManager.this, header, sessionBackup);
+                    return sessionBackup;
                 }
 
             }, dstFile, cancelCallback);
