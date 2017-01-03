@@ -23,6 +23,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
+
 /**
  * バックアップの復元を行なう
  *
@@ -80,6 +82,8 @@ public class CentralBackupImporter {
                 callback.onLoadInformation(this, information, cancelCallback);
             }
 
+            assertNotCanceled(cancelCallback);
+
             // セッション情報をロード
             for (File file : IOUtil.listFiles(new File(directory, CentralBackupExporter.PATH_SESSION_DATA))) {
                 if (!file.getName().endsWith(CentralBackupExporter.EXT_SESSION_DATA)) {
@@ -90,6 +94,7 @@ public class CentralBackupImporter {
                 AppLog.db("Found Session[%s]", file.getAbsolutePath());
                 try (InputStream stream = new FileInputStream(file)) {
                     SessionBackup session = JSON.decode(stream, SessionBackup.class);
+                    assertNotCanceled(cancelCallback);
                     callback.onLoadSession(this, session, cancelCallback);
                 }
             }

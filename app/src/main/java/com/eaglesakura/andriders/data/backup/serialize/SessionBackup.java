@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.data.backup.serialize;
 
+import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 
 import android.support.annotation.Keep;
@@ -32,5 +33,9 @@ public class SessionBackup {
         SessionBackup result = new SessionBackup();
         result.points = dataList;
         return result;
+    }
+
+    public static SessionHeader getSessionHeader(SessionBackup backup) {
+        return new SessionHeader(backup.points.get(backup.points.size() - 1));
     }
 }

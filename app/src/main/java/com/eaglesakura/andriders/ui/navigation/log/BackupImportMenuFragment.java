@@ -3,7 +3,6 @@ package com.eaglesakura.andriders.ui.navigation.log;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.SessionHeader;
-import com.eaglesakura.andriders.data.backup.CentralBackupExporter;
 import com.eaglesakura.andriders.data.backup.serialize.SessionBackup;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
@@ -17,10 +16,11 @@ import com.eaglesakura.android.framework.ui.support.annotation.FragmentMenu;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.OnMenuClick;
 import com.eaglesakura.android.oari.OnActivityResult;
+import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.material.widget.DialogBuilder;
 import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
-import com.eaglesakura.util.StringUtil;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -31,10 +31,10 @@ import android.support.annotation.UiThread;
 import java.util.Date;
 
 /**
- * 完全なログバックアップを行なう
+ * バックアップからのファイル復元を行なう
  */
-@FragmentMenu(R.menu.user_log_backup_export)
-public class BackupExportMenuFragment extends AppFragment {
+@FragmentMenu(R.menu.user_log_backup_import)
+public class BackupImportMenuFragment extends AppFragment {
 
     @BindInterface
     Callback mCallback;
@@ -46,17 +46,14 @@ public class BackupExportMenuFragment extends AppFragment {
     /**
      * バックアップボタンを押した
      */
-    @OnMenuClick(R.id.Menu_Export_Backup)
+    @OnMenuClick(R.id.Menu_Import_Backup)
     void clickBackup() {
-        AppDialogBuilder.newInformation(getContext(), R.string.Message_Log_ExportBackup)
+        AppDialogBuilder.newInformation(getContext(), R.string.Message_Log_ImportBackup)
                 .positiveButton(R.string.Word_Common_OK, () -> {
                     AppLog.widget("Pick Output File");
-
-                    long dateId = SessionHeader.toDateId(mCallback.getBackupTargetSessionId(this));
-
-                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("application/*");
-                    intent.putExtra(Intent.EXTRA_TITLE, StringUtil.format("backup-%d%s", dateId, CentralBackupExporter.EXT_BACKUP_FILE));
                     startActivityForResult(intent, AppConstants.REQUEST_PICK_BACKUP_FILE);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
@@ -72,45 +69,36 @@ public class BackupExportMenuFragment extends AppFragment {
         AppLog.widget("Backup %s", data.getData().toString());
         // 設定画面を開く
         UIHandler.postUI(() -> {
-            showExportDialog(data.getData());
+            showImportDialog(data.getData());
         });
     }
 
     @UiThread
-    void showExportDialog(Uri uri) {
-        DialogBuilder builder = AppDialogBuilder.newProgress(getContext(), getString(R.string.Word_Common_DataWrite))
-                .title(R.string.Title_Log_Backup)
+    void showImportDialog(Uri uri) {
+        DialogBuilder builder = AppDialogBuilder.newProgress(getContext(), getString(R.string.Word_Common_DataLoad))
+                .title(R.string.Title_Log_Restore)
                 .cancelable(true)
                 .canceledOnTouchOutside(false)
                 .positiveButton(R.string.EsMaterial_Dialog_Cancel, null);
         DialogToken token = DialogBuilder.showAsToken(builder, mLifecycleDelegate);
-        asyncUI(task -> {
+        asyncUI((BackgroundTask<DataCollection<SessionHeader>> task) -> {
             try (DialogToken _token = token) {
-
-                long sessionId = mCallback.getBackupTargetSessionId(this);
-                mCentralLogManager.exportDailySessions(sessionId, new CentralLogManager.ExportCallback() {
+                return mCentralLogManager.importFromBackup(new CentralLogManager.ImportCallback() {
                     @Override
-                    public void onStart(CentralLogManager self, @NonNull SessionHeader header) {
+                    public void onInsertStart(CentralLogManager self, @NonNull SessionBackup backup) {
                         token.updateContent(view -> {
+                            SessionHeader header = SessionBackup.getSessionHeader(backup);
                             Date date = new Date(header.getSessionId());
-                            String text = getString(R.string.Message_Log_ExportSession, LogSummaryBinding.DEFAULT_DATE_FORMATTER.format(date));
+                            String text = getString(R.string.Message_Log_ImportSession, LogSummaryBinding.DEFAULT_DATE_FORMATTER.format(date));
                             new AQuery(view).id(R.id.EsMaterial_Progress_Text).text(text);
                         });
                     }
-
-                    @Override
-                    public void onStartCompress(CentralLogManager self, @NonNull SessionHeader session, SessionBackup backup) {
-
-                    }
                 }, uri, SupportCancelCallbackBuilder.from(task).or(token).build());
-                return this;
             }
         }).canceled(task -> {
-            AppLog.db("Cancel Backup");
+            AppLog.db("Cancel Restore");
         }).completed((result, task) -> {
-            AppDialogBuilder.newInformation(getContext(), R.string.Message_Log_BackupCompleted)
-                    .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+            mCallback.onSessionImportCompleted(this, result);
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
@@ -121,8 +109,8 @@ public class BackupExportMenuFragment extends AppFragment {
 
     public interface Callback {
         /**
-         * 代表セッションIDを取得する
+         * セッションをインポート完了した
          */
-        long getBackupTargetSessionId(BackupExportMenuFragment self);
+        void onSessionImportCompleted(BackupImportMenuFragment self, DataCollection<SessionHeader> headers);
     }
 }
