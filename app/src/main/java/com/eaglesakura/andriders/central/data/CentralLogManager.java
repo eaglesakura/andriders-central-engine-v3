@@ -3,8 +3,12 @@ package com.eaglesakura.andriders.central.data;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
 import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
+import com.eaglesakura.andriders.data.backup.CentralBackupExporter;
+import com.eaglesakura.andriders.data.backup.serialize.SessionBackup;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.error.AppException;
+import com.eaglesakura.andriders.error.io.AppDataNotFoundException;
+import com.eaglesakura.andriders.error.io.AppDatabaseException;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.android.garnet.Garnet;
@@ -20,8 +24,10 @@ import com.eaglesakura.util.Timer;
 import org.greenrobot.greendao.annotation.NotNull;
 
 import android.content.Context;
+import android.net.Uri;
 
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -141,6 +147,34 @@ public class CentralLogManager {
         } catch (Throwable e) {
             AppException.throwAppExceptionOrTaskCanceled(e);
             return 0;
+        }
+    }
+
+    /**
+     * 指定したセッションを含む1日をエクスポートする
+     *
+     * @param now            セッションを含む日
+     * @param dstFile        書込み先ファイル
+     * @param cancelCallback キャンセルチェック
+     */
+    public void exportDailySessions(long now, Uri dstFile, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+        try (SessionLogDatabase batch = openReadOnly()) {
+            CentralBackupExporter exporter = new CentralBackupExporter(mContext);
+
+            // この日を含んだセッションを列挙する
+            SessionHeaderCollection dailySessions = listDailyHeaders(now, cancelCallback);
+            if (dailySessions.isEmpty()) {
+                throw new AppDataNotFoundException("Date Error");
+            }
+            for (SessionHeader header : dailySessions.list()) {
+                List<RawCentralData> centralDataList = batch.listCentralData(header.getSessionId(), cancelCallback);
+                if (centralDataList.isEmpty()) {
+                    throw new AppDatabaseException("Session Data Error");
+                }
+                exporter.addSession(SessionBackup.newInstance(centralDataList));
+            }
+
+            exporter.export(dstFile, cancelCallback);
         }
     }
 }

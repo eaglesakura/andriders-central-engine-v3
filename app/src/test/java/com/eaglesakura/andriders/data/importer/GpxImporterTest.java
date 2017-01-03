@@ -21,10 +21,13 @@ import com.eaglesakura.android.property.PropertyStore;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.thread.Holder;
 import com.eaglesakura.thread.IntHolder;
+import com.eaglesakura.thread.LongHolder;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.LogUtil;
 
 import org.junit.Test;
+
+import android.net.Uri;
 
 import java.io.File;
 import java.util.Date;
@@ -102,7 +105,17 @@ public class GpxImporterTest extends AppUnitTestCase {
                 .file(new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
                 .build();
 
+        LongHolder firstSession = new LongHolder();
+
         SessionImportCommitter committer = new SessionImportCommitter(getContext()) {
+            @Override
+            public void onSessionStart(SessionImporter self, CentralDataManager dataManager) throws AppException {
+                super.onSessionStart(self, dataManager);
+                if (firstSession.value == 0) {
+                    firstSession.value = dataManager.getSessionId();
+                }
+            }
+
             @Override
             public void onPointInsert(SessionImporter self, CentralDataManager dataManager, RawCentralData latest) throws AppException {
                 // CentralをValidate
@@ -143,6 +156,15 @@ public class GpxImporterTest extends AppUnitTestCase {
                 logManager.loadAllStatistics(() -> false),
                 logManager.loadDailyStatistics(DateUtil.getTime(TimeZone.getDefault(), 2015, 5, 24).getTime(), () -> false)
         };
+
+        // バックアップを取る
+        {
+            File exportFile = new File(getContext().getFilesDir(), "export.zip");
+            AppLog.test("Export Path[%s]", exportFile.getAbsolutePath());
+            Uri export = Uri.fromFile(exportFile);
+            logManager.exportDailySessions(firstSession.value, export, () -> false);
+            assertTrue(exportFile.isFile());
+        }
 
         for (LogStatistics log : testStatisticses) {
             assertNotNull(log);
