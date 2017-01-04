@@ -3,6 +3,7 @@ package com.eaglesakura.andriders.storage;
 import com.eaglesakura.android.device.external.Storage;
 import com.eaglesakura.android.garnet.Singleton;
 import com.eaglesakura.util.IOUtil;
+import com.eaglesakura.util.RandomUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -46,5 +47,26 @@ public class AppStorageManager {
     @Nullable
     public File getExternalDatabasePath(@NonNull String name) {
         return new File(getDatabaseDirectory(), name).getAbsoluteFile();
+    }
+
+    /**
+     * 新たなキャッシュファイルを生成する。
+     * このファイルは内部領域に作られ、次回起動時に削除される。
+     */
+    @NonNull
+    public File newTemporaryFile() {
+        File cacheDir = mContext.getCacheDir();
+        return new File(cacheDir, "" + System.currentTimeMillis() + "-" + RandomUtil.randShortString() + ".bin");
+    }
+
+    /**
+     * 新たなキャッシュディレクトリを生成する
+     */
+    @NonNull
+    public File newTemporaryDir() {
+        File cacheDir = mContext.getCacheDir();
+        File result = new File(cacheDir, "" + System.currentTimeMillis() + "-" + RandomUtil.randShortString());
+        result.mkdirs();
+        return result;
     }
 }

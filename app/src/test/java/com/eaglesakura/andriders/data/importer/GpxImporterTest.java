@@ -5,8 +5,10 @@ import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.central.data.CentralDataManagerTest;
 import com.eaglesakura.andriders.central.data.CentralLogManager;
 import com.eaglesakura.andriders.central.data.log.LogStatistics;
+import com.eaglesakura.andriders.central.data.log.SessionHeader;
 import com.eaglesakura.andriders.central.data.log.SessionHeaderCollection;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
+import com.eaglesakura.andriders.data.backup.serialize.SessionBackup;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.data.gpx.GpxParser;
 import com.eaglesakura.andriders.error.AppException;
@@ -18,12 +20,17 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.property.PropertyStore;
+import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.thread.Holder;
 import com.eaglesakura.thread.IntHolder;
+import com.eaglesakura.thread.LongHolder;
 import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.LogUtil;
 
 import org.junit.Test;
+
+import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.util.Date;
@@ -101,7 +108,17 @@ public class GpxImporterTest extends AppUnitTestCase {
                 .file(new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
                 .build();
 
+        LongHolder firstSession = new LongHolder();
+
         SessionImportCommitter committer = new SessionImportCommitter(getContext()) {
+            @Override
+            public void onSessionStart(SessionImporter self, CentralDataManager dataManager) throws AppException {
+                super.onSessionStart(self, dataManager);
+                if (firstSession.value == 0) {
+                    firstSession.value = dataManager.getSessionId();
+                }
+            }
+
             @Override
             public void onPointInsert(SessionImporter self, CentralDataManager dataManager, RawCentralData latest) throws AppException {
                 // CentralをValidate
@@ -143,6 +160,26 @@ public class GpxImporterTest extends AppUnitTestCase {
                 logManager.loadDailyStatistics(DateUtil.getTime(TimeZone.getDefault(), 2015, 5, 24).getTime(), () -> false)
         };
 
+        // バックアップを取る
+        {
+            File exportFile = new File(getContext().getFilesDir(), "export.zip");
+            AppLog.test("Export Path[%s]", exportFile.getAbsolutePath());
+            Uri export = Uri.fromFile(exportFile);
+
+            // ログをエクスポートできる
+            logManager.exportDailySessions(firstSession.value, new CentralLogManager.ExportCallback() {
+                @Override
+                public void onStart(CentralLogManager self, @NonNull SessionHeader header) {
+
+                }
+
+                @Override
+                public void onStartCompress(CentralLogManager self, @NonNull SessionHeader session, SessionBackup backup) {
+
+                }
+            }, export, () -> false);
+        }
+
         for (LogStatistics log : testStatisticses) {
             assertNotNull(log);
             validate(log.getMaxSpeedKmh()).delta(10.0).eq(60.0);   // AACR最高速度
@@ -179,6 +216,11 @@ public class GpxImporterTest extends AppUnitTestCase {
                 }, () -> false);
                 validate(points).from(10);
                 AppLog.test("Each Points num[%d]", points);
+
+                // 全てのCentral Pointがロードできることを確認
+                DataCollection<RawCentralData> centralDataCollection = logManager.listSessionPoints(header.getSessionId(), () -> false);
+                assertNotNull(centralDataCollection);
+                validate(centralDataCollection.list()).notEmpty().allNotNull().sizeFrom(10).sizeTo(points);
 
                 // 削除ができることを確認
                 logManager.delete(header);

@@ -254,4 +254,15 @@
     <string name="Word.Gpx.NoAddTime">時差修正なし</string>
     <string name="Word.Gpx.SubTime">時差を減算する</string>
     <string name="Message.Gpx.ImportTimeSelect">時差補正</string>
+    <string name="Word.Log.ExportBackup">完全なバックアップ</string>
+    <string name="Word.Log.ImportBackup">バックアップから復元</string>
+    <string name="Message.Log.ExportBackup">この日のログを完全にバックアップしますか?</string>
+    <string name="Message.Log.ImportBackup">復元するバックアップファイルを選択してください。</string>
+    <string name="Title.Log.Backup">完全なバックアップ</string>
+    <string name="Title.Log.Restore">バックアップから復元</string>
+    <string name="Message.Log.ExportSession">セッション %1$s</string>
+    <string name="Message.Log.ImportSession">セッション %1$s</string>
+    <string name="Message.Log.BackupCompleted">バックアップを完了しました。</string>
+    <string name="Message.Log.ImportCompleted">バックアップの復元を完了しました。\n%1$d セッション</string>
+    <string name="Word.Common.Share">共有</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.central.data.log;
 
+import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.util.DateUtil;
 
 import java.util.Comparator;
@@ -31,6 +32,15 @@ public class SessionHeader {
         mSessionId = sessionId;
         mEndDate = new Date(endDate);
         mDateId = toDateId(sessionId);
+    }
+
+    /**
+     * Central Dataからヘッダを生成する
+     */
+    public SessionHeader(RawCentralData data) {
+        mSessionId = data.session.sessionId;
+        mEndDate = new Date(data.centralStatus.date);
+        mDateId = toDateId(mSessionId);
     }
 
     /**
