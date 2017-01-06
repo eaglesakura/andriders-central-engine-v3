@@ -99,7 +99,7 @@ dependencies {
     if (ACESDK_COMPILE_LOCAL) {
         compile project(':sdk')
     } else {
-        compile "com.eaglesakura:andriders-central-engine-sdk:${ACES_APP_VERSION}.+"
+        compile "com.eaglesakura:andriders-central-engine-sdk:${ACES_APP_VERSION}.beta-+"
     }
 
     /**
