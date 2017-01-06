@@ -42,7 +42,7 @@ import java.util.Set;
 @FragmentLayout(R.layout.sensor_gadgets_ble_fitness)
 public abstract class BleFitnessSensorSettingFragment extends AppFragment {
 
-    static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss.SS");
+    static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss");
 
     @BundleState
     int mDeviceTypeId;
