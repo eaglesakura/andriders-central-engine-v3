@@ -13,4 +13,9 @@ public class BuildConfigTest extends DeviceTestCase<AceApplication> {
         assertTrue(FrameworkCentral.getApplication() instanceof AceApplication);
     }
 
+    @Test
+    public void SDKがACEをインストール済みとしている() throws Throwable {
+        assertEquals(AceEnvironment.isInstalledACE(getContext()), AceEnvironment.INSTALL_ACE_OK);
+        assertNotNull(AceEnvironment.getAceInstallIntent(getContext()));
+    }
 }

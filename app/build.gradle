@@ -1,9 +1,8 @@
 // バージョン名
 // ${メジャーバージョン}.${機能バージョン}.${ビルド番号}
-// 1.0.x  : 初期リリース
-// 1.9.x  : サイコンUI切り替えでAndroid 5.1対応
 // 3.0.x  : モジュール細分化バージョン
 def ACES_APP_VERSION = "3.0"
+def ACES_SDK_VERSION = "3.0.+"
 
 buildscript {
     repositories {
@@ -59,7 +58,6 @@ dependencies {
         compile project(":eglibrary:android-firebase")
         compile project(':eglibrary:android-bluetooth')
         compile project(':eglibrary:greendao-wrapper')
-//        compile project(':eglibrary:android-apptour')
 
         /**
          * UnitTest
@@ -86,7 +84,6 @@ dependencies {
         compile 'com.eaglesakura:greendao-wrapper:+'
         compile 'com.eaglesakura:small-aquery:+'
         compile 'com.eaglesakura:margarineknife:1.+'
-//        compile 'com.eaglesakura:android-apptour:+'
 
         /**
          * UnitTest
@@ -99,7 +96,7 @@ dependencies {
     if (ACESDK_COMPILE_LOCAL) {
         compile project(':sdk')
     } else {
-        compile 'com.eaglesakura:andriders-central-engine-sdk:+'
+        compile "com.eaglesakura:andriders-central-engine-sdk:${ACES_SDK_VERSION}"
     }
 
     /**
@@ -160,7 +157,7 @@ android {
 
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 25
 
 //        versionCode 99999;
@@ -170,8 +167,9 @@ android {
 
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
-//        buildConfigField "String", "DEFAULT_PACKAGE_NAME", "\"com.eaglesakura.andriders\""
 
+        // 日本語と英語リソースのみを残す
+        resConfigs "en", "ja"
 
         manifestPlaceholders = [google_api_key: "@string/google_api_key"]
 

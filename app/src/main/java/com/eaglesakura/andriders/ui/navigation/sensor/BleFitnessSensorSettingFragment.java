@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +40,9 @@ import java.util.Set;
  * Google Fitによるスキャン可能なデバイスをスキャン・選択するUI
  */
 @FragmentLayout(R.layout.sensor_gadgets_ble_fitness)
-public class BleFitnessSensorSettingFragment extends AppFragment {
+public abstract class BleFitnessSensorSettingFragment extends AppFragment {
+
+    static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss");
 
     @BundleState
     int mDeviceTypeId;

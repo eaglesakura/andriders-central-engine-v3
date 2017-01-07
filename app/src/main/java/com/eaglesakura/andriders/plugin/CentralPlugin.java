@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.data.display.DisplayBindManager;
 import com.eaglesakura.andriders.data.display.DisplayKeyCollection;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.error.AppException;
+import com.eaglesakura.andriders.gen.prop.DebugSettings;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
@@ -79,16 +80,20 @@ public class CentralPlugin {
     @NonNull
     private final UserProfiles mUserProfiles;
 
+    @NonNull
+    private final DebugSettings mDebugSettings;
+
     /**
      * Plugin本体との通信を行う
      */
     private CommandClientImpl mClientImpl;
 
-    CentralPlugin(Context context, ResolveInfo info, UserProfiles profiles) {
+    CentralPlugin(Context context, ResolveInfo info, UserProfiles profiles, DebugSettings debugSettings) {
         mConnectionId = newConnectionId();
         mContext = context;
         mPackageInfo = info;
         mUserProfiles = profiles;
+        mDebugSettings = debugSettings;
 
         buildCentralCommands();
         buildDisplayCommands();
@@ -129,7 +134,7 @@ public class CentralPlugin {
         intent.setComponent(getComponentName());
         intent.putExtra(PluginServerImpl.EXTRA_CONNECTION_ID, mConnectionId);
         intent.putExtra(PluginServerImpl.EXTRA_ACE_IMPL_SDK_VERSION, BuildConfig.ACE_SDK_VERSION);
-        intent.putExtra(PluginServerImpl.EXTRA_DEBUGGABLE, BuildConfig.DEBUG);
+        intent.putExtra(PluginServerImpl.EXTRA_DEBUGGABLE, mDebugSettings.isDebugEnable());
         intent.putExtra(PluginServerImpl.EXTRA_ACE_COMPONENT, new ComponentName(mContext, CentralSessionService.class));
 
         CommandClientImpl commandClient = new CommandClientImpl(mContext, mConnectionId);
@@ -284,6 +289,7 @@ public class CentralPlugin {
 
     /**
      * 設定画面を開かせる
+     * ハンドリングに成功した場合はtrueを返却する。
      */
     public boolean startSettings() {
         try {

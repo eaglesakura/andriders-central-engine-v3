@@ -9,9 +9,6 @@ import com.eaglesakura.util.Util;
 
 import org.junit.Test;
 
-import android.content.Context;
-import android.net.wifi.WifiManager;
-
 /**
  * セッション実行テスト
  */
@@ -20,7 +17,6 @@ public class CentralSessionTest extends AppDeviceTestCase {
     @Test(timeout = 1000 * 10)
     public void セッションが生成できる() throws Throwable {
         SessionInfo sessionInfo = new SessionInfo.Builder(getContext(), new Clock(System.currentTimeMillis()))
-                .debuggable(true)
                 .build();
 
         assertNotNull(sessionInfo);
@@ -39,7 +35,7 @@ public class CentralSessionTest extends AppDeviceTestCase {
     @Test(timeout = 1000 * 30)
     public void セッションのライフサイクルを通過できる() throws Throwable {
         Timer timer = new Timer();
-        CentralSession centralSession = CentralSession.newInstance(new SessionInfo.Builder(getContext(), new Clock(System.currentTimeMillis())).debuggable(true).build());
+        CentralSession centralSession = CentralSession.newInstance(new SessionInfo.Builder(getContext(), new Clock(System.currentTimeMillis())).build());
 
         try {
             timer.start();

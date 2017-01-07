@@ -1,8 +1,11 @@
 package com.eaglesakura.andriders.ui.navigation.base;
 
+import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
+import com.eaglesakura.android.framework.ui.progress.DialogToken;
 import com.eaglesakura.android.framework.ui.progress.ProgressToken;
 import com.eaglesakura.android.framework.ui.support.SupportFragment;
+import com.eaglesakura.material.widget.DialogBuilder;
 import com.eaglesakura.material.widget.support.SupportProgressFragment;
 
 import android.support.annotation.NonNull;
@@ -37,4 +40,17 @@ public class AppFragment extends SupportFragment {
     public ProgressToken pushProgress(String message) {
         return SupportProgressFragment.pushProgress(this, message);
     }
+
+    @NonNull
+    public DialogToken showProgress(@StringRes int messageRes) {
+        return showProgress(getString(messageRes));
+    }
+
+    @NonNull
+    public DialogToken showProgress(String message) {
+        DialogBuilder builder = AppDialogBuilder.newProgress(getContext(), message);
+        builder.cancelable(false);
+        return DialogBuilder.showAsToken(builder, mLifecycleDelegate);
+    }
+
 }

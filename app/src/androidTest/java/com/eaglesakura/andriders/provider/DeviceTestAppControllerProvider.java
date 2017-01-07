@@ -10,7 +10,7 @@ public class DeviceTestAppControllerProvider extends AppStorageProvider {
     public AppStorageManager provideStorageController() {
         return new AppStorageManager(getApplication()) {
             @Override
-            protected File getExternalDataStorage() {
+            protected File getDataStoragePath() {
                 return AppDeviceTestUtil.getExternalStoragePath();
             }
         };

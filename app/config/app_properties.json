@@ -15,18 +15,6 @@
           "value": "0"
         }
       ]
-    },
-    {
-      "comment": "デバッグ管理",
-      "name": "DebugSettings",
-      "properties": [
-        {
-          "comment": "デバッグをONにする場合はtrue",
-          "type": "boolean",
-          "name": "debugEnable",
-          "value": "false"
-        }
-      ]
     }
   ]
 }

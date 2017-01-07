@@ -1,6 +1,8 @@
 package com.eaglesakura.andriders.system.context;
 
+import com.eaglesakura.andriders.data.common.AboutInfoConfig;
 import com.eaglesakura.andriders.model.profile.RoadbikeWheelLength;
+import com.eaglesakura.andriders.model.sensor.SensorConfig;
 import com.eaglesakura.andriders.system.context.config.AppConfigManager;
 import com.eaglesakura.andriders.system.context.config.FbConfigRoot;
 import com.eaglesakura.andriders.system.context.config.FbPackageInfo;
@@ -59,12 +61,27 @@ public class AppConfig {
     }
 
     /**
+     * センサー設定値を取得する
+     */
+    public SensorConfig getSensor() {
+        return new SensorConfig(getRaw().sensor);
+    }
+
+    /**
+     * 開発情報を取得する
+     */
+    public AboutInfoConfig getAboutInfo() {
+        return new AboutInfoConfig(getRaw().aboutInfo);
+    }
+
+    /**
      * GoogleFitの画面を開くComponentを取得する
      */
     public ComponentName getGoogleFitAppComponent() {
         FbPackageInfo googleFitPackage = getRaw().profile.googleFitPackage;
         return new ComponentName(googleFitPackage.packageName, googleFitPackage.className);
     }
+
 
     /**
      * データ同期を行う

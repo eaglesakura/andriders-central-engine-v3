@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.ui.navigation.log.LogSummaryBinding;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
 import com.eaglesakura.android.saver.BundleState;
+import com.eaglesakura.android.saver.SaveType;
 import com.eaglesakura.material.widget.support.SupportProgressFragment;
 import com.eaglesakura.util.CollectionUtil;
 
@@ -40,7 +41,7 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
     /**
      * 削除されたセッション一覧
      */
-    @BundleState
+    @BundleState(value = SaveType.Json)
     ArrayList<Long> mDeletedSessions = new ArrayList<>();
 
     @Override
@@ -74,8 +75,12 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
     }
 
     @Override
-    public void onSessionDeleted(DailyLogFragmentMain self, SessionHeader header) {
+    public void onSessionDeleteStart(DailyLogFragmentMain self, SessionHeader header) {
         CollectionUtil.addUnique(mDeletedSessions, header.getSessionId());
+    }
+
+    @Override
+    public void onSessionDeleted(DailyLogFragmentMain self, SessionHeader header) {
     }
 
     @Override

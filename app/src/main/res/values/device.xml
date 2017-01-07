@@ -15,5 +15,6 @@
     <dimen name="App.Font.Normal">14dp</dimen>
     <dimen name="App.Font.Caption">12dp</dimen>
     <dimen name="App.Progress.Width">250dp</dimen>
+    <dimen name="Button.Size.LargeFab">64dp</dimen>
 
 </resources>
