@@ -10,7 +10,7 @@ public class TestAppStorageProvider extends AppStorageProvider {
     public AppStorageManager provideStorageController() {
         return new AppStorageManager(getApplication()) {
             @Override
-            protected File getExternalDataStorage() {
+            protected File getDataStoragePath() {
                 return IOUtil.mkdirs(new File(getApplication().getFilesDir(), "sdcard"));
             }
         };

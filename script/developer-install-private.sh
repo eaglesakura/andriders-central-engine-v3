@@ -19,7 +19,8 @@ if [ -e "./ace-private/v3.0.x/" ]; then
     cp -rf ./ace-private/v3.0.x/main           ./app/private/
     cp -rf ./ace-private/v3.0.x/sign           ./app/private/
     cp -f  ./ace-private/v3.0.x/private.gradle ./app/private/
-    cp -rf ./ace-private/v3.0.x/googleplay     ./app/src/
+    cp -rf ./ace-private/v3.0.x/debug          ./app/src/
+    cp -rf ./ace-private/v3.0.x/release        ./app/src/
 else
     echo "ace-private not sync"
     cp -rf ./app/private.tmp/** ./app/private/
