@@ -16,6 +16,7 @@ import com.eaglesakura.andriders.plugin.data.CentralEngineSessionData;
 import com.eaglesakura.andriders.plugin.display.DisplayData;
 import com.eaglesakura.andriders.plugin.display.DisplayDataSender;
 import com.eaglesakura.andriders.plugin.display.LineValue;
+import com.eaglesakura.andriders.ui.navigation.SensorDeviceSettingActivity;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.util.PermissionUtil;
 import com.eaglesakura.geo.Geohash;
@@ -76,7 +77,7 @@ public class GpsLocationPluginService extends Service implements AcePluginServic
         PluginInformation info = new PluginInformation(this, "gps_loc");
         info.setSummary("現在位置をサイクルコンピュータに反映します。");
         info.setCategory(Category.CATEGORY_LOCATION);
-        info.setHasSetting(false);
+        info.setHasSetting(true);
         return info;
     }
 
@@ -176,7 +177,10 @@ public class GpsLocationPluginService extends Service implements AcePluginServic
 
     @Override
     public void startSetting(PluginConnection connection) {
-
+        Intent intent = SensorDeviceSettingActivity.Builder.from(this)
+                .build();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     /**

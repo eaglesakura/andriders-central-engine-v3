@@ -6,32 +6,37 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-
-    <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/App.Theme.AppBarOverlay">
-
-        <!-- Toolbar -->
-        <android.support.v7.widget.Toolbar
-                android:id="@+id/EsMaterial_Toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="visible"
-                app:popupTheme="@style/App.Theme.PopupOverlay"/>
-
-    </android.support.design.widget.AppBarLayout>
-
     <android.support.v4.widget.DrawerLayout
             android:id="@+id/Content.Drawer"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         <!-- メインコンテンツ -->
-        <FrameLayout
-                android:id="@+id/Content_Holder_Root"
+        <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent">
+
+            <android.support.design.widget.AppBarLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/App.Theme.AppBarOverlay">
+
+                <!-- Toolbar -->
+                <android.support.v7.widget.Toolbar
+                        android:id="@+id/EsMaterial_Toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        app:popupTheme="@style/App.Theme.PopupOverlay"/>
+
+            </android.support.design.widget.AppBarLayout>
+
+            <FrameLayout
+                    android:id="@+id/Content_Holder_Root"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+        </LinearLayout>
 
         <android.support.design.widget.NavigationView
                 android:id="@+id/Content.Navigation.Root"
@@ -39,6 +44,5 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 app:menu="@menu/session_info"/>
-
     </android.support.v4.widget.DrawerLayout>
 </LinearLayout>

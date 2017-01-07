@@ -42,12 +42,16 @@ import java.util.List;
  * ログ表示画面のメインFragment
  */
 @FragmentLayout(R.layout.user_log)
-public class TotalLogFragmentMain extends AppNavigationFragment implements SessionModifyListener, GpxImportMenuFragment.Callback {
+public class TotalLogFragmentMain extends AppNavigationFragment
+        implements SessionModifyListener, GpxImportMenuFragment.Callback, BackupImportMenuFragment.Callback {
 
     /**
      * メニュー
      */
     FragmentHolder<GpxImportMenuFragment> mGpxImportMenu = FragmentHolder.newInstance(this, GpxImportMenuFragment.class, 0).bind(mLifecycleDelegate);
+
+    FragmentHolder<BackupImportMenuFragment> mBackupImportMenuFragment
+            = FragmentHolder.newInstance(this, BackupImportMenuFragment.class, 0).bind(mLifecycleDelegate);
 
     /**
      * セッション情報表示
@@ -219,6 +223,12 @@ public class TotalLogFragmentMain extends AppNavigationFragment implements Sessi
     @Override
     public void onGpxImportCompleted(GpxImportMenuFragment self, DataCollection<SessionInfo> sessions) {
         // 再度ログをロードする
+        loadAllLogs();
+    }
+
+    @Override
+    public void onSessionImportCompleted(BackupImportMenuFragment self, DataCollection<SessionHeader> headers) {
+        // ログをリロードする
         loadAllLogs();
     }
 

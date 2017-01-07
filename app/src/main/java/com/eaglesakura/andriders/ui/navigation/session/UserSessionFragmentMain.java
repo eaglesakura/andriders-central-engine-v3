@@ -22,7 +22,6 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.UiThread;
 import android.view.View;
-import android.widget.Button;
 
 /**
  * ユーザーのセッション情報を表示するActivity
@@ -34,7 +33,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
             FragmentHolder.newInstance(this, NavigationMapFragment.class, R.id.ViewHolder_Navigation).bind(mLifecycleDelegate);
 
     @Bind(R.id.Button_SessionChange)
-    Button mSessionButton;
+    View mSessionButton;
 
     final SessionControlBus mSessionControlBus = new SessionControlBus().bind(mLifecycleDelegate, this);
 
@@ -139,12 +138,10 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
             // 既にセッションが開始されている
             toolbarBuilder.title(R.string.Title_Session_Running);
             mSessionButton.setBackgroundTintList(ColorStateList.valueOf(ResourceUtil.argb(getContext(), R.color.App_Theme_Red)));
-            mSessionButton.setText(R.string.Word_Session_SessionStopButton);
         } else {
             // セッションが開始されていない
             toolbarBuilder.title(R.string.Word_Common_AndridersCentralEngine_Short);
             mSessionButton.setBackgroundTintList(ColorStateList.valueOf(ResourceUtil.argb(getContext(), R.color.App_Theme_Blue)));
-            mSessionButton.setText(R.string.Word_Session_SessionStartButton);
         }
 
         mSessionButton.setVisibility(View.VISIBLE);

@@ -40,8 +40,6 @@
     <string name="Message.Session.SessionStop">セッションを停止しますか？\n走行時間[%1$s]</string>
     <string name="Word.Session.Start">セッション開始</string>
     <string name="Word.Session.Stop">セッション停止</string>
-    <string name="Word.Session.SessionStopButton">セッションを終了</string>
-    <string name="Word.Session.SessionStartButton">セッションを開始</string>
 
     <!-- プロファイル設定 -->
     <string name="Title.Profile">プロファイル</string>
@@ -134,11 +132,12 @@
     <string name="Word.Display.NoData">N/A</string>
     <string name="Word.Display.Heartrate">心拍</string>
     <string name="Word.Display.Cadence">ケイデンス</string>
-    <string name="Word.Display.Speed.Title">速度</string>
+    <string name="Title.Display.Speed">速度</string>
     <string name="Word.Display.Speed.Max">最高速度</string>
     <string name="Word.Display.Speed.byGPS">GPS速度(km/h)</string>
     <string name="Word.Display.Speed.bySensor">速度(km/h)</string>
-    <string name="Word.Display.FitnessCalories.Title">消費カロリー</string>
+    <string name="Title.Display.FitnessCalories">消費カロリー</string>
+
     <string name="Word.Display.Reconnect">取得中</string>
     <string name="Word.Display.ErrorSlot">無効な表示内容</string>
     <string name="Message.Display.PluginNotEnabled">プラグインが有効化されていません。\n使用するプラグインを選択してください。</string>
@@ -183,6 +182,8 @@
     <string name="Word.Gadget.BleHeartrateMonitor">BLE ハートレートモニター</string>
     <string name="Word.Gadget.BleSpeedAndCadenceSensor">BLE スピード＆ケイデンスセンサー</string>
     <string name="Message.Gadget.Found">センサーを検出 [%1$s]</string>
+    <string name="Title.Gadget.SensorSupport">センサー補助機能</string>
+    <string name="Word.Gadget.GpsAccuracySelector">%1$d メートル</string>
 
     <!-- アプリ情報 -->
     <string name="Title.About">アプリについて</string>
@@ -217,5 +218,51 @@
     <string name="Message.Fit.Notification">"セッション %1$s %2$s - %3$s"</string>
     <string name="Word.Log.UploadToGoogleFit">GoogleFitへアップロード</string>
     <string name="Message.Log.ImportGpx">GPXファイルをインポートしますか？</string>
-    <string name="Title.Sensor.Support">センサー補助機能</string>
+    <string name="Title.About.Developer">開発者</string>
+    <string name="Title.Display.Distance">走行距離</string>
+    <string name="Message.Display.DistanceSummary">今日の走行距離とセッションと走行距離をそれぞれ表示します。</string>
+    <string name="Title.Display.ActiveDistance">自走距離</string>
+    <string name="Message.Display.ActiveDistanceSummary">
+        今日の自走距離とセッションの自走距離をそれぞれ表示します。クランクを回して自走した距離のみがカウントされます。
+    </string>
+    <string name="Title.Display.NowTime">現在時刻</string>
+    <string name="Message.Display.NowTimeSummary">現在時刻を表示します。</string>
+    <string name="Title.Display.SessionDuration">走行時間</string>
+    <string name="Message.Display.SessionDurationSummary">今日のセッション合計時間とセッションの経過時間をそれぞれ表示します。
+    </string>
+    <string name="Title.Display.ActiveDuration">自走時間</string>
+    <string name="Message.Display.ActiveDurationSummary">
+        今日の自走時間とセッションの自走時間をそれぞれ表示します。クランクを回して自走した時間のみがカウントされます。
+    </string>
+    <string name="Title.Display.SessionTimeDistance">セッション時間と距離</string>
+    <string name="Message.Display.SessionTimeDistanceSummary">セッションの経過時間と走行距離を表示します。</string>
+    <string name="Title.Display.Climb">ヒルクライム</string>
+    <string name="Message.Display.ClimbSummary">
+        現在地点の標高とセッションの獲得標高を表示します。標高はGPS情報を元にしているため、実際の情報との誤差があります。
+    </string>
+    <string name="Title.Display.HillInfo">斜度情報</string>
+    <string name="Message.Display.HillInfoSummary">斜度情報を表示します。斜度はGPS情報から計算されるため、実際の値とは誤差があります。
+    </string>
+    <string name="Word.Sensor.Testing">接続テスト</string>
+    <string name="Message.Sensor.BleDeviceNotSelected">BLE機器が選択されていません。</string>
+    <string name="Word.Sensor.BatteryAmount">バッテリー残量</string>
+    <string name="Word.Sensor.ConnectState">接続状態</string>
+    <string name="Word.Sensor.StateConnect">接続</string>
+    <string name="Word.Sensor.StateConnecting">検索中</string>
+    <string name="Word.Display.UpdatedDate">更新時刻</string>
+    <string name="Word.Gpx.AddTime">時差を加算する</string>
+    <string name="Word.Gpx.NoAddTime">時差修正なし</string>
+    <string name="Word.Gpx.SubTime">時差を減算する</string>
+    <string name="Message.Gpx.ImportTimeSelect">時差補正</string>
+    <string name="Word.Log.ExportBackup">完全なバックアップ</string>
+    <string name="Word.Log.ImportBackup">バックアップから復元</string>
+    <string name="Message.Log.ExportBackup">この日のログを完全にバックアップしますか?</string>
+    <string name="Message.Log.ImportBackup">復元するバックアップファイルを選択してください。</string>
+    <string name="Title.Log.Backup">完全なバックアップ</string>
+    <string name="Title.Log.Restore">バックアップから復元</string>
+    <string name="Message.Log.ExportSession">セッション %1$s</string>
+    <string name="Message.Log.ImportSession">セッション %1$s</string>
+    <string name="Message.Log.BackupCompleted">バックアップを完了しました。</string>
+    <string name="Message.Log.ImportCompleted">バックアップの復元を完了しました。\n%1$d セッション</string>
+    <string name="Word.Common.Share">共有</string>
 </resources>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+            android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:id="@+id/Item.Status"
+            app:keyText="@string/Word.Sensor.ConnectState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+            android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:id="@+id/Item.Updated"
+            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+            app:keyText="@string/Word.Display.UpdatedDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+            android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:id="@+id/Item.Battery"
+            app:keyText="@string/Word.Sensor.BatteryAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+            android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:id="@+id/Item.Cadence"
+            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+            app:keyText="@string/Word.Display.Cadence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <com.eaglesakura.andriders.ui.widget.AppKeyValueView
+            android:layout_marginLeft="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:layout_marginRight="@dimen/EsMaterial.Margin.KeyLine1Horizontal"
+            android:id="@+id/Item.Speed"
+            android:layout_marginTop="@dimen/EsMaterial.Button.Margin"
+            app:keyText="@string/Title.Display.Speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>

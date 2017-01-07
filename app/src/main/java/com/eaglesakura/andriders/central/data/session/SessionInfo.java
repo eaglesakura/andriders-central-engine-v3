@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.central.data.session;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.gen.prop.CentralServiceSettings;
+import com.eaglesakura.andriders.gen.prop.DebugSettings;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
@@ -52,7 +53,7 @@ public class SessionInfo {
     /**
      * デバッグ状態であればtrue
      */
-    boolean mDebuggable;
+    final DebugSettings mDebugSettings;
 
     protected SessionInfo(Builder builder) {
         mContext = builder.mContext;
@@ -60,7 +61,7 @@ public class SessionInfo {
         mSessionClock = builder.mSessionClock;
         mUserProfiles = builder.mUserProfiles;
         mCentralServiceSettings = builder.mCentralServiceSettings;
-        mDebuggable = builder.mDebuggable;
+        mDebugSettings = builder.mDebugSettings;
     }
 
     public Context getContext() {
@@ -83,8 +84,12 @@ public class SessionInfo {
         return mCentralServiceSettings;
     }
 
+    public DebugSettings getDebugSettings() {
+        return mDebugSettings;
+    }
+
     public boolean isDebuggable() {
-        return mDebuggable;
+        return mDebugSettings.isDebugEnable();
     }
 
     public static class Builder {
@@ -116,9 +121,9 @@ public class SessionInfo {
         CentralServiceSettings mCentralServiceSettings;
 
         /**
-         * デバッグチェック
+         * デバッグ設定
          */
-        boolean mDebuggable;
+        DebugSettings mDebugSettings;
 
         public Builder(@NonNull Context context, @NonNull Clock clock) {
             mContext = context;
@@ -136,6 +141,7 @@ public class SessionInfo {
 
             mUserProfiles = newUserProfiles(kvs);
             mCentralServiceSettings = newCentralServiceSettings(kvs);
+            mDebugSettings = newDebugSettings(kvs);
             return this;
         }
 
@@ -147,11 +153,9 @@ public class SessionInfo {
             return new CentralServiceSettings(store);
         }
 
-        public Builder debuggable(boolean debug) {
-            mDebuggable = debug;
-            return this;
+        protected DebugSettings newDebugSettings(PropertyStore store) {
+            return new DebugSettings(store);
         }
-
 
         public SessionInfo build() {
 

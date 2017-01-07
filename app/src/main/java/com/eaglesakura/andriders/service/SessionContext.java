@@ -8,7 +8,6 @@ import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.notification.NotificationData;
-import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.service.command.CentralCommandController;
 import com.eaglesakura.andriders.service.command.ProximityFeedbackManager;
@@ -98,7 +97,6 @@ public class SessionContext {
         mLifecycleDelegate.onCreate();
 
         SessionInfo sessionInfo = new SessionInfo.Builder(mService, new Clock(System.currentTimeMillis()))
-                .debuggable(intent.getBooleanExtra(CentralServiceCommand.EXTRA_BOOT_DEBUG_MODE, false))
                 .build();
 
         CentralSession.InitializeOption option = new CentralSession.InitializeOption();
@@ -270,6 +268,11 @@ public class SessionContext {
 
         @Override
         public void onUpdate(ServiceAnimationController self, CentralSession session, double deltaSec) {
+            // セッションが初期化されていないなら無視する
+            if (mSession == null) {
+                return;
+            }
+
             {
                 // セッション内部時間と現実時間とのズレを補正する
                 double centralDeltaSec = (double) (System.currentTimeMillis() - session.getSessionClock().now()) / 1000.0;

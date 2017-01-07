@@ -9,6 +9,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/EsMaterial.Grey.800"
+            android:textSize="@dimen/App.Font.Caption"
             android:layout_gravity="center"/>
 
     <android.support.v7.widget.AppCompatTextView

@@ -10,6 +10,7 @@ import com.eaglesakura.andriders.plugin.connection.PluginConnection;
 import com.eaglesakura.andriders.plugin.data.CentralEngineSessionData;
 import com.eaglesakura.andriders.plugin.display.DisplayDataSender;
 import com.eaglesakura.andriders.sensor.SensorType;
+import com.eaglesakura.andriders.ui.navigation.SensorDeviceSettingActivity;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.bluetooth.error.BluetoothException;
 import com.eaglesakura.android.bluetooth.gatt.BleDeviceConnection;
@@ -55,8 +56,9 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
     @Override
     public PluginInformation getExtensionInformation(PluginConnection connection) {
         PluginInformation info = new PluginInformation(this, "ble_hr");
-        info.setSummary("Bluetooth LE対応センサーから心拍を取得します");
+        info.setSummary("Bluetooth LE対応センサーから心拍を取得します。");
         info.setCategory(Category.CATEGORY_HEARTRATEMONITOR);
+        info.setHasSetting(true);
         return info;
     }
 
@@ -99,7 +101,10 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
 
     @Override
     public void startSetting(PluginConnection connection) {
-
+        Intent intent = SensorDeviceSettingActivity.Builder.from(this)
+                .build();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     /**

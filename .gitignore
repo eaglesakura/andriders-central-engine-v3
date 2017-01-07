@@ -19,6 +19,7 @@ gdb.setup
 gdbserver
 obj/
 latex/
+dependencies.txt
 
 # 外部ライブラリ
 # 必要に応じてsyncする

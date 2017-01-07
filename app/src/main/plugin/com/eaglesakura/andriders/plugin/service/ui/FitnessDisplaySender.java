@@ -14,9 +14,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
- * 最高速度更新を行う
- *
- * 表示は「最高速」「今日最高速」「セッション最高速」でそれぞれ表示する
+ * フィットネス情報を送信する
  */
 public class FitnessDisplaySender extends DisplayDataSender {
     public static final String DISPLAY_ID = "FITNESS_ALL";
@@ -45,11 +43,12 @@ public class FitnessDisplaySender extends DisplayDataSender {
         Context context = getContext();
 
         DisplayData data = new DisplayData(context, DISPLAY_ID);
-        LineValue value = new LineValue(2);
+        LineValue value = new LineValue(3);
 
         // 最高速度
-        value.setLine(0, "今日消費", StringUtil.format("%.1f kcal", mTodayFitnessStatus.calorie));
-        value.setLine(1, "セッション消費", StringUtil.format("%.1f kcal", mSessionFitnessStatus.calorie));
+        value.setLine(0, "カロリー消費", "");
+        value.setLine(1, "今日合計", StringUtil.format("%.1f kcal", mTodayFitnessStatus.calorie));
+        value.setLine(2, "セッション", StringUtil.format("%.1f kcal", mSessionFitnessStatus.calorie));
 
         data.setValue(value);
         mSession.getDisplay().setValue(data);
@@ -66,7 +65,7 @@ public class FitnessDisplaySender extends DisplayDataSender {
 
     public static DisplayKey newInformation(Context context) {
         DisplayKey result = new DisplayKey(context, DISPLAY_ID);
-        result.setTitle(context.getString(R.string.Word_Display_FitnessCalories_Title));
+        result.setTitle(context.getString(R.string.Title_Display_FitnessCalories));
         result.setSummary(context.getString(R.string.Message_Display_FitnessCaloriesSummary));
         return result;
     }

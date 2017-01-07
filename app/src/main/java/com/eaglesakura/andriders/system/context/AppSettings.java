@@ -53,11 +53,13 @@ public class AppSettings {
         mAppPropertyStore = newDatabasePropertyStore(context, R.raw.app_properties);
         mCentralPropertyStore = newDatabasePropertyStore(context, R.raw.central_properties);
 
-        mDebugSettings = new DebugSettings(mAppPropertyStore);
+        // CentralにDumpされない情報
         mUpdateCheckProps = new UpdateCheckProps(mAppPropertyStore);
 
+        // CentralにDumpされる情報
         mCentralSettings = new CentralServiceSettings(mCentralPropertyStore);
         mUserProfiles = new UserProfiles(mCentralPropertyStore);
+        mDebugSettings = new DebugSettings(mCentralPropertyStore);
 
         mConfig = new AppConfig(context, new AppConfigManager(context));
     }

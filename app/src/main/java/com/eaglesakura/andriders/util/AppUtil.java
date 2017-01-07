@@ -109,18 +109,8 @@ public class AppUtil {
                 // GPS
                 .addApiIfAvailable(LocationServices.API)
                 ;
-//        return new GoogleApiClient.Builder(context)
-//                // Google Fit
-//                .addApi(Fitness.HISTORY_API)
-//                .addApi(Fitness.BLE_API)
-//                .addApi(Fitness.SESSIONS_API)
-//                .addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
-//                .addScope(Fitness.SCOPE_BODY_READ_WRITE)
-//                .addScope(Fitness.SCOPE_LOCATION_READ_WRITE)
-//                // GPS
-//                .addApi(LocationServices.API)
-//                ;
     }
+
 
     public static String getErrorTitle(Throwable e) {
         Context context = FrameworkCentral.getApplication();

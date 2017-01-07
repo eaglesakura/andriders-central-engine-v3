@@ -335,7 +335,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
                 final long OFFSET_TIME_MS = (long) ((double) (1000 * 60 * 60) * current);
 
-                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 25)); // 現在地点をオフセット
+                assertFalse(data.setLocation(lat, lng, alt, 51));  // 信頼性の低い座標は弾かれる
                 data.onUpdate();
                 assertFalse(data.isActiveMoving()); // ケイデンスが発生しないので、アクティブにはならないはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
@@ -402,7 +403,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                 final float SAMPLE_CRANK_RPM = (float) (90.0 + Math.random() * 10.0);
                 final float gear = 2.05f; // 19T-39T
                 assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
-                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 25)); // 現在地点をオフセット
+                assertFalse(data.setLocation(lat, lng, alt, 51));  // 信頼性の低い座標は弾かれる
                 data.onUpdate();
                 assertTrue(data.isActiveMoving()); // ケイデンスから速度を得ているので、アクティブなはずである
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
@@ -463,7 +465,8 @@ public class CentralDataManagerTest extends AppUnitTestCase {
                     // 最初の30分はケイデンスセンサーの値を入力する
                     assertEquals(data.setSpeedAndCadence(SAMPLE_CRANK_RPM, ++crankRevolution, SAMPLE_CRANK_RPM * gear, (int) (crankRevolution * gear)), 2);
                 }
-                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 100)); // 現在地点をオフセット
+                assertTrue(data.setLocation(lat, lng, alt, Math.random() * 25)); // 現在地点をオフセット
+                assertFalse(data.setLocation(lat, lng, alt, 51));  // 信頼性の低い座標は弾かれる
                 data.onUpdate();
                 assertNotNull(data.mSpeedData.getSpeedZone()); // ゾーンは必ず取得できる
                 current += OFFSET_TIME_HOUR;

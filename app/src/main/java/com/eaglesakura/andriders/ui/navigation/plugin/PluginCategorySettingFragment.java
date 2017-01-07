@@ -96,12 +96,12 @@ public class PluginCategorySettingFragment extends AppFragment {
             }
             return this;
         }).completed((result, task) -> {
-            updateExtensionViews(getParent(PluginSettingFragmentMain.class).getPlugins());
+            updatePluginViews(getParent(PluginSettingFragmentMain.class).getPlugins());
         }).start();
     }
 
     @UiThread
-    void updateExtensionViews(CentralPluginCollection pluginCollection) {
+    void updatePluginViews(CentralPluginCollection pluginCollection) {
         // 取得成功したらViewに反映する
         mModulesRoot.removeAllViews();
         mCentralPluginCollection = pluginCollection;
@@ -130,12 +130,25 @@ public class PluginCategorySettingFragment extends AppFragment {
                     });
 
             PluginInformation information = plugin.getInformation();
-            if (information != null) {
-                // TODO 説明テキスト設定
-            }
+            q.id(R.id.Item_Summary).text(information.getSummary());
+            // 設定画面のリンク
+            q.id(R.id.Button_Setting).visibility(information.hasSetting() ? View.VISIBLE : View.GONE).clicked(view -> {
+                showPluginSetting(plugin);
+            });
+            // SDKバージョン表記
+            q.id(R.id.Item_AceSDKVersion).text("SDK v" + information.getSdkVersion());
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             mModulesRoot.addView(card, params);
+        }
+    }
+
+    @UiThread
+    void showPluginSetting(CentralPlugin plugin) {
+        if (!plugin.startSettings()) {
+            AppDialogBuilder.newAlert(getContext(), "正常にプラグインの設定画面を開けませんでした。")
+                    .positiveButton(R.string.Word_Common_OK, null)
+                    .show(mLifecycleDelegate);
         }
     }
 
