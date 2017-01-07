@@ -1,6 +1,5 @@
 package com.eaglesakura.andriders.storage;
 
-import com.eaglesakura.android.device.external.Storage;
 import com.eaglesakura.android.garnet.Singleton;
 import com.eaglesakura.util.IOUtil;
 import com.eaglesakura.util.RandomUtil;
@@ -26,15 +25,16 @@ public class AppStorageManager {
     /**
      * 外部データインストール領域を取得する
      */
-    protected File getExternalDataStorage() {
-        return Storage.getExternalDataStorage(mContext).getPath();
+    protected File getDataStoragePath() {
+//        return Storage.getDataStoragePath(mContext).getPath();
+        return mContext.getExternalFilesDir(null);
     }
 
     /**
      * データベースディレクトリを取得する
      */
     protected File getDatabaseDirectory() {
-        File storage = getExternalDataStorage();
+        File storage = getDataStoragePath();
         if (storage.getName().equals("files")) {
             storage = storage.getParentFile();
         }
