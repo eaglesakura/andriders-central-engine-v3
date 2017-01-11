@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.plugin.connection;
 
 import com.eaglesakura.andriders.AppDeviceTestCase;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
+import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.AppStorageProvider;
@@ -41,6 +42,8 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
 
     NotificationProtocol.RawNotification mUnitTestNotification;
 
+    List<CommandKey> mBootedCommands = new ArrayList<>();
+
     @Override
     public void onSetup() {
         super.onSetup();
@@ -65,6 +68,12 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
                     assertNotNull(centralData);
                 }
                 super.onReceived(notification, centralData);
+            }
+
+            @Override
+            public void onReceived(@NonNull CommandKey key, @Nullable RawCentralData centralData) {
+                mBootedCommands.add(key);
+                super.onReceived(key, centralData);
             }
         };
         mCentralDataReceiver.connect();
@@ -167,6 +176,9 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
 
         // 通知等をチェックする
         Util.sleep(1000 * 10);
+
+        // MEMO: 事前にタイマーコマンド, 5秒程度で設定しておく
+        validate(mBootedCommands).sizeFrom(1);
 
         // Wi-Fiが連動している
         assertEquals(

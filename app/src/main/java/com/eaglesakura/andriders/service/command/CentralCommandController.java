@@ -45,7 +45,7 @@ import java.util.List;
 public class CentralCommandController {
 
     @NonNull
-    final private Context mContext;
+    private Context mContext;
 
     @NonNull
     private Callback mCallback;
@@ -243,13 +243,15 @@ public class CentralCommandController {
     }
 
     private final CommandController.CommandBootListener mCommandBootListener = ((self, data) -> {
-        AppLog.command("Boot Command[%s]", data.getKey());
-        RawIntent rawIntent = data.getIntent();
-        Intent intent = SerializableIntent.newIntent(rawIntent);
+        byte[] centralData = null;
         try {
+            AppLog.command("Boot Command[%s]", data.getKey());
+            RawIntent rawIntent = data.getIntent();
+            Intent intent = SerializableIntent.newIntent(rawIntent);
             // ACEのデータを受け取っているなら、シリアライズしてコマンドに送る
             if (mLatestCentralData != null) {
-                intent.putExtra(CommandSetting.EXTRA_SERIALIZED_INTENT, SerializeUtil.serializePublicFieldObject(mLatestCentralData));
+                centralData = SerializeUtil.serializePublicFieldObject(mLatestCentralData, true);
+                intent.putExtra(CommandSetting.EXTRA_SERIALIZED_INTENT, centralData);
             }
             switch (rawIntent.intentType) {
                 case Activity:
@@ -264,6 +266,20 @@ public class CentralCommandController {
                     mCallback.requestBroadcastCommand(this, data, intent);
                     break;
             }
+
+        } catch (Exception e) {
+            AppLog.printStackTrace(e);
+            return;
+        }
+
+        // 正常に起動できたら、Receiverにも流す
+        try {
+            Intent intent = new Intent(CentralDataReceiver.ACTION_COMMAND_BOOTED);
+            intent.putExtra(CentralDataReceiver.EXTRA_COMMAND_KEY, data.getKey());
+            if (centralData != null) {
+                intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, centralData);
+            }
+            mContext.sendBroadcast(intent);
         } catch (Exception e) {
             AppLog.printStackTrace(e);
         }
