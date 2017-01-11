@@ -2,6 +2,8 @@ package com.eaglesakura.andriders.plugin.connection;
 
 import com.eaglesakura.andriders.AppDeviceTestCase;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
+import com.eaglesakura.andriders.command.CommandKey;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.serialize.NotificationProtocol;
@@ -9,6 +11,7 @@ import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawSessionInfo;
 import com.eaglesakura.andriders.service.CentralSessionService;
 import com.eaglesakura.andriders.system.context.AppSettings;
+import com.eaglesakura.android.garnet.BuildConfig;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
@@ -19,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,12 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
     List<NotificationProtocol.RawNotification> mReceivedNotifications = new ArrayList<>();
 
     CentralDataReceiver mCentralDataReceiver;
+
+    public static final String NOTIFICATION_ID_UNITTEST = BuildConfig.APPLICATION_ID + ".NOTIFICATION_ID_UNITTEST";
+
+    NotificationProtocol.RawNotification mUnitTestNotification;
+
+    List<CommandKey> mBootedCommands = new ArrayList<>();
 
     @Override
     public void onSetup() {
@@ -51,9 +61,19 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
             }
 
             @Override
-            public void onReceived(@NonNull NotificationProtocol.RawNotification notification) {
+            public void onReceived(@NonNull NotificationProtocol.RawNotification notification, @Nullable RawCentralData centralData) {
                 mReceivedNotifications.add(notification);
-                super.onReceived(notification);
+                if (notification.uniqueId.equals(NOTIFICATION_ID_UNITTEST)) {
+                    mUnitTestNotification = notification;
+                    assertNotNull(centralData);
+                }
+                super.onReceived(notification, centralData);
+            }
+
+            @Override
+            public void onReceived(@NonNull CommandKey key, @Nullable RawCentralData centralData) {
+                mBootedCommands.add(key);
+                super.onReceived(key, centralData);
             }
         };
         mCentralDataReceiver.connect();
@@ -130,9 +150,21 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
             // セッションIDは現在時刻範囲内でなければならない
             validate(info.sessionId).from(startTime).to(System.currentTimeMillis());
 
+            // テスト通知を送る
+            Util.sleep(100);
+            {
+                NotificationData notification = new NotificationData.Builder(getContext(), NOTIFICATION_ID_UNITTEST)
+                        .message("UnitTest Started")
+                        .getNotification();
+                notification.showRequest(getContext());
+            }
+
             // コールバックが送られている
             Util.sleep(500);
             assertEquals(sessionStartCount.value, 1);
+
+            // UnitTest用の通知が表示されている
+            assertNotNull(mUnitTestNotification);
 
             // セッションを切断する
             assertTrue(connection.disconnect(() -> false));
@@ -144,6 +176,9 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
 
         // 通知等をチェックする
         Util.sleep(1000 * 10);
+
+        // MEMO: 事前にタイマーコマンド, 5秒程度で設定しておく
+        validate(mBootedCommands).sizeFrom(1);
 
         // Wi-Fiが連動している
         assertEquals(

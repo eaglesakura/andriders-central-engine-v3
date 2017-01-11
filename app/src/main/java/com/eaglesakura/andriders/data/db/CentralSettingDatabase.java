@@ -58,6 +58,9 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     @Initializer
     public void initialize() {
         Garnet.inject(this);
+        if (mStorageController == null) {
+            throw new IllegalStateException();
+        }
     }
 
     /**
@@ -254,6 +257,9 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
+        if (mStorageController == null) {
+            throw new IllegalStateException();
+        }
         return new SQLiteOpenHelper(getContext(), mStorageController.getExternalDatabasePath("v3_settings.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

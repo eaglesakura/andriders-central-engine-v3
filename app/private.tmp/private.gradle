@@ -7,7 +7,7 @@
  * 下記のコマンドを実行し、ライブラリがリンクしているsubmoduleを全て同期しなければならない。
  */
 ext.EGLIBRARY_COMPILE_LOCAL = false
-ext.ACESDK_COMPILE_LOCAL = true
+ext.ACESDK_COMPILE_LOCAL = false
 
 // 強制的にコンパイル済Jarを使用する
 if ("true" == "${System.properties["app.lib_no_compile"]}") {
