@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import java.io.File;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class AppDeviceTestUtil {
 
@@ -21,6 +22,8 @@ public class AppDeviceTestUtil {
     public static void onSetup(@NonNull DeviceTestCase testCase) {
         assertNotNull(testCase);
         sDatabasePath = new File(Storage.getExternalDataStorage(testCase.getContext()).getPath(), "test/" + RandomUtil.randShortString());
+        sDatabasePath.mkdirs();
+        assertTrue(sDatabasePath.isDirectory());
     }
 
     public static void onShutdown(@NonNull DeviceTestCase testCase) {

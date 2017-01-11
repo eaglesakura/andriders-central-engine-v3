@@ -60,7 +60,7 @@ public class SessionContext {
      * CentralSessionと
      */
     @NonNull
-    CentralStatusBar mSessionNotification;
+    CentralStatusBar mSessionStatusbar;
 
     /**
      * アニメーション管理
@@ -108,7 +108,7 @@ public class SessionContext {
 
         mSessionLogController = SessionLogController.attach(mLifecycleDelegate, centralSession);
 
-        mSessionNotification = CentralStatusBar.attach(mLifecycleDelegate, centralSession, mNotificationCallback);
+        mSessionStatusbar = CentralStatusBar.attach(mLifecycleDelegate, centralSession, mNotificationCallback);
 
         mAnimationController = ServiceAnimationController.attach(mLifecycleDelegate, centralSession, mAnimationCallback);
 
@@ -168,8 +168,8 @@ public class SessionContext {
     }
 
     @Nullable
-    public CentralStatusBar getSessionNotification() {
-        return mSessionNotification;
+    public CentralStatusBar getSessionStatusbar() {
+        return mSessionStatusbar;
     }
 
     @Nullable

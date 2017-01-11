@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders;
 
 import com.eaglesakura.andriders.provider.AppStorageProvider;
-import com.eaglesakura.andriders.provider.DeviceTestAppControllerProvider;
+import com.eaglesakura.andriders.provider.DeviceTestAppStorageProvider;
 import com.eaglesakura.android.devicetest.DeviceTestCase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.thread.ui.UIHandler;
@@ -11,7 +11,7 @@ public class AppDeviceTestCase extends DeviceTestCase<AceApplication> {
     @Override
     public void onSetup() {
         super.onSetup();
-        Garnet.override(AppStorageProvider.class, DeviceTestAppControllerProvider.class);
+        Garnet.override(AppStorageProvider.class, DeviceTestAppStorageProvider.class);
         AppDeviceTestUtil.onSetup(this);
     }
 

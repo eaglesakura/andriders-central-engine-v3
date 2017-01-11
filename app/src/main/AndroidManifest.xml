@@ -86,7 +86,7 @@
                   android:screenOrientation="portrait"
                   android:label="@string/Title.ChooseApp">
             <intent-filter>
-                <!-- acetrigger://で起動する -->
+                <!-- acecommand://で起動する -->
                 <data android:scheme="acecommand"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <!-- デフォルト指定 -->
