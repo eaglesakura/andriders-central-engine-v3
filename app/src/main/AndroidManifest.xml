@@ -100,7 +100,7 @@
                 android:label="@string/Title.Plugin.Basic"
                 android:process=":ace">
             <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+                <action android:name="org.andriders.ace.ACTION_ACE_EXTENSION_BIND"/>
             </intent-filter>
         </service>
         <service
@@ -109,7 +109,7 @@
                 android:label="@string/Title.Plugin.Location"
                 android:process=":ace">
             <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+                <action android:name="org.andriders.ace.ACTION_ACE_EXTENSION_BIND"/>
             </intent-filter>
         </service>
         <service android:name="com.eaglesakura.andriders.plugin.service.BleHeartratePluginService"
@@ -117,7 +117,7 @@
                  android:label="@string/Title.Plugin.BleHeartrate"
                  android:process=":ace">
             <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+                <action android:name="org.andriders.ace.ACTION_ACE_EXTENSION_BIND"/>
             </intent-filter>
         </service>
         <service
@@ -126,7 +126,7 @@
                 android:label="@string/Title.Plugin.BleSpeedAndCadence"
                 android:process=":ace">
             <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+                <action android:name="org.andriders.ace.ACTION_ACE_EXTENSION_BIND"/>
             </intent-filter>
         </service>
         <service android:name="com.eaglesakura.andriders.service.FitnessCommitService"

@@ -8,6 +8,8 @@ import com.eaglesakura.andriders.data.display.DisplayLayoutManager;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.model.display.DisplayLayoutCollection;
+import com.eaglesakura.andriders.notification.NotificationData;
+import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.provider.SessionManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
@@ -21,9 +23,13 @@ import com.eaglesakura.android.rx.ResultCollection;
 import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.util.Timer;
+import com.eaglesakura.util.Util;
 import com.squareup.otto.Subscribe;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -154,6 +160,12 @@ public class CentralDisplayWindow {
             initNotificationDisplay();
             refreshDeviceContext();
 
+            // BroadcastReceiver登録
+            {
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(CentralServiceCommand.ACTION_NOTIFICATION_REQUEST);
+                mContext.registerReceiver(mCentralDisplayEventReceiver, filter);
+            }
             mLifecycleDelegate.onCreate();
         } else if (state.getState() == SessionState.State.Stopping) {
             // ウィンドウを削除する
@@ -163,6 +175,9 @@ public class CentralDisplayWindow {
             mNotificationDisplay = null;
             mNotificationView = null;
             mDataDisplay = null;
+
+            // Receiverを削除
+            mContext.unregisterReceiver(mCentralDisplayEventReceiver);
 
             mLifecycleDelegate.onDestroy();
         }
@@ -294,4 +309,18 @@ public class CentralDisplayWindow {
             AppLog.printStackTrace(error);
         }).start();
     }
+
+    final BroadcastReceiver mCentralDisplayEventReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (CentralServiceCommand.ACTION_NOTIFICATION_REQUEST.equals(action)) {
+                byte[] data = intent.getByteArrayExtra(CentralServiceCommand.EXTRA_NOTIFICATION_DATA);
+                if (data == null) {
+                    return;
+                }
+                Util.safeIfPresent(getCentralNotificationManager(), it -> it.queue(new NotificationData(mContext, data)));
+            }
+        }
+    };
 }

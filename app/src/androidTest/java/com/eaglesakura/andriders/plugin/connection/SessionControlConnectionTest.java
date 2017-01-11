@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.plugin.connection;
 
 import com.eaglesakura.andriders.AppDeviceTestCase;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
+import com.eaglesakura.andriders.notification.NotificationData;
 import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.serialize.NotificationProtocol;
@@ -9,6 +10,7 @@ import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawSessionInfo;
 import com.eaglesakura.andriders.service.CentralSessionService;
 import com.eaglesakura.andriders.system.context.AppSettings;
+import com.eaglesakura.android.garnet.BuildConfig;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
@@ -35,6 +37,10 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
 
     CentralDataReceiver mCentralDataReceiver;
 
+    public static final String NOTIFICATION_ID_UNITTEST = BuildConfig.APPLICATION_ID + ".NOTIFICATION_ID_UNITTEST";
+
+    NotificationProtocol.RawNotification mUnitTestNotification;
+
     @Override
     public void onSetup() {
         super.onSetup();
@@ -54,6 +60,10 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
             @Override
             public void onReceived(@NonNull NotificationProtocol.RawNotification notification, @Nullable RawCentralData centralData) {
                 mReceivedNotifications.add(notification);
+                if (notification.uniqueId.equals(NOTIFICATION_ID_UNITTEST)) {
+                    mUnitTestNotification = notification;
+                    assertNotNull(centralData);
+                }
                 super.onReceived(notification, centralData);
             }
         };
@@ -131,9 +141,21 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
             // セッションIDは現在時刻範囲内でなければならない
             validate(info.sessionId).from(startTime).to(System.currentTimeMillis());
 
+            // テスト通知を送る
+            Util.sleep(100);
+            {
+                NotificationData notification = new NotificationData.Builder(getContext(), NOTIFICATION_ID_UNITTEST)
+                        .message("UnitTest Started")
+                        .getNotification();
+                notification.showRequest(getContext());
+            }
+
             // コールバックが送られている
             Util.sleep(500);
             assertEquals(sessionStartCount.value, 1);
+
+            // UnitTest用の通知が表示されている
+            assertNotNull(mUnitTestNotification);
 
             // セッションを切断する
             assertTrue(connection.disconnect(() -> false));

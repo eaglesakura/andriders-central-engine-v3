@@ -21,7 +21,7 @@ public class PluginDataManagerTest extends AppDeviceTestCase {
 
     @Test
     public void 必要なServiceのパッケージを列挙できる() throws Throwable {
-        validate(mDataManager.listExtensionServices(false))
+        validate(mDataManager.listPluginServices(false))
                 .notEmpty().allNotNull()
                 .each(info -> {
                     assertNotNull(info.serviceInfo);
@@ -38,7 +38,7 @@ public class PluginDataManagerTest extends AppDeviceTestCase {
         assertNotNull(plugins);
         validate(plugins.list())
                 .allNotNull()
-                .sizeIs(mDataManager.listExtensionServices(false).size())
+                .sizeIs(mDataManager.listPluginServices(false).size())
                 .each(plugin -> {
                     // 生成直後は未接続である
                     assertFalse(plugin.isConnected());
