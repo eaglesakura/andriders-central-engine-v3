@@ -229,7 +229,10 @@ public class SessionContext {
                 intent.setAction(CentralDataReceiver.ACTION_RECEIVED_NOTIFICATION);
                 intent.addCategory(CentralDataReceiver.INTENT_CATEGORY);
                 intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
-
+                RawCentralData centralData = mSession.getCentralDataManager().getLatestCentralData();
+                if (centralData != null) {
+                    intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(centralData, true));
+                }
                 mService.sendBroadcast(intent);
             } catch (Throwable e) {
                 AppLog.report(e);

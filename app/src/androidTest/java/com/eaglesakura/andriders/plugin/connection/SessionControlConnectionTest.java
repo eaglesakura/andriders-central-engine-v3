@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +52,9 @@ public class SessionControlConnectionTest extends AppDeviceTestCase {
             }
 
             @Override
-            public void onReceived(@NonNull NotificationProtocol.RawNotification notification) {
+            public void onReceived(@NonNull NotificationProtocol.RawNotification notification, @Nullable RawCentralData centralData) {
                 mReceivedNotifications.add(notification);
-                super.onReceived(notification);
+                super.onReceived(notification, centralData);
             }
         };
         mCentralDataReceiver.connect();
