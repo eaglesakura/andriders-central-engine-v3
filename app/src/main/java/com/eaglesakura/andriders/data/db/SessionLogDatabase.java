@@ -57,8 +57,6 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
     public SessionLogDatabase(@NonNull Context context) {
         super(context, DaoMaster.class);
-
-        Garnet.inject(this);
     }
 
     @Initializer
