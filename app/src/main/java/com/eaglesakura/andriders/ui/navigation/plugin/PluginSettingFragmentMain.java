@@ -95,7 +95,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
         }).completed((pluginCollection, task) -> {
             mPlugins = pluginCollection;
         }).failed((error, task) -> {
-            AppLog.printStackTrace(error);
+            AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);

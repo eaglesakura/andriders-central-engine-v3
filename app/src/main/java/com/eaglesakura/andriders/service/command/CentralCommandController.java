@@ -138,7 +138,7 @@ public class CentralCommandController {
             }
             onLoadCommands(result);
         }).failed((error, task) -> {
-            AppLog.printStackTrace(error);
+            AppLog.report(error);
         }).start();
     }
 

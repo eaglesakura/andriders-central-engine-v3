@@ -291,7 +291,7 @@ public class CentralDisplayWindow {
             }
             mLastTopApplication = packageName;
         }).failed((error, task) -> {
-            AppLog.printStackTrace(error);
+            AppLog.report(error);
         }).start();
     }
 }

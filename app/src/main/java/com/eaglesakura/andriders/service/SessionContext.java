@@ -132,7 +132,7 @@ public class SessionContext {
                 plugin.onCentralBootCompleted();
             });
         }).failed((error, task) -> {
-            AppLog.printStackTrace(error);
+            AppLog.report(error);
         }).start();
     }
 
