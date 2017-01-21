@@ -104,6 +104,7 @@ public class CentralCommandController {
         Garnet.create(result)
                 .depend(Context.class, context)
                 .inject();
+        session.getDataBus().bind(lifecycleDelegate, result);
         session.getStateBus().bind(lifecycleDelegate, result);
         animationFrameBus.bind(lifecycleDelegate, result);
         return result;
@@ -251,7 +252,7 @@ public class CentralCommandController {
             // ACEのデータを受け取っているなら、シリアライズしてコマンドに送る
             if (mLatestCentralData != null) {
                 centralData = SerializeUtil.serializePublicFieldObject(mLatestCentralData, true);
-                intent.putExtra(CommandSetting.EXTRA_SERIALIZED_INTENT, centralData);
+                intent.putExtra(CommandSetting.EXTRA_COMMAND_CENTRAL_DATA, centralData);
             }
             switch (rawIntent.intentType) {
                 case Activity:
