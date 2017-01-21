@@ -106,7 +106,7 @@ public class FitnessSettingFragment extends AppFragment {
             // 起動成功したから何もしない
             return;
         } catch (Exception e) {
-            AppLog.printStackTrace(e);
+            AppLog.report(e);
         }
 
         AppDialogBuilder.newAlert(getContext(), R.string.Word_Profile_GoogleFitNotInstalled)
