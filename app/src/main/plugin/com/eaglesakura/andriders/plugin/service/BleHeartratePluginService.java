@@ -21,11 +21,13 @@ import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDele
 import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.android.util.ResourceUtil;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.StringUtil;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -116,12 +118,14 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
      * @param cancelCallback デフォルトのキャンセルチェック
      */
     private void deviceConnectLoop(String address, CentralEngineSessionData centralData, DisplayDataSender display, CancelCallback cancelCallback) throws Throwable {
+        Drawable NOTIFICATION_ICON = ResourceUtil.vectorDrawable(this, R.drawable.ic_heart_beats, R.color.App_Icon_Grey);
+
         BlePeripheralDeviceConnection.SessionCallback sessionCallback = new BlePeripheralDeviceConnection.SessionCallback() {
             @Override
             public void onSessionStart(BlePeripheralDeviceConnection self, BlePeripheralDeviceConnection.Session session) {
                 NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_SEARCH)
                         .message(R.string.Message_Plugin_BleHeartrate_Search)
-                        .icon(R.mipmap.ic_launcher)
+                        .icon(NOTIFICATION_ICON)
                         .getNotification();
                 display.queueNotification(notification);
             }
@@ -131,7 +135,7 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
                 if (session.isGattConnected()) {
                     NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_DISCONNECT)
                             .message(R.string.Message_Plugin_BleHeartrate_Disconnected)
-                            .icon(R.mipmap.ic_launcher)
+                            .icon(NOTIFICATION_ICON)
                             .getNotification();
                     display.queueNotification(notification);
                 }
@@ -146,7 +150,7 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
                 super.onGattConnected(self, gatt);
                 NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_CONNECT)
                         .message(R.string.Message_Plugin_BleHeartrate_Connected)
-                        .icon(R.mipmap.ic_launcher)
+                        .icon(NOTIFICATION_ICON)
                         .getNotification();
                 display.queueNotification(notification);
             }
@@ -174,7 +178,7 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
                 if (!mBatteryUpdated) {
                     NotificationData notification = new NotificationData.Builder(getApplication(), NotificationData.ID_GADGET_BLE_HRMONITOR_BATTERY)
                             .message(getString(R.string.Message_Plugin_BleHeartrate_Battery, newLevel))
-                            .icon(R.mipmap.ic_launcher)
+                            .icon(NOTIFICATION_ICON)
                             .getNotification();
                     display.queueNotification(notification);
                 }

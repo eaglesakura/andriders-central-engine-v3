@@ -21,7 +21,7 @@ public class AppDeviceTestUtil {
 
     public static void onSetup(@NonNull DeviceTestCase testCase) {
         assertNotNull(testCase);
-        sDatabasePath = new File(testCase.getTestContext().getExternalFilesDir(null), "test/" + RandomUtil.randShortString());
+        sDatabasePath = new File(testCase.getContext().getExternalFilesDir(null), "test/" + RandomUtil.randShortString()).getAbsoluteFile();
         sDatabasePath.mkdirs();
         assertTrue(sDatabasePath.isDirectory());
     }
