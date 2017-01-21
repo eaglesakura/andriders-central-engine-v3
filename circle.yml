@@ -32,6 +32,12 @@ deployment:
     branch: /^feature\/id\/.*$/
     commands:
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
+  beta:
+    branch: /^beta\/id\/.*$/
+    commands:
+      - ./gradlew :app:dependencyUpdates
+      - ./script/circleci-deploy-deploygate.sh
+      - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
     commands:
