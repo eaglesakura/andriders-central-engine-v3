@@ -176,7 +176,7 @@ public class PluginCategorySettingFragment extends AppFragment {
             }
             return this;
         }).failed((error, task) -> {
-            AppLog.printStackTrace(error);
+            AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
                     .show(mLifecycleDelegate);
