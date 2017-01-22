@@ -5,8 +5,11 @@ import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.util.StringUtil;
 
 import org.junit.Test;
+
+import android.content.pm.PackageManager;
 
 public class PluginDataManagerTest extends AppDeviceTestCase {
 
@@ -91,6 +94,21 @@ public class PluginDataManagerTest extends AppDeviceTestCase {
     }
 
     @Test
+    public void SDK組み込み済みアプリをすべて列挙できる() throws Throwable {
+
+        validate(getContext().getPackageManager().getInstalledApplications(PackageManager.GET_META_DATA)).notEmpty().allNotNull()
+                .each(info -> {
+                    if (info.metaData == null) {
+                        return;
+                    }
+                    String sdkVersion = info.metaData.getString("org.andriders.ace.SDK_VERSION");
+                    if (!StringUtil.isEmpty(sdkVersion)) {
+                        AppLog.test("Package[%s] Version[%s]", info.packageName, sdkVersion);
+                    }
+                });
+    }
+
+    @Test
     public void すべての表示情報を列挙できる() throws Throwable {
         CentralPluginCollection plugins = mDataManager.listPlugins(PluginDataManager.PluginListingMode.All, () -> false);
 
@@ -106,6 +124,5 @@ public class PluginDataManagerTest extends AppDeviceTestCase {
         } finally {
             plugins.disconnect();
         }
-
     }
 }
