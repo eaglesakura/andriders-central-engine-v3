@@ -12,6 +12,14 @@ buildscript {
 apply plugin: 'com.eaglesakura.ci-support'
 apply plugin: 'deploygate'
 
+private String getDeployMessage() {
+    try {
+        return file("deploy-log.txt").text;
+    } catch (Throwable e) {
+        return "";
+    }
+}
+
 /**
  * フレーバー指定でapkを検索
  * @return 検索したAPKファイル or null
@@ -20,13 +28,19 @@ private File getApk(String app, String flavor, String type) {
     File dir = file("ci-release/${app}/apk/");
     for (File file : dir.listFiles()) {
         println "check ${file.name}"
-        if ("${app}-${flavor}-${type}.apk".toString().equals(file.name)) {
-            return file;
+        if (flavor != null) {
+            if ("${app}-${flavor}-${type}.apk".toString().equals(file.name)) {
+                return file;
+            }
+        } else {
+            if ("${app}-${type}.apk".toString().equals(file.name)) {
+                return file;
+            }
         }
     }
-//    println "not found apk(${app}-${flavor}-${type}.apk)"
     return null;
 }
+
 
 deploygate {
 
@@ -39,8 +53,8 @@ deploygate {
          */
         googleplayDebug {
             sourceFile = getApk("app", "googleplay", "debug");
-            message = "for GooglePlay ${eglibrary.ci.buildDate}";
-            releaseNote = "for GooglePlay Debug ${eglibrary.ci.buildDate}";
+            message = "for Googleplay Debug ${eglibrary.ci.buildDate}\n${getDeployMessage()}";
+            releaseNote = "for Googleplay Debug | auto deploy | ${eglibrary.ci.buildDate}";
         }
 
         /**
@@ -48,8 +62,8 @@ deploygate {
          */
         googleplayRelease {
             sourceFile = getApk("app", "googleplay", "release");
-            message = "for GooglePlay ${eglibrary.ci.buildDate}";
-            releaseNote = "for GooglePlay ${eglibrary.ci.buildDate}";
+            message = "for Googleplay Release ${eglibrary.ci.buildDate}\n${getDeployMessage()}";
+            releaseNote = "for Googleplay Release | auto deploy | ${eglibrary.ci.buildDate}";
         }
 
     }
