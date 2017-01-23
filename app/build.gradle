@@ -2,7 +2,7 @@
 // ${メジャーバージョン}.${機能バージョン}.${ビルド番号}
 // 3.0.x  : モジュール細分化バージョン
 def ACES_APP_VERSION = "3.0"
-def ACES_SDK_VERSION = "3.0.beta-+"
+def ACES_SDK_VERSION = "3.0.+"
 
 buildscript {
     repositories {
