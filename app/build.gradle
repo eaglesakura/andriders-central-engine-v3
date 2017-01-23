@@ -140,6 +140,8 @@ dependencies {
     // Remote Debug
     debugCompile 'com.deploygate:sdk:3.1'
 
+    // SQLite JSON
+    androidTestCompile 'com.eaglesakura:android-sqliteX:3.16.1.+'
 }
 
 android {

@@ -25,3 +25,4 @@ dependencies.txt
 # 必要に応じてsyncする
 ace-private/
 eglibrary/
+private/
