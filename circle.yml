@@ -32,13 +32,6 @@ deployment:
     branch: /^feature\/id\/.*$/
     commands:
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
-  beta:
-    branch: /^beta\/id\/.*$/
-    commands:
-      - ./gradlew :app:dependencyUpdates
-      - ./script/circleci-deploy-deploygate.sh
-      - ./gradlew uploadGooglePlayBetaVersion
-      - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
     commands:
@@ -50,11 +43,21 @@ deployment:
     commands:
       - ./gradlew :app:dependencyUpdates
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
+# リリース直前の調整バージョン
+# 細かな修正を行なうが、概ねリリース可能なもの
+  beta:
+    branch: /^beta\/id\/.*$/
+    commands:
+      - ./gradlew :app:dependencyUpdates
+      - ./script/circleci-deploy-deploygate.sh
+      - ./gradlew uploadGooglePlayBetaVersion
+      - cp -r ./ci-release $CIRCLE_ARTIFACTS
+# 製品リリースして問題のないバージョン
   release:
     branch: /^v[0-9]\..*$/
     commands:
       - ./gradlew :app:dependencyUpdates
       - ./script/circleci-deploy-deploygate.sh
-      - ./gradlew uploadGooglePlayBetaVersion
+      - ./gradlew uploadGooglePlayReleaseVersion
       - ./gradlew uploadGooglePlayListings
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
