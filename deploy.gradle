@@ -5,12 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.eaglesakura:plugin-ci-support:1.1.195") {
-            exclude group: "com.google.apis"
-            exclude group: "com.google.oauth-client"
-        }
-        classpath "com.google.apis:google-api-services-androidpublisher:v2-rev40-1.22.+"
-        classpath "com.google.oauth-client:google-oauth-client-java6:1.22.+"
+        classpath "com.eaglesakura:plugin-ci-support:1.1.196"
     }
 }
 
