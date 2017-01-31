@@ -45,3 +45,8 @@ ext.RELEASE_KEYSTORE_ALIAS_PASS = "apprelease"
  */
 ext.DEPLOYGATE_USER_NAME="deploygate_user_name"
 ext.DEPLOYGATE_API_KEY="deploygate_api_key"
+
+/**
+ * Google Playサービスアカウント設定
+ */
+ext.GOOGLEPLAY_SERVICEACCOUNT_MAIL = "example@example.com"

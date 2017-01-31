@@ -37,6 +37,7 @@ deployment:
     commands:
       - ./gradlew :app:dependencyUpdates
       - ./script/circleci-deploy-deploygate.sh
+      - ./gradlew uploadGooglePlayBetaVersion
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
     branch: develop
@@ -54,4 +55,6 @@ deployment:
     commands:
       - ./gradlew :app:dependencyUpdates
       - ./script/circleci-deploy-deploygate.sh
+      - ./gradlew uploadGooglePlayBetaVersion
+      - ./gradlew uploadGooglePlayListings
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
