@@ -31,3 +31,6 @@ https://github.com/eaglesakura/andriders-central-engine-v3
 
 SDKを組み込むことで、プラグインを自由に開発することもできます。
 https://github.com/eaglesakura/andriders-central-engine-sdk
+
+Andriders Central Engine 旧バージョン(ver1系)は下記のURLで配布されています。
+https://play.google.com/store/apps/details?id=com.eaglesakura.andriders
