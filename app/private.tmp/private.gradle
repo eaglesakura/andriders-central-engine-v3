@@ -50,3 +50,4 @@ ext.DEPLOYGATE_API_KEY="deploygate_api_key"
  * Google Playサービスアカウント設定
  */
 ext.GOOGLEPLAY_SERVICEACCOUNT_MAIL = "example@example.com"
+ext.GOOGLEPLAY_DEPLOY_P12_FILE = file("ace-private/release-deploy.p12")

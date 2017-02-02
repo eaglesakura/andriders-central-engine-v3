@@ -77,7 +77,7 @@ task uploadGooglePlayAlphaVersion(type: com.eaglesakura.gradle.task.AndroidGoogl
     track = "alpha";
     apk = getApk("app", "googleplay", "release")
     serviceAccountEmail = GOOGLEPLAY_SERVICEACCOUNT_MAIL;
-    p12 = file("ace-private/release-deploy.p12")
+    p12 = GOOGLEPLAY_DEPLOY_P12_FILE
 }
 
 
@@ -90,7 +90,7 @@ task uploadGooglePlayBetaVersion(type: com.eaglesakura.gradle.task.AndroidGoogle
     apk = getApk("app", "googleplay", "release")
     apkListings = file("googleplay/beta")
     serviceAccountEmail = GOOGLEPLAY_SERVICEACCOUNT_MAIL;
-    p12 = file("ace-private/release-deploy.p12")
+    p12 = GOOGLEPLAY_DEPLOY_P12_FILE
 }
 
 /**
@@ -102,7 +102,7 @@ task uploadGooglePlayReleaseVersion(type: com.eaglesakura.gradle.task.AndroidGoo
     apk = getApk("app", "googleplay", "release")
     apkListings = file("googleplay/production")
     serviceAccountEmail = GOOGLEPLAY_SERVICEACCOUNT_MAIL;
-    p12 = file("ace-private/release-deploy.p12")
+    p12 = GOOGLEPLAY_DEPLOY_P12_FILE
 }
 
 /**
@@ -112,5 +112,5 @@ task uploadGooglePlayListings(type: com.eaglesakura.gradle.task.AndroidGooglePla
     applicationId = "org.andriders.ace";
     serviceAccountEmail = GOOGLEPLAY_SERVICEACCOUNT_MAIL;
     listings    = file("googleplay/production")
-    p12 = file("ace-private/release-deploy.p12")
+    p12 = GOOGLEPLAY_DEPLOY_P12_FILE
 }
