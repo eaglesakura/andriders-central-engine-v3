@@ -50,7 +50,7 @@ deployment:
     commands:
       - ./gradlew :app:dependencyUpdates
       - ./script/circleci-deploy-deploygate.sh
-      - ./gradlew uploadGooglePlayBetaVersion
+      - ./gradlew uploadGooglePlayAlphaVersion
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
 # 製品リリースして問題のないバージョン
   release:
