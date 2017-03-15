@@ -39,8 +39,8 @@ task clean(type: Delete) {
 
 // 各グローバル設定
 ext {
-    ANDROID_SUPPORT_LIB_VERSION = "25.1.1"
-    ANDROID_PLAYSERVICE_LIB_VERSION = "10.0.1"
+    ANDROID_SUPPORT_LIB_VERSION = "25.3.0"
+    ANDROID_PLAYSERVICE_LIB_VERSION = "10.2.0"
 }
 
 // APIキー等の隠蔽したいデータを配置

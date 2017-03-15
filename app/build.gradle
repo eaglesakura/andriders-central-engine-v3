@@ -303,7 +303,6 @@ apply from: "generator.gradle"
 /**
  * Notifications
  */
-apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.mindera.gradle.slack'
 apply plugin: 'com.github.ben-manes.versions'
 
@@ -316,15 +315,15 @@ slack {
     gitInfo = true
 }
 
-apply plugin: 'com.getkeepsafe.dexcount'
-dexcount {
-    format = "json"
-    includeClasses = false
-    includeFieldCount = true
-    includeTotalMethodCount = true
-    orderByMethodCount = true
-    verbose = false
-}
+//apply plugin: 'com.getkeepsafe.dexcount'
+//dexcount {
+//    format = "json"
+//    includeClasses = false
+//    includeFieldCount = true
+//    includeTotalMethodCount = true
+//    orderByMethodCount = true
+//    verbose = false
+//}
 
 // Apply Google Play Service Data
 apply plugin: 'com.google.gms.google-services'

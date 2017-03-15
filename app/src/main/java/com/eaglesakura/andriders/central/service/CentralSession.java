@@ -133,7 +133,7 @@ public class CentralSession {
         // 必要であればWi-Fiを切断する
         if (mSessionInfo.getCentralServiceSettings().isWifiDisable()) {
             try {
-                WifiManager wifiManager = (WifiManager) mSessionInfo.getContext().getSystemService(Context.WIFI_SERVICE);
+                WifiManager wifiManager = (WifiManager) mSessionInfo.getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                 wifiManager.setWifiEnabled(false);
             } catch (Exception e) {
                 AppLog.report(e);
