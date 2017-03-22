@@ -27,7 +27,7 @@ private String getDeployMessage() {
 private File getApk(String app, String flavor, String type) {
     File dir = file("ci-release/${app}/apk/");
     for (File file : dir.listFiles()) {
-        println "check ${file.name}"
+//        println "check ${file.name}"
         if (flavor != null) {
             if ("${app}-${flavor}-${type}.apk".toString().equals(file.name)) {
                 return file;
