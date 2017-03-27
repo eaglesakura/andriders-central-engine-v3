@@ -42,6 +42,18 @@ public class CentralPluginCollection extends DataCollection<CentralPlugin> {
     }
 
     /**
+     * 指定したアプリpackageが含まれているならばtrue
+     */
+    public boolean containsPackage(String appPackageName) {
+        return find((CentralPlugin plugin) -> {
+            if (plugin.getComponentName().getPackageName().equals(appPackageName)) {
+                return true;
+            }
+            return false;
+        }) != null;
+    }
+
+    /**
      * 指定した表示内容をサポートするプラグインを検索する
      */
     public CentralPlugin find(DisplayKey key) {

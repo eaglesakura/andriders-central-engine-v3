@@ -74,7 +74,7 @@ public class PluginDataManager extends CentralSettingManager {
     /**
      * 拡張Service一覧を取得する
      */
-    List<ResolveInfo> listExtensionServices(boolean activeOnly) {
+    List<ResolveInfo> listPluginServices(boolean activeOnly) {
         PackageManager pm = mContext.getPackageManager();
         Intent intent = new Intent(PluginServerImpl.ACTION_ACE_EXTENSION_BIND);
         List<ResolveInfo> resolveInfos = pm.queryIntentServices(intent, 0);
@@ -107,7 +107,7 @@ public class PluginDataManager extends CentralSettingManager {
      * @param mode 列挙モード
      */
     public CentralPluginCollection listPlugins(PluginListingMode mode, CancelCallback cancelCallback) throws TaskCanceledException, AppException {
-        List<ResolveInfo> resolveInfoList = listExtensionServices(mode == PluginListingMode.Active);
+        List<ResolveInfo> resolveInfoList = listPluginServices(mode == PluginListingMode.Active);
         AppSupportUtil.assertNotCanceled(cancelCallback);
 
         List<CentralPlugin> plugins = new ArrayList<>();

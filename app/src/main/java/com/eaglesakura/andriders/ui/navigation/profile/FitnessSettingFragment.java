@@ -106,7 +106,7 @@ public class FitnessSettingFragment extends AppFragment {
             // 起動成功したから何もしない
             return;
         } catch (Exception e) {
-            AppLog.printStackTrace(e);
+            AppLog.report(e);
         }
 
         AppDialogBuilder.newAlert(getContext(), R.string.Word_Profile_GoogleFitNotInstalled)
@@ -138,15 +138,18 @@ public class FitnessSettingFragment extends AppFragment {
             try (PlayServiceConnection connection = PlayServiceConnection.newInstance(builder, cancelCallback)) {
                 GoogleApiClient client = connection.getClientIfSuccess();
                 float userWeight = GoogleApiUtil.getUserWeightFromFit(client, cancelCallback);
+                AppLog.system("Sync Weight[%.1f kg]", userWeight);
                 if (userWeight > 0) {
                     mUserProfile.setUserWeight(userWeight);
                     mAppSettings.commit();
+                } else {
+                    throw new IllegalArgumentException("Weight Error");
                 }
                 return userWeight;
             }
         }).completed((weight, task) -> {
             updateUI();
-            if (!mWeightSyncMessageBooted) {
+            if (!mWeightSyncMessageBooted && weight > 0) {
                 SnackbarBuilder.from(this)
                         .message(R.string.Message_Profile_WeightSyncCompleted)
                         .show();
@@ -154,7 +157,6 @@ public class FitnessSettingFragment extends AppFragment {
             }
         }).failed((err, task) -> {
             AppLog.printStackTrace(err);
-
             if (!mWeightSyncMessageBooted) {
                 SnackbarBuilder.from(this)
                         .message(R.string.Message_Profile_WeightSyncFailed)

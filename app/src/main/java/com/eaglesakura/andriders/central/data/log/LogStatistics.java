@@ -1,7 +1,8 @@
 package com.eaglesakura.andriders.central.data.log;
 
-import com.android.annotations.NonNull;
 import com.eaglesakura.andriders.serialize.RawCentralData;
+
+import android.support.annotation.NonNull;
 
 import java.util.Date;
 

@@ -9,12 +9,14 @@ import com.eaglesakura.andriders.central.data.command.timer.TimerCommandControll
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.central.service.SessionState;
+import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.provider.SessionManagerProvider;
+import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.util.AppLog;
@@ -25,6 +27,7 @@ import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.rx.CallbackTime;
 import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.util.SerializeUtil;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
@@ -42,7 +45,7 @@ import java.util.List;
 public class CentralCommandController {
 
     @NonNull
-    final private Context mContext;
+    private Context mContext;
 
     @NonNull
     private Callback mCallback;
@@ -84,6 +87,9 @@ public class CentralCommandController {
     @NonNull
     private AnimationFrame.Bus mAnimationBus;
 
+    @Nullable
+    private RawCentralData mLatestCentralData;
+
     CentralCommandController(@NonNull Context context, LifecycleDelegate delegate, CentralSession session, AnimationFrame.Bus animationFrameBus, Callback callback) {
         mContext = context;
         mCallback = callback;
@@ -98,6 +104,7 @@ public class CentralCommandController {
         Garnet.create(result)
                 .depend(Context.class, context)
                 .inject();
+        session.getDataBus().bind(lifecycleDelegate, result);
         session.getStateBus().bind(lifecycleDelegate, result);
         animationFrameBus.bind(lifecycleDelegate, result);
         return result;
@@ -138,7 +145,7 @@ public class CentralCommandController {
             }
             onLoadCommands(result);
         }).failed((error, task) -> {
-            AppLog.printStackTrace(error);
+            AppLog.report(error);
         }).start();
     }
 
@@ -219,7 +226,8 @@ public class CentralCommandController {
      */
     @Subscribe
     private void onSessionDataChanged(SessionData.Bus data) {
-        mCentralDataReceiver.onReceived(data.getLatestData());
+        mLatestCentralData = data.getLatestData();
+        mCentralDataReceiver.onReceived(mLatestCentralData);
     }
 
     /**
@@ -236,10 +244,16 @@ public class CentralCommandController {
     }
 
     private final CommandController.CommandBootListener mCommandBootListener = ((self, data) -> {
-        AppLog.command("Boot Command[%s]", data.getKey());
-        RawIntent rawIntent = data.getIntent();
-        Intent intent = SerializableIntent.newIntent(rawIntent);
+        byte[] centralData = null;
         try {
+            AppLog.command("Boot Command[%s]", data.getKey());
+            RawIntent rawIntent = data.getIntent();
+            Intent intent = SerializableIntent.newIntent(rawIntent);
+            // ACEのデータを受け取っているなら、シリアライズしてコマンドに送る
+            if (mLatestCentralData != null) {
+                centralData = SerializeUtil.serializePublicFieldObject(mLatestCentralData, true);
+                intent.putExtra(CommandSetting.EXTRA_COMMAND_CENTRAL_DATA, centralData);
+            }
             switch (rawIntent.intentType) {
                 case Activity:
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // 新規Taskでなければならない
@@ -253,6 +267,20 @@ public class CentralCommandController {
                     mCallback.requestBroadcastCommand(this, data, intent);
                     break;
             }
+
+        } catch (Exception e) {
+            AppLog.printStackTrace(e);
+            return;
+        }
+
+        // 正常に起動できたら、Receiverにも流す
+        try {
+            Intent intent = new Intent(CentralDataReceiver.ACTION_COMMAND_BOOTED);
+            intent.putExtra(CentralDataReceiver.EXTRA_COMMAND_KEY, data.getKey());
+            if (centralData != null) {
+                intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, centralData);
+            }
+            mContext.sendBroadcast(intent);
         } catch (Exception e) {
             AppLog.printStackTrace(e);
         }

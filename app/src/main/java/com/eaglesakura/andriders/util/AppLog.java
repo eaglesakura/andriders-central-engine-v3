@@ -1,13 +1,13 @@
 package com.eaglesakura.andriders.util;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import com.eaglesakura.andriders.provider.LoggerProvider;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.util.LogUtil;
 
 import android.content.Context;
+
+import java.lang.reflect.Method;
 
 /**
  * アプリ用のログ出力をラップする
@@ -20,6 +20,10 @@ public class AppLog {
     @Inject(value = LoggerProvider.class, name = LoggerProvider.NAME_APPLOG)
     static LogUtil.Logger sAppLogger;
 
+    static Class FirebaseCrash;
+
+    static Method FIrebaseCrash_report;
+
     public static void printStackTrace(Throwable e) {
         e.printStackTrace();
     }
@@ -30,9 +34,13 @@ public class AppLog {
     public static void report(Throwable e) {
         e.printStackTrace();
         try {
-            FirebaseCrash.report(e);
-        } catch (Exception fbc) {
-
+            if (FirebaseCrash == null) {
+                FirebaseCrash = Class.forName("com.google.firebase.crash.FirebaseCrash");
+                FIrebaseCrash_report = FirebaseCrash.getDeclaredMethod("report", Throwable.class);
+            }
+            FIrebaseCrash_report.invoke(FirebaseCrash);
+        } catch (Throwable fbc) {
+            fbc.printStackTrace();
         }
     }
 

@@ -8,10 +8,10 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'  // for AS 2.2.x
-        classpath "com.eaglesakura:plugin-ci-support:1.0.47"
+        classpath 'com.android.tools.build:gradle:2.3.0'  // for AS 2.3.x
+        classpath "com.eaglesakura:plugin-ci-support:1.1.196"
         classpath "com.eaglesakura:plugin-android-mipmap:1.0.114"
-        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        classpath 'me.tatarka:gradle-retrolambda:3.5.0'
         classpath 'com.google.gms:google-services:3.0.0'
 
         // Notifications
@@ -39,8 +39,8 @@ task clean(type: Delete) {
 
 // 各グローバル設定
 ext {
-    ANDROID_SUPPORT_LIB_VERSION = "25.1.0"
-    ANDROID_PLAYSERVICE_LIB_VERSION = "10.0.1"
+    ANDROID_SUPPORT_LIB_VERSION = "25.3.0"
+    ANDROID_PLAYSERVICE_LIB_VERSION = "10.2.0"
 }
 
 // APIキー等の隠蔽したいデータを配置

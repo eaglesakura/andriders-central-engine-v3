@@ -50,15 +50,13 @@ import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCan
  * セッションごとのログを保持する
  */
 public class SessionLogDatabase extends DaoDatabase<DaoSession> {
-    private static final int SUPPORTED_DATABASE_VERSION = 1;
+    static final int SUPPORTED_DATABASE_VERSION = 1;
 
     @Inject(AppStorageProvider.class)
     AppStorageManager mStorageManager;
 
     public SessionLogDatabase(@NonNull Context context) {
         super(context, DaoMaster.class);
-
-        Garnet.inject(this);
     }
 
     @Initializer

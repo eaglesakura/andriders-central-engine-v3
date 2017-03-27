@@ -41,6 +41,7 @@
 
         <activity
                 android:name="com.eaglesakura.andriders.ui.navigation.AppBootActivity"
+                android:label="@string/Env.LauncherName"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -85,7 +86,7 @@
                   android:screenOrientation="portrait"
                   android:label="@string/Title.ChooseApp">
             <intent-filter>
-                <!-- acetrigger://で起動する -->
+                <!-- acecommand://で起動する -->
                 <data android:scheme="acecommand"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <!-- デフォルト指定 -->
@@ -99,7 +100,7 @@
                 android:label="@string/Title.Plugin.Basic"
                 android:process=":ace">
             <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+                <action android:name="org.andriders.ace.ACTION_ACE_EXTENSION_BIND"/>
             </intent-filter>
         </service>
         <service
@@ -108,7 +109,7 @@
                 android:label="@string/Title.Plugin.Location"
                 android:process=":ace">
             <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+                <action android:name="org.andriders.ace.ACTION_ACE_EXTENSION_BIND"/>
             </intent-filter>
         </service>
         <service android:name="com.eaglesakura.andriders.plugin.service.BleHeartratePluginService"
@@ -116,7 +117,7 @@
                  android:label="@string/Title.Plugin.BleHeartrate"
                  android:process=":ace">
             <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+                <action android:name="org.andriders.ace.ACTION_ACE_EXTENSION_BIND"/>
             </intent-filter>
         </service>
         <service
@@ -125,7 +126,7 @@
                 android:label="@string/Title.Plugin.BleSpeedAndCadence"
                 android:process=":ace">
             <intent-filter>
-                <action android:name="com.eaglesakura.andriders.ACTION_ACE_EXTENSION_BIND_V3"/>
+                <action android:name="org.andriders.ace.ACTION_ACE_EXTENSION_BIND"/>
             </intent-filter>
         </service>
         <service android:name="com.eaglesakura.andriders.service.FitnessCommitService"
