@@ -8,13 +8,17 @@ import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
 import com.edmodo.rangebar.RangeBar;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 
 /**
@@ -38,9 +42,10 @@ public class ZoneSettingFragment extends AppFragment {
     @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
         UserProfiles profile = mAppSettings.getUserProfiles();
         mCruiseZoneBar.setThumbIndices(profile.getSpeedZoneCruise() - MIN_CRUISE_SPEED, profile.getSpeedZoneSprint() - MIN_CRUISE_SPEED);
@@ -48,6 +53,8 @@ public class ZoneSettingFragment extends AppFragment {
 
         mCadenceZoneBar.setThumbIndices(profile.getCadenceZoneIdeal() - MIN_CADENCE, profile.getCadenceZoneHigh() - MIN_CADENCE);
         mCadenceZoneBar.setOnRangeBarChangeListener(mCadenceZoneListenerImpl);
+
+        return view;
     }
 
     @Override

@@ -4,13 +4,14 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.service.FitnessCommitService;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
-import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentMenu;
 import com.eaglesakura.android.margarine.OnMenuClick;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.annotation.FragmentMenu;
 
 import android.content.Intent;
 
 import java.util.Date;
+
 
 /**
  * GoogleFitへのアップロード管理を行う
@@ -33,7 +34,7 @@ public class GoogleFitUploadMenuFragment extends AppFragment {
                     getContext().startService(intent);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     public interface Callback {

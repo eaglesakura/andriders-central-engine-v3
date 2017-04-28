@@ -14,16 +14,15 @@ import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentMenu;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.margarine.OnMenuClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.UIHandler;
+import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.collection.DataCollection;
-import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.annotation.FragmentMenu;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -61,7 +60,7 @@ public class GpxImportMenuFragment extends AppFragment {
                     startActivityForResult(intent, AppConstants.REQUEST_PICK_GPXFILE);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     /**
@@ -108,7 +107,7 @@ public class GpxImportMenuFragment extends AppFragment {
                     startGpxFileImport(builder.build());
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     /**
@@ -116,8 +115,8 @@ public class GpxImportMenuFragment extends AppFragment {
      */
     @UiThread
     void startGpxFileImport(GpxImporter gpxImporter) {
-        asyncUI((BackgroundTask<DataCollection<SessionInfo>> task) -> {
-            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
+        asyncQueue((BackgroundTask<DataCollection<SessionInfo>> task) -> {
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
             List<SessionInfo> result = new ArrayList<SessionInfo>();
             try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
                 SessionImportCommitter committer = new SessionImportCommitter(getContext()) {
@@ -130,7 +129,7 @@ public class GpxImportMenuFragment extends AppFragment {
                 };
                 try (SessionLogDatabase db = committer.openDatabase()) {
                     db.runInTx(() -> {
-                        gpxImporter.install(committer, cancelCallback);
+                        gpxImporter.install(committer, checker);
                         return 0;
                     });
                 }

@@ -12,26 +12,25 @@ import com.eaglesakura.andriders.databinding.UserLogTotalRowBinding;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.FragmentHolder;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
 import com.eaglesakura.collection.DataCollection;
-import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.adapter.CardAdapter;
-import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
-import com.eaglesakura.material.widget.support.SupportRecyclerView;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.app.FragmentHolder;
+import com.eaglesakura.sloth.app.lifecycle.FragmentLifecycle;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
+import com.eaglesakura.sloth.view.adapter.CardAdapter;
 import com.eaglesakura.util.CollectionUtil;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,16 +47,16 @@ public class TotalLogFragmentMain extends AppNavigationFragment
     /**
      * メニュー
      */
-    FragmentHolder<GpxImportMenuFragment> mGpxImportMenu = FragmentHolder.newInstance(this, GpxImportMenuFragment.class, 0).bind(mLifecycleDelegate);
+    FragmentHolder<GpxImportMenuFragment> mGpxImportMenu = FragmentHolder.newInstance(this, GpxImportMenuFragment.class, 0);
 
     FragmentHolder<BackupImportMenuFragment> mBackupImportMenuFragment
-            = FragmentHolder.newInstance(this, BackupImportMenuFragment.class, 0).bind(mLifecycleDelegate);
+            = FragmentHolder.newInstance(this, BackupImportMenuFragment.class, 0);
 
     /**
      * セッション情報表示
      */
     @Bind(R.id.Content_List)
-    SupportRecyclerView mSessionDateList;
+    RecyclerView mSessionDateList;
 
     @Inject(AppManagerProvider.class)
     CentralLogManager mCentralLogManager;
@@ -66,9 +65,18 @@ public class TotalLogFragmentMain extends AppNavigationFragment
     Callback mCallback;
 
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-        mSessionDateList.setAdapter(mLogAdapter, false);
+    protected void onCreateLifecycle(FragmentLifecycle lifecycle) {
+        super.onCreateLifecycle(lifecycle);
+        mGpxImportMenu.bind(lifecycle);
+        mBackupImportMenuFragment.bind(lifecycle);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        mSessionDateList.setAdapter(mLogAdapter);
+        return view;
     }
 
     @Override
@@ -82,10 +90,10 @@ public class TotalLogFragmentMain extends AppNavigationFragment
      */
     @UiThread
     void loadAllLogs() {
-        asyncUI((BackgroundTask<SessionHeaderCollection> task) -> {
+        asyncQueue((BackgroundTask<SessionHeaderCollection> task) -> {
             try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
-                CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
-                return mCentralLogManager.listAllHeaders(cancelCallback);
+                SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
+                return mCentralLogManager.listAllHeaders(checker);
             }
         }).completed((result, task) -> {
             onLoadHeaders(result);
@@ -107,7 +115,6 @@ public class TotalLogFragmentMain extends AppNavigationFragment
             mLogAdapter.getCollection().addAll(sessionHeaders.listSessionDates().list());
             mLogAdapter.notifyDataSetChanged();
         }
-        mSessionDateList.setProgressVisibly(false, sessionHeaders.size());
     }
 
     /**
@@ -157,7 +164,7 @@ public class TotalLogFragmentMain extends AppNavigationFragment
      */
     @UiThread
     void loadDailySessions(DateSessions daily, CardAdapter.CardBind<DateSessions> bind) {
-        async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
+        getLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
             SupportCancelCallbackBuilder.CancelChecker cancelChecker = SupportCancelCallbackBuilder
                     .from(task)
                     .or(bind)
@@ -179,7 +186,7 @@ public class TotalLogFragmentMain extends AppNavigationFragment
      */
     @UiThread
     void loadTotalSessions(CardAdapter.CardBind<DateSessions> bind) {
-        async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
+        getLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
             SupportCancelCallbackBuilder.CancelChecker cancelChecker = SupportCancelCallbackBuilder
                     .from(task)
                     .or(bind)

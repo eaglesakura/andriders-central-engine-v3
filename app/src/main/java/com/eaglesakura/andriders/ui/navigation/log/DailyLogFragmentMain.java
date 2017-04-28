@@ -11,26 +11,26 @@ import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.FragmentHolder;
-import com.eaglesakura.android.framework.ui.progress.DialogToken;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.saver.BundleState;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.adapter.CardAdapter;
-import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
-import com.eaglesakura.material.widget.support.SupportRecyclerView;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.app.FragmentHolder;
+import com.eaglesakura.sloth.app.lifecycle.FragmentLifecycle;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.ui.progress.DialogToken;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
+import com.eaglesakura.sloth.view.adapter.CardAdapter;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,13 +48,13 @@ public class DailyLogFragmentMain extends AppNavigationFragment
      * Google Fitアップロードメニュー
      */
     FragmentHolder<GoogleFitUploadMenuFragment> mFitUploadMenuFragment
-            = FragmentHolder.newInstance(this, GoogleFitUploadMenuFragment.class, 0).bind(mLifecycleDelegate);
+            = FragmentHolder.newInstance(this, GoogleFitUploadMenuFragment.class, 0);
 
     /**
      * 完全なバックアップメニュー
      */
     FragmentHolder<BackupExportMenuFragment> mBackupMenuFragment
-            = FragmentHolder.newInstance(this, BackupExportMenuFragment.class, 0).bind(mLifecycleDelegate);
+            = FragmentHolder.newInstance(this, BackupExportMenuFragment.class, 0);
 
     /**
      * 起点となるセッション
@@ -71,7 +71,14 @@ public class DailyLogFragmentMain extends AppNavigationFragment
     Callback mCallback;
 
     @Bind(R.id.Content_List)
-    SupportRecyclerView mListView;
+    RecyclerView mListView;
+
+    @Override
+    protected void onCreateLifecycle(FragmentLifecycle lifecycle) {
+        super.onCreateLifecycle(lifecycle);
+        mFitUploadMenuFragment.bind(lifecycle);
+        mBackupMenuFragment.bind(lifecycle);
+    }
 
     /**
      * 起点となるセッションを指定する
@@ -80,10 +87,12 @@ public class DailyLogFragmentMain extends AppNavigationFragment
         mSampleSessionId = sampleSessionId;
     }
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-        mListView.setAdapter(mAdapter, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        mListView.setAdapter(mAdapter);
+        return view;
     }
 
     @Override
@@ -97,10 +106,10 @@ public class DailyLogFragmentMain extends AppNavigationFragment
      */
     @UiThread
     void loadAllLogs() {
-        asyncUI((BackgroundTask<SessionHeaderCollection> task) -> {
+        asyncQueue((BackgroundTask<SessionHeaderCollection> task) -> {
             try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
-                CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
-                return mCentralLogManager.listDailyHeaders(mSampleSessionId, cancelCallback);
+                SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
+                return mCentralLogManager.listDailyHeaders(mSampleSessionId, checker);
             }
         }).completed((result, task) -> {
             onLoadHeaders(result);
@@ -117,7 +126,6 @@ public class DailyLogFragmentMain extends AppNavigationFragment
         } else {
             mAdapter.getCollection().addAll(sessionHeaders.list());
         }
-        mListView.setProgressVisibly(false, sessionHeaders.size());
     }
 
 
@@ -148,7 +156,7 @@ public class DailyLogFragmentMain extends AppNavigationFragment
                     deleteSession(session);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     /**
@@ -157,7 +165,7 @@ public class DailyLogFragmentMain extends AppNavigationFragment
     @UiThread
     void deleteSession(SessionHeader session) {
         mCallback.onSessionDeleteStart(this, session);
-        asyncUI(task -> {
+        asyncQueue(task -> {
             try (DialogToken token = showProgress(R.string.Word_Common_DataDelete)) {
                 mCentralLogManager.delete(session);
                 return this;
@@ -167,7 +175,7 @@ public class DailyLogFragmentMain extends AppNavigationFragment
         }).finalized(task -> {
             AppDialogBuilder.newInformation(getContext(), R.string.Message_Log_SessionDeleted)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
             mAdapter.getCollection().remove(session);
 
             // 親に動作を伝える
@@ -183,7 +191,7 @@ public class DailyLogFragmentMain extends AppNavigationFragment
      */
     @UiThread
     void loadSession(CardAdapter.CardBind<SessionHeader> bind) {
-        async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
+        getLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
             CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).or(bind).build();
             return mCentralLogManager.loadSessionStatistics(bind.getItem(), cancelCallback);
         }).completed((result, task) -> {

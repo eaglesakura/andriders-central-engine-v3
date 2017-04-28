@@ -1,12 +1,11 @@
 package com.eaglesakura.andriders.ui.widget;
 
 import com.eaglesakura.andriders.util.AppUtil;
-import com.eaglesakura.material.widget.DialogBuilder;
+import com.eaglesakura.sloth.view.builder.DialogBuilder;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
 
-import java.io.Closeable;
 
 /**
  * アプリ用のDialog生成

@@ -1,7 +1,4 @@
 {
-  "classesOutputPath": "src/main/gen/java",
-  "configOutputPath": "src/main/res/raw",
-  "packageName": "com.eaglesakura.andriders.gen.prop",
   "configName": "central_properties.json",
   "groups": [
     {

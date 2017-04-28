@@ -11,17 +11,19 @@ import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.SupportAQuery;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.saver.BundleState;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
 
-import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -31,6 +33,7 @@ import java.util.List;
 /**
  * カテゴリごとにプラグインを列挙するFragment
  */
+@FragmentLayout(R.layout.plugin_module)
 public class PluginCategorySettingFragment extends AppFragment {
 
     @BundleState
@@ -53,9 +56,11 @@ public class PluginCategorySettingFragment extends AppFragment {
 
     CentralPluginCollection mCentralPluginCollection;
 
-    public PluginCategorySettingFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.plugin_module);
-    }
+    /**
+     * 親Fragmentはこれが必須である
+     */
+    @BindInterface
+    PluginSettingFragmentMain mParent;
 
     /**
      * 各種リソースを指定する
@@ -70,33 +75,27 @@ public class PluginCategorySettingFragment extends AppFragment {
         this.mCategoryName = categoryName;
     }
 
-
+    @Nullable
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-
-        SupportAQuery q = new SupportAQuery(self.getView());
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        AQuery q = new AQuery(view);
         q.id(R.id.App_HeaderView_Icon).image(mIconResId);
         q.id(R.id.App_HeaderView_Title).text(mTitleResId);
         q.id(R.id.Extension_Category_Info).text(mInfoResId);
+        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        asyncUI(task -> {
-            while (getParent(PluginSettingFragmentMain.class).getPlugins() == null) {
+        asyncQueue(task -> {
+            while (mParent.getPlugins() == null) {
                 task.waitTime(1);
             }
             return this;
         }).completed((result, task) -> {
-            updatePluginViews(getParent(PluginSettingFragmentMain.class).getPlugins());
+            updatePluginViews(mParent.getPlugins());
         }).start();
     }
 
@@ -148,7 +147,7 @@ public class PluginCategorySettingFragment extends AppFragment {
         if (!plugin.startSettings()) {
             AppDialogBuilder.newAlert(getContext(), "正常にプラグインの設定画面を開けませんでした。")
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }
     }
 
@@ -159,7 +158,7 @@ public class PluginCategorySettingFragment extends AppFragment {
      */
     @UiThread
     void activate(CentralPlugin plugin, boolean isChecked) {
-        asyncUI(task -> {
+        asyncQueue(task -> {
             Category pluginCategory = Category.fromName(mCategoryName);
             List<CentralPlugin> pluginList = mCentralPluginCollection.list(pluginCategory);
 
@@ -179,7 +178,7 @@ public class PluginCategorySettingFragment extends AppFragment {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }).start();
     }
 

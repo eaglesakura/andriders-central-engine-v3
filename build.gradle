@@ -1,21 +1,24 @@
 buildscript {
     repositories {
-        maven { url "http://eaglesakura.github.io/maven/" }
-        maven { url "https://jitpack.io" }
 //        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
         jcenter()
         mavenCentral()
+        maven { url "https://dl.bintray.com/eaglesakura/maven/" }
+        maven { url "https://jitpack.io" }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'  // for AS 2.2.x
-        classpath "com.eaglesakura:plugin-ci-support:1.1.196"
-        classpath "com.eaglesakura:plugin-android-mipmap:1.0.114"
-        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        classpath 'com.android.tools.build:gradle:2.3.1'  // for AS 2.2.x
+        classpath "com.eaglesakura:plugin-ci-support:1.2.200"
+        classpath 'me.tatarka:gradle-retrolambda:3.5.0'
         classpath 'com.google.gms:google-services:3.0.0'
 
+        // Generator Plugins
+        classpath "com.eaglesakura:sloth-plugin:1.0.12"
+        classpath "com.eaglesakura:plugin-android-mipmap:1.1.156"
+
         // Notifications
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.4.1'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.3'
         classpath 'com.github.operando:gradle-slack-plugin:1.1.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
 
@@ -26,10 +29,11 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url "http://eaglesakura.github.io/maven/" }
-        maven { url "https://clojars.org/repo/" }
-        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
+        jcenter()
         mavenCentral()
+        maven { url "https://clojars.org/repo/" }
+        maven { url "https://dl.bintray.com/eaglesakura/maven/" }
+//        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
     }
 }
 
@@ -39,7 +43,7 @@ task clean(type: Delete) {
 
 // 各グローバル設定
 ext {
-    ANDROID_SUPPORT_LIB_VERSION = "25.3.0"
+    ANDROID_SUPPORT_LIB_VERSION = "25.3.1"
     ANDROID_PLAYSERVICE_LIB_VERSION = "10.2.0"
 }
 

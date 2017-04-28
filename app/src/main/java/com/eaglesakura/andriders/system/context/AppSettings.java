@@ -6,10 +6,10 @@ import com.eaglesakura.andriders.gen.prop.DebugSettings;
 import com.eaglesakura.andriders.gen.prop.UpdateCheckProps;
 import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.system.context.config.AppConfigManager;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Singleton;
-import com.eaglesakura.android.property.TextDatabasePropertyStore;
-import com.eaglesakura.android.property.TextPropertyStore;
+import com.eaglesakura.sloth.db.property.TextDatabasePropertyStore;
+import com.eaglesakura.sloth.db.property.TextPropertyStore;
+import com.eaglesakura.sloth.util.AppSupportUtil;
 
 import android.content.Context;
 import android.support.annotation.RawRes;

@@ -13,19 +13,17 @@ import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.BackgroundTask;
 import com.eaglesakura.android.saver.BundleState;
-import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.SnackbarBuilder;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.view.builder.SnackbarBuilder;
 import com.eaglesakura.util.StringUtil;
 import com.edmodo.rangebar.RangeBar;
 
@@ -33,7 +31,11 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.concurrent.TimeUnit;
 
@@ -63,11 +65,13 @@ public class FitnessSettingFragment extends AppFragment {
         mUserProfile = mAppSettings.getUserProfiles();
     }
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
         mHeartrateZone.setThumbIndices(mUserProfile.getNormalHeartrate() - MIN_HEARTRATE, mUserProfile.getMaxHeartrate() - MIN_HEARTRATE);
         mHeartrateZone.setOnRangeBarChangeListener(mHeartrateRangeListenerImpl);
+        return view;
     }
 
     @Override
@@ -115,7 +119,7 @@ public class FitnessSettingFragment extends AppFragment {
                     startActivity(installIntent);
                 })
                 .neutralButton(R.string.Word_Common_OK, null)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
 
@@ -132,12 +136,12 @@ public class FitnessSettingFragment extends AppFragment {
      */
     @UiThread
     void syncFitnessData() {
-        asyncUI((BackgroundTask<Float> task) -> {
+        asyncQueue((BackgroundTask<Float> task) -> {
             GoogleApiClient.Builder builder = AppUtil.newFullPermissionClient(getActivity());
-            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task, 60, TimeUnit.SECONDS);
-            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(builder, cancelCallback)) {
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).orTimeout(60, TimeUnit.SECONDS).build();
+            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(builder, checker)) {
                 GoogleApiClient client = connection.getClientIfSuccess();
-                float userWeight = GoogleApiUtil.getUserWeightFromFit(client, cancelCallback);
+                float userWeight = GoogleApiUtil.getUserWeightFromFit(client, checker);
                 AppLog.system("Sync Weight[%.1f kg]", userWeight);
                 if (userWeight > 0) {
                     mUserProfile.setUserWeight(userWeight);

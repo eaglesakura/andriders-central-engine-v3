@@ -1,9 +1,9 @@
 package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.system.context.AppSettings;
-import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Provide;
 import com.eaglesakura.android.garnet.Singleton;
+import com.eaglesakura.sloth.provider.ContextProvider;
 
 import android.content.Context;
 

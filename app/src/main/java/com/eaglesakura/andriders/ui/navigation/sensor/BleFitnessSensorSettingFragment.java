@@ -13,22 +13,25 @@ import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.saver.BundleState;
-import com.eaglesakura.android.thread.ui.UIHandler;
-import com.eaglesakura.android.util.ResourceUtil;
-import com.eaglesakura.material.widget.SnackbarBuilder;
-import com.eaglesakura.material.widget.SpinnerAdapterBuilder;
-import com.eaglesakura.material.widget.SupportArrayAdapter;
+import com.eaglesakura.android.thread.UIHandler;
+import com.eaglesakura.android.util.DrawableUtil;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.view.adapter.SupportArrayAdapter;
+import com.eaglesakura.sloth.view.builder.SnackbarBuilder;
+import com.eaglesakura.sloth.view.builder.SpinnerAdapterBuilder;
 import com.eaglesakura.util.StringUtil;
 
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.UiThread;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -92,10 +95,11 @@ public abstract class BleFitnessSensorSettingFragment extends AppFragment {
         mDeviceTypeId = mDeviceType.getDeviceTypeId();
     }
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-        AQuery q = new AQuery(self.getView());
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        AQuery q = new AQuery(view);
 
         List<BleDeviceCache> devices = new ArrayList<>();
         devices.add(null);
@@ -128,6 +132,7 @@ public abstract class BleFitnessSensorSettingFragment extends AppFragment {
                 .selected(it -> onDeviceSelected(it))
                 .build();
         mSpinnerAdapter = (SupportArrayAdapter<BleDeviceCache>) q.getSpinner().getAdapter();
+        return view;
     }
 
     @Override
@@ -144,7 +149,7 @@ public abstract class BleFitnessSensorSettingFragment extends AppFragment {
 
         // ヘッダ表記を変更する
         new AQuery(getView())
-                .id(R.id.App_HeaderView_Icon).image(ResourceUtil.vectorDrawable(getContext(), mHeaderIconRes, R.color.App_Icon_Grey))
+                .id(R.id.App_HeaderView_Icon).image(DrawableUtil.getVectorDrawable(getContext(), mHeaderIconRes, R.color.App_Icon_Grey))
                 .id(R.id.App_HeaderView_Title).text(mHeaderTextRes);
 
         mScanner = new BleDeviceScanner(getContext(), mDeviceType);

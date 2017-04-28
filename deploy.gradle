@@ -1,11 +1,11 @@
 buildscript {
     repositories {
-        maven { url "http://eaglesakura.github.io/maven/" }
         jcenter()
+        maven { url "https://dl.bintray.com/eaglesakura/maven/" }
     }
 
     dependencies {
-        classpath "com.eaglesakura:plugin-ci-support:1.1.196"
+        classpath "com.eaglesakura:plugin-ci-support:1.2.200"
     }
 }
 
@@ -80,7 +80,6 @@ task uploadGooglePlayAlphaVersion(type: com.eaglesakura.gradle.task.AndroidGoogl
     p12 = GOOGLEPLAY_DEPLOY_P12_FILE
 }
 
-
 /**
  * ベータ版: APKと更新情報をアップロードする
  */
@@ -111,6 +110,6 @@ task uploadGooglePlayReleaseVersion(type: com.eaglesakura.gradle.task.AndroidGoo
 task uploadGooglePlayListings(type: com.eaglesakura.gradle.task.AndroidGooglePlayPublishTask) {
     applicationId = "org.andriders.ace";
     serviceAccountEmail = GOOGLEPLAY_SERVICEACCOUNT_MAIL;
-    listings    = file("googleplay/production")
+    listings = file("googleplay/production")
     p12 = GOOGLEPLAY_DEPLOY_P12_FILE
 }

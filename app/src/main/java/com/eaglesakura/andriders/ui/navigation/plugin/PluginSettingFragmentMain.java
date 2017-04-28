@@ -9,15 +9,14 @@ import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.ToolbarBuilder;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
+import com.eaglesakura.sloth.view.builder.ToolbarBuilder;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -82,13 +81,13 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
     @Override
     public void onResume() {
         super.onResume();
-        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<CentralPluginCollection> task) -> {
-            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
+        getLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<CentralPluginCollection> task) -> {
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
             try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
-                CentralPluginCollection pluginCollection = mPluginDataManager.listPlugins(PluginDataManager.PluginListingMode.All, cancelCallback);
+                CentralPluginCollection pluginCollection = mPluginDataManager.listPlugins(PluginDataManager.PluginListingMode.All, checker);
 
                 CentralPlugin.ConnectOption option = new CentralPlugin.ConnectOption();
-                pluginCollection.connect(option, cancelCallback);
+                pluginCollection.connect(option, checker);
 
                 return pluginCollection;
             }
@@ -98,7 +97,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }).start();
 
         ToolbarBuilder.from(this).title(R.string.Title_Plugin).build();
@@ -111,7 +110,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
         if (mPlugins != null) {
             CentralPluginCollection pluginCollection = mPlugins;
             mPlugins = null;
-            async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, it -> {
+            getLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, it -> {
                 pluginCollection.disconnect();
                 return this;
             }).start();

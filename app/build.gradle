@@ -8,16 +8,14 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url "http://eaglesakura.github.io/maven/" }
+        maven { url "https://dl.bintray.com/eaglesakura/maven/" }
     }
     dependencies {
-        classpath "com.eaglesakura:plugin-android-dbgenerator:2.1.162"
+        classpath "com.eaglesakura:plugin-ci-support:1.2.200"
     }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'com.eaglesakura.ci-support'
-apply plugin: 'com.eaglesakura.android-mipmap'
-apply plugin: 'com.eaglesakura.android-props'
 apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
 
 configurations {
@@ -25,35 +23,10 @@ configurations {
     all*.exclude group: "org.apache.httpcomponents", module: "httpclient"
 }
 
-/**
- * アプリのプロパティ管理
- */
-props {
-    property file("config/app_properties.json")
-    property file("config/central_properties.json")
-}
-
-/**
- * mipmap生成管理
- */
-mipmap {
-    sources = file("image/");
-    output = file("src/main/res");
-    toolsPath.identify = System.getenv("IMGMAGICK_IDENTIFY");
-    toolsPath.convert = System.getenv("IMGMAGICK_CONVERT");
-    cleanOldFiles = false;
-}
-
 dependencies {
     testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     if (EGLIBRARY_COMPILE_LOCAL) {
-        compile project(":eglibrary:simple-logger")
-        compile project(":eglibrary:simple-utils")
-        compile project(':eglibrary:android-thread')
-        compile project(':eglibrary:android-text-kvs')
-        compile project(':eglibrary:android-command-service')
-        compile project(':eglibrary:android-net')
-        compile project(':eglibrary:android-framework')
+        compile project(':eglibrary:sloth-framework')
         compile project(":eglibrary:android-gms")
         compile project(":eglibrary:android-firebase")
         compile project(':eglibrary:android-bluetooth')
@@ -124,7 +97,7 @@ dependencies {
     compile "com.google.firebase:firebase-auth:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile "com.google.firebase:firebase-config:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     compile "com.google.firebase:firebase-database:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile 'com.android.support:support-annotations:+'
+    compile "com.android.support:support-annotations:${ANDROID_PLAYSERVICE_LIB_VERSION}"
     // Firebase Crashはリリース時のみで良い
     releaseCompile "com.google.firebase:firebase-crash:${ANDROID_PLAYSERVICE_LIB_VERSION}"
 
@@ -141,7 +114,7 @@ dependencies {
     debugCompile 'com.deploygate:sdk:3.1'
 
     // SQLite JSON
-    androidTestCompile 'com.eaglesakura:android-sqliteX:3.16.1.+'
+    androidTestCompile 'com.eaglesakura:android-sqliteX:3.16.1.8'
 }
 
 android {

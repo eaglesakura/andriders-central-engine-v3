@@ -1,20 +1,41 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            url "http://eaglesakura.github.io/maven/"
-        }
+        maven { url "https://dl.bintray.com/eaglesakura/maven/" }
     }
     dependencies {
-        classpath "com.eaglesakura:plugin-android-dbgenerator:2.0.146"
-        classpath "com.eaglesakura:plugin-firebase-remoteconfig:1.0.36"
+        classpath "com.eaglesakura:sloth-plugin:1.0.12"
     }
+}
+
+apply plugin: 'com.eaglesakura.android-mipmap' /* Generate Android Mipmap */
+apply plugin: 'com.eaglesakura.sloth.prop' /* Generate App Properties */
+
+/**
+ * アプリのプロパティ管理
+ */
+props {
+    output file("src/main/gen/java")
+    configOutput file("src/main/res/raw")
+    property file("config/app_properties.json"), "com.eaglesakura.andriders.gen.prop"
+    property file("config/central_properties.json"), "com.eaglesakura.andriders.gen.prop"
+}
+
+/**
+ * mipmap生成管理
+ */
+mipmap {
+    sources = file("image/");
+    output = file("src/main/res");
+    toolsPath.identify = System.getenv("IMGMAGICK_IDENTIFY");
+    toolsPath.convert = System.getenv("IMGMAGICK_CONVERT");
+    cleanOldFiles = false;
 }
 
 /**
  * Firebaseで管理されるConfigを生成する
  */
-task generateFirebaseConfig(type: com.eaglesakura.gradle.task.FirebaseRemoteConfigGenTask) {
+task generateFirebaseConfig(type: com.eaglesakura.sloth.firebase.FirebaseRemoteConfigGenTask) {
     outDirectory = file("src/main/gen/java")
     def AppStatusConfig = newConfig("${android.defaultConfig.applicationId}.gen.config.AppStatusConfig");
     AppStatusConfig.stringConfig("database_path_config", "nil");      // Databaseのコンフィグリンク
@@ -23,7 +44,7 @@ task generateFirebaseConfig(type: com.eaglesakura.gradle.task.FirebaseRemoteConf
 /**
  * サイクルコンピューター設定用プロファイルを出力する
  */
-task generateCentralSettingDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
+task generateCentralSettingDao(type: com.eaglesakura.sloth.dao.AndroidDaoGenTask) {
     outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 
@@ -79,7 +100,7 @@ task generateCentralSettingDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTa
 /**
  * セッション情報は書き出しが多いので別なSchemaにしておく
  */
-task generateCentralLogDao(type: com.eaglesakura.gradle.task.AndroidDaoGenTask) {
+task generateCentralLogDao(type: com.eaglesakura.sloth.dao.AndroidDaoGenTask) {
     outDirectory = file("src/main/gen/java")
     classPackageBase = "com.eaglesakura.andriders.dao"
 

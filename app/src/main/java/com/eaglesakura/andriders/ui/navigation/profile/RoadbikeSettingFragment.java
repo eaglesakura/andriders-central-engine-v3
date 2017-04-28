@@ -6,14 +6,18 @@ import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.collection.DataCollection;
-import com.eaglesakura.material.widget.SpinnerAdapterBuilder;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.view.builder.SpinnerAdapterBuilder;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * ロードバイク基本設定用Fragment
@@ -26,13 +30,12 @@ public class RoadbikeSettingFragment extends AppFragment {
     @Inject(AppContextProvider.class)
     AppSettings mAppSettings;
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        AQuery q = new AQuery(self.getView());
-
-
+        AQuery q = new AQuery(view);
         DataCollection<RoadbikeWheelLength> wheelLengthCollection = mAppSettings.getConfig().listWheelLength();
         SpinnerAdapterBuilder.from(q.id(R.id.Selector_WheelOuterLength).getSpinner(), RoadbikeWheelLength.class)
                 .items(wheelLengthCollection.getSource())
@@ -40,6 +43,7 @@ public class RoadbikeSettingFragment extends AppFragment {
                 .selection(item -> Math.abs(mAppSettings.getUserProfiles().getWheelOuterLength() - item.getOuterLength()) < 3)  // 近似する周長を初期選択
                 .selected((index, item) -> onSelected(item))
                 .build();
+        return view;
     }
 
     @UiThread

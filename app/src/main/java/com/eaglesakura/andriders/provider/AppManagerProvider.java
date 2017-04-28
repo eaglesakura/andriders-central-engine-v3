@@ -10,10 +10,10 @@ import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Depend;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Provide;
+import com.eaglesakura.sloth.provider.ContextProvider;
 
 /**
  * Manager系の依存管理を行う
