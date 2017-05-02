@@ -5,7 +5,7 @@
              android:layout_height="match_parent"
              android:orientation="vertical">
 
-    <com.eaglesakura.material.widget.support.SupportRecyclerView
+    <android.support.v7.widget.RecyclerView
             android:id="@+id/Content.List"
             app:esmEmptyText="コマンドが登録されていません"
             app:esmProgressVisible="false"

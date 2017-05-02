@@ -22,16 +22,17 @@ import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.firebase.auth.FirebaseAuthorizeManager;
-import com.eaglesakura.android.framework.ui.FragmentHolder;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.android.util.FragmentUtil;
 import com.eaglesakura.android.util.ImageUtil;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.app.FragmentHolder;
+import com.eaglesakura.sloth.app.lifecycle.FragmentLifecycle;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
@@ -43,6 +44,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * ユーザーの簡易ナビゲートを行う
@@ -64,7 +68,7 @@ public class NavigationMapFragment extends AppFragment {
             SupportMapFragment fragment = SupportMapFragment.newInstance(opt);
             return fragment;
         }
-    }.bind(mLifecycleDelegate);
+    };
 
     GoogleMap mGoogleMap;
 
@@ -95,15 +99,28 @@ public class NavigationMapFragment extends AppFragment {
     private static final float MAP_ZOOM_DEFAULT = 16;
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mCentralDataReceiver = new CentralDataReceiver(context);
+    protected void onCreateLifecycle(FragmentLifecycle lifecycle) {
+        super.onCreateLifecycle(lifecycle);
+        mMapFragment.bind(lifecycle);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        mCentralDataReceiver = new CentralDataReceiver(getContext());
         mCentralDataReceiver.addHandler(mLocationHandlerImpl);
 
-        mSessionControlBus = findInterfaceOrThrow(SessionControlBus.Holder.class).getSessionControlBus();
-        mSessionControlBus.bind(mLifecycleDelegate, this);
+        mSessionControlBus = FragmentUtil.findInterface(this, getContext(), SessionControlBus.Holder.class).getSessionControlBus();
+        mSessionControlBus.bind(getLifecycle(), this);
 
-        mImageLoader = findInterfaceOrThrow(AppImageLoader.Holder.class).getImageLoader();
+        mImageLoader = FragmentUtil.findInterface(this, getContext(), AppImageLoader.Holder.class).getImageLoader();
+        return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
     }
 
     @Override
@@ -146,7 +163,7 @@ public class NavigationMapFragment extends AppFragment {
     protected void onGoogleMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         if (!mLocationInitialized) {
-            async(ExecuteTarget.LocalParallel, CallbackTime.CurrentForeground, (BackgroundTask<Location> task) -> {
+            getLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.CurrentForeground, (BackgroundTask<Location> task) -> {
                 CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).build();
                 try (PlayServiceConnection connection = PlayServiceConnection.newInstance(newLocationClient(getContext()), cancelCallback)) {
                     return LocationServices.FusedLocationApi.getLastLocation(connection.getClient());
@@ -170,10 +187,10 @@ public class NavigationMapFragment extends AppFragment {
      */
     @UiThread
     void loadUserIcon() {
-        asyncUI((BackgroundTask<Bitmap> task) -> {
-            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
-            FirebaseUser user = FirebaseAuthorizeManager.getInstance().await(cancelCallback);
-            Drawable drawable = mImageLoader.newImage(user.getPhotoUrl(), true).await(cancelCallback);
+        asyncQueue((BackgroundTask<Bitmap> task) -> {
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
+            FirebaseUser user = FirebaseAuthorizeManager.getInstance().await(checker);
+            Drawable drawable = mImageLoader.newImage(user.getPhotoUrl(), true).await(checker);
             return ((BitmapDrawable) drawable).getBitmap();
         }).completed((result, task) -> {
             // アイコンを保持し、必要であれば切り替える

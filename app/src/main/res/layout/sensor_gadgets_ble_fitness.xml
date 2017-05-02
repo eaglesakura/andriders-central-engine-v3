@@ -31,7 +31,7 @@
                         android:layout_height="@dimen/EsMaterial.Navigation.MinHeight"/>
             </FrameLayout>
 
-            <com.eaglesakura.material.widget.TransparentButton
+            <com.eaglesakura.sloth.view.TransparentButton
                     android:id="@+id/Button.Testing"
                     android:layout_marginLeft="@dimen/App.Margin.Indent"
                     android:layout_width="match_parent"
@@ -50,7 +50,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
-            </com.eaglesakura.material.widget.TransparentButton>
+            </com.eaglesakura.sloth.view.TransparentButton>
         </LinearLayout>
     </LinearLayout>
 

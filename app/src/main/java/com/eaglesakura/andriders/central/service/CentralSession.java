@@ -15,7 +15,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.Timer;
 

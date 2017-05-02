@@ -9,10 +9,9 @@ import com.eaglesakura.andriders.plugin.CentralPlugin;
 import com.eaglesakura.andriders.plugin.DisplayKey;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
-import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
 import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.material.widget.adapter.CardAdapter;
-import com.eaglesakura.material.widget.support.SupportRecyclerView;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.view.adapter.CardAdapter;
 import com.eaglesakura.util.StringUtil;
 import com.squareup.otto.Subscribe;
 
@@ -23,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,9 +101,9 @@ public class LayoutEditFragment extends AppFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_appselect_dialog, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Display_Choose), view)
                 .fullScreen(true)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
 
-        SupportRecyclerView supportRecyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof SupportRecyclerView));
+        RecyclerView recyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof RecyclerView));
         CardAdapter<DisplayKeyBind> adapter = newSelectorAdapter((plugin, displayKey) -> {
             setDisplayLayout(layout, plugin, displayKey);
             mCallback.onUpdateLayout(this);
@@ -115,7 +115,7 @@ public class LayoutEditFragment extends AppFragment {
                 adapter.getCollection().add(new DisplayKeyBindImpl(plugin, key));
             }
         }
-        supportRecyclerView.setAdapter(adapter, false);
+        recyclerView.setAdapter(adapter);
     }
 
 

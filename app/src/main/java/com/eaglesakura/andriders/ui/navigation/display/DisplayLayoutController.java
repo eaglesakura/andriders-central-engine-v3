@@ -13,14 +13,14 @@ import com.eaglesakura.andriders.plugin.PluginDataManager;
 import com.eaglesakura.andriders.plugin.PluginInformation;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.task.DataBus;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.android.util.DrawableUtil;
 import com.eaglesakura.android.util.PackageUtil;
-import com.eaglesakura.android.util.ResourceUtil;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.sloth.data.DataBus;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.StringUtil;
 
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
+import static com.eaglesakura.sloth.util.AppSupportUtil.assertNotCanceled;
 
 /**
  * レイアウトデータ管理
@@ -84,7 +84,7 @@ public class DisplayLayoutController {
 
     public DisplayLayoutController(Context context) {
         mContext = context;
-        mSubIcon = ResourceUtil.vectorDrawable(context, R.drawable.ic_cycle_computer, R.color.App_Icon_Grey);
+        mSubIcon = DrawableUtil.getVectorDrawable(context, R.drawable.ic_cycle_computer, R.color.App_Icon_Grey);
         Garnet.create(this)
                 .depend(Context.class, context)
                 .inject();

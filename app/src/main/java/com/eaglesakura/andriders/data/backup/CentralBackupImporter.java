@@ -7,10 +7,9 @@ import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.storage.AppStorageManager;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.io.CancelableInputStream;
 import com.eaglesakura.json.JSON;
-import com.eaglesakura.lambda.CallbackUtils;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.IOUtil;
 
@@ -23,7 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
+import static com.eaglesakura.sloth.util.AppSupportUtil.assertNotCanceled;
 
 /**
  * バックアップの復元を行なう
@@ -43,22 +42,23 @@ public class CentralBackupImporter {
     File unzip(AppStorageManager storageManager, Uri uri, CancelCallback cancelCallback) throws IOException, AppException, TaskCanceledException {
         File tempDir = storageManager.newTemporaryDir();
         try (InputStream input = mContext.getContentResolver().openInputStream(uri)) {
-            IOUtil.unzip(input, tempDir, new IOUtil.DecompressCallback() {
-                @Override
-                public boolean isCanceled() {
-                    return CallbackUtils.isCanceled(cancelCallback);
-                }
-
-                @Override
-                public boolean isDecompressExist(long size, File dst) {
-                    return true;
-                }
-
-                @Override
-                public void onDecompressCompleted(File dst) {
-
-                }
-            });
+            // FIXME: unzip機能を復元する
+//            IOUtil.unzip(input, tempDir, new IOUtil.DecompressCallback() {
+//                @Override
+//                public boolean isCanceled() {
+//                    return CallbackUtils.isCanceled(cancelCallback);
+//                }
+//
+//                @Override
+//                public boolean isDecompressExist(long size, File dst) {
+//                    return true;
+//                }
+//
+//                @Override
+//                public void onDecompressCompleted(File dst) {
+//
+//                }
+//            });
         }
         return tempDir;
     }

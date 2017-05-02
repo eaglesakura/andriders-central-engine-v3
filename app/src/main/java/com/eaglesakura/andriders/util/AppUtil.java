@@ -9,11 +9,11 @@ import com.google.android.gms.location.LocationServices;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.CommandSetting;
-import com.eaglesakura.android.framework.FrameworkCentral;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.ImageUtil;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.io.CancelableInputStream;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.sloth.Sloth;
 
 import org.greenrobot.greendao.annotation.NotNull;
 
@@ -44,14 +44,14 @@ public class AppUtil {
         if (sessionTimeHour == 0) {
             if (sessionTimeMinute == 0) {
                 // 秒だけ
-                return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeS, sessionTimeSec);
+                return Sloth.getApplication().getString(R.string.Word_Common_TimeS, sessionTimeSec);
             } else {
                 // 分秒
-                return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeMS, sessionTimeMinute, sessionTimeSec);
+                return Sloth.getApplication().getString(R.string.Word_Common_TimeMS, sessionTimeMinute, sessionTimeSec);
             }
         } else {
             // 時分
-            return FrameworkCentral.getApplication().getString(R.string.Word_Common_TimeHM, sessionTimeHour, sessionTimeMinute);
+            return Sloth.getApplication().getString(R.string.Word_Common_TimeHM, sessionTimeHour, sessionTimeMinute);
         }
     }
 
@@ -113,12 +113,12 @@ public class AppUtil {
 
 
     public static String getErrorTitle(Throwable e) {
-        Context context = FrameworkCentral.getApplication();
+        Context context = Sloth.getApplication();
         return context.getString(R.string.Title_Error_Runtime);
     }
 
     public static String getErrorMessage(Throwable e) {
-        Context context = FrameworkCentral.getApplication();
+        Context context = Sloth.getApplication();
         return context.getString(R.string.Message_Error_Runtime);
     }
 

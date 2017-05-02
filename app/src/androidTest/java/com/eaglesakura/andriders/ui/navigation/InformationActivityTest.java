@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.ui.navigation;
 import com.eaglesakura.andriders.AppScenarioTest;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.android.devicetest.scenario.UiScenario;
-import com.eaglesakura.android.framework.ui.license.LicenseViewActivity;
+import com.eaglesakura.sloth.ui.license.LicenseViewActivity;
 
 import org.junit.Test;
 

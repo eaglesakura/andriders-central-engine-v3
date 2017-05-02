@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.gen.prop;
 
 
-public class CentralServiceSettings extends com.eaglesakura.android.property.internal.GeneratedProperties {
+public class CentralServiceSettings extends com.eaglesakura.sloth.db.property.internal.GeneratedProperties {
     
     public static final String ID_WIFIDISABLE = "CentralServiceSettings.wifiDisable";
     public static final String ID_CPUNOSLEEP = "CentralServiceSettings.cpuNoSleep";
@@ -14,7 +14,7 @@ public class CentralServiceSettings extends com.eaglesakura.android.property.int
     public static final String ID_GPSSPEEDENABLE = "CentralServiceSettings.gpsSpeedEnable";
     
     public CentralServiceSettings(){ }
-    public CentralServiceSettings(com.eaglesakura.android.property.PropertyStore store) { setPropertyStore(store); }
+    public CentralServiceSettings(com.eaglesakura.sloth.db.property.PropertyStore store){ setPropertyStore(store); }
     public void setWifiDisable(boolean set){ setProperty("CentralServiceSettings.wifiDisable", set); }
     public boolean isWifiDisable(){ return getBooleanProperty("CentralServiceSettings.wifiDisable"); }
     public void setCpuNoSleep(boolean set){ setProperty("CentralServiceSettings.cpuNoSleep", set); }

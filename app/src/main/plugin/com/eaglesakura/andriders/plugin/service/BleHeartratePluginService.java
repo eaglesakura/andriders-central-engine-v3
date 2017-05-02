@@ -17,12 +17,12 @@ import com.eaglesakura.android.bluetooth.gatt.BleDeviceConnection;
 import com.eaglesakura.android.bluetooth.gatt.BleGattController;
 import com.eaglesakura.android.bluetooth.gatt.BleHeartrateMonitorCallback;
 import com.eaglesakura.android.bluetooth.gatt.BlePeripheralDeviceConnection;
-import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.util.ResourceUtil;
+import com.eaglesakura.android.util.DrawableUtil;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 import com.eaglesakura.util.StringUtil;
 
 import android.app.Service;
@@ -34,7 +34,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 public class BleHeartratePluginService extends Service implements AcePluginService {
-    ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
+    ServiceLifecycle mLifecycleDelegate = new ServiceLifecycle();
 
     @Nullable
     @Override
@@ -80,8 +80,8 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
 
         mLifecycleDelegate.onCreate();
         mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, task -> {
-            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
-            deviceConnectLoop(address, centralData, connection.getDisplay(), cancelCallback);
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
+            deviceConnectLoop(address, centralData, connection.getDisplay(), checker);
             return this;
         }).start();
     }
@@ -118,7 +118,7 @@ public class BleHeartratePluginService extends Service implements AcePluginServi
      * @param cancelCallback デフォルトのキャンセルチェック
      */
     private void deviceConnectLoop(String address, CentralEngineSessionData centralData, DisplayDataSender display, CancelCallback cancelCallback) throws Throwable {
-        Drawable NOTIFICATION_ICON = ResourceUtil.vectorDrawable(this, R.drawable.ic_heart_beats, R.color.App_Icon_Grey);
+        Drawable NOTIFICATION_ICON = DrawableUtil.getVectorDrawable(this, R.drawable.ic_heart_beats, R.color.App_Icon_Grey);
 
         BlePeripheralDeviceConnection.SessionCallback sessionCallback = new BlePeripheralDeviceConnection.SessionCallback() {
             @Override

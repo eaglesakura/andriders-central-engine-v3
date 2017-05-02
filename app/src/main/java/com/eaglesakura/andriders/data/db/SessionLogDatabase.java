@@ -20,8 +20,8 @@ import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.sql.SupportCursor;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.collection.StringFlag;
 import com.eaglesakura.geo.Geohash;
 import com.eaglesakura.geo.GeohashGroup;
@@ -44,12 +44,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
+import static com.eaglesakura.sloth.util.AppSupportUtil.assertNotCanceled;
 
 /**
  * セッションごとのログを保持する
  */
-public class SessionLogDatabase extends DaoDatabase<DaoSession> {
+public class SessionLogDatabase extends DaoDatabase<DaoSession, SessionLogDatabase> {
     static final int SUPPORTED_DATABASE_VERSION = 1;
 
     @Inject(AppStorageProvider.class)
@@ -384,6 +384,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
      */
     public void insert(Iterable<RawCentralData> dataList, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         try {
+            DaoSession session = getSession();
             for (RawCentralData data : dataList) {
                 assertNotCanceled(cancelCallback);
 
@@ -466,7 +467,7 @@ public class SessionLogDatabase extends DaoDatabase<DaoSession> {
 
     @Override
     protected SQLiteOpenHelper createHelper() {
-        return new SQLiteOpenHelper(context, mStorageManager.getExternalDatabasePath("v3_session_log.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
+        return new SQLiteOpenHelper(getContext(), mStorageManager.getExternalDatabasePath("v3_session_log.db").getAbsolutePath(), null, SUPPORTED_DATABASE_VERSION) {
             @Override
             public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

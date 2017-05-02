@@ -18,12 +18,12 @@ import com.eaglesakura.andriders.service.ui.CentralStatusBar;
 import com.eaglesakura.andriders.service.ui.ServiceAnimationController;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.util.SerializeUtil;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.serialize.PublicFieldSerializer;
+import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 import com.squareup.otto.Subscribe;
 
 import android.app.Service;
@@ -40,7 +40,7 @@ public class SessionContext {
     private final Service mService;
 
     @NonNull
-    private final ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
+    private final ServiceLifecycle mLifecycleDelegate = new ServiceLifecycle();
 
     /**
      * 現在走行中のセッションデータ
@@ -117,8 +117,9 @@ public class SessionContext {
 
         mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession, mCommandCallback);
 
-        mLifecycleDelegate.asyncUI((BackgroundTask<CentralSession> task) -> {
-            centralSession.initialize(option, AppSupportUtil.asCancelCallback(task));
+        mLifecycleDelegate.asyncQueue((BackgroundTask<CentralSession> task) -> {
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
+            centralSession.initialize(option, checker);
             return centralSession;
         }).completed((result, task) -> {
             mSession = centralSession;
@@ -209,7 +210,7 @@ public class SessionContext {
         AppLog.broadcast("RawCentralData date[%d]", raw.centralStatus.date);
 
         mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<byte[]> task) -> {
-            return SerializeUtil.serializePublicFieldObject(raw, true);
+            return PublicFieldSerializer.serializeFrom(raw, true);
         }).completed((result, task) -> {
             // 対応アプリに対してブロードキャストを行う
             Intent intent = new Intent();
@@ -231,7 +232,7 @@ public class SessionContext {
                 intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
                 RawCentralData centralData = mSession.getCentralDataManager().getLatestCentralData();
                 if (centralData != null) {
-                    intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, SerializeUtil.serializePublicFieldObject(centralData, true));
+                    intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, PublicFieldSerializer.serializeFrom(centralData, true));
                 }
                 mService.sendBroadcast(intent);
             } catch (Throwable e) {

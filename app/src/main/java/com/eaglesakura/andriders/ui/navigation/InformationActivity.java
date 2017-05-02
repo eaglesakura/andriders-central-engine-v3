@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationActivity;
 import com.eaglesakura.andriders.ui.navigation.info.InformationFragmentMain;
 import com.eaglesakura.andriders.ui.widget.ImageLoaderFragment;
-import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
+import com.eaglesakura.sloth.app.delegate.ContentHolderActivityDelegate;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,13 +24,14 @@ public class InformationActivity extends AppNavigationActivity {
     }
 
     @Override
-    public int getDefaultLayoutId(@NonNull ContentHolderActivityDelegate self) {
+    public int getContentLayout(@NonNull ContentHolderActivityDelegate self) {
         return R.layout.system_activity_with_toolbar;
     }
 
     @NonNull
     @Override
-    public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
+    public Fragment newContentFragment(@NonNull ContentHolderActivityDelegate self) {
         return new InformationFragmentMain();
     }
+
 }

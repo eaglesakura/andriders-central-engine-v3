@@ -6,9 +6,9 @@ import com.eaglesakura.andriders.data.display.DisplayBindManager;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.service.command.ProximityFeedbackManager;
 import com.eaglesakura.andriders.service.command.ProximitySensorManager;
-import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Depend;
 import com.eaglesakura.android.garnet.Provide;
+import com.eaglesakura.sloth.provider.ContextProvider;
 
 /**
  * セッション関連の依存を解決する

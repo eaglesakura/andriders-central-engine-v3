@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders;
 
 import com.eaglesakura.andriders.provider.AppStorageProvider;
-import com.eaglesakura.android.framework.ui.support.SupportActivity;
 import com.eaglesakura.android.garnet.Garnet;
+import com.eaglesakura.sloth.app.SlothActivity;
 import com.eaglesakura.util.Util;
 
 import org.junit.Rule;
@@ -13,7 +13,7 @@ import android.support.test.rule.ActivityTestRule;
 /**
  * シナリオテスト用
  */
-public abstract class AppScenarioTest<ActivityClass extends SupportActivity> extends AppDeviceTestCase {
+public abstract class AppScenarioTest<ActivityClass extends SlothActivity> extends AppDeviceTestCase {
 
     @Rule
     public final ActivityTestRule<ActivityClass> mRule;

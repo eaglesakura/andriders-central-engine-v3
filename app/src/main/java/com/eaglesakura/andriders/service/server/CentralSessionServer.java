@@ -7,7 +7,8 @@ import com.eaglesakura.andriders.serialize.RawSessionInfo;
 import com.eaglesakura.android.service.CommandMap;
 import com.eaglesakura.android.service.CommandServer;
 import com.eaglesakura.android.service.data.Payload;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.UIHandler;
+import com.eaglesakura.serialize.PublicFieldSerializer;
 
 import android.app.Application;
 import android.app.Service;
@@ -70,7 +71,7 @@ public class CentralSessionServer {
     public void notifyOnSessionStarted(SessionInfo info) {
         try {
             RawSessionInfo raw = new RawSessionInfo(info.getSessionId());
-            mImpl.broadcast(CentralServiceCommand.CMD_onSessionStarted, Payload.fromPublicField(raw));
+            mImpl.broadcast(CentralServiceCommand.CMD_onSessionStarted, new Payload(PublicFieldSerializer.serializeFrom(raw, true)));
         } catch (Exception e) {
         }
     }
@@ -78,7 +79,8 @@ public class CentralSessionServer {
     public void notifyOnSessionStopped(SessionInfo info) {
         try {
             RawSessionInfo raw = new RawSessionInfo(info.getSessionId());
-            mImpl.broadcast(CentralServiceCommand.CMD_onSessionStopped, Payload.fromPublicField(raw));
+            Payload payload = new Payload(PublicFieldSerializer.serializeFrom(raw, true));
+            mImpl.broadcast(CentralServiceCommand.CMD_onSessionStopped, payload);
         } catch (Exception e) {
 
         }
@@ -94,7 +96,7 @@ public class CentralSessionServer {
                 return null;
             } else {
                 RawSessionInfo info = new RawSessionInfo(currentSession.getSessionId());
-                return Payload.fromPublicField(info);
+                return new Payload(PublicFieldSerializer.serializeFrom(info, true));
             }
         });
 

@@ -10,7 +10,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <com.eaglesakura.material.widget.TransparentButton
+        <com.eaglesakura.sloth.view.TransparentButton
                 android:id="@+id/Item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -45,6 +45,6 @@
                         android:layout_height="wrap_content"/>
 
             </LinearLayout>
-        </com.eaglesakura.material.widget.TransparentButton>
+        </com.eaglesakura.sloth.view.TransparentButton>
     </LinearLayout>
 </layout>

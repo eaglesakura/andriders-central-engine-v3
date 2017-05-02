@@ -1,9 +1,9 @@
 package com.eaglesakura.andriders.ui.navigation.session;
 
 import com.eaglesakura.andriders.R;
-import com.eaglesakura.android.framework.delegate.lifecycle.LifecycleDelegate;
 import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.material.widget.ToolbarBuilder;
+import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
+import com.eaglesakura.sloth.view.builder.ToolbarBuilder;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -36,10 +36,10 @@ public class MenuController {
         mDrawerLayout = toolbarBuilder.getDrawerLayout();
     }
 
-    public MenuController bind(LifecycleDelegate delegate) {
-        delegate.getCallbackQueue().subscribe(next -> {
+    public MenuController bind(Lifecycle delegate) {
+        delegate.subscribe(next -> {
             switch (next.getState()) {
-                case OnResumed:
+                case OnResume:
                     mNavigationView.setNavigationItemSelectedListener(miItemSelectedImpl);
                     break;
             }

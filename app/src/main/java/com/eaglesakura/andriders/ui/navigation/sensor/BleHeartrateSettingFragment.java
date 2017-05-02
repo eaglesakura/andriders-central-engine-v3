@@ -12,11 +12,11 @@ import com.eaglesakura.android.bluetooth.gatt.BleDeviceConnection;
 import com.eaglesakura.android.bluetooth.gatt.BleGattController;
 import com.eaglesakura.android.bluetooth.gatt.BleHeartrateMonitorCallback;
 import com.eaglesakura.android.bluetooth.gatt.BlePeripheralDeviceConnection;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.margarine.OnClick;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.UIHandler;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 import com.eaglesakura.util.StringUtil;
 import com.eaglesakura.util.Util;
 
@@ -48,15 +48,15 @@ public class BleHeartrateSettingFragment extends BleFitnessSensorSettingFragment
         if (StringUtil.isEmpty(BLE_ADDRESS)) {
             AppDialogBuilder.newAlert(getContext(), R.string.Message_Sensor_BleDeviceNotSelected)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
             return;
         }
 
         View content = LayoutInflater.from(getContext()).inflate(R.layout.sensor_gadgets_ble_heartrate_testing, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Word_Sensor_Testing), content)
                 .positiveButton(R.string.EsMaterial_Dialog_Close, null)
-                .show(mLifecycleDelegate);
-        asyncUI(task -> {
+                .show(getLifecycle());
+        asyncQueue(task -> {
             CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).build();
             BlePeripheralDeviceConnection connection = new BlePeripheralDeviceConnection(getContext(), BLE_ADDRESS);
             connection.alwaysConnect(new BlePeripheralDeviceConnection.SessionCallback() {

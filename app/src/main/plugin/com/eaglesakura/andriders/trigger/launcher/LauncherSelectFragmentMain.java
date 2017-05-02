@@ -5,11 +5,9 @@ import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.IconItemAdapter;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.material.widget.support.SupportRecyclerView;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
 import com.eaglesakura.util.CollectionUtil;
 
 import android.content.ComponentName;
@@ -19,8 +17,13 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +33,14 @@ import java.util.List;
 public class LauncherSelectFragmentMain extends AppFragment {
 
     @Bind(R.id.Content_List)
-    SupportRecyclerView mItems;
+    RecyclerView mItems;
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-        mItems.getRecyclerView().setLayoutManager(new GridLayoutManager(getContext(), 3));
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        mItems.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        return view;
     }
 
     @Override
@@ -46,10 +51,10 @@ public class LauncherSelectFragmentMain extends AppFragment {
 
     @UiThread
     void loadLaunchers() {
-        asyncUI((BackgroundTask<List<ResolveInfo>> task) -> {
+        asyncQueue((BackgroundTask<List<ResolveInfo>> task) -> {
             return listLauncherApplications(getContext());
         }).completed((result, task) -> {
-            mItems.setAdapter(mAdapter, true);
+            mItems.setAdapter(mAdapter);
             mAdapter.getCollection()
                     .addAll(CollectionUtil.asOtherList(result, it -> new IconItemAdapter.LauncherItem(getContext(), it)));
         }).failed((error, task) -> {
@@ -57,7 +62,7 @@ public class LauncherSelectFragmentMain extends AppFragment {
         }).start();
     }
 
-    IconItemAdapter<IconItemAdapter.LauncherItem> mAdapter = new IconItemAdapter<IconItemAdapter.LauncherItem>(mLifecycleDelegate ) {
+    IconItemAdapter<IconItemAdapter.LauncherItem> mAdapter = new IconItemAdapter<IconItemAdapter.LauncherItem>(getLifecycle()) {
         @Override
         protected Context getContext() {
             return getActivity();

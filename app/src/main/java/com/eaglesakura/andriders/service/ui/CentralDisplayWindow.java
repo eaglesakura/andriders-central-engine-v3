@@ -13,15 +13,15 @@ import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.provider.SessionManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ResultCollection;
 import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.android.util.ViewUtil;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.cerberus.ResultCollection;
+import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.eaglesakura.util.Timer;
 import com.eaglesakura.util.Util;
 import com.squareup.otto.Subscribe;
@@ -85,7 +85,7 @@ public class CentralDisplayWindow {
     private DisplayLayoutCollection mCurrentDisplayLayout;
 
     @NonNull
-    private final ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
+    private final ServiceLifecycle mLifecycle = new ServiceLifecycle();
 
     /**
      * 最後にチェックした際のアプリケーションID
@@ -97,7 +97,7 @@ public class CentralDisplayWindow {
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     }
 
-    public static CentralDisplayWindow attach(@NonNull Context context, ServiceLifecycleDelegate lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session) {
+    public static CentralDisplayWindow attach(@NonNull Context context, ServiceLifecycle lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session) {
         CentralDisplayWindow result = new CentralDisplayWindow(context);
         session.getStateBus().bind(lifecycleDelegate, result);
         session.getDataBus().bind(lifecycleDelegate, result);
@@ -166,7 +166,7 @@ public class CentralDisplayWindow {
                 filter.addAction(CentralServiceCommand.ACTION_NOTIFICATION_REQUEST);
                 mContext.registerReceiver(mCentralDisplayEventReceiver, filter);
             }
-            mLifecycleDelegate.onCreate();
+            mLifecycle.onCreate();
         } else if (state.getState() == SessionState.State.Stopping) {
             // ウィンドウを削除する
             mWindowManager.removeView(mDataDisplay);
@@ -179,7 +179,7 @@ public class CentralDisplayWindow {
             // Receiverを削除
             mContext.unregisterReceiver(mCentralDisplayEventReceiver);
 
-            mLifecycleDelegate.onDestroy();
+            mLifecycle.onDestroy();
         }
     }
 
@@ -287,7 +287,7 @@ public class CentralDisplayWindow {
     @UiThread
     void refreshDeviceContext() {
         Timer timer = new Timer();
-        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<ResultCollection> task) -> {
+        mLifecycle.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<ResultCollection> task) -> {
             String currentAppPackage = PackageUtil.getTopApplicationPackage(mContext);
             DisplayLayoutCollection collection = mCurrentDisplayLayout;
             if (!currentAppPackage.equals(mLastTopApplication)) {

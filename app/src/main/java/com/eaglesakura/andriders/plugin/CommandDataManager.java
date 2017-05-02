@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.model.command.CommandSetupData;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.andriders.system.manager.CentralSettingManager;
 import com.eaglesakura.json.JSON;
+import com.eaglesakura.serialize.PublicFieldDeserializer;
 import com.eaglesakura.serialize.error.SerializeException;
 import com.eaglesakura.util.SerializeUtil;
 
@@ -83,7 +84,7 @@ public class CommandDataManager extends CentralSettingManager {
             dbCommand.setPackageName(data.getPackageName());
 
             if (data.getUserIntent() != null) {
-                RawIntent rawIntent = SerializeUtil.deserializePublicFieldObject(RawIntent.class, data.getUserIntent());
+                RawIntent rawIntent = PublicFieldDeserializer.deserializeFrom(RawIntent.class, data.getUserIntent());
                 dbCommand.setIntentJson(JSON.encodeOrNull(rawIntent));
             }
 

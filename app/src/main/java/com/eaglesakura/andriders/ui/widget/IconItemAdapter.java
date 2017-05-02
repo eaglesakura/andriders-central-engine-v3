@@ -1,12 +1,12 @@
 package com.eaglesakura.andriders.ui.widget;
 
 import com.eaglesakura.andriders.databinding.WidgetIconitemRowBinding;
-import com.eaglesakura.android.framework.delegate.lifecycle.LifecycleDelegate;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.android.rx.ResultCollection;
-import com.eaglesakura.material.widget.adapter.CardAdapter;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.cerberus.ResultCollection;
+import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
+import com.eaglesakura.sloth.view.adapter.CardAdapter;
 
 import android.content.Context;
 import android.content.pm.ResolveInfo;
@@ -21,10 +21,10 @@ import android.view.ViewGroup;
  * アイコンを持つアイテムのセレクタ
  */
 public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends CardAdapter<T> {
-    final LifecycleDelegate mLifecycleDelegate;
+    final Lifecycle mLifecycle;
 
-    public IconItemAdapter(LifecycleDelegate delegate) {
-        mLifecycleDelegate = delegate;
+    public IconItemAdapter(Lifecycle delegate) {
+        mLifecycle = delegate;
     }
 
     protected abstract Context getContext();
@@ -44,7 +44,7 @@ public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends Ca
         binding.Icon.setVisibility(View.INVISIBLE);
 
         // 非同期でいアコンを処理する
-        mLifecycleDelegate.async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<ResultCollection> task) -> {
+        mLifecycle.async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<ResultCollection> task) -> {
             return new ResultCollection()
                     .put("main", bind.getItem().getIcon())
                     .put("sub", bind.getItem().getSubIcon())

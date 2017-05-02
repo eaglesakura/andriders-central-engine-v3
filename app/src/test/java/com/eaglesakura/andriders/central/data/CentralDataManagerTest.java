@@ -10,9 +10,10 @@ import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.json.JSON;
+import com.eaglesakura.serialize.PublicFieldDeserializer;
+import com.eaglesakura.serialize.PublicFieldSerializer;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.MathUtil;
-import com.eaglesakura.util.SerializeUtil;
 import com.eaglesakura.util.Timer;
 
 import org.junit.Test;
@@ -200,10 +201,10 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         // シリアライズとデシリアライズが正常である
         {
-            byte[] bytes = SerializeUtil.serializePublicFieldObject(centralData, true);
+            byte[] bytes = PublicFieldSerializer.serializeFrom(centralData, true);
             assertFalse(CollectionUtil.isEmpty(bytes));
 
-            RawCentralData deserialized = SerializeUtil.deserializePublicFieldObject(RawCentralData.class, bytes);
+            RawCentralData deserialized = PublicFieldDeserializer.deserializeFrom(RawCentralData.class, bytes);
             assertEquals(centralData, deserialized);
         }
         {

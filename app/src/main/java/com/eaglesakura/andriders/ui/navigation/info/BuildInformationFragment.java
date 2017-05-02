@@ -11,19 +11,21 @@ import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.ui.widget.AppKeyValueView;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.device.external.Storage;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.license.LicenseViewActivity;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.OnCheckedChanged;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.util.PackageUtil;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.ui.license.LicenseViewActivity;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
 import com.eaglesakura.util.StringUtil;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import java.io.File;
@@ -52,11 +54,11 @@ public class BuildInformationFragment extends AppFragment {
         mServiceSettings = mAppSettings.getCentralSettings();
     }
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-
-        AQuery q = new AQuery(self.getView());
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        AQuery q = new AQuery(view);
         q.id(R.id.Item_AppVersion).getView(AppKeyValueView.class).setValueText(BuildConfig.VERSION_NAME);
         q.id(R.id.Item_BuildDate).getView(AppKeyValueView.class).setValueText(BuildConfig.BUILD_DATE);
         q.id(R.id.Item_AceSDKVersion).getView(AppKeyValueView.class).setValueText(com.eaglesakura.andriders.sdk.BuildConfig.ACE_SDK_VERSION);
@@ -65,6 +67,7 @@ public class BuildInformationFragment extends AppFragment {
         if (mDebugSettings.isDebugEnable()) {
             q.id(R.id.Information_DebugSettings).visible();
         }
+        return view;
     }
 
     @OnClick(R.id.Button_Licenses)
@@ -87,7 +90,7 @@ public class BuildInformationFragment extends AppFragment {
         if (enabled) {
             AppDialogBuilder.newAlert(getContext(), R.string.Message_Debug_Enable)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }
     }
 
@@ -96,7 +99,7 @@ public class BuildInformationFragment extends AppFragment {
      */
     @OnClick(R.id.Debug_Data_Dump)
     void debugClickDataDump() {
-        asyncUI(it -> {
+        asyncQueue(it -> {
             try (ProgressToken token = pushProgress(R.string.Word_Common_DataWrite)) {
                 File dst = new File(Storage.getExternalDataStorage(getActivity()).getPath(), "/debug/" + StringUtil.toString(new Date()));
                 PackageUtil.dumpPackageDataDirectory(getActivity(), dst);

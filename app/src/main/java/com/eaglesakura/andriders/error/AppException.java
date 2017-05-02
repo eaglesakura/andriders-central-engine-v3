@@ -2,7 +2,7 @@ package com.eaglesakura.andriders.error;
 
 import com.eaglesakura.andriders.error.io.AppIOException;
 import com.eaglesakura.andriders.error.plugin.PluginException;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 
 import android.os.RemoteException;
 

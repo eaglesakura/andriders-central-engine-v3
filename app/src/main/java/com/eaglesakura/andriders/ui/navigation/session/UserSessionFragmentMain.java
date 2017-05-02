@@ -7,20 +7,20 @@ import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
-import com.eaglesakura.android.framework.ui.FragmentHolder;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnClick;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.util.ResourceUtil;
-import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.ToolbarBuilder;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.app.FragmentHolder;
+import com.eaglesakura.sloth.app.lifecycle.FragmentLifecycle;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
+import com.eaglesakura.sloth.view.builder.ToolbarBuilder;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.UiThread;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 /**
@@ -28,14 +28,20 @@ import android.view.View;
  */
 @FragmentLayout(R.layout.session_info)
 public class UserSessionFragmentMain extends AppNavigationFragment implements SessionControlBus.Holder {
-    @SuppressWarnings("unused")
     FragmentHolder<NavigationMapFragment> mNavigationMapFragment =
-            FragmentHolder.newInstance(this, NavigationMapFragment.class, R.id.ViewHolder_Navigation).bind(mLifecycleDelegate);
+            FragmentHolder.newInstance(this, NavigationMapFragment.class, R.id.ViewHolder_Navigation);
 
     @Bind(R.id.Button_SessionChange)
     View mSessionButton;
 
-    final SessionControlBus mSessionControlBus = new SessionControlBus().bind(mLifecycleDelegate, this);
+    final SessionControlBus mSessionControlBus = new SessionControlBus();
+
+    @Override
+    protected void onCreateLifecycle(FragmentLifecycle lifecycle) {
+        super.onCreateLifecycle(lifecycle);
+        mNavigationMapFragment.bind(lifecycle);
+        mSessionControlBus.bind(lifecycle, this);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,12 +58,11 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
      *
      */
     void connectSessionCentral() {
-        asyncUI((BackgroundTask<SessionControlConnection> task) -> {
+        asyncQueue((BackgroundTask<SessionControlConnection> task) -> {
             try (ProgressToken token = pushProgress(R.string.Word_Session_ConnectACEs)) {
-                CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
-
+                SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
                 SessionControlConnection connection = new SessionControlConnection(getContext());
-                connection.connect(cancelCallback);
+                connection.connect(checker);
                 return connection;
             }
         }).completed((result, task) -> {
@@ -67,7 +72,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }).start();
     }
 
@@ -107,7 +112,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
                     syncSessionButtonState(true);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .showOnce(mLifecycleDelegate, "sessionUI");
+                .showOnce(getLifecycle(), "sessionUI");
     }
 
     /**
@@ -123,7 +128,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
                     syncSessionButtonState(false);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .showOnce(mLifecycleDelegate, "sessionUI");
+                .showOnce(getLifecycle(), "sessionUI");
     }
 
     @UiThread
@@ -137,11 +142,11 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
         if (sessionStarted) {
             // 既にセッションが開始されている
             toolbarBuilder.title(R.string.Title_Session_Running);
-            mSessionButton.setBackgroundTintList(ColorStateList.valueOf(ResourceUtil.argb(getContext(), R.color.App_Theme_Red)));
+            mSessionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.App_Theme_Red)));
         } else {
             // セッションが開始されていない
             toolbarBuilder.title(R.string.Word_Common_AndridersCentralEngine_Short);
-            mSessionButton.setBackgroundTintList(ColorStateList.valueOf(ResourceUtil.argb(getContext(), R.color.App_Theme_Blue)));
+            mSessionButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), R.color.App_Theme_Blue)));
         }
 
         mSessionButton.setVisibility(View.VISIBLE);

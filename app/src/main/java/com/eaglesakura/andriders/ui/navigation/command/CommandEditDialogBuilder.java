@@ -3,8 +3,8 @@ package com.eaglesakura.andriders.ui.navigation.command;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.lifecycle.UiLifecycleDelegate;
-import com.eaglesakura.material.widget.SpinnerAdapterBuilder;
+import com.eaglesakura.sloth.app.lifecycle.UiLifecycle;
+import com.eaglesakura.sloth.view.builder.SpinnerAdapterBuilder;
 import com.eaglesakura.util.StringUtil;
 
 import android.app.Dialog;
@@ -43,7 +43,7 @@ public class CommandEditDialogBuilder {
     }
 
 
-    public Dialog show(UiLifecycleDelegate lifecycleDelegate) {
+    public Dialog show(UiLifecycle lifecycleDelegate) {
         AlertDialog dialog = mDialogBuilder.show();
         return lifecycleDelegate.addAutoDismiss(dialog);
     }

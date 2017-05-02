@@ -2,8 +2,9 @@ package com.eaglesakura.andriders.ui.navigation.info;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
-import com.eaglesakura.android.framework.ui.FragmentHolder;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.app.FragmentHolder;
+import com.eaglesakura.sloth.app.lifecycle.FragmentLifecycle;
 
 
 /**
@@ -16,7 +17,14 @@ import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 @FragmentLayout(R.layout.system_fragment_stack)
 public class InformationFragmentMain extends AppFragment {
 
-    FragmentHolder<BuildInformationFragment> mBuildInformationFragment = FragmentHolder.newInstance(this, BuildInformationFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+    FragmentHolder<BuildInformationFragment> mBuildInformationFragment = FragmentHolder.newInstance(this, BuildInformationFragment.class, R.id.Content_List_Root);
 
-    FragmentHolder<DeveloperInfoFragment> mDeveloperInfoFragment = FragmentHolder.newInstance(this, DeveloperInfoFragment.class, R.id.Content_List_Root).bind(mLifecycleDelegate);
+    FragmentHolder<DeveloperInfoFragment> mDeveloperInfoFragment = FragmentHolder.newInstance(this, DeveloperInfoFragment.class, R.id.Content_List_Root);
+
+    @Override
+    protected void onCreateLifecycle(FragmentLifecycle lifecycle) {
+        super.onCreateLifecycle(lifecycle);
+        mBuildInformationFragment.bind(lifecycle);
+        mDeveloperInfoFragment.bind(lifecycle);
+    }
 }

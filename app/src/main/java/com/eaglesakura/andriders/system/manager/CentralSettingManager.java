@@ -39,6 +39,6 @@ public abstract class CentralSettingManager {
      * DBを書き込み可能な状態で開く
      */
     protected CentralSettingDatabase open() {
-        return mCentralDatabase.openWritable(CentralSettingDatabase.class);
+        return mCentralDatabase.open(0x00);
     }
 }

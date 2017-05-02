@@ -14,10 +14,11 @@ import com.eaglesakura.andriders.error.io.AppDatabaseException;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
+import com.eaglesakura.android.db.DaoDatabase;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.Action1;
 import com.eaglesakura.lambda.CancelCallback;
@@ -61,11 +62,11 @@ public class CentralLogManager {
     }
 
     SessionLogDatabase openReadOnly() {
-        return mSessionLogDatabaseRead.openReadOnly(SessionLogDatabase.class);
+        return mSessionLogDatabaseRead.open(DaoDatabase.FLAG_READ_ONLY);
     }
 
     SessionLogDatabase openWrite() {
-        return mSessionLogDatabaseRead.openReadOnly(SessionLogDatabase.class);
+        return mSessionLogDatabaseRead.open(0x00);
     }
 
     /**

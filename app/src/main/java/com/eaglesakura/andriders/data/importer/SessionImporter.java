@@ -3,7 +3,7 @@ package com.eaglesakura.andriders.data.importer;
 import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.error.AppException;
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.lambda.CancelCallback;
 
 import android.support.annotation.NonNull;

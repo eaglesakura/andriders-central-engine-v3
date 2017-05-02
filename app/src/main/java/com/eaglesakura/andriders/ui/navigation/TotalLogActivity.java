@@ -6,10 +6,10 @@ import com.eaglesakura.andriders.ui.navigation.base.AppNavigationActivity;
 import com.eaglesakura.andriders.ui.navigation.log.SessionModifyListener;
 import com.eaglesakura.andriders.ui.navigation.log.TotalLogFragmentMain;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
-import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
-import com.eaglesakura.android.framework.util.FragmentUtil;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.material.widget.support.SupportProgressFragment;
+import com.eaglesakura.android.util.FragmentUtil;
+import com.eaglesakura.sloth.app.delegate.ContentHolderActivityDelegate;
+import com.eaglesakura.sloth.ui.progress.SupportProgressFragment;
 import com.eaglesakura.util.CollectionUtil;
 
 import android.content.Intent;
@@ -34,9 +34,14 @@ public class TotalLogActivity extends AppNavigationActivity implements TotalLogF
         }
     }
 
+    @Override
+    public int getContentLayout(@NonNull ContentHolderActivityDelegate self) {
+        return R.layout.system_activity_with_toolbar;
+    }
+
     @NonNull
     @Override
-    public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
+    public Fragment newContentFragment(@NonNull ContentHolderActivityDelegate self) {
         return new TotalLogFragmentMain();
     }
 
@@ -50,7 +55,7 @@ public class TotalLogActivity extends AppNavigationActivity implements TotalLogF
         AppDialogBuilder.newError(this, error)
                 .positiveButton(R.string.Word_Common_OK, () -> finish())
                 .cancelable(false)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     @Override

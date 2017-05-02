@@ -7,10 +7,10 @@ import com.eaglesakura.andriders.ui.navigation.base.AppNavigationActivity;
 import com.eaglesakura.andriders.ui.navigation.log.DailyLogFragmentMain;
 import com.eaglesakura.andriders.ui.navigation.log.LogSummaryBinding;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
-import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.saver.SaveType;
-import com.eaglesakura.material.widget.support.SupportProgressFragment;
+import com.eaglesakura.sloth.app.delegate.ContentHolderActivityDelegate;
+import com.eaglesakura.sloth.ui.progress.SupportProgressFragment;
 import com.eaglesakura.util.CollectionUtil;
 
 import android.content.Context;
@@ -66,9 +66,14 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
         getSupportActionBar().setTitle(LogSummaryBinding.DEFAULT_DAY_FORMATTER.format(new Date(getSessionId())));
     }
 
+    @Override
+    public int getContentLayout(@NonNull ContentHolderActivityDelegate self) {
+        return R.layout.system_activity_with_toolbar;
+    }
+
     @NonNull
     @Override
-    public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
+    public Fragment newContentFragment(@NonNull ContentHolderActivityDelegate self) {
         DailyLogFragmentMain fragmentMain = new DailyLogFragmentMain();
         fragmentMain.setSampleSessionId(getSessionId());
         return fragmentMain;
@@ -88,7 +93,7 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
         AppDialogBuilder.newInformation(this, R.string.Message_Log_AllSessionDeleted)
                 .positiveButton(R.string.Word_Common_OK, () -> finish())
                 .cancelable(false)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     @Override
@@ -96,7 +101,7 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
         AppDialogBuilder.newError(this, error)
                 .positiveButton(R.string.Word_Common_OK, () -> finish())
                 .cancelable(false)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     @Override

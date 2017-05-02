@@ -15,18 +15,22 @@ import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.FragmentPagerTitle;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.util.ResourceUtil;
+import com.eaglesakura.android.util.DrawableUtil;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.ui.pager.FragmentPagerTitle;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.AppCompatImageView;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
@@ -36,6 +40,7 @@ import java.util.List;
 /**
  * 近接コマンド設定クラス
  */
+@FragmentLayout(R.layout.command_setup_proximity)
 public class ProximityCommandFragment extends AppFragment implements FragmentPagerTitle {
 
     @Bind(R.id.Command_Proximity_DisplayLink)
@@ -52,13 +57,10 @@ public class ProximityCommandFragment extends AppFragment implements FragmentPag
     @Inject(AppContextProvider.class)
     AppSettings mSettings;
 
-    public ProximityCommandFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.command_setup_proximity);
-    }
-
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // ディスプレイリンクの設定
         mLinkDisplaySwitch.setChecked(mSettings.getCentralSettings().isProximityCommandScreenLink());
@@ -68,12 +70,14 @@ public class ProximityCommandFragment extends AppFragment implements FragmentPag
             mSettings.getCentralSettings().commit();
         });
 
-        AQuery q = new AQuery(self.getView());
+        AQuery q = new AQuery(view);
         mCommandViewList.add(q.id(R.id.Command_Proximity_Index0).getView(ViewGroup.class));
         mCommandViewList.add(q.id(R.id.Command_Proximity_Index1).getView(ViewGroup.class));
         mCommandViewList.add(q.id(R.id.Command_Proximity_Index2).getView(ViewGroup.class));
         mCommandViewList.add(q.id(R.id.Command_Proximity_Index3).getView(ViewGroup.class));
         updateProximityUI();
+
+        return view;
     }
 
     @Override
@@ -110,7 +114,7 @@ public class ProximityCommandFragment extends AppFragment implements FragmentPag
                         if (data != null) {
                             it.setImageBitmap(data.decodeIcon());
                         } else {
-                            it.setImageDrawable(ResourceUtil.vectorDrawable(getContext(), R.drawable.ic_common_none, R.color.App_Icon_Grey));
+                            it.setImageDrawable(DrawableUtil.getVectorDrawable(getContext(), R.drawable.ic_common_none, R.color.App_Icon_Grey));
                         }
                     });
             ++index;
@@ -127,7 +131,7 @@ public class ProximityCommandFragment extends AppFragment implements FragmentPag
                 .negativeButton("上書", () -> {
                     startCommandSetup(data.getKey());
                 })
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     @UiThread

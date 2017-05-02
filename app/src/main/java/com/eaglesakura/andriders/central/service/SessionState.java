@@ -1,6 +1,6 @@
 package com.eaglesakura.andriders.central.service;
 
-import com.eaglesakura.android.framework.delegate.task.DataBus;
+import com.eaglesakura.sloth.data.DataBus;
 
 import android.support.annotation.Nullable;
 

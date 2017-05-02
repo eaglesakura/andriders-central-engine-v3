@@ -5,8 +5,8 @@ import com.eaglesakura.andriders.ui.navigation.base.AppNavigationActivity;
 import com.eaglesakura.andriders.ui.navigation.display.DisplaySettingFragmentMain;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
-import com.eaglesakura.material.widget.support.SupportProgressFragment;
+import com.eaglesakura.sloth.app.delegate.ContentHolderActivityDelegate;
+import com.eaglesakura.sloth.ui.progress.SupportProgressFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,9 +26,14 @@ public class DisplayLayoutSettingActivity extends AppNavigationActivity implemen
         }
     }
 
+    @Override
+    public int getContentLayout(@NonNull ContentHolderActivityDelegate self) {
+        return R.layout.system_activity_with_toolbar;
+    }
+
     @NonNull
     @Override
-    public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
+    public Fragment newContentFragment(@NonNull ContentHolderActivityDelegate self) {
         return new DisplaySettingFragmentMain();
     }
 
@@ -40,7 +45,7 @@ public class DisplayLayoutSettingActivity extends AppNavigationActivity implemen
                     startActivity(intent);
                 })
                 .dismissed(() -> finish())
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     @Override
@@ -49,6 +54,6 @@ public class DisplayLayoutSettingActivity extends AppNavigationActivity implemen
         AppDialogBuilder.newError(this, error)
                 .positiveButton(R.string.EsMaterial_Dialog_Close, () -> finish())
                 .cancelable(false)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 }

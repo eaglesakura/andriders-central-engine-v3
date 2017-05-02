@@ -5,13 +5,13 @@ import com.eaglesakura.andriders.ui.navigation.base.AppNavigationActivity;
 import com.eaglesakura.andriders.ui.navigation.session.MenuController;
 import com.eaglesakura.andriders.ui.navigation.session.UserSessionFragmentMain;
 import com.eaglesakura.andriders.ui.widget.ImageLoaderFragment;
-import com.eaglesakura.android.framework.delegate.activity.ContentHolderActivityDelegate;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.MargarineKnife;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
-import com.eaglesakura.material.widget.ToolbarBuilder;
-import com.eaglesakura.material.widget.support.SupportProgressFragment;
+import com.eaglesakura.sloth.app.delegate.ContentHolderActivityDelegate;
+import com.eaglesakura.sloth.ui.progress.SupportProgressFragment;
+import com.eaglesakura.sloth.view.builder.ToolbarBuilder;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -60,7 +60,7 @@ public class UserSessionActivity extends AppNavigationActivity {
         mDrawerToggle = toolbarBuilder.getDrawerToggle();
 
         // メニューを構築する
-        mMenuController = new MenuController(toolbarBuilder, mMenuCallbackImpl).bind(mLifecycleDelegate);
+        mMenuController = new MenuController(toolbarBuilder, mMenuCallbackImpl).bind(getLifecycle());
     }
 
     @Override
@@ -78,13 +78,13 @@ public class UserSessionActivity extends AppNavigationActivity {
     }
 
     @Override
-    public int getDefaultLayoutId(@NonNull ContentHolderActivityDelegate self) {
+    public int getContentLayout(@NonNull ContentHolderActivityDelegate self) {
         return R.layout.session_info_activity;
     }
 
     @NonNull
     @Override
-    public Fragment newDefaultContentFragment(@NonNull ContentHolderActivityDelegate self) {
+    public Fragment newContentFragment(@NonNull ContentHolderActivityDelegate self) {
         return new UserSessionFragmentMain();
     }
 

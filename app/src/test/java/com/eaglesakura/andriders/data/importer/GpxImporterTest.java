@@ -19,13 +19,12 @@ import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.property.PropertyStore;
 import com.eaglesakura.collection.DataCollection;
+import com.eaglesakura.sloth.db.property.PropertyStore;
 import com.eaglesakura.thread.Holder;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.thread.LongHolder;
 import com.eaglesakura.util.DateUtil;
-import com.eaglesakura.util.LogUtil;
 
 import org.junit.Test;
 
@@ -41,7 +40,6 @@ public class GpxImporterTest extends AppUnitTestCase {
     @Override
     public void onSetup() {
         super.onSetup();
-        LogUtil.setLogEnable("App.DB", false);
     }
 
     @Test

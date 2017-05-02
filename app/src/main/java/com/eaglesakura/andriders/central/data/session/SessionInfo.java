@@ -7,12 +7,12 @@ import com.eaglesakura.andriders.gen.prop.UserProfiles;
 import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.property.ImmutableTextPropertyStore;
-import com.eaglesakura.android.property.PropertyStore;
-import com.eaglesakura.android.property.model.PropertySource;
 import com.eaglesakura.json.JSON;
+import com.eaglesakura.sloth.db.property.ImmutableTextPropertyStore;
+import com.eaglesakura.sloth.db.property.PropertyStore;
+import com.eaglesakura.sloth.db.property.model.PropertySource;
+import com.eaglesakura.sloth.util.AppSupportUtil;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

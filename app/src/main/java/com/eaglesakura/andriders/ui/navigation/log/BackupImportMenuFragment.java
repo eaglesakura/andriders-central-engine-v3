@@ -10,18 +10,18 @@ import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.ui.progress.DialogToken;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentMenu;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.OnMenuClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.UIHandler;
+import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.collection.DataCollection;
-import com.eaglesakura.material.widget.DialogBuilder;
-import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.annotation.FragmentMenu;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.ui.progress.DialogToken;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
+import com.eaglesakura.sloth.view.builder.DialogBuilder;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -58,7 +58,7 @@ public class BackupImportMenuFragment extends AppFragment {
                     startActivityForResult(intent, AppConstants.REQUEST_PICK_BACKUP_FILE);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     @OnActivityResult(AppConstants.REQUEST_PICK_BACKUP_FILE)
@@ -81,8 +81,8 @@ public class BackupImportMenuFragment extends AppFragment {
                 .cancelable(true)
                 .canceledOnTouchOutside(false)
                 .positiveButton(R.string.EsMaterial_Dialog_Cancel, null);
-        DialogToken token = DialogBuilder.showAsToken(builder, mLifecycleDelegate);
-        asyncUI((BackgroundTask<DataCollection<SessionHeader>> task) -> {
+        DialogToken token = DialogBuilder.showAsToken(builder, getLifecycle());
+        asyncQueue((BackgroundTask<DataCollection<SessionHeader>> task) -> {
             try (DialogToken _token1 = token;
                  ProgressToken _token2 = pushProgress(R.string.Word_Common_Working)
             ) {
@@ -106,7 +106,7 @@ public class BackupImportMenuFragment extends AppFragment {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }).start();
     }
 

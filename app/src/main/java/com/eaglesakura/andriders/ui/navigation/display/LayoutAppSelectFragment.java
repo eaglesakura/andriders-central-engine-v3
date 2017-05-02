@@ -6,19 +6,19 @@ import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.ui.widget.IconItemAdapter;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.material.widget.support.SupportRecyclerView;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
 import com.squareup.otto.Subscribe;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -35,9 +35,10 @@ public class LayoutAppSelectFragment extends AppFragment {
 
     @OnClick(R.id.Button_AppSelect)
     void clickAppSelect() {
-        asyncUI(task -> {
+        asyncQueue(task -> {
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
             try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
-                mDisplayLayoutController.loadTargetApplications(AppSupportUtil.asCancelCallback(task));
+                mDisplayLayoutController.loadTargetApplications(checker);
                 return this;
             }
         }).completed((result, task) -> {
@@ -46,7 +47,7 @@ public class LayoutAppSelectFragment extends AppFragment {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }).start();
 
     }
@@ -59,10 +60,10 @@ public class LayoutAppSelectFragment extends AppFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_appselect_dialog, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Command_ChooseApp), view)
                 .fullScreen(true)
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
 
-        SupportRecyclerView supportRecyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof SupportRecyclerView));
-        IconItemAdapter<DisplayLayoutApplication> adapter = new IconItemAdapter<DisplayLayoutApplication>(mLifecycleDelegate) {
+        RecyclerView supportRecyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof RecyclerView));
+        IconItemAdapter<DisplayLayoutApplication> adapter = new IconItemAdapter<DisplayLayoutApplication>(getLifecycle()) {
             @Override
             protected Context getContext() {
                 return getActivity();
@@ -76,8 +77,8 @@ public class LayoutAppSelectFragment extends AppFragment {
         };
         adapter.getCollection().addAll(mDisplayLayoutController.listSortedApplications());
 
-        supportRecyclerView.getRecyclerView().setLayoutManager(new GridLayoutManager(getContext(), 3));
-        supportRecyclerView.setAdapter(adapter, true);
+        supportRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        supportRecyclerView.setAdapter(adapter);
     }
 
     /**

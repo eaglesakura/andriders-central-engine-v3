@@ -3,9 +3,9 @@ package com.eaglesakura.andriders.service.ui;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
-import com.eaglesakura.android.thread.loop.HandlerLoopController;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.HandlerLoopController;
+import com.eaglesakura.android.thread.UIHandler;
+import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.squareup.otto.Subscribe;
 
 import android.support.annotation.NonNull;
@@ -21,7 +21,7 @@ public class ServiceAnimationController {
         mCallback = callback;
     }
 
-    public static ServiceAnimationController attach(ServiceLifecycleDelegate lifecycleDelegate, @NonNull CentralSession session, @NonNull Callback callback) {
+    public static ServiceAnimationController attach(ServiceLifecycle lifecycleDelegate, @NonNull CentralSession session, @NonNull Callback callback) {
         ServiceAnimationController result = new ServiceAnimationController(callback);
         session.getStateBus().bind(lifecycleDelegate, result);
         return result;

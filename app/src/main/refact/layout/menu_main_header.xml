@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-    <com.eaglesakura.material.widget.TransparentButton
+    <com.eaglesakura.sloth.view.TransparentButton
             style="@style/EsMaterial.Widget"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -32,6 +32,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="andriders.blog.jp"/>
-    </com.eaglesakura.material.widget.TransparentButton>
+    </com.eaglesakura.sloth.view.TransparentButton>
 
 </LinearLayout>

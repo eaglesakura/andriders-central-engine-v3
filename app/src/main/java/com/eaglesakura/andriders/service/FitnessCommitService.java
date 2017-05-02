@@ -6,12 +6,12 @@ import com.eaglesakura.andriders.google.GoogleFitUploader;
 import com.eaglesakura.andriders.ui.navigation.log.LogSummaryBinding;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.UIHandler;
 import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.RemoteViewsBuilder;
-import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
-import com.eaglesakura.material.widget.support.SupportRemoteViews;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.view.SupportRemoteViews;
+import com.eaglesakura.sloth.view.builder.RemoteViewsBuilder;
 
 import android.app.IntentService;
 import android.app.Notification;

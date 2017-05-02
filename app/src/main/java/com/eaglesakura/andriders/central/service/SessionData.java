@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.central.service;
 
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.android.framework.delegate.task.DataBus;
+import com.eaglesakura.sloth.data.DataBus;
 
 /**
  * 最新のセッション情報

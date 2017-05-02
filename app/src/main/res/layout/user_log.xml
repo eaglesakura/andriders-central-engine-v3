@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         android:background="?attr/esmWindowBackgroundColorDark"
         android:orientation="vertical">
-    <com.eaglesakura.material.widget.support.SupportRecyclerView
+    <android.support.v7.widget.RecyclerView
             app:esmProgressVisible="false"
             app:esmEmptyText="走行記録がありません"
             android:id="@+id/Content.List"

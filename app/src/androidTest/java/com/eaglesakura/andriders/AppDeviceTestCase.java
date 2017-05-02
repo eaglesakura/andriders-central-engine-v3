@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.provider.DeviceTestAppStorageProvider;
 import com.eaglesakura.android.devicetest.DeviceTestCase;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.UIHandler;
 import com.eaglesakura.lambda.Action0;
 
 public abstract class AppDeviceTestCase extends DeviceTestCase<AceApplication> {

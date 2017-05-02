@@ -10,7 +10,6 @@ import com.google.android.gms.fitness.result.DataReadResult;
 
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.AndroidThreadUtil;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.DateUtil;
@@ -28,7 +27,7 @@ public class GoogleApiUtil {
      * <br>
      * 取得できなかったら負の値を返す
      */
-    public static float getUserWeightFromFit(GoogleApiClient client, CancelCallback cancelCallback) throws TaskCanceledException {
+    public static float getUserWeightFromFit(GoogleApiClient client, CancelCallback cancelCallback) throws InterruptedException {
         AndroidThreadUtil.assertBackgroundThread();
 
         DataReadRequest request = new DataReadRequest.Builder()

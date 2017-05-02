@@ -28,7 +28,7 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.lambda.Action1;
 import com.eaglesakura.lambda.CancelCallback;
 
@@ -90,6 +90,8 @@ public class GoogleFitUploader {
             return sessionHeaderCollection.size();
         } catch (IOException e) {
             throw new AppIOException(e);
+        } catch (InterruptedException e) {
+            throw new TaskCanceledException(e);
         }
     }
 
@@ -217,9 +219,13 @@ public class GoogleFitUploader {
                 sessionRequest.setSession(fitSession.build());
 
 
-                Status status = PlayServiceUtil.await(Fitness.SessionsApi.insertSession(mConnection.getClient(), sessionRequest.build()), cancelCallback);
-                if (!status.isSuccess()) {
-                    throw new AppIOException("Session upload failed.");
+                try {
+                    Status status = PlayServiceUtil.await(Fitness.SessionsApi.insertSession(mConnection.getClient(), sessionRequest.build()), cancelCallback);
+                    if (!status.isSuccess()) {
+                        throw new AppIOException("Session upload failed.");
+                    }
+                } catch (InterruptedException e) {
+                    throw new TaskCanceledException(e);
                 }
             }
 
@@ -254,11 +260,15 @@ public class GoogleFitUploader {
                 return;
             }
             // 全データをコミット
-            Status status = PlayServiceUtil.await(Fitness.HistoryApi.insertData(mConnection.getClient(), dataSet), cancelCallback);
-            if (status.isSuccess()) {
-                AppLog.system("Success HistoryApi.insertData(%s) Points(%d)", type, dataSet.getDataPoints().size());
-            } else {
-                throw new AppIOException(type + " Upload filed");
+            try {
+                Status status = PlayServiceUtil.await(Fitness.HistoryApi.insertData(mConnection.getClient(), dataSet), cancelCallback);
+                if (status.isSuccess()) {
+                    AppLog.system("Success HistoryApi.insertData(%s) Points(%d)", type, dataSet.getDataPoints().size());
+                } else {
+                    throw new AppIOException(type + " Upload filed");
+                }
+            } catch (InterruptedException e) {
+                throw new TaskCanceledException(e);
             }
         }
     }

@@ -8,8 +8,7 @@ import com.eaglesakura.andriders.model.plugin.ActivePluginCollection;
 import com.eaglesakura.andriders.plugin.internal.PluginServerImpl;
 import com.eaglesakura.andriders.system.manager.CentralSettingManager;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.lambda.CancelCallback;
 
 import android.content.Context;
@@ -20,6 +19,8 @@ import android.content.pm.ResolveInfo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static com.eaglesakura.sloth.util.AppSupportUtil.assertNotCanceled;
 
 /**
  * プラグイン情報のコントロールを行う
@@ -108,7 +109,7 @@ public class PluginDataManager extends CentralSettingManager {
      */
     public CentralPluginCollection listPlugins(PluginListingMode mode, CancelCallback cancelCallback) throws TaskCanceledException, AppException {
         List<ResolveInfo> resolveInfoList = listPluginServices(mode == PluginListingMode.Active);
-        AppSupportUtil.assertNotCanceled(cancelCallback);
+        assertNotCanceled(cancelCallback);
 
         List<CentralPlugin> plugins = new ArrayList<>();
 

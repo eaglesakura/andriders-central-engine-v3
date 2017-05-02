@@ -5,8 +5,8 @@ import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
 import com.eaglesakura.andriders.service.server.CentralSessionServer;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.util.ContextUtil;
+import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.squareup.otto.Subscribe;
 
 import org.greenrobot.greendao.annotation.NotNull;
@@ -15,6 +15,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
@@ -35,7 +36,8 @@ public class CentralSessionService extends Service {
     @NotNull
     final CentralSessionServer mSessionServer;
 
-    ServiceLifecycleDelegate mServiceLifecycleDelegate = new ServiceLifecycleDelegate();
+    @NonNull
+    final ServiceLifecycle mLifecycle = new ServiceLifecycle();
 
     public CentralSessionService() {
         mSessionServer = new CentralSessionServer(this, mSessionServerCallback);
@@ -50,7 +52,7 @@ public class CentralSessionService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mServiceLifecycleDelegate.onCreate();
+        mLifecycle.onCreate();
     }
 
 
@@ -74,7 +76,7 @@ public class CentralSessionService extends Service {
 
     @Override
     public void onDestroy() {
-        mServiceLifecycleDelegate.onDestroy();
+        mLifecycle.onDestroy();
         stopCurrentSession(null);
         super.onDestroy();
     }

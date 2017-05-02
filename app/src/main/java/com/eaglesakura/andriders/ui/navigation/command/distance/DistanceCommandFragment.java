@@ -10,13 +10,14 @@ import com.eaglesakura.andriders.ui.navigation.command.CommandEditDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.FragmentPagerTitle;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.material.widget.SnackbarBuilder;
-import com.eaglesakura.material.widget.adapter.CardAdapter;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.ui.pager.FragmentPagerTitle;
+import com.eaglesakura.sloth.view.adapter.CardAdapter;
+import com.eaglesakura.sloth.view.builder.SnackbarBuilder;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.StringUtil;
 
@@ -31,15 +32,12 @@ import android.view.ViewGroup;
 /**
  * タイマーコマンドのセットアップ
  */
+@FragmentLayout(R.layout.command_setup_list)
 public class DistanceCommandFragment extends CommandBaseFragment implements FragmentPagerTitle {
     final int REQUEST_COMMAND_SETUP = AppConstants.REQUEST_COMMAND_SETUP_DISTANCE;
 
     @BindStringArray(R.array.Message_Command_Distance)
     private String[] mInfoFormats;
-
-    public DistanceCommandFragment() {
-        mFragmentDelegate.setLayoutId(R.layout.command_setup_list);
-    }
 
     @Override
     protected int getCommandCategory() {
@@ -84,7 +82,7 @@ public class DistanceCommandFragment extends CommandBaseFragment implements Frag
                     CommandEditDialogBuilder.from(getContext(), item)
                             .commit(mCommandCommitListener)
                             .delete(mCommandDeleteListener)
-                            .show(mLifecycleDelegate);
+                            .show(getLifecycle());
                 });
             }
         };

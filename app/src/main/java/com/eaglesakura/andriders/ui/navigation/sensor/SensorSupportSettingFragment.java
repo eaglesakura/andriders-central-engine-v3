@@ -5,13 +5,17 @@ import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.margarine.OnCheckedChanged;
-import com.eaglesakura.material.widget.SpinnerAdapterBuilder;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.view.builder.SpinnerAdapterBuilder;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Spinner;
 
 /**
@@ -29,11 +33,11 @@ public class SensorSupportSettingFragment extends AppFragment {
     @Bind(R.id.Selector_GpsAccuracy)
     Spinner mGpsAccuracy;
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-
-        AQuery q = new AQuery(self.getView());
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        AQuery q = new AQuery(view);
         q.id(R.id.Button_KillWiFi).checked(mAppSettings.getCentralSettings().isWifiDisable());
         q.id(R.id.Button_GpsSpeedEnable).checked(mAppSettings.getCentralSettings().isGpsSpeedEnable());
 
@@ -47,6 +51,7 @@ public class SensorSupportSettingFragment extends AppFragment {
                     mAppSettings.commit();
                 })
                 .build();
+        return view;
     }
 
     /**

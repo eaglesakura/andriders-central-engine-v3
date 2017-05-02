@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.ui.navigation.session;
 
 import com.eaglesakura.andriders.plugin.connection.SessionControlConnection;
-import com.eaglesakura.android.framework.delegate.task.DataBus;
+import com.eaglesakura.sloth.data.DataBus;
 
 /**
  * セッション制御を保持する

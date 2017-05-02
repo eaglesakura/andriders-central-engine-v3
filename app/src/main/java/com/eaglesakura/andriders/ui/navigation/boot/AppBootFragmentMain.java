@@ -18,19 +18,20 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
 import com.eaglesakura.android.firebase.auth.FirebaseAuthorizeManager;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.gms.error.SignInRequireException;
 import com.eaglesakura.android.gms.util.PlayServiceUtil;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.android.util.ContextUtil;
+import com.eaglesakura.android.util.FragmentUtil;
 import com.eaglesakura.android.util.PermissionUtil;
-import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 import com.eaglesakura.util.Timer;
 
 import android.content.Intent;
@@ -43,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * アプリを起動し、必要なハンドリングを行う
  */
+@FragmentLayout(R.layout.boot)
 public class AppBootFragmentMain extends AppNavigationFragment {
 
     /**
@@ -93,11 +95,6 @@ public class AppBootFragmentMain extends AppNavigationFragment {
      */
     boolean mBootCompleted;
 
-
-    public AppBootFragmentMain() {
-        mFragmentDelegate.setLayoutId(R.layout.boot);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -107,7 +104,8 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             // パーミッションを取得する
             if (mPermissionRequestCount < 2) {
                 ++mPermissionRequestCount;
-                requestRuntimePermission(REQUIRE_PERMISSIONS);
+                // FIXME: Update Runtime permission.
+//                requestRuntimePermission(REQUIRE_PERMISSIONS);
             } else {
                 // 警告ダイアログを出す
                 onFailedUserPermission();
@@ -138,10 +136,10 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             return;
         }
 
-        async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, task -> {
+        getLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, task -> {
             task.throwIfCanceled();
 
-            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
 
             // 所定のパーミッションを得るまで起動させない
             while (!PermissionUtil.isRuntimePermissionGranted(getContext(), REQUIRE_PERMISSIONS)) {
@@ -165,21 +163,21 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             task.throwIfCanceled();
 
             // アカウントログインチェック
-            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, cancelCallback)) {
+            try (PlayServiceConnection connection = PlayServiceConnection.newInstance(AppUtil.newFullPermissionClient(getActivity()), GoogleApiClient.SIGN_IN_MODE_OPTIONAL, checker)) {
                 if (!connection.isConnectionSuccess(Auth.GOOGLE_SIGN_IN_API, Fitness.SESSIONS_API, Fitness.HISTORY_API)) {
                     task.throwIfCanceled();
                     // 必要なAPIを満たしていない場合、ログインを行わせる
-                    PlayServiceUtil.await(Auth.GoogleSignInApi.revokeAccess(connection.getClient()), cancelCallback);
+                    PlayServiceUtil.await(Auth.GoogleSignInApi.revokeAccess(connection.getClient()), checker);
                     throw new SignInRequireException(connection.newSignInIntent());
                 }
 
                 // Firebaseログイン
                 if (mSignInAccount != null) {
-                    mFirebaseAuthorizeManager.signIn(mSignInAccount, cancelCallback);
+                    mFirebaseAuthorizeManager.signIn(mSignInAccount, checker);
                     mSignInAccount = null;
                 }
 
-                if (mFirebaseAuthorizeManager.await(cancelCallback) == null) {
+                if (mFirebaseAuthorizeManager.await(checker) == null) {
                     // Firebaseログインが必要
                     throw new SignInRequireException(connection.newSignInIntent());
                 }
@@ -195,8 +193,8 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             // Configを取得する
             Timer timer = new Timer();
             try {
-                CancelCallback callback = AppSupportUtil.asCancelCallback(task, 1000 * 10, TimeUnit.MILLISECONDS);
-                mAppSettings.getConfig().fetch(callback);
+                SupportCancelCallbackBuilder.CancelChecker fetchCancelChecker = SupportCancelCallbackBuilder.from(task).orTimeout(1000 * 10, TimeUnit.MILLISECONDS).build();
+                mAppSettings.getConfig().fetch(fetchCancelChecker);
             } catch (Throwable e) {
                 if (mAppSettings.getConfig().requireFetch()) {
                     // Fetchに失敗し、かつコンフィグの同期も行われていない初回は起動に失敗しなければならない
@@ -251,7 +249,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
         }
 
         // Activityを起動する
-        for (Listener listener : listInterfaces(Listener.class)) {
+        for (Listener listener : FragmentUtil.listInterfaces(getFragmentManager(), Listener.class)) {
             listener.onBootCompleted(this);
         }
         mBootCompleted = true;
@@ -265,7 +263,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
         AppDialogBuilder.newAlert(getContext(), "アプリの実行に必要な権限を得られませんでした。\nアプリの権限を確認し、再起動してください。")
                 .cancelable(false)
                 .positiveButton("権限を確認", () -> startActivity(ContextUtil.getAppSettingIntent(getActivity())))
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     /**
@@ -275,7 +273,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
         AppDialogBuilder.newAlert(getContext(), "サイコン表示を行うため、「他のアプリの上に重ねて表示」を許可してください。")
                 .cancelable(false)
                 .positiveButton("設定", () -> startActivity(ContextUtil.getAppOverlaySettingIntent(getActivity())))
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     /**
@@ -285,7 +283,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
         AppDialogBuilder.newAlert(getContext(), "サイコン表示切り替えを有効化するため、「使用履歴へアクセス」を許可してください。")
                 .cancelable(false)
                 .positiveButton("設定", () -> startActivity(ContextUtil.getUsageStatusAcesss(getActivity())))
-                .show(mLifecycleDelegate);
+                .show(getLifecycle());
     }
 
     @OnActivityResult(AppConstants.REQUEST_GOOGLE_AUTH)

@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.service.ui;
 
 import com.eaglesakura.andriders.central.service.CentralSession;
-import com.eaglesakura.android.framework.delegate.task.DataBus;
+import com.eaglesakura.sloth.data.DataBus;
 
 import android.support.annotation.Nullable;
 

@@ -8,20 +8,23 @@ import com.eaglesakura.andriders.provider.AppContextProvider;
 import com.eaglesakura.andriders.system.context.AppSettings;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
-import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
+import com.eaglesakura.android.util.FragmentUtil;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.concurrent.TimeUnit;
@@ -41,14 +44,16 @@ public class DeveloperInfoFragment extends AppFragment {
     @NonNull
     AppImageLoader mImageLoader;
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        mImageLoader = findInterfaceOrThrow(AppImageLoader.Holder.class).getImageLoader();
+        mImageLoader = FragmentUtil.findInterface(this, getContext(), AppImageLoader.Holder.class).getImageLoader();
         mAppSettings.getConfig().getAboutInfo().listDeveloperLinks().safeEach(developer -> {
             addDeveloperView(developer);
         });
+        return view;
     }
 
     /**
@@ -68,7 +73,7 @@ public class DeveloperInfoFragment extends AppFragment {
             }
         });
         binding.Button.setOnClickListener(view -> onClickDeveloper(developer));
-        async(ExecuteTarget.Network, CallbackTime.Foreground, (BackgroundTask<Drawable> task) -> {
+        getLifecycle().async(ExecuteTarget.Network, CallbackTime.Foreground, (BackgroundTask<Drawable> task) -> {
             SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).andTimeout(1000 * 60, TimeUnit.MILLISECONDS).build();
             return mImageLoader.newImage(developer.getIconUri(), false)
                     .keepAspectResize(256, 256)

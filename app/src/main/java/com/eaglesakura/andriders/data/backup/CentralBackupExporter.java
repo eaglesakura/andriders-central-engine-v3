@@ -8,8 +8,8 @@ import com.eaglesakura.andriders.provider.AppStorageProvider;
 import com.eaglesakura.andriders.storage.AppStorageManager;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.ContextUtil;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.json.JSON;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.IOUtil;
@@ -29,7 +29,7 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
+import static com.eaglesakura.sloth.util.AppSupportUtil.assertNotCanceled;
 
 /**
  * バックアップの書込みを行なう

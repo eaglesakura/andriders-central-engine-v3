@@ -19,9 +19,9 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Initializer;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.garnet.Singleton;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.material.widget.support.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

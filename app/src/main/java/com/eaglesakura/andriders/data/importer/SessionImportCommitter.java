@@ -43,7 +43,7 @@ public class SessionImportCommitter implements SessionImporter.Listener {
     }
 
     public SessionLogDatabase openDatabase() {
-        return mDatabase.openWritable(SessionLogDatabase.class);
+        return mDatabase.open(0x00);
     }
 
     @Override

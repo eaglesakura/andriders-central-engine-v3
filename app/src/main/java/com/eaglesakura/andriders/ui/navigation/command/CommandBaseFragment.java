@@ -7,15 +7,18 @@ import com.eaglesakura.andriders.plugin.CommandDataManager;
 import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.fragment.SupportFragmentDelegate;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.margarine.Bind;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.material.widget.adapter.CardAdapter;
-import com.eaglesakura.material.widget.support.SupportRecyclerView;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.sloth.view.adapter.CardAdapter;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -24,7 +27,7 @@ import java.util.List;
  */
 public abstract class CommandBaseFragment extends AppFragment {
     @Bind(R.id.Content_List)
-    SupportRecyclerView mRecyclerView;
+    RecyclerView mRecyclerView;
 
     @Inject(AppManagerProvider.class)
     protected CommandDataManager mCommandDataManager;
@@ -36,17 +39,18 @@ public abstract class CommandBaseFragment extends AppFragment {
      */
     protected abstract int getCommandCategory();
 
+    @Nullable
     @Override
-    public void onAfterViews(SupportFragmentDelegate self, int flags) {
-        super.onAfterViews(self, flags);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
         if (mAdapter == null) {
             mAdapter = newCardAdapter();
-            mRecyclerView.setAdapter(mAdapter, true);
+            mRecyclerView.setAdapter(mAdapter);
         } else {
-            mRecyclerView.setAdapter(mAdapter, true);
-            mRecyclerView.setProgressVisibly(false, mAdapter.getCollection().size());
+            mRecyclerView.setAdapter(mAdapter);
+//            mRecyclerView.setProgressVisibly(false, mAdapter.getCollection().size());
         }
+        return view;
     }
 
     @Override
@@ -57,7 +61,7 @@ public abstract class CommandBaseFragment extends AppFragment {
 
     @UiThread
     protected void loadCommands() {
-        asyncUI((BackgroundTask<CommandDataCollection> task) -> {
+        asyncQueue((BackgroundTask<CommandDataCollection> task) -> {
             return mCommandDataManager.loadFromCategory(getCommandCategory());
         }).completed((result, task) -> {
             onCommandLoaded(result);
@@ -69,7 +73,7 @@ public abstract class CommandBaseFragment extends AppFragment {
     @UiThread
     protected void onCommandLoaded(CommandDataCollection commands) {
         List<CommandData> list = commands.list(it -> true);
-        mRecyclerView.setProgressVisibly(false, list.size());
+//        mRecyclerView.setProgressVisibly(false, list.size());
         mAdapter.getCollection().insertOrReplaceAll(list);
         mAdapter.notifyDataSetChanged();
     }

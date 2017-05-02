@@ -13,7 +13,7 @@ public class SessionLogDatabaseTest extends AppUnitTestCase {
         SessionLogDatabase db = Garnet.factory(AppDatabaseProvider.class).instance(SessionLogDatabase.class, AppDatabaseProvider.NAME_READ_ONLY);
         assertNotNull(db);
 
-        try (SessionLogDatabase token = db.openWritable(SessionLogDatabase.class)) {
+        try (SessionLogDatabase token = db.open(0x00)) {
             // データが空である
             validate(token.getSession().getDbSessionPointDao().loadAll()).sizeIs(0);
             // 初回はnullが取得できる

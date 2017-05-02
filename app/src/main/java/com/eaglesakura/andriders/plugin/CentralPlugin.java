@@ -18,13 +18,13 @@ import com.eaglesakura.andriders.sensor.SensorType;
 import com.eaglesakura.andriders.serialize.PluginProtocol;
 import com.eaglesakura.andriders.service.CentralSessionService;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.service.CommandClient;
 import com.eaglesakura.android.service.CommandMap;
 import com.eaglesakura.android.service.data.Payload;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.serialize.PublicFieldDeserializer;
 import com.eaglesakura.util.CollectionUtil;
-import com.eaglesakura.util.LogUtil;
 import com.eaglesakura.util.RandomUtil;
 import com.eaglesakura.util.StringUtil;
 
@@ -194,7 +194,7 @@ public class CentralPlugin {
                 Payload payload = mClientImpl.requestPostToServer(CentralDataCommand.CMD_getInformations, null);
                 mInformationList = PluginInformation.deserialize(payload.getBuffer());
             } catch (Exception e) {
-                LogUtil.log(e);
+                AppLog.report(e);
                 return null;
             }
         }
@@ -296,7 +296,7 @@ public class CentralPlugin {
             mClientImpl.requestPostToServer(CentralDataCommand.CMD_onSettingStart, null);
             return true;
         } catch (Exception e) {
-            LogUtil.log(e);
+            AppLog.printStackTrace(e);
             return false;
         }
     }
@@ -371,7 +371,7 @@ public class CentralPlugin {
          * GPS座標を更新する
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setLocation, (Object sender, String cmd, Payload payload) -> {
-            PluginProtocol.SrcLocation idl = payload.deserializePublicField(PluginProtocol.SrcLocation.class);
+            PluginProtocol.SrcLocation idl = PublicFieldDeserializer.deserializeFrom(PluginProtocol.SrcLocation.class, payload.getBuffer());
             CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setLocation(idl.latitude, idl.longitude, idl.altitude, idl.accuracyMeter));
             return null;
         });
@@ -380,7 +380,7 @@ public class CentralPlugin {
          * 心拍を設定する
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setHeartrate, (Object sender, String cmd, Payload payload) -> {
-            PluginProtocol.SrcHeartrate idl = payload.deserializePublicField(PluginProtocol.SrcHeartrate.class);
+            PluginProtocol.SrcHeartrate idl = PublicFieldDeserializer.deserializeFrom(PluginProtocol.SrcHeartrate.class, payload.getBuffer());
             CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setHeartrate(idl.bpm));
             return null;
         });
@@ -389,7 +389,7 @@ public class CentralPlugin {
          * S&Cセンサーを設定する
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, (Object sender, String cmd, Payload payload) -> {
-            PluginProtocol.SrcSpeedAndCadence idl = payload.deserializePublicField(PluginProtocol.SrcSpeedAndCadence.class);
+            PluginProtocol.SrcSpeedAndCadence idl = PublicFieldDeserializer.deserializeFrom(PluginProtocol.SrcSpeedAndCadence.class, payload.getBuffer());
             CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setSpeedAndCadence(idl.crankRpm, idl.crankRevolution, idl.wheelRpm, idl.wheelRevolution));
             return null;
         });

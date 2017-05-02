@@ -2,8 +2,8 @@ package com.eaglesakura.andriders.provider;
 
 import com.eaglesakura.andriders.data.db.CentralSettingDatabase;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
-import com.eaglesakura.android.framework.provider.ContextProvider;
 import com.eaglesakura.android.garnet.Provide;
+import com.eaglesakura.sloth.provider.ContextProvider;
 
 import android.content.Context;
 

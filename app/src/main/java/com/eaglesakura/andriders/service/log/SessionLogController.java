@@ -9,11 +9,11 @@ import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.ClockTimer;
-import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.squareup.otto.Subscribe;
 
 import android.support.annotation.NonNull;
@@ -22,7 +22,7 @@ import android.support.annotation.NonNull;
  * セッションログの書き込み管理コントローラ
  */
 public class SessionLogController {
-    ServiceLifecycleDelegate mLifecycleDelegate = new ServiceLifecycleDelegate();
+    ServiceLifecycle mLifecycleDelegate = new ServiceLifecycle();
 
     SessionLogger mLogger;
 
@@ -38,7 +38,7 @@ public class SessionLogController {
         mCommitTimer = new ClockTimer(centralSession.getSessionClock());
     }
 
-    public static SessionLogController attach(ServiceLifecycleDelegate lifecycleDelegate, CentralSession session) {
+    public static SessionLogController attach(ServiceLifecycle lifecycleDelegate, CentralSession session) {
         SessionLogController result = new SessionLogController(session);
         session.getStateBus().bind(lifecycleDelegate, result);
         session.getDataBus().bind(lifecycleDelegate, result);
@@ -91,7 +91,7 @@ public class SessionLogController {
         }
 
         mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
-            try (SessionLogDatabase db = mDatabase.openWritable(SessionLogDatabase.class)) {
+            try (SessionLogDatabase db = mDatabase.open(0x00)) {
                 db.runInTx(() -> {
                     mLogger.commit(mDatabase);
                     return 0;

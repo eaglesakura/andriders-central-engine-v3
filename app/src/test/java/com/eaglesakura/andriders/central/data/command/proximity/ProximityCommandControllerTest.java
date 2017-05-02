@@ -7,7 +7,7 @@ import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.andriders.service.command.ProximityData;
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.android.rx.PendingCallbackQueue;
+import com.eaglesakura.cerberus.PendingCallbackQueue;
 import com.eaglesakura.thread.IntHolder;
 import com.eaglesakura.util.Util;
 

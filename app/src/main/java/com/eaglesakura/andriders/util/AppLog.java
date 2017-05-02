@@ -3,7 +3,8 @@ package com.eaglesakura.andriders.util;
 import com.eaglesakura.andriders.provider.LoggerProvider;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.log.Logger;
+import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 
@@ -15,10 +16,10 @@ import java.lang.reflect.Method;
 public class AppLog {
 
     @Inject(value = LoggerProvider.class, name = LoggerProvider.NAME_DEFAULT)
-    static LogUtil.Logger sDefaultLogger;
+    static Logger.Impl sDefaultLogger;
 
     @Inject(value = LoggerProvider.class, name = LoggerProvider.NAME_APPLOG)
-    static LogUtil.Logger sAppLogger;
+    static Logger.Impl sAppLogger;
 
     static Class FirebaseCrash;
 
@@ -51,97 +52,71 @@ public class AppLog {
         Garnet.create(AppLog.class)
                 .depend(Context.class, context)
                 .inject();
-        LogUtil.setLogger(sDefaultLogger);
+        Logger.setLogger(sDefaultLogger);
     }
 
     public static void widget(String fmt, Object... args) {
         String tag = "App.Widget";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void system(String fmt, Object... args) {
         String tag = "App.System";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void command(String fmt, Object... args) {
         String tag = "App.Command";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void db(String fmt, Object... args) {
         String tag = "App.DB";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void gps(String fmt, Object... args) {
         String tag = "App.GPS";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void speed(String fmt, Object... args) {
         String tag = "App.Speed";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void cadence(String fmt, Object... args) {
         String tag = "App.Cadence";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void broadcast(String fmt, Object... args) {
         String tag = "App.Broadcast";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void ble(String fmt, Object... args) {
         String tag = "App.Ble";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_DEBUG, tag, StringUtil.format(fmt, args));
     }
 
     public static void bleData(String fmt, Object... args) {
         String tag = "App.Ble.Data";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_DEBUG, tag, StringUtil.format(fmt, args));
     }
 
     public static void proximity(String fmt, Object... args) {
         String tag = "App.Sensor.Proximity";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void plugin(String fmt, Object... args) {
         String tag = "App.Plugin";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_INFO, tag, StringUtil.format(fmt, args));
     }
 
     public static void test(String fmt, Object... args) {
         String tag = "App.Test";
-
-        LogUtil.setLogger(tag, sAppLogger);
-        LogUtil.out(tag, fmt, args);
+        sAppLogger.out(Logger.LEVEL_DEBUG, tag, StringUtil.format(fmt, args));
     }
 }

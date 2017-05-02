@@ -9,7 +9,6 @@ import com.eaglesakura.andriders.provider.TestAppStorageProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.AndroidSupportTestCase;
 import com.eaglesakura.android.garnet.Garnet;
-import com.eaglesakura.util.LogUtil;
 
 import org.robolectric.annotation.Config;
 
@@ -26,9 +25,9 @@ public abstract class AppUnitTestCase extends AndroidSupportTestCase {
         super.onSetup();
 
         // ログを一部無効化する
-        LogUtil.setLogEnable("App.GPS", false);
-        LogUtil.setLogEnable("App.Ble.Data", false);
-        LogUtil.setLogEnable("App.DB", false);
+//        LogUtil.setLogEnable("App.GPS", false);
+//        LogUtil.setLogEnable("App.Ble.Data", false);
+//        LogUtil.setLogEnable("App.DB", false);
 
         // UnitTest用モジュールへ切り替える
         TestAppManagerProvider.onSetup(this);

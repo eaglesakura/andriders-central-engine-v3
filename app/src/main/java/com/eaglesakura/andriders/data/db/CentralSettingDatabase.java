@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * Central Engineの設定データを保持するDB
  */
-public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
+public class CentralSettingDatabase extends DaoDatabase<DaoSession, CentralSettingDatabase> {
 
     static final int SUPPORTED_DATABASE_VERSION = 1;
 
@@ -67,14 +67,14 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      * コマンドを保存する
      */
     public void update(@NonNull DbCommand cmd) {
-        session.insertOrReplace(cmd);
+        getSession().insertOrReplace(cmd);
     }
 
     /**
      * 指定したコマンドを削除する
      */
     public void remove(@NonNull CommandKey key) {
-        session.getDbCommandDao().deleteByKey(key.toString());
+        getSession().getDbCommandDao().deleteByKey(key.toString());
     }
 
 
@@ -89,7 +89,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      */
     @NonNull
     public List<CommandData> listCommands(int category) {
-        List<DbCommand> commands = session.getDbCommandDao().queryBuilder()
+        List<DbCommand> commands = getSession().getDbCommandDao().queryBuilder()
                 .where(DbCommandDao.Properties.Category.eq(category))
                 .list();
 
@@ -101,7 +101,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      */
     @NonNull
     public List<CommandData> listCommands() {
-        List<DbCommand> commands = session.getDbCommandDao().loadAll();
+        List<DbCommand> commands = getSession().getDbCommandDao().loadAll();
 
         return CollectionUtil.asOtherList(commands, it -> new CommandData(it));
     }
@@ -112,7 +112,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      */
     @NonNull
     public DisplayLayoutCollection listAllLayouts() {
-        return new DisplayLayoutCollection(CollectionUtil.asOtherList(session.getDbDisplayLayoutDao().loadAll(), it -> new DisplayLayout(it)));
+        return new DisplayLayoutCollection(CollectionUtil.asOtherList(getSession().getDbDisplayLayoutDao().loadAll(), it -> new DisplayLayout(it)));
     }
 
     /**
@@ -124,7 +124,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      */
     @NonNull
     public DisplayLayoutCollection listLayouts(String packageName) {
-        List<DbDisplayLayout> list = session.getDbDisplayLayoutDao().queryBuilder()
+        List<DbDisplayLayout> list = getSession().getDbDisplayLayoutDao().queryBuilder()
                 .where(DbDisplayLayoutDao.Properties.AppPackageName.eq(packageName))
                 .list();
         return new DisplayLayoutCollection(
@@ -136,14 +136,14 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      * レイアウト設定を更新する
      */
     public void update(DbDisplayLayout layout) {
-        session.getDbDisplayLayoutDao().insertOrReplace(layout);
+        getSession().getDbDisplayLayoutDao().insertOrReplace(layout);
     }
 
     /**
      * レイアウト設定を削除し、スロットを空ける
      */
     public void remove(DbDisplayLayout layout) {
-        session.getDbDisplayLayoutDao().delete(layout);
+        getSession().getDbDisplayLayoutDao().delete(layout);
     }
 
 
@@ -151,9 +151,9 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      * 表示対象のグループを削除する。
      */
     public void removeLayouts(final String appPackageName) {
-        session.runInTx(() -> {
+        getSession().runInTx(() -> {
             // グループレイアウトを削除する
-            QueryBuilder<DbDisplayLayout> builder = session.getDbDisplayLayoutDao().queryBuilder();
+            QueryBuilder<DbDisplayLayout> builder = getSession().getDbDisplayLayoutDao().queryBuilder();
             builder.where(DbDisplayLayoutDao.Properties.AppPackageName.eq(appPackageName));
             builder.buildDelete().executeDeleteWithoutDetachingEntities();
         });
@@ -167,7 +167,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
         sensor.setAddress(device.getAddress());
         sensor.setName(device.getName());
         sensor.setTypeFlags(device.getFlags().toString());
-        session.getDbBleSensorDao().insertOrReplace(sensor);
+        getSession().getDbBleSensorDao().insertOrReplace(sensor);
     }
 
     /**
@@ -175,7 +175,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      */
     @NonNull
     public BleDeviceCacheCollection listBleDevices(int sensorType) {
-        List<DbBleSensor> list = session.getDbBleSensorDao().queryBuilder()
+        List<DbBleSensor> list = getSession().getDbBleSensorDao().queryBuilder()
                 .where(DbBleSensorDao.Properties.TypeFlags.like(new StringFlag(sensorType).toLikeQuery()))
                 .build()
                 .list();
@@ -194,12 +194,12 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
         dbActivePlugin.setPackageName(appInfo.serviceInfo.packageName);
         dbActivePlugin.setClassName(appInfo.serviceInfo.name);
 
-        session.getDbActivePluginDao().insertOrReplace(dbActivePlugin);
+        getSession().getDbActivePluginDao().insertOrReplace(dbActivePlugin);
     }
 
     public boolean isActivePlugin(String packageName, String className) {
         String key = getPluginClassName(packageName, className);
-        return session.getDbActivePluginDao().queryBuilder()
+        return getSession().getDbActivePluginDao().queryBuilder()
                 .where(DbActivePluginDao.Properties.UniqueId.eq(key))
                 .count() > 0;
     }
@@ -209,12 +209,12 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      */
     public void activePlugin(Class clazz, Category category) {
         DbActivePlugin dbActivePlugin = new DbActivePlugin();
-        dbActivePlugin.setUniqueId(getPluginClassName(context.getPackageName(), clazz.getName()));
+        dbActivePlugin.setUniqueId(getPluginClassName(getContext().getPackageName(), clazz.getName()));
         dbActivePlugin.setCategory(category.getName());
-        dbActivePlugin.setPackageName(context.getPackageName());
+        dbActivePlugin.setPackageName(getContext().getPackageName());
         dbActivePlugin.setClassName(clazz.getName());
 
-        session.getDbActivePluginDao().insertOrReplace(dbActivePlugin);
+        getSession().getDbActivePluginDao().insertOrReplace(dbActivePlugin);
 
     }
 
@@ -222,14 +222,14 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      * 有効状態から削除する
      */
     public void disablePlugin(ResolveInfo appInfo) {
-        session.getDbActivePluginDao().deleteByKey(getPluginClassName(appInfo.serviceInfo.packageName, appInfo.serviceInfo.name));
+        getSession().getDbActivePluginDao().deleteByKey(getPluginClassName(appInfo.serviceInfo.packageName, appInfo.serviceInfo.name));
     }
 
     /**
      * プラグインを無効化する
      */
     public void disablePlugin(String packageName, String className) {
-        session.getDbActivePluginDao().deleteByKey(getPluginClassName(packageName, className));
+        getSession().getDbActivePluginDao().deleteByKey(getPluginClassName(packageName, className));
     }
 
     /**
@@ -238,7 +238,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
      * @param categoryName カテゴリ名
      */
     public void disableCategoryPlugins(@NonNull String categoryName) {
-        session.getDbActivePluginDao().queryBuilder()
+        getSession().getDbActivePluginDao().queryBuilder()
                 .where(DbActivePluginDao.Properties.Category.eq(categoryName))
                 .buildDelete().executeDeleteWithoutDetachingEntities();
     }
@@ -249,7 +249,7 @@ public class CentralSettingDatabase extends DaoDatabase<DaoSession> {
     public ActivePluginCollection listPlugins() {
         return new ActivePluginCollection(
                 CollectionUtil.asOtherList(
-                        session.getDbActivePluginDao().loadAll(),
+                        getSession().getDbActivePluginDao().loadAll(),
                         it -> new ActivePlugin(it)
                 )
         );

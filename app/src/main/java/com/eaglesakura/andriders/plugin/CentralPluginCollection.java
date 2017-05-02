@@ -1,8 +1,8 @@
 package com.eaglesakura.andriders.plugin;
 
 import com.eaglesakura.andriders.error.AppException;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.AndroidThreadUtil;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
 

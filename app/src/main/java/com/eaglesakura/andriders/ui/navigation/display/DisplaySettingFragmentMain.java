@@ -4,12 +4,12 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.ui.widget.AppDialogBuilder;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.ui.FragmentHolder;
-import com.eaglesakura.android.framework.ui.progress.ProgressToken;
-import com.eaglesakura.android.framework.ui.support.annotation.BindInterface;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
-import com.eaglesakura.android.framework.util.AppSupportUtil;
-import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.sloth.annotation.BindInterface;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.app.FragmentHolder;
+import com.eaglesakura.sloth.app.lifecycle.FragmentLifecycle;
+import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
+import com.eaglesakura.sloth.ui.progress.ProgressToken;
 
 import android.os.Bundle;
 import android.support.annotation.UiThread;
@@ -26,33 +26,40 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
     /**
      * アプリ選択Fragment
      */
-    FragmentHolder<LayoutAppSelectFragment> mLayoutAppSelectFragment = FragmentHolder.newInstance(this, LayoutAppSelectFragment.class, R.id.Content_Holder_AppSelector).bind(mLifecycleDelegate);
+    FragmentHolder<LayoutAppSelectFragment> mLayoutAppSelectFragment = FragmentHolder.newInstance(this, LayoutAppSelectFragment.class, R.id.Content_Holder_AppSelector);
 
     /**
      * レイアウト編集
      */
-    FragmentHolder<LayoutEditFragment> mLayoutEditFragment = FragmentHolder.newInstance(this, LayoutEditFragment.class, R.id.Content_Holder_DisplayLayout).bind(mLifecycleDelegate);
+    FragmentHolder<LayoutEditFragment> mLayoutEditFragment = FragmentHolder.newInstance(this, LayoutEditFragment.class, R.id.Content_Holder_DisplayLayout);
 
     DisplayLayoutController mDisplayLayoutController;
 
     DisplayLayoutController.Bus mDisplayLayoutControllerBus;
 
     @Override
+    protected void onCreateLifecycle(FragmentLifecycle lifecycle) {
+        super.onCreateLifecycle(lifecycle);
+        mLayoutAppSelectFragment.bind(lifecycle);
+        mLayoutEditFragment.bind(lifecycle);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDisplayLayoutController = new DisplayLayoutController(getContext());
         mDisplayLayoutControllerBus = new DisplayLayoutController.Bus(mDisplayLayoutController);
-        mDisplayLayoutControllerBus.bind(mLifecycleDelegate, mLayoutAppSelectFragment.get());
-        mDisplayLayoutControllerBus.bind(mLifecycleDelegate, mLayoutEditFragment.get());
+        mDisplayLayoutControllerBus.bind(getLifecycle(), mLayoutAppSelectFragment.get());
+        mDisplayLayoutControllerBus.bind(getLifecycle(), mLayoutEditFragment.get());
         loadDisplayController();
     }
 
     @UiThread
     void loadDisplayController() {
-        asyncUI(task -> {
-            CancelCallback cancelCallback = AppSupportUtil.asCancelCallback(task);
+        asyncQueue(task -> {
+            SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
             try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
-                mDisplayLayoutController.load(cancelCallback);
+                mDisplayLayoutController.load(checker);
             }
             return this;
         }).completed((result, task) -> {
@@ -72,7 +79,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
     @Override
     public void onApplicationSelected(LayoutAppSelectFragment fragment, DisplayLayoutApplication selected) {
         // アプリ切り替えの送信を行う
-        asyncUI(task -> {
+        asyncQueue(task -> {
             try (ProgressToken token = pushProgress(R.string.Word_Common_Working)) {
                 mDisplayLayoutController.getLayoutGroup(selected.getPackageName());
                 mDisplayLayoutController.commit();
@@ -85,14 +92,14 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }).start();
     }
 
     @Override
     public void onRequestDeleteLayout(LayoutAppSelectFragment fragment, DisplayLayoutApplication app) {
         // アプリ削除
-        asyncUI(task -> {
+        asyncQueue(task -> {
             try (ProgressToken token = pushProgress(R.string.Word_Common_Save)) {
                 mDisplayLayoutController.remove(app.getPackageName());
                 return this;
@@ -104,14 +111,14 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }).start();
     }
 
     @Override
     public void onUpdateLayout(LayoutEditFragment self) {
         // レイアウト情報の保存を行う
-        asyncUI(task -> {
+        asyncQueue(task -> {
             try (ProgressToken token = pushProgress(R.string.Word_Common_Save)) {
                 mDisplayLayoutController.commit();
                 return this;
@@ -120,7 +127,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(mLifecycleDelegate);
+                    .show(getLifecycle());
         }).start();
     }
 

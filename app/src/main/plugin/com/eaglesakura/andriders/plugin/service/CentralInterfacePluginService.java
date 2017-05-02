@@ -23,8 +23,8 @@ import com.eaglesakura.andriders.plugin.service.ui.SessionTimeDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.SpeedDisplaySender;
 import com.eaglesakura.andriders.plugin.service.ui.TimeDisplaySender;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.thread.loop.HandlerLoopController;
-import com.eaglesakura.android.thread.ui.UIHandler;
+import com.eaglesakura.android.thread.HandlerLoopController;
+import com.eaglesakura.android.thread.UIHandler;
 
 import android.app.Service;
 import android.content.Intent;

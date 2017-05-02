@@ -12,10 +12,10 @@ import com.eaglesakura.andriders.error.io.AppIOException;
 import com.eaglesakura.andriders.gen.prop.CentralServiceSettings;
 import com.eaglesakura.andriders.serialize.RawGeoPoint;
 import com.eaglesakura.andriders.util.Clock;
-import com.eaglesakura.android.property.PropertyStore;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
+import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.io.CancelableInputStream;
 import com.eaglesakura.lambda.CancelCallback;
+import com.eaglesakura.sloth.db.property.PropertyStore;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -29,7 +29,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.eaglesakura.android.framework.util.AppSupportUtil.assertNotCanceled;
+import static com.eaglesakura.sloth.util.AppSupportUtil.assertNotCanceled;
 
 /**
  * GPXファイルからimportを行う

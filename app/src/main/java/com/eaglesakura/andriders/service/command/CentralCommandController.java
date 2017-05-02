@@ -20,13 +20,14 @@ import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.framework.delegate.lifecycle.LifecycleDelegate;
-import com.eaglesakura.android.framework.delegate.lifecycle.ServiceLifecycleDelegate;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
-import com.eaglesakura.android.rx.BackgroundTask;
-import com.eaglesakura.android.rx.CallbackTime;
-import com.eaglesakura.android.rx.ExecuteTarget;
+import com.eaglesakura.cerberus.BackgroundTask;
+import com.eaglesakura.cerberus.CallbackTime;
+import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.serialize.PublicFieldSerializer;
+import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
+import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.eaglesakura.util.SerializeUtil;
 import com.squareup.otto.Subscribe;
 
@@ -60,7 +61,7 @@ public class CentralCommandController {
     final private CentralSession mSession;
 
     @NonNull
-    final private LifecycleDelegate mLifecycleDelegate;
+    final private Lifecycle mLifecycleDelegate;
 
     @Inject(AppManagerProvider.class)
     private CommandDataManager mCommandDataManager;
@@ -90,7 +91,7 @@ public class CentralCommandController {
     @Nullable
     private RawCentralData mLatestCentralData;
 
-    CentralCommandController(@NonNull Context context, LifecycleDelegate delegate, CentralSession session, AnimationFrame.Bus animationFrameBus, Callback callback) {
+    CentralCommandController(@NonNull Context context, Lifecycle delegate, CentralSession session, AnimationFrame.Bus animationFrameBus, Callback callback) {
         mContext = context;
         mCallback = callback;
         mCentralDataReceiver = new CentralDataReceiver(mContext);
@@ -99,7 +100,7 @@ public class CentralCommandController {
         mAnimationBus = animationFrameBus;
     }
 
-    public static CentralCommandController attach(@NonNull Context context, ServiceLifecycleDelegate lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session, Callback callback) {
+    public static CentralCommandController attach(@NonNull Context context, ServiceLifecycle lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session, Callback callback) {
         CentralCommandController result = new CentralCommandController(context, lifecycleDelegate, session, animationFrameBus, callback);
         Garnet.create(result)
                 .depend(Context.class, context)
@@ -251,7 +252,7 @@ public class CentralCommandController {
             Intent intent = SerializableIntent.newIntent(rawIntent);
             // ACEのデータを受け取っているなら、シリアライズしてコマンドに送る
             if (mLatestCentralData != null) {
-                centralData = SerializeUtil.serializePublicFieldObject(mLatestCentralData, true);
+                centralData = PublicFieldSerializer.serializeFrom(mLatestCentralData, true);
                 intent.putExtra(CommandSetting.EXTRA_COMMAND_CENTRAL_DATA, centralData);
             }
             switch (rawIntent.intentType) {

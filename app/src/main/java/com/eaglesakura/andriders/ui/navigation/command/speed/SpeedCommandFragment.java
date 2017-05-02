@@ -10,14 +10,14 @@ import com.eaglesakura.andriders.ui.navigation.command.CommandEditDialogBuilder;
 import com.eaglesakura.andriders.util.AppConstants;
 import com.eaglesakura.andriders.util.AppUtil;
 import com.eaglesakura.android.aquery.AQuery;
-import com.eaglesakura.android.framework.delegate.fragment.FragmentPagerTitle;
-import com.eaglesakura.android.framework.ui.support.annotation.FragmentLayout;
 import com.eaglesakura.android.margarine.BindStringArray;
 import com.eaglesakura.android.margarine.OnClick;
 import com.eaglesakura.android.oari.OnActivityResult;
 import com.eaglesakura.android.util.ViewUtil;
-import com.eaglesakura.material.widget.SnackbarBuilder;
-import com.eaglesakura.material.widget.adapter.CardAdapter;
+import com.eaglesakura.sloth.annotation.FragmentLayout;
+import com.eaglesakura.sloth.ui.pager.FragmentPagerTitle;
+import com.eaglesakura.sloth.view.adapter.CardAdapter;
+import com.eaglesakura.sloth.view.builder.SnackbarBuilder;
 import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
@@ -61,7 +61,7 @@ public class SpeedCommandFragment extends CommandBaseFragment implements Fragmen
                     CommandEditDialogBuilder.from(getContext(), item)
                             .commit(mCommandCommitListener)
                             .delete(mCommandDeleteListener)
-                            .show(mLifecycleDelegate);
+                            .show(getLifecycle());
                 });
                 binding.setItem(new CardBinding() {
                     @Override

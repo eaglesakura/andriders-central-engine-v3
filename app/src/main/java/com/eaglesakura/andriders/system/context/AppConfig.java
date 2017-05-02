@@ -9,7 +9,6 @@ import com.eaglesakura.andriders.system.context.config.FbPackageInfo;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.v3.gen.config.AppStatusConfig;
 import com.eaglesakura.android.error.NetworkNotConnectException;
-import com.eaglesakura.android.rx.error.TaskCanceledException;
 import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
@@ -86,7 +85,7 @@ public class AppConfig {
     /**
      * データ同期を行う
      */
-    public int fetch(CancelCallback cancelCallback) throws TaskCanceledException, NetworkNotConnectException {
+    public int fetch(CancelCallback cancelCallback) throws InterruptedException, NetworkNotConnectException {
         AppLog.system("CurrentConfigPath[%s]", mConfig.getDatabasePathConfig());
         return mConfigManager.fetch(cancelCallback);
     }

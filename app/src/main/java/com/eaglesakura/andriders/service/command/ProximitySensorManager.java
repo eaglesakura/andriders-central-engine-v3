@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.service.command;
 
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.android.system.ScreenEventReceiver;
+import com.eaglesakura.android.device.event.ScreenEventReceiver;
 
 import android.content.Context;
 import android.hardware.Sensor;
