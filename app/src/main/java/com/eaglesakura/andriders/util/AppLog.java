@@ -14,10 +14,6 @@ import java.lang.reflect.Method;
  * アプリ用のログ出力をラップする
  */
 public class AppLog {
-
-    @Inject(value = LoggerProvider.class, name = LoggerProvider.NAME_DEFAULT)
-    static Logger.Impl sDefaultLogger;
-
     @Inject(value = LoggerProvider.class, name = LoggerProvider.NAME_APPLOG)
     static Logger.Impl sAppLogger;
 
@@ -52,7 +48,6 @@ public class AppLog {
         Garnet.create(AppLog.class)
                 .depend(Context.class, context)
                 .inject();
-        Logger.setLogger(sDefaultLogger);
     }
 
     public static void widget(String fmt, Object... args) {
