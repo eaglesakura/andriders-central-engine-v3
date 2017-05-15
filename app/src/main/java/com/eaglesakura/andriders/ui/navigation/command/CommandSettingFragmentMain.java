@@ -2,6 +2,7 @@ package com.eaglesakura.andriders.ui.navigation.command;
 
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
+import com.eaglesakura.andriders.ui.navigation.base.AppNavigationFragment;
 import com.eaglesakura.andriders.ui.navigation.command.distance.DistanceCommandFragment;
 import com.eaglesakura.andriders.ui.navigation.command.proximity.ProximityCommandFragment;
 import com.eaglesakura.andriders.ui.navigation.command.speed.SpeedCommandFragment;
@@ -22,7 +23,7 @@ import android.view.ViewGroup;
  * 各種コマンドを設定する
  */
 @FragmentLayout(R.layout.command_setup)
-public class CommandSettingFragmentMain extends AppFragment {
+public class CommandSettingFragmentMain extends AppNavigationFragment {
     @Bind(R.id.Content_PagerTab)
     TabLayout mPagerTab;
 

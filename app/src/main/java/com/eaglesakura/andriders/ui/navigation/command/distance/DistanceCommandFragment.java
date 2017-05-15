@@ -49,7 +49,7 @@ public class DistanceCommandFragment extends CommandBaseFragment implements Frag
         return new CardAdapter<CommandData>() {
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
-                return CommandSetupDistanceRowBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
+                return CommandSetupDistanceRowBinding.inflate(getActivity().getLayoutInflater(), parent, false).getRoot();
             }
 
             @Override

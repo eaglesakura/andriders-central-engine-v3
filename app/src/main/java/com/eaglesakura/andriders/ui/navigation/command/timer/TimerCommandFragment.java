@@ -49,7 +49,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements Fragmen
         return new CardAdapter<CommandData>() {
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
-                return CommandSetupTimerRowBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
+                return CommandSetupTimerRowBinding.inflate(getActivity().getLayoutInflater(), parent, false).getRoot();
             }
 
             @Override
@@ -74,7 +74,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements Fragmen
                         return text;
                     }
                 });
-                binding.CommandItem.setOnClickListener(it -> {
+                binding.Item.setOnClickListener(it -> {
                     CommandEditDialogBuilder.from(getContext(), item)
                             .commit(mCommandCommitListener)
                             .delete(mCommandDeleteListener)

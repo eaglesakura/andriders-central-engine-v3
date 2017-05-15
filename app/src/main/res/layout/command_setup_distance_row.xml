@@ -4,38 +4,36 @@
         <variable name="item"
                   type="com.eaglesakura.andriders.ui.navigation.command.distance.DistanceCommandFragment.CardBinding"/>
     </data>
-    <LinearLayout
+    <android.support.v7.widget.CardView
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical"
+            android:id="@+id/Item"
+            android:layout_margin="@dimen/EsMaterial.Button.Margin"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <com.eaglesakura.sloth.view.TransparentButton
-                android:id="@+id/Item"
+        <LinearLayout
+                android:layout_margin="@dimen/EsMaterial.Button.Margin"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <LinearLayout
-                    android:orientation="horizontal"
+                android:layout_height="@dimen/EsMaterial.Button.MinHeight">
+            <android.support.v7.widget.AppCompatImageView
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="@dimen/App.Icon.Large.Margin"
+                    android:src="@{item.icon}"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"/>
+
+            <android.support.v7.widget.AppCompatTextView
+                    android:text="@{item.title}"
+                    android:gravity="right"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:layout_gravity="center_vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/EsMaterial.Button.MinHeight">
-                <android.support.v7.widget.AppCompatImageView
-                        android:layout_gravity="center_vertical"
-                        android:layout_margin="@dimen/App.Icon.Large.Margin"
-                        android:src="@{item.icon}"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"/>
+                    android:layout_height="wrap_content"/>
 
-                <android.support.v7.widget.AppCompatTextView
-                        android:text="@{item.title}"
-                        android:gravity="right"
-                        android:maxLines="1"
-                        android:ellipsize="end"
-                        android:layout_gravity="center_vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+        </LinearLayout>
 
-            </LinearLayout>
-
-        </com.eaglesakura.sloth.view.TransparentButton>
-        <include layout="@layout/esm_material_separator"/>
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
 </layout>

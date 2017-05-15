@@ -15,6 +15,8 @@ import com.eaglesakura.sloth.view.adapter.CardAdapter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,11 +47,11 @@ public abstract class CommandBaseFragment extends AppFragment {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (mAdapter == null) {
             mAdapter = newCardAdapter();
-            mRecyclerView.setAdapter(mAdapter);
-        } else {
-            mRecyclerView.setAdapter(mAdapter);
-//            mRecyclerView.setProgressVisibly(false, mAdapter.getCollection().size());
         }
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setAdapter(mAdapter);
         return view;
     }
 

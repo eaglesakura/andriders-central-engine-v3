@@ -49,7 +49,7 @@ public class SpeedCommandFragment extends CommandBaseFragment implements Fragmen
         return new CardAdapter<CommandData>() {
             @Override
             protected View onCreateCard(ViewGroup parent, int viewType) {
-                return CommandSetupSpeedRowBinding.inflate(getActivity().getLayoutInflater(), null, false).getRoot();
+                return CommandSetupSpeedRowBinding.inflate(getActivity().getLayoutInflater(), parent, false).getRoot();
             }
 
             @Override
