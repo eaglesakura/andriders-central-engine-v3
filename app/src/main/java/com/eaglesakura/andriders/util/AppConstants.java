@@ -51,5 +51,10 @@ public interface AppConstants {
      * バックアップファイルの選択
      */
     int REQUEST_PICK_BACKUP_FILE = 0x3707;
+
+    /**
+     * Runtime Permissions
+     */
+    int REQUEST_RUNTIME_PERMISSION = 0x3708;
 }
 

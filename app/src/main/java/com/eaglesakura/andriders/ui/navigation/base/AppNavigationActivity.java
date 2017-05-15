@@ -1,12 +1,14 @@
 package com.eaglesakura.andriders.ui.navigation.base;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.android.oari.ActivityResult;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.sloth.app.SlothActivity;
 import com.eaglesakura.sloth.app.delegate.ContentHolderActivityDelegate;
 import com.eaglesakura.sloth.app.lifecycle.ActivityLifecycle;
 import com.eaglesakura.util.Util;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -39,5 +41,11 @@ public abstract class AppNavigationActivity extends SlothActivity implements Con
     @Nullable
     public Fragment getContentFragment() {
         return mContentHolder.getContentFragment();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ActivityResult.invoke(this, requestCode, resultCode, data);
     }
 }

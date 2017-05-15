@@ -36,6 +36,7 @@ import com.eaglesakura.util.Timer;
 
 import android.content.Intent;
 import android.support.annotation.UiThread;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -104,7 +105,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             // パーミッションを取得する
             if (mPermissionRequestCount < 2) {
                 ++mPermissionRequestCount;
-                // FIXME: Update Runtime permission.
+                requestPermissions(REQUIRE_PERMISSIONS, AppConstants.REQUEST_RUNTIME_PERMISSION);
 //                requestRuntimePermission(REQUIRE_PERMISSIONS);
             } else {
                 // 警告ダイアログを出す
@@ -249,7 +250,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
         }
 
         // Activityを起動する
-        for (Listener listener : FragmentUtil.listInterfaces(getFragmentManager(), Listener.class)) {
+        for (Listener listener : FragmentUtil.listInterfaces(((AppCompatActivity) getActivity()), Listener.class)) {
             listener.onBootCompleted(this);
         }
         mBootCompleted = true;

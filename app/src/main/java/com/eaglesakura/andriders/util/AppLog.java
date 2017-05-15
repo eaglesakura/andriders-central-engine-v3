@@ -35,7 +35,7 @@ public class AppLog {
                 FirebaseCrash = Class.forName("com.google.firebase.crash.FirebaseCrash");
                 FIrebaseCrash_report = FirebaseCrash.getDeclaredMethod("report", Throwable.class);
             }
-            FIrebaseCrash_report.invoke(FirebaseCrash);
+            FIrebaseCrash_report.invoke(FirebaseCrash, e);
         } catch (Throwable fbc) {
             fbc.printStackTrace();
         }

@@ -2,6 +2,7 @@ package com.eaglesakura.andriders;
 
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.sloth.Sloth;
+import com.eaglesakura.sloth.util.DebugUtil;
 
 import android.app.Application;
 
@@ -18,6 +19,6 @@ public class AceApplication extends Application {
 
         // Central & DeploygateRemote
         Sloth.init(this);
-//        FrameworkCentral.requestDeploygateInstall();
+        DebugUtil.requestDeploygateInstall(this);
     }
 }

@@ -39,10 +39,10 @@ public class LoggerProvider implements Provider {
     @Provide(name = NAME_APPLOG)
     public Logger.Impl provideAppLogger() {
         return new Logger.AndroidLogger(Log.class) {
-            @Override
-            protected int getStackDepth() {
-                return super.getStackDepth() + 1;
-            }
+//            @Override
+//            protected int getStackDepth() {
+//                return super.getStackDepth() + 1;
+//            }
         }.setStackInfo(mDebugable);
     }
 }
