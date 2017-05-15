@@ -9,7 +9,7 @@ import com.eaglesakura.sloth.app.lifecycle.FragmentLifecycle;
 /**
  * BLEデバイス等の設定を行う
  */
-@FragmentLayout(R.layout.system_fragment_stack)
+@FragmentLayout(R.layout.sensor_gadget)
 public class SensorDeviceSettingFragmentMain extends AppNavigationFragment {
 
     /**

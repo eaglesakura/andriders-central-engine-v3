@@ -17,7 +17,7 @@ public class SensorDeviceSettingActivity extends AppNavigationActivity {
 
     @Override
     public int getContentLayout(@NonNull ContentHolderActivityDelegate self) {
-        return R.layout.system_activity_with_toolbar;
+        return R.layout.sensor_gadget_activity;
     }
 
     @NonNull
