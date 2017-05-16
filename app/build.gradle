@@ -105,7 +105,7 @@ dependencies {
     compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
 
     // Remote Debug
-    debugCompile 'com.deploygate:sdk:3.1'
+    debugCompile 'com.deploygate:sdk:3.1.1'
 
     // SQLite JSON
     androidTestCompile 'com.eaglesakura:android-sqliteX:3.16.1.8'
