@@ -30,6 +30,8 @@ import com.eaglesakura.util.CollectionUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,6 +77,9 @@ public class TotalLogFragmentMain extends AppNavigationFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
+        mSessionDateList.setItemAnimator(new DefaultItemAnimator());
+        mSessionDateList.setLayoutManager(new LinearLayoutManager(getContext()));
+        mSessionDateList.setHasFixedSize(false);
         mSessionDateList.setAdapter(mLogAdapter);
         return view;
     }

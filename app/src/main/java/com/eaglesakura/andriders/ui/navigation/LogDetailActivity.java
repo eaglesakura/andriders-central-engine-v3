@@ -68,7 +68,7 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
 
     @Override
     public int getContentLayout(@NonNull ContentHolderActivityDelegate self) {
-        return R.layout.system_activity_with_toolbar;
+        return R.layout.user_log_activity;
     }
 
     @NonNull

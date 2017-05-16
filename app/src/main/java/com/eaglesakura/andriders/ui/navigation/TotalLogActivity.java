@@ -36,7 +36,7 @@ public class TotalLogActivity extends AppNavigationActivity implements TotalLogF
 
     @Override
     public int getContentLayout(@NonNull ContentHolderActivityDelegate self) {
-        return R.layout.system_activity_with_toolbar;
+        return R.layout.user_log_activity;
     }
 
     @NonNull
@@ -47,7 +47,7 @@ public class TotalLogActivity extends AppNavigationActivity implements TotalLogF
 
     @Override
     public void onSessionNotFound(TotalLogFragmentMain self) {
-
+        // TODO セッションが表示できないダイアログを表示する
     }
 
     @Override

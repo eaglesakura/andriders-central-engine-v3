@@ -265,6 +265,7 @@ public class GoogleFitUploader {
                 if (status.isSuccess()) {
                     AppLog.system("Success HistoryApi.insertData(%s) Points(%d)", type, dataSet.getDataPoints().size());
                 } else {
+                    AppLog.system("HistoryApi insert failed, status[%d], msg[%s]", status.getStatusCode(), status.getStatusMessage());
                     throw new AppIOException(type + " Upload filed");
                 }
             } catch (InterruptedException e) {

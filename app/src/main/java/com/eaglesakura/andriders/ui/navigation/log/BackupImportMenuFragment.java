@@ -20,7 +20,6 @@ import com.eaglesakura.sloth.annotation.BindInterface;
 import com.eaglesakura.sloth.annotation.FragmentMenu;
 import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 import com.eaglesakura.sloth.ui.progress.DialogToken;
-import com.eaglesakura.sloth.ui.progress.ProgressToken;
 import com.eaglesakura.sloth.view.builder.DialogBuilder;
 
 import android.app.Activity;
@@ -81,11 +80,13 @@ public class BackupImportMenuFragment extends AppFragment {
                 .cancelable(true)
                 .canceledOnTouchOutside(false)
                 .positiveButton(R.string.EsMaterial_Dialog_Cancel, null);
+
+        // UIスレッドで先行してダイアログを表示する
+        // これは非同期処理開始前にFragmentが閉じられるのを防ぐため
         DialogToken token = DialogBuilder.showAsToken(builder, getLifecycle());
+
         asyncQueue((BackgroundTask<DataCollection<SessionHeader>> task) -> {
-            try (DialogToken _token1 = token;
-                 ProgressToken _token2 = pushProgress(R.string.Word_Common_Working)
-            ) {
+            try (DialogToken _token1 = token) {
                 return mCentralLogManager.importFromBackup(new CentralLogManager.ImportCallback() {
                     @Override
                     public void onInsertStart(CentralLogManager self, @NonNull SessionBackup backup) {

@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.io.CancelableInputStream;
+import com.eaglesakura.io.ZipDecoder;
 import com.eaglesakura.json.JSON;
 import com.eaglesakura.lambda.CancelCallback;
 import com.eaglesakura.util.IOUtil;
@@ -43,22 +44,19 @@ public class CentralBackupImporter {
         File tempDir = storageManager.newTemporaryDir();
         try (InputStream input = mContext.getContentResolver().openInputStream(uri)) {
             // FIXME: unzip機能を復元する
-//            IOUtil.unzip(input, tempDir, new IOUtil.DecompressCallback() {
-//                @Override
-//                public boolean isCanceled() {
-//                    return CallbackUtils.isCanceled(cancelCallback);
-//                }
-//
-//                @Override
-//                public boolean isDecompressExist(long size, File dst) {
-//                    return true;
-//                }
-//
-//                @Override
-//                public void onDecompressCompleted(File dst) {
-//
-//                }
-//            });
+            ZipDecoder zipDecoder = new ZipDecoder(input);
+            zipDecoder.setOutputDir(tempDir);
+            zipDecoder.unzip(new ZipDecoder.Callback() {
+                @Override
+                public boolean isDecompressExist(long size, File dst) {
+                    return true;
+                }
+
+                @Override
+                public void onDecompressCompleted(File dst) {
+
+                }
+            }, cancelCallback);
         }
         return tempDir;
     }

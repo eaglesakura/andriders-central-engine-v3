@@ -30,6 +30,8 @@ import com.eaglesakura.sloth.view.adapter.CardAdapter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,6 +93,9 @@ public class DailyLogFragmentMain extends AppNavigationFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
+        mListView.setHasFixedSize(false);
+        mListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mListView.setItemAnimator(new DefaultItemAnimator());
         mListView.setAdapter(mAdapter);
         return view;
     }
