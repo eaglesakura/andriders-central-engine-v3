@@ -38,31 +38,25 @@ dependencies {
         androidTestCompile project(":eglibrary:android-devicetest-support")
         testCompile project(":eglibrary:android-unittest-support")
     } else {
-        compile 'com.eaglesakura:simple-logger:+'
-        compile 'com.eaglesakura:simple-utils:+'
-        compile 'com.eaglesakura:simple-serialize:+'
-        compile 'com.eaglesakura:geo-utils:+'
-        compile 'com.eaglesakura:android-simple-utils:+'
-        compile 'com.eaglesakura:android-thread:+'
-        compile 'com.eaglesakura:android-text-kvs:+'
-        compile 'com.eaglesakura:android-bluetooth:+'
-        compile 'com.eaglesakura:android-command-service:+'
-        compile 'com.eaglesakura:android-canvas-graphics:+'
-        compile 'com.eaglesakura:android-net:+'
-        compile 'com.eaglesakura:android-framework:+'
-        compile 'com.eaglesakura:android-gms:+'
-        compile 'com.eaglesakura:android-firebase:+'
-        compile 'com.eaglesakura:rxandroid-support:+'
-        compile 'com.eaglesakura:onactivityresult-invoke:+'
-        compile 'com.eaglesakura:greendao-wrapper:+'
-        compile 'com.eaglesakura:small-aquery:+'
-        compile 'com.eaglesakura:margarineknife:1.+'
+        compile 'com.eaglesakura:sloth-framework:3.25.0.12'
+        compile 'com.eaglesakura:android-bluetooth:1.1.452'
+        compile 'com.eaglesakura:android-gms:1.10.1.108'
+        compile 'com.eaglesakura:android-firebase:1.10.1.134'
+        compile 'com.eaglesakura:greendao-wrapper:2.2.459'
 
         /**
          * UnitTest
          */
-        androidTestCompile 'com.eaglesakura:android-devicetest-support:2.+'
-        testCompile 'com.eaglesakura:android-unittest-support:1.+'
+        androidTestCompile("com.eaglesakura:android-devicetest-support:2.1.273") {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+            exclude(group: "com.android.support")
+        }
+        testCompile('com.eaglesakura:android-unittest-support:1.4.208') {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+            exclude(group: "com.android.support")
+        }
     }
 
 
