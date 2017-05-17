@@ -4,7 +4,7 @@ buildscript {
         maven { url "https://dl.bintray.com/eaglesakura/maven/" }
     }
     dependencies {
-        classpath "com.eaglesakura:sloth-plugin:1.0.12"
+        classpath "com.eaglesakura:sloth-plugin:1.0.13"
     }
 }
 
