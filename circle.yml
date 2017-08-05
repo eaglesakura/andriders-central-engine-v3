@@ -28,7 +28,7 @@ test:
       - ./script/circleci-build-assemble.sh
 deployment:
   feature:
-    branch: /^feature\/id\/.*$/
+    branch: /^feature\/.*$/
     commands:
       - cp -r ./ci-release $CIRCLE_ARTIFACTS
   develop:
