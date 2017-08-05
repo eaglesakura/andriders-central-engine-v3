@@ -16,7 +16,7 @@ find . -type f -regex ".*/build/test-results/googleplayDebug/.*xml" -exec cp {} 
 }
 
 # テスト実行
-./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1  \
+./gradlew -PpreDexEnable=false \
           :app:testGoogleplayDebugUnitTest
 
 

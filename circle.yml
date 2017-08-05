@@ -5,7 +5,6 @@ checkout:
     - chmod 755 ./script/circleci-build-testing.sh
     - chmod 755 ./script/circleci-deploy-deploygate.sh
     - chmod 755 ./script/developer-install-private.sh
-    - git submodule update --init
 machine:
   timezone:
     Asia/Tokyo

@@ -1,8 +1,9 @@
 #! /bin/sh
 
 # ビルド
-./gradlew -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1  \
-          :app:assembleGoogleplayDebug :app:assembleGoogleplayRelease \
+./gradlew -PpreDexEnable=false \
+          :app:assembleGoogleplayDebug \
+          :app:assembleGoogleplayRelease \
           ciCollectAndroidApps
 
 # lint check
