@@ -11,7 +11,7 @@ if [ ! -e $REPOSITORY ]; then
   git clone git@github.com:eaglesakura/$REPOSITORY.git $DIRECTORY
 fi
 
-cd $REPOSITORY
+cd $DIRECTORY
 git config core.filemode false
 git fetch
 git checkout -f $BRANCH
