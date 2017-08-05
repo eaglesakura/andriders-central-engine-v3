@@ -21,8 +21,11 @@ obj/
 latex/
 dependencies.txt
 
+# 秘密鍵等のプライベートファイル
+app/sign
+
 # 外部ライブラリ
 # 必要に応じてsyncする
-ace-private/
 eglibrary/
 private/
+ace-private/
