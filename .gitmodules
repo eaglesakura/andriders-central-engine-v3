@@ -1,3 +1,0 @@
-[submodule "sdk"]
-	path = sdk
-	url = git@github.com:eaglesakura/andriders-central-engine-sdk.git

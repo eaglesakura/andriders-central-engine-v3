@@ -80,7 +80,7 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
     public void 近接コマンドのBootを行える() throws Throwable {
         // 1秒経過ごとにフィードバックされる
         for (int i = 0; i < 4; ++i) {
-            PendingCallbackQueue callbackQueue = PendingCallbackQueue.newUnitTestController();
+            PendingCallbackQueue callbackQueue = new PendingCallbackQueue();
             Clock clock = new Clock(System.currentTimeMillis());
 
             IntHolder holder = new IntHolder(-1);

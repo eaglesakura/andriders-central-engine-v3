@@ -46,7 +46,7 @@ public class GpxImporterTest extends AppUnitTestCase {
     public void GPXのサンプルファイルからパースを行える_AACR2015() throws Throwable {
         GpxImporter build = new GpxImporter.Builder(getContext())
                 .parser(GpxParser.DateOption.None)
-                .file(new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
+                .file(new File("src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
                 .build();
 
         IntHolder gpxSegmentNum = new IntHolder();
@@ -103,7 +103,7 @@ public class GpxImporterTest extends AppUnitTestCase {
     public void GPXのサンプルデータを書き込める_AACR2015() throws Throwable {
         GpxImporter build = new GpxImporter.Builder(getContext())
                 .parser(GpxParser.DateOption.None)
-                .file(new File("../sdk/src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
+                .file(new File("src/test/assets/gpx/sample-aacr2015.gpx").getAbsoluteFile())
                 .build();
 
         LongHolder firstSession = new LongHolder();
@@ -232,7 +232,7 @@ public class GpxImporterTest extends AppUnitTestCase {
     public void GPXのサンプルデータを書き込める_AACR2016() throws Throwable {
         GpxImporter build = new GpxImporter.Builder(getContext())
                 .parser(GpxParser.DateOption.None)
-                .file(new File("../sdk/src/test/assets/gpx/sample-aacr2016.gpx").getAbsoluteFile())
+                .file(new File("src/test/assets/gpx/sample-aacr2016.gpx").getAbsoluteFile())
                 .build();
 
         SessionImportCommitter committer = new SessionImportCommitter(getContext()) {
@@ -333,7 +333,7 @@ public class GpxImporterTest extends AppUnitTestCase {
                 };
             }
         }.parser(GpxParser.DateOption.None)
-                .file(new File("../sdk/src/test/assets/gpx/sample-aacr2016.gpx").getAbsoluteFile())
+                .file(new File("src/test/assets/gpx/sample-aacr2016.gpx").getAbsoluteFile())
                 .build();
 
         build.install(new SessionImporter.Listener() {

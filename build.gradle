@@ -1,16 +1,14 @@
 buildscript {
     repositories {
-//        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
+        maven { url "https://maven.google.com" }
         jcenter()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
         maven { url "https://dl.bintray.com/eaglesakura/maven/" }
+        maven { url 'https://jitpack.io' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'  // for AS 2.2.x
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha9'  // for AS 2.2.x
         classpath "com.eaglesakura:plugin-ci-support:1.2.200"
-        classpath 'me.tatarka:gradle-retrolambda:3.5.0'
         classpath 'com.google.gms:google-services:3.0.0'
 
         // Generator Plugins
@@ -18,33 +16,27 @@ buildscript {
         classpath "com.eaglesakura:plugin-android-mipmap:1.1.156"
 
         // Notifications
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.3'
+//        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.3'
         classpath 'com.github.operando:gradle-slack-plugin:1.1.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
 
         // Deploy
-        classpath 'com.deploygate:gradle:0.6'
+        classpath 'com.deploygate:gradle:1.1.3'
     }
 }
 
 allprojects {
     repositories {
+        maven { url "https://maven.google.com" }
         jcenter()
-        mavenCentral()
-        maven { url "https://clojars.org/repo/" }
         maven { url "https://dl.bintray.com/eaglesakura/maven/" }
-//        maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
+        maven { url 'https://jitpack.io' }
+        maven { url "https://clojars.org/repo/" }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-// 各グローバル設定
-ext {
-    ANDROID_SUPPORT_LIB_VERSION = "25.3.1"
-    ANDROID_PLAYSERVICE_LIB_VERSION = "10.2.0"
 }
 
 // APIキー等の隠蔽したいデータを配置

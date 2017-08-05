@@ -1,22 +1,28 @@
 // バージョン名
 // ${メジャーバージョン}.${機能バージョン}.${ビルド番号}
 // 3.0.x  : モジュール細分化バージョン
-def ACES_APP_VERSION = "3.0"
-def ACES_SDK_VERSION = "3.0.+"
+def ACE_APP_VERSION = "3.0"
+def ACE_SDK_VERSION = "3.0.build-590"
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url "https://dl.bintray.com/eaglesakura/maven/" }
-    }
-    dependencies {
-        classpath "com.eaglesakura:plugin-ci-support:1.2.200"
-    }
-}
 apply plugin: 'com.android.application'
 apply plugin: 'com.eaglesakura.ci-support'
-apply plugin: 'me.tatarka.retrolambda' /* Android Lambda */
+
+/**
+ * Android Studioでのビルドとそれ以外を切り分ける
+ */
+if (project.hasProperty("devBuild")) {
+    ext.ANDROID_STUDIO = true
+    ext.ANDROID_BUILD_DATE = "\"date-devBuild\""
+    ext.ANDROID_BUILD_ON_CI = "${Boolean.FALSE}"
+    ext.ANDROID_BUILD_NUMBER = 1
+    ext.ANDROID_BUILD_NAME = "${ACE_APP_VERSION}.devBuild"
+} else {
+    ext.ANDROID_STUDIO = false
+    ext.ANDROID_BUILD_DATE = "\"${eglibrary.ci.buildDate}\""
+    ext.ANDROID_BUILD_ON_CI = "${eglibrary.ci.ciRunning}"
+    ext.ANDROID_BUILD_NUMBER = eglibrary.ci.buildVersionCode as int
+    ext.ANDROID_BUILD_NAME = "${ACE_APP_VERSION}${getArtifactVersionSuffix()}"
+}
 
 configurations {
     all*.exclude group: "com.google.code.findbugs", module: "jsr305"
@@ -24,100 +30,125 @@ configurations {
 }
 
 dependencies {
-    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
-    if (EGLIBRARY_COMPILE_LOCAL) {
-        compile project(':eglibrary:sloth-framework')
-        compile project(":eglibrary:android-gms")
-        compile project(":eglibrary:android-firebase")
-        compile project(':eglibrary:android-bluetooth')
-        compile project(':eglibrary:greendao-wrapper')
-
-        /**
-         * UnitTest
-         */
-        androidTestCompile project(":eglibrary:android-devicetest-support")
-        testCompile project(":eglibrary:android-unittest-support")
-    } else {
-        compile 'com.eaglesakura:sloth-framework:3.25.0.12'
-        compile 'com.eaglesakura:android-bluetooth:1.1.452'
-        compile 'com.eaglesakura:android-gms:1.10.1.108'
-        compile 'com.eaglesakura:android-firebase:1.10.1.134'
-        compile 'com.eaglesakura:greendao-wrapper:2.2.459'
-
-        /**
-         * UnitTest
-         */
-        androidTestCompile("com.eaglesakura:android-devicetest-support:2.1.273") {
-            exclude(group: "com.eaglesakura", module: "java-commons")
-            exclude(group: "com.eaglesakura", module: "android-commons")
-            exclude(group: "com.android.support")
-        }
-        testCompile('com.eaglesakura:android-unittest-support:1.4.208') {
-            exclude(group: "com.eaglesakura", module: "java-commons")
-            exclude(group: "com.eaglesakura", module: "android-commons")
-            exclude(group: "com.android.support")
-        }
-    }
-
-
     if (ACESDK_COMPILE_LOCAL) {
-        compile project(':sdk')
+        implementation project(':sdk')
     } else {
-        compile "com.eaglesakura:andriders-central-engine-sdk:${ACES_SDK_VERSION}"
+        implementation "com.eaglesakura:andriders-central-engine-sdk:${ACE_SDK_VERSION}"
     }
 
+    testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+    implementation 'com.eaglesakura:greendao-wrapper:2.4.0'
+    // FIXME 正式ビルドに切り替える
+    implementation("com.eaglesakura:garnet:1.2.build-209") {
+        exclude(group: "com.eaglesakura", module: "java-commons")
+        exclude(group: "com.eaglesakura", module: "android-commons")
+    }
+    // FIXME 正式ビルドに切り替える
+    implementation("com.eaglesakura:sloth-framework:4.0.build-74") {
+        exclude(group: "com.eaglesakura", module: "java-commons")
+        exclude(group: "com.eaglesakura", module: "android-commons")
+        exclude(group: "com.eaglesakura", module: "garnet")
+    }
+    // FIXME 正式ビルドに切り替える
+    implementation("com.eaglesakura:android-bluetooth:1.3.build-473") {
+        exclude(group: "com.eaglesakura", module: "java-commons")
+        exclude(group: "com.eaglesakura", module: "android-commons")
+    }
+    // FIXME 正式ビルドに切り替える
+    implementation("com.eaglesakura:android-gms:2.0.build-124") {
+        exclude(group: "com.eaglesakura", module: "java-commons")
+        exclude(group: "com.eaglesakura", module: "android-commons")
+        exclude(group: "com.google.android.gms")
+        exclude(group: "com.google.android.firebase")
+    }
+    implementation("com.eaglesakura:android-firebase:2.0.build-151") {
+        exclude(group: "com.eaglesakura", module: "java-commons")
+        exclude(group: "com.eaglesakura", module: "android-commons")
+        exclude(group: "com.google.android.gms")
+        exclude(group: "com.google.android.firebase")
+    }
+
+    /**
+     * UnitTest
+     */
+    androidTestImplementation("com.eaglesakura:android-devicetest-support:2.3.1") {
+        exclude(group: "com.eaglesakura", module: "java-commons")
+        exclude(group: "com.eaglesakura", module: "android-commons")
+        exclude(group: "com.android.support")
+    }
+    testImplementation("com.eaglesakura:android-unittest-support:1.6.0") {
+        exclude(group: "com.eaglesakura", module: "java-commons")
+        exclude(group: "com.eaglesakura", module: "android-commons")
+        exclude(group: "com.android.support")
+    }
     /**
      * support libs
      */
-    compile "com.android.support:support-v4:${ANDROID_SUPPORT_LIB_VERSION}"
-    compile "com.android.support:appcompat-v7:${ANDROID_SUPPORT_LIB_VERSION}"
-    compile "com.android.support:cardview-v7:${ANDROID_SUPPORT_LIB_VERSION}"
-    compile "com.android.support:recyclerview-v7:${ANDROID_SUPPORT_LIB_VERSION}"
-    compile "com.android.support:palette-v7:${ANDROID_SUPPORT_LIB_VERSION}"
-    compile "com.android.support:design:${ANDROID_SUPPORT_LIB_VERSION}"
-    compile "com.android.support:support-vector-drawable:${ANDROID_SUPPORT_LIB_VERSION}"
+    implementation "com.android.support:support-v4:26.0.0"
+    implementation "com.android.support:appcompat-v7:26.0.0"
+    implementation "com.android.support:cardview-v7:26.0.0"
+    implementation "com.android.support:recyclerview-v7:26.0.0"
+    implementation "com.android.support:palette-v7:26.0.0"
+    implementation "com.android.support:design:26.0.0"
+    implementation "com.android.support:support-vector-drawable:26.0.0"
+
+    /**
+     * Android Architecture Components
+     */
+    implementation "android.arch.lifecycle:runtime:1.0.0-alpha8"
+    implementation "android.arch.lifecycle:extensions:1.0.0-alpha8"
+    annotationProcessor "android.arch.lifecycle:compiler:1.0.0-alpha8"
+
+    // Room O/R Mapper
+    implementation "android.arch.persistence.room:runtime:1.0.0-alpha8"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha8"
+
     /**
      * Play Service
      */
-    compile "com.google.android.gms:play-services-fitness:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.android.gms:play-services-location:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.android.gms:play-services-maps:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.android.gms:play-services-auth:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    implementation "com.google.android.gms:play-services-fitness:11.0.4"
+    implementation "com.google.android.gms:play-services-location:11.0.4"
+    implementation "com.google.android.gms:play-services-maps:11.0.4"
+    implementation "com.google.android.gms:play-services-auth:11.0.4"
 
     /**
      * Firebase
      */
-    compile "com.google.firebase:firebase-core:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.firebase:firebase-auth:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.firebase:firebase-config:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.google.firebase:firebase-database:${ANDROID_PLAYSERVICE_LIB_VERSION}"
-    compile "com.android.support:support-annotations:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    implementation "com.google.firebase:firebase-core:11.0.4"
+    implementation "com.google.firebase:firebase-auth:11.0.4"
+    implementation "com.google.firebase:firebase-config:11.0.4"
+    implementation "com.google.firebase:firebase-database:11.0.4"
+    implementation "com.android.support:support-annotations:11.0.4"
     // Firebase Crashはリリース時のみで良い
-    releaseCompile "com.google.firebase:firebase-crash:${ANDROID_PLAYSERVICE_LIB_VERSION}"
+    releaseImplementation"com.google.firebase:firebase-crash:11.0.4"
 
     // UI Library
-    compile 'com.edmodo:rangebar:1.0.0' // Zone Setting
+    implementation 'com.edmodo:rangebar:1.0.0' // Zone Setting
 
     /**
      * Smooth ProgressBar
      * https://github.com/castorflex/SmoothProgressBar
      */
-    compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
+    implementation 'com.github.castorflex.smoothprogressbar:library:1.1.0'
 
     // Remote Debug
-    debugCompile 'com.deploygate:sdk:3.1.1'
+    debugImplementation'com.deploygate:sdk:3.1.1'
 
     // SQLite JSON
-    androidTestCompile 'com.eaglesakura:android-sqliteX:3.16.1.8'
+    androidTestImplementation 'com.eaglesakura:android-sqliteX:3.16.1.8'
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
+
+    if (ANDROID_STUDIO) {
+        aaptOptions.cruncherEnabled = false
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     dataBinding {
@@ -127,12 +158,12 @@ android {
     defaultConfig {
         applicationId "com.eaglesakura.andriders.v3"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 26
+        multiDexEnabled true
 
-//        versionCode 99999;
-        versionCode eglibrary.ci.buildVersionCode as int
-        versionName "${ACES_APP_VERSION}${getArtifactVersionSuffix()}"
-        vectorDrawables.useSupportLibrary = true        // using vector drawable
+        versionCode ANDROID_BUILD_NUMBER
+        versionName ANDROID_BUILD_NAME
+        vectorDrawables.useSupportLibrary = true        // using vector getDrawable
 
         // add BuildConfig
         buildConfigField "String", "BUILD_DATE", "\"${eglibrary.ci.buildDate}\""
@@ -147,22 +178,14 @@ android {
     }
 
     sourceSets {
-        main {
-            java.srcDirs += [
-                    'src/main/gen/java',
-                    // 内蔵プラグイン
-                    'src/main/plugin',
-            ]
-            res.srcDirs += [
-                    "private/main/res"
-            ];
-        }
-    }
-
-    dexOptions {
-        // memo: http://developer.covelline.com/2015/06/circle-ci/
-        javaMaxHeapSize eglibrary.ci.ciRunning ? "2g" : "4g"
-        preDexLibraries !eglibrary.ci.ciRunning
+        main.java.srcDirs += [
+                'src/main/gen/java',
+                'src/main/plugin',  // 内蔵プラグイン
+        ]
+        main.res.srcDirs += [
+                "private/main/res"
+        ]
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())   // Room generated
     }
 
     testOptions {
@@ -172,6 +195,7 @@ android {
             }
         }
     }
+
     // 署名設定
     signingConfigs {
         debug {
@@ -192,9 +216,9 @@ android {
     buildTypes {
         debug {
             // Pluginとの連携やデバッグを楽にするため、Package名は共通にする
-//            applicationIdSuffix ".debug"
             versionNameSuffix ".debug"    // バージョン名にデバッグフラグを付与する
             signingConfig signingConfigs.debug
+            ext.alwaysUpdateBuildId = false
         }
 
         release {
@@ -202,15 +226,40 @@ android {
         }
     }
 
+    /**
+     * ビルドフレーバー種別一覧
+     *
+     * ide: 開発/ビルド環境
+     */
+    flavorDimensions "ide"
+
     productFlavors {
-        // for googleplay release
+        /**
+         * Android Studioでのローカルビルド設定
+         */
         develop {
+            dimension "ide"
+            applicationId "org.andriders.ace"
+
             minSdkVersion 21
-            applicationId "org.andriders.ace"
+
+            /**
+             * 日本語とxxxhdpiリソースのみを残す
+             */
+            resConfigs "ja", DEVELOER_TARGET_RESOURCE_DPI
         }
-        // for googleplay release
+
+        /**
+         * デプロイ / ビルドマシン用設定
+         */
         googleplay {
+            dimension "ide"
             applicationId "org.andriders.ace"
+
+            /**p
+             * 日本語と英語リソースのみを残す
+             */
+            resConfigs "en", "ja"
         }
     }
 
@@ -229,26 +278,13 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/services/com.google.**'
         exclude "**/**annotations.gwt.xml"
         exclude "**/**-setter_store.bin"
         exclude "**/**-layoutinfo.bin"
         exclude "**/**-br.bin"
-    }
-}
-
-/**
- * UnitTest & retro lambda
- */
-tasks.withType(Test) {
-    project.tasks
-            .findAll {
-        task -> (task.name ==~ /compile.*?TestJava.*?/)
-    }
-    .each { task ->
-        task.doFirst {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
-        }
+        exclude "build-data.properties"
+        exclude "protobuf.meta"
     }
 }
 
@@ -280,16 +316,6 @@ slack {
     enabled = eglibrary.ci.ciRunning
 //    enabled = true
     gitInfo = true
-}
-
-apply plugin: 'com.getkeepsafe.dexcount'
-dexcount {
-    format = "json"
-    includeClasses = false
-    includeFieldCount = true
-    includeTotalMethodCount = true
-    orderByMethodCount = true
-    verbose = false
 }
 
 // Apply Google Play Service Data

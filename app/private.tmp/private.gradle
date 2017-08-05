@@ -1,21 +1,15 @@
 /**
  * Open化できないデータをここに配置する。
  */
+ext.DEVELOER_TARGET_RESOURCE_DPI = "xxhdpi"
 
 /**
  * ライブラリをソースコード単位でビルドする場合はtrueを指定する。
- * 下記のコマンドを実行し、ライブラリがリンクしているsubmoduleを全て同期しなければならない。
  */
-ext.EGLIBRARY_COMPILE_LOCAL = false
 ext.ACESDK_COMPILE_LOCAL = false
-
-// 強制的にコンパイル済Jarを使用する
-if ("true" == "${System.properties["app.lib_no_compile"]}") {
-    println("Libs, Using maven repository")
-    ext.EGLIBRARY_COMPILE_LOCAL = false;
-} else {
-    println("Libs, Using local projects, using maven -> `-Dapp.lib_no_compile=true`")
-}
+ext.EGLIBRARY_COMPILE_PROJECT_ANDROID_BLUETOOTH = true  // Bluetoothを利用する
+ext.EGLIBRARY_COMPILE_PROJECT_ANDROID_FRAMEWORK = true   // アプリフレームワークを使用する
+ext.EGLIBRARY_COMPILE_PROJECT_ANDROID_FRAMEWORK_PLAYSERVICE = true
 
 /**
  * デバッグ用署名設定

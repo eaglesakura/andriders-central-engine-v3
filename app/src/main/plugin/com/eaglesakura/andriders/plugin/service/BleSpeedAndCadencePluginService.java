@@ -119,7 +119,7 @@ public class BleSpeedAndCadencePluginService extends Service implements AcePlugi
      * @param display        通知送信先
      * @param cancelCallback デフォルトのキャンセルチェック
      */
-    private void deviceConnectLoop(String address, CentralEngineSessionData centralData, DisplayDataSender display, CancelCallback cancelCallback) throws Throwable {
+    private void deviceConnectLoop(String address, CentralEngineSessionData centralData, DisplayDataSender display, CancelCallback cancelCallback) throws Exception {
 
         Drawable NOTIFICATION_ICON = DrawableUtil.getVectorDrawable(this, R.drawable.ic_speed, R.color.App_Icon_Grey);
 

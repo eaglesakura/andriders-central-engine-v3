@@ -6,13 +6,8 @@ import com.eaglesakura.andriders.system.context.AppSettings;
 import static junit.framework.Assert.assertEquals;
 
 public class TestAppContextProvider extends AppContextProvider {
-    static int sCallSettingsCount;
-
-
     @Override
     public AppSettings provideSettings() {
-        assertEquals(++sCallSettingsCount, 1);  // シングルトンであることを保証する
-
         AppSettings settings = super.provideSettings();
 
         // 計算を確定させるため、フィットネスデータを構築する
