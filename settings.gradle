@@ -1,5 +1,22 @@
 apply from: "private/private.gradle"
 
+if (EGLIBRARY_COMPILE_JAVA_COMMONS) {
+    include ':eglibrary:java-commons'
+}
+if (EGLIBRARY_COMPILE_ANDROID_COMMONS) {
+    include ':eglibrary:android-commons'
+}
+if (EGLIBRARY_COMPILE_ANDROID_BLUETOOTH) {
+    include ':eglibrary:android-bluetooth'
+}
+if (EGLIBRARY_COMPILE_SLOTH_FRAMEWORK) {
+    include ':eglibrary:sloth-framework'
+}
+if (EGLIBRARY_COMPILE_ANDROID_PLAYSERVICE) {
+    include ':eglibrary:android-gms'
+    include ':eglibrary:android-firebase'
+}
+
 if (ACESDK_COMPILE_LOCAL) {
     include ':sdk'
 }
