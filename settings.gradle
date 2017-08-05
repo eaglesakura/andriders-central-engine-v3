@@ -1,4 +1,4 @@
-apply from: "app/private/private.gradle"
+apply from: "private/private.gradle"
 
 if (ACESDK_COMPILE_LOCAL) {
     include ':sdk'

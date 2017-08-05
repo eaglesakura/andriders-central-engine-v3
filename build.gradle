@@ -40,5 +40,5 @@ task clean(type: Delete) {
 }
 
 // APIキー等の隠蔽したいデータを配置
-apply from: "app/private/private.gradle"
+apply from: "private/private.gradle"
 apply from: "deploy.gradle"
