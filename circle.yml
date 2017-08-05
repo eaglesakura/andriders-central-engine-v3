@@ -21,7 +21,7 @@ dependencies:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk-auto.sh)"
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-extra-repo.sh)"
     - ./script/developer-install-private.sh
-    - ./gradlew --refresh-dependencies :app:dependencies
+    - ./gradlew :app:dependencies
 test:
   override:
       - ./script/circleci-build-testing.sh
