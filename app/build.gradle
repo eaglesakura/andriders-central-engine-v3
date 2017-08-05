@@ -31,12 +31,41 @@ configurations {
 
 dependencies {
     if (ACESDK_COMPILE_LOCAL) {
-        implementation project(':sdk')
+        implementation(project(':sdk')) {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+        }
     } else {
-        implementation "com.eaglesakura:andriders-central-engine-sdk:${ACE_SDK_VERSION}"
+        implementation("com.eaglesakura:andriders-central-engine-sdk:${ACE_SDK_VERSION}") {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+        }
     }
 
-    testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+    if (!EGLIBRARY_COMPILE_JAVA_COMMONS) {
+        // FIXME 正式ビルドに切り替える
+        implementation "com.eaglesakura:java-commons:2.2.build-21"
+    } else {
+        implementation project(':eglibrary:java-commons')
+    }
+
+    if (!EGLIBRARY_COMPILE_ANDROID_COMMONS) {
+        // FIXME 正式ビルドに切り替える
+        implementation("com.eaglesakura:android-commons:2.3.3") {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+        }
+    } else {
+        implementation(project(':eglibrary:android-commons')) {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+        }
+    }
+
+    // FIXME 正式ビルドに切り替える
+    implementation("com.eaglesakura:garnet:1.2.build-209") {
+        exclude(group: "com.eaglesakura", module: "java-commons")
+        exclude(group: "com.eaglesakura", module: "android-commons")
+    }
+
     implementation 'com.eaglesakura:greendao-wrapper:2.4.0'
     // FIXME 正式ビルドに切り替える
     implementation("com.eaglesakura:garnet:1.2.build-209") {
@@ -49,28 +78,51 @@ dependencies {
         exclude(group: "com.eaglesakura", module: "android-commons")
         exclude(group: "com.eaglesakura", module: "garnet")
     }
-    // FIXME 正式ビルドに切り替える
-    implementation("com.eaglesakura:android-bluetooth:1.3.build-473") {
-        exclude(group: "com.eaglesakura", module: "java-commons")
-        exclude(group: "com.eaglesakura", module: "android-commons")
+
+    if (!EGLIBRARY_COMPILE_ANDROID_BLUETOOTH) {
+        // FIXME 正式ビルドに切り替える
+        implementation("com.eaglesakura:android-bluetooth:1.3.build-473") {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+        }
+    } else {
+        implementation(project(':eglibrary:android-bluetooth')) {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+        }
     }
-    // FIXME 正式ビルドに切り替える
-    implementation("com.eaglesakura:android-gms:2.0.build-124") {
-        exclude(group: "com.eaglesakura", module: "java-commons")
-        exclude(group: "com.eaglesakura", module: "android-commons")
-        exclude(group: "com.google.android.gms")
-        exclude(group: "com.google.android.firebase")
-    }
-    implementation("com.eaglesakura:android-firebase:2.0.build-151") {
-        exclude(group: "com.eaglesakura", module: "java-commons")
-        exclude(group: "com.eaglesakura", module: "android-commons")
-        exclude(group: "com.google.android.gms")
-        exclude(group: "com.google.android.firebase")
+
+    if (!EGLIBRARY_COMPILE_ANDROID_PLAYSERVICE) {
+        // FIXME 正式ビルドに切り替える
+        implementation("com.eaglesakura:android-gms:2.0.build-124") {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+            exclude(group: "com.google.android.gms")
+            exclude(group: "com.google.android.firebase")
+        }
+        implementation("com.eaglesakura:android-firebase:2.0.build-151") {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+            exclude(group: "com.google.android.gms")
+            exclude(group: "com.google.android.firebase")
+        }
+    } else {
+        implementation(project(':eglibrary:android-gms')) {
+            exclude(group: "com.google.android.gms")
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+        }
+        implementation(project(':eglibrary:android-firebase')) {
+            exclude(group: "com.eaglesakura", module: "java-commons")
+            exclude(group: "com.eaglesakura", module: "android-commons")
+            exclude(group: "com.eaglesakura", module: "android-gms")
+        }
     }
 
     /**
      * UnitTest
      */
+    testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     androidTestImplementation("com.eaglesakura:android-devicetest-support:2.3.1") {
         exclude(group: "com.eaglesakura", module: "java-commons")
         exclude(group: "com.eaglesakura", module: "android-commons")
@@ -120,7 +172,7 @@ dependencies {
     implementation "com.google.firebase:firebase-config:11.0.4"
     implementation "com.google.firebase:firebase-database:11.0.4"
     // Firebase Crashはリリース時のみで良い
-    releaseImplementation"com.google.firebase:firebase-crash:11.0.4"
+    releaseImplementation "com.google.firebase:firebase-crash:11.0.4"
 
     // UI Library
     implementation 'com.edmodo:rangebar:1.0.0' // Zone Setting
@@ -132,7 +184,7 @@ dependencies {
     implementation 'com.github.castorflex.smoothprogressbar:library:1.1.0'
 
     // Remote Debug
-    debugImplementation'com.deploygate:sdk:3.1.1'
+    debugImplementation 'com.deploygate:sdk:3.1.1'
 
     // SQLite JSON
     androidTestImplementation 'com.eaglesakura:android-sqliteX:3.16.1.8'
@@ -293,9 +345,16 @@ android {
  * CircleCIの場合、バージョン末尾にビルド番号を付与する
  */
 def getArtifactVersionSuffix() {
+    String CIRCLE_TAG = System.env.CIRCLE_TAG
+
+    if (CIRCLE_TAG != null) {
+        // TAGがある場合それを直接利用する
+        return ""
+    }
+
     if (System.env.CIRCLE_BUILD_NUM != null) {
         // CircleCIのバージョンが指定されているので、そちらを利用する
-        return ".${System.env.CIRCLE_BUILD_NUM}"
+        return ".build-${System.env.CIRCLE_BUILD_NUM}"
     } else {
         return ".snapshot"
     }
