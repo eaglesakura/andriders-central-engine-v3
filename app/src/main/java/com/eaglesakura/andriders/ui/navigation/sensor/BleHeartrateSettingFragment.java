@@ -48,14 +48,14 @@ public class BleHeartrateSettingFragment extends BleFitnessSensorSettingFragment
         if (StringUtil.isEmpty(BLE_ADDRESS)) {
             AppDialogBuilder.newAlert(getContext(), R.string.Message_Sensor_BleDeviceNotSelected)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
             return;
         }
 
         View content = LayoutInflater.from(getContext()).inflate(R.layout.sensor_gadgets_ble_heartrate_testing, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Word_Sensor_Testing), content)
                 .positiveButton(R.string.EsMaterial_Dialog_Close, null)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
         asyncQueue(task -> {
             CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).build();
             BlePeripheralDeviceConnection connection = new BlePeripheralDeviceConnection(getContext(), BLE_ADDRESS);

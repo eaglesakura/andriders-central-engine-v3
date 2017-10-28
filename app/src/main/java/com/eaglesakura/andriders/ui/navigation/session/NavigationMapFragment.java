@@ -112,7 +112,7 @@ public class NavigationMapFragment extends AppFragment {
         mCentralDataReceiver.addHandler(mLocationHandlerImpl);
 
         mSessionControlBus = FragmentUtil.findInterface(this, getContext(), SessionControlBus.Holder.class).getSessionControlBus();
-        mSessionControlBus.bind(getLifecycle(), this);
+        mSessionControlBus.bind(getFragmentLifecycle(), this);
 
         mImageLoader = FragmentUtil.findInterface(this, getContext(), AppImageLoader.Holder.class).getImageLoader();
         return view;
@@ -163,7 +163,7 @@ public class NavigationMapFragment extends AppFragment {
     protected void onGoogleMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
         if (!mLocationInitialized) {
-            getLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.CurrentForeground, (BackgroundTask<Location> task) -> {
+            getFragmentLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.CurrentForeground, (BackgroundTask<Location> task) -> {
                 CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).build();
                 try (PlayServiceConnection connection = PlayServiceConnection.newInstance(newLocationClient(getContext()), cancelCallback)) {
                     return LocationServices.FusedLocationApi.getLastLocation(connection.getClient());

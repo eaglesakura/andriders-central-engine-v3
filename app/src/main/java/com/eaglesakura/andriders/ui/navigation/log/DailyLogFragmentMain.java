@@ -161,7 +161,7 @@ public class DailyLogFragmentMain extends AppNavigationFragment
                     deleteSession(session);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     /**
@@ -180,7 +180,7 @@ public class DailyLogFragmentMain extends AppNavigationFragment
         }).finalized(task -> {
             AppDialogBuilder.newInformation(getContext(), R.string.Message_Log_SessionDeleted)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
             mAdapter.getCollection().remove(session);
 
             // 親に動作を伝える
@@ -196,7 +196,7 @@ public class DailyLogFragmentMain extends AppNavigationFragment
      */
     @UiThread
     void loadSession(CardAdapter.CardBind<SessionHeader> bind) {
-        getLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
+        getFragmentLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
             CancelCallback cancelCallback = SupportCancelCallbackBuilder.from(task).or(bind).build();
             return mCentralLogManager.loadSessionStatistics(bind.getItem(), cancelCallback);
         }).completed((result, task) -> {

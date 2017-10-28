@@ -47,7 +47,7 @@ public class LayoutAppSelectFragment extends AppFragment {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
 
     }
@@ -60,10 +60,10 @@ public class LayoutAppSelectFragment extends AppFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_appselect_dialog, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Command_ChooseApp), view)
                 .fullScreen(true)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
 
         RecyclerView supportRecyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof RecyclerView));
-        IconItemAdapter<DisplayLayoutApplication> adapter = new IconItemAdapter<DisplayLayoutApplication>(getLifecycle()) {
+        IconItemAdapter<DisplayLayoutApplication> adapter = new IconItemAdapter<DisplayLayoutApplication>(getFragmentLifecycle()) {
             @Override
             protected Context getContext() {
                 return getActivity();

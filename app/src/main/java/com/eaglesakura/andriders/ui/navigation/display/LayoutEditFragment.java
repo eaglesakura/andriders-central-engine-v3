@@ -103,7 +103,7 @@ public class LayoutEditFragment extends AppFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.display_setup_appselect_dialog, null, false);
         Dialog dialog = AppDialogBuilder.newCustomContent(getContext(), getString(R.string.Title_Display_Choose), view)
                 .fullScreen(true)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
 
         RecyclerView recyclerView = ViewUtil.findViewByMatcher(view, it -> (it instanceof RecyclerView));
         CardAdapter<DisplayKeyBind> adapter = newSelectorAdapter((plugin, displayKey) -> {

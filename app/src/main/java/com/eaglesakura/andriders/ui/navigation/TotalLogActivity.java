@@ -55,7 +55,7 @@ public class TotalLogActivity extends AppNavigationActivity implements TotalLogF
         AppDialogBuilder.newError(this, error)
                 .positiveButton(R.string.Word_Common_OK, () -> finish())
                 .cancelable(false)
-                .show(getLifecycle());
+                .show(getActivityLifecycle());
     }
 
     @Override

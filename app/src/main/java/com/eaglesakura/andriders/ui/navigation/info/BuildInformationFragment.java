@@ -90,7 +90,7 @@ public class BuildInformationFragment extends AppFragment {
         if (enabled) {
             AppDialogBuilder.newAlert(getContext(), R.string.Message_Debug_Enable)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }
     }
 

@@ -45,7 +45,7 @@ public class DisplayLayoutSettingActivity extends AppNavigationActivity implemen
                     startActivity(intent);
                 })
                 .dismissed(() -> finish())
-                .show(getLifecycle());
+                .show(getActivityLifecycle());
     }
 
     @Override
@@ -54,6 +54,6 @@ public class DisplayLayoutSettingActivity extends AppNavigationActivity implemen
         AppDialogBuilder.newError(this, error)
                 .positiveButton(R.string.EsMaterial_Dialog_Close, () -> finish())
                 .cancelable(false)
-                .show(getLifecycle());
+                .show(getActivityLifecycle());
     }
 }

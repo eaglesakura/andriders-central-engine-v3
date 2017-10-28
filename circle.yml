@@ -1,10 +1,7 @@
 checkout:
   post:
     - chmod 755 ./gradlew
-    - chmod 755 ./script/circleci-build-assemble.sh
-    - chmod 755 ./script/circleci-build-testing.sh
-    - chmod 755 ./script/circleci-deploy-deploygate.sh
-    - chmod 755 ./script/developer-install-private.sh
+    - chmod -R 755 ./script
 machine:
   timezone:
     Asia/Tokyo
@@ -18,8 +15,7 @@ dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
   override:
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk-auto.sh)"
-    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-extra-repo.sh)"
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk-auto.sh?CIRCLE_BUILD_NUM=${CIRCLE_BUILD_NUM})"
     - ./script/developer-install-private.sh
     - ./gradlew :app:dependencies
 test:

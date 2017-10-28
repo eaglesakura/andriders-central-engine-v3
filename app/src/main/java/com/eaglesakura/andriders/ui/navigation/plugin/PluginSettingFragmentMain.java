@@ -81,7 +81,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
     @Override
     public void onResume() {
         super.onResume();
-        getLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<CentralPluginCollection> task) -> {
+        getFragmentLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, (BackgroundTask<CentralPluginCollection> task) -> {
             SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
             try (ProgressToken token = pushProgress(R.string.Word_Common_DataLoad)) {
                 CentralPluginCollection pluginCollection = mPluginDataManager.listPlugins(PluginDataManager.PluginListingMode.All, checker);
@@ -97,7 +97,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
 
         ToolbarBuilder.from(this).title(R.string.Title_Plugin).build();
@@ -110,7 +110,7 @@ public class PluginSettingFragmentMain extends AppNavigationFragment {
         if (mPlugins != null) {
             CentralPluginCollection pluginCollection = mPlugins;
             mPlugins = null;
-            getLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, it -> {
+            getFragmentLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, it -> {
                 pluginCollection.disconnect();
                 return this;
             }).start();

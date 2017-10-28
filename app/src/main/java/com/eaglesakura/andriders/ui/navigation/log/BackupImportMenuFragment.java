@@ -57,7 +57,7 @@ public class BackupImportMenuFragment extends AppFragment {
                     startActivityForResult(intent, AppConstants.REQUEST_PICK_BACKUP_FILE);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     @OnActivityResult(AppConstants.REQUEST_PICK_BACKUP_FILE)
@@ -83,7 +83,7 @@ public class BackupImportMenuFragment extends AppFragment {
 
         // UIスレッドで先行してダイアログを表示する
         // これは非同期処理開始前にFragmentが閉じられるのを防ぐため
-        DialogToken token = DialogBuilder.showAsToken(builder, getLifecycle());
+        DialogToken token = DialogBuilder.showAsToken(builder, getFragmentLifecycle());
 
         asyncQueue((BackgroundTask<DataCollection<SessionHeader>> task) -> {
             try (DialogToken _token1 = token) {
@@ -107,7 +107,7 @@ public class BackupImportMenuFragment extends AppFragment {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
     }
 

@@ -169,7 +169,7 @@ public class TotalLogFragmentMain extends AppNavigationFragment
      */
     @UiThread
     void loadDailySessions(DateSessions daily, CardAdapter.CardBind<DateSessions> bind) {
-        getLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
+        getFragmentLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
             SupportCancelCallbackBuilder.CancelChecker cancelChecker = SupportCancelCallbackBuilder
                     .from(task)
                     .or(bind)
@@ -191,7 +191,7 @@ public class TotalLogFragmentMain extends AppNavigationFragment
      */
     @UiThread
     void loadTotalSessions(CardAdapter.CardBind<DateSessions> bind) {
-        getLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
+        getFragmentLifecycle().async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<LogStatistics> task) -> {
             SupportCancelCallbackBuilder.CancelChecker cancelChecker = SupportCancelCallbackBuilder
                     .from(task)
                     .or(bind)

@@ -131,7 +131,7 @@ public class ProximityCommandFragment extends AppFragment implements FragmentPag
                 .negativeButton("上書", () -> {
                     startCommandSetup(data.getKey());
                 })
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     @UiThread

@@ -78,7 +78,7 @@ public class TimerCommandFragment extends CommandBaseFragment implements Fragmen
                     CommandEditDialogBuilder.from(getContext(), item)
                             .commit(mCommandCommitListener)
                             .delete(mCommandDeleteListener)
-                            .show(getLifecycle());
+                            .show(getFragmentLifecycle());
                 });
             }
         };
