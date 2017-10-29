@@ -175,7 +175,7 @@ dependencies {
     debugImplementation 'com.deploygate:sdk:4.0.0'
 
     // SQLite JSON
-    androidTestImplementation 'com.eaglesakura:android-sqliteX:3.16.1.8'
+    androidTestImplementation 'com.eaglesakura:android-sqliteX:1.0.build-33'
 }
 
 android {
