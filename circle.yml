@@ -21,7 +21,6 @@ dependencies:
 test:
   override:
       - ./script/circleci-build-testing.sh
-      - ./script/circleci-build-assemble.sh
       - ./gradlew -PpreDexEnable=false :app:assembleGoogleplayDebug
       - ./gradlew -PpreDexEnable=false :app:assembleGoogleplayRelease
       - ./gradlew ciCollectAndroidApps
