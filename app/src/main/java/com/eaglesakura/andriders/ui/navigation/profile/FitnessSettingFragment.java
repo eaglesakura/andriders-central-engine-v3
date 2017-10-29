@@ -119,7 +119,7 @@ public class FitnessSettingFragment extends AppFragment {
                     startActivity(installIntent);
                 })
                 .neutralButton(R.string.Word_Common_OK, null)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
 

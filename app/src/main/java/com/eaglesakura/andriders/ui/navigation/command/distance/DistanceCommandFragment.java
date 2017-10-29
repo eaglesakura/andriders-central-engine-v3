@@ -82,7 +82,7 @@ public class DistanceCommandFragment extends CommandBaseFragment implements Frag
                     CommandEditDialogBuilder.from(getContext(), item)
                             .commit(mCommandCommitListener)
                             .delete(mCommandDeleteListener)
-                            .show(getLifecycle());
+                            .show(getFragmentLifecycle());
                 });
             }
         };

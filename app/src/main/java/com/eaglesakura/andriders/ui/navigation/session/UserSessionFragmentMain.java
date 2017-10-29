@@ -72,7 +72,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
     }
 
@@ -112,7 +112,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
                     syncSessionButtonState(true);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .showOnce(getLifecycle(), "sessionUI");
+                .showOnce(getFragmentLifecycle(), "sessionUI");
     }
 
     /**
@@ -128,7 +128,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
                     syncSessionButtonState(false);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .showOnce(getLifecycle(), "sessionUI");
+                .showOnce(getFragmentLifecycle(), "sessionUI");
     }
 
     @UiThread

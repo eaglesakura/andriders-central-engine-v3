@@ -73,7 +73,7 @@ public class DeveloperInfoFragment extends AppFragment {
             }
         });
         binding.Button.setOnClickListener(view -> onClickDeveloper(developer));
-        getLifecycle().async(ExecuteTarget.Network, CallbackTime.Foreground, (BackgroundTask<Drawable> task) -> {
+        getFragmentLifecycle().async(ExecuteTarget.Network, CallbackTime.Foreground, (BackgroundTask<Drawable> task) -> {
             SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).andTimeout(1000 * 60, TimeUnit.MILLISECONDS).build();
             return mImageLoader.newImage(developer.getIconUri(), false)
                     .keepAspectResize(256, 256)

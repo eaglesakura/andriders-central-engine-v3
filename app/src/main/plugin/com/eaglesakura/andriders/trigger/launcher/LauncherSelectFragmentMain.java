@@ -62,7 +62,7 @@ public class LauncherSelectFragmentMain extends AppFragment {
         }).start();
     }
 
-    IconItemAdapter<IconItemAdapter.LauncherItem> mAdapter = new IconItemAdapter<IconItemAdapter.LauncherItem>(getLifecycle()) {
+    IconItemAdapter<IconItemAdapter.LauncherItem> mAdapter = new IconItemAdapter<IconItemAdapter.LauncherItem>(getFragmentLifecycle()) {
         @Override
         protected Context getContext() {
             return getActivity();

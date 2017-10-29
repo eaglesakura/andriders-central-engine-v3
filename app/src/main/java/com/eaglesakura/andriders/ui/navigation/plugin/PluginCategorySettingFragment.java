@@ -147,7 +147,7 @@ public class PluginCategorySettingFragment extends AppFragment {
         if (!plugin.startSettings()) {
             AppDialogBuilder.newAlert(getContext(), "正常にプラグインの設定画面を開けませんでした。")
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }
     }
 
@@ -178,7 +178,7 @@ public class PluginCategorySettingFragment extends AppFragment {
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
     }
 

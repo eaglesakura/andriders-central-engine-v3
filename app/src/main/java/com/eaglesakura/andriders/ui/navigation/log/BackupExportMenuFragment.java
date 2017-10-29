@@ -61,7 +61,7 @@ public class BackupExportMenuFragment extends AppFragment {
                     startActivityForResult(intent, AppConstants.REQUEST_PICK_BACKUP_FILE);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     @OnActivityResult(AppConstants.REQUEST_PICK_BACKUP_FILE)
@@ -84,7 +84,7 @@ public class BackupExportMenuFragment extends AppFragment {
                 .cancelable(true)
                 .canceledOnTouchOutside(false)
                 .positiveButton(R.string.EsMaterial_Dialog_Cancel, null);
-        DialogToken token = DialogBuilder.showAsToken(builder, getLifecycle());
+        DialogToken token = DialogBuilder.showAsToken(builder, getFragmentLifecycle());
         asyncQueue(task -> {
             try (DialogToken _token = token;
                  ProgressToken _token2 = pushProgress(R.string.Word_Common_Working)) {
@@ -112,12 +112,12 @@ public class BackupExportMenuFragment extends AppFragment {
         }).completed((result, task) -> {
             AppDialogBuilder.newInformation(getContext(), R.string.Message_Log_BackupCompleted)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).failed((error, task) -> {
             AppLog.printStackTrace(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
     }
 

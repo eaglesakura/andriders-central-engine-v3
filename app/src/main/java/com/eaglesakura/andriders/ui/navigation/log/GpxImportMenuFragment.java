@@ -60,7 +60,7 @@ public class GpxImportMenuFragment extends AppFragment {
                     startActivityForResult(intent, AppConstants.REQUEST_PICK_GPXFILE);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     /**
@@ -107,7 +107,7 @@ public class GpxImportMenuFragment extends AppFragment {
                     startGpxFileImport(builder.build());
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     /**

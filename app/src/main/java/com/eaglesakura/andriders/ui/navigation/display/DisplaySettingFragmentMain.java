@@ -49,8 +49,8 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
         super.onCreate(savedInstanceState);
         mDisplayLayoutController = new DisplayLayoutController(getContext());
         mDisplayLayoutControllerBus = new DisplayLayoutController.Bus(mDisplayLayoutController);
-        mDisplayLayoutControllerBus.bind(getLifecycle(), mLayoutAppSelectFragment.get());
-        mDisplayLayoutControllerBus.bind(getLifecycle(), mLayoutEditFragment.get());
+        mDisplayLayoutControllerBus.bind(getFragmentLifecycle(), mLayoutAppSelectFragment.get());
+        mDisplayLayoutControllerBus.bind(getFragmentLifecycle(), mLayoutEditFragment.get());
         loadDisplayController();
     }
 
@@ -92,7 +92,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
     }
 
@@ -111,7 +111,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
     }
 
@@ -127,7 +127,7 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
             AppLog.report(error);
             AppDialogBuilder.newError(getContext(), error)
                     .positiveButton(R.string.Word_Common_OK, null)
-                    .show(getLifecycle());
+                    .show(getFragmentLifecycle());
         }).start();
     }
 

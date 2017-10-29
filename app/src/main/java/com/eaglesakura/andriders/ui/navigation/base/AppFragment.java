@@ -48,7 +48,7 @@ public class AppFragment extends SlothFragment {
     public DialogToken showProgress(String message) {
         DialogBuilder builder = AppDialogBuilder.newProgress(getContext(), message);
         builder.cancelable(false);
-        return DialogBuilder.showAsToken(builder, getLifecycle());
+        return DialogBuilder.showAsToken(builder, getFragmentLifecycle());
     }
 
     /**

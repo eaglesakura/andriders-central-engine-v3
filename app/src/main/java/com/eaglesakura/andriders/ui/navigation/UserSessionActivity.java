@@ -60,7 +60,7 @@ public class UserSessionActivity extends AppNavigationActivity {
         mDrawerToggle = toolbarBuilder.getDrawerToggle();
 
         // メニューを構築する
-        mMenuController = new MenuController(toolbarBuilder, mMenuCallbackImpl).bind(getLifecycle());
+        mMenuController = new MenuController(toolbarBuilder, mMenuCallbackImpl).bind(getActivityLifecycle());
     }
 
     @Override

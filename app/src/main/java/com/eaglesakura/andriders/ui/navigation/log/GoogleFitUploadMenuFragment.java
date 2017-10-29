@@ -34,7 +34,7 @@ public class GoogleFitUploadMenuFragment extends AppFragment {
                     getContext().startService(intent);
                 })
                 .negativeButton(R.string.Word_Common_Cancel, null)
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     public interface Callback {

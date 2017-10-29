@@ -93,7 +93,7 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
         AppDialogBuilder.newInformation(this, R.string.Message_Log_AllSessionDeleted)
                 .positiveButton(R.string.Word_Common_OK, () -> finish())
                 .cancelable(false)
-                .show(getLifecycle());
+                .show(getActivityLifecycle());
     }
 
     @Override
@@ -101,7 +101,7 @@ public class LogDetailActivity extends AppNavigationActivity implements DailyLog
         AppDialogBuilder.newError(this, error)
                 .positiveButton(R.string.Word_Common_OK, () -> finish())
                 .cancelable(false)
-                .show(getLifecycle());
+                .show(getActivityLifecycle());
     }
 
     @Override

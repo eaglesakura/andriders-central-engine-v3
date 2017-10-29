@@ -61,7 +61,7 @@ public class SpeedCommandFragment extends CommandBaseFragment implements Fragmen
                     CommandEditDialogBuilder.from(getContext(), item)
                             .commit(mCommandCommitListener)
                             .delete(mCommandDeleteListener)
-                            .show(getLifecycle());
+                            .show(getFragmentLifecycle());
                 });
                 binding.setItem(new CardBinding() {
                     @Override

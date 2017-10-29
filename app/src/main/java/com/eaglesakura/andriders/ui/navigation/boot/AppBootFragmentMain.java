@@ -137,7 +137,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
             return;
         }
 
-        getLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, task -> {
+        getFragmentLifecycle().async(ExecuteTarget.LocalQueue, CallbackTime.CurrentForeground, task -> {
             task.throwIfCanceled();
 
             SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
@@ -264,7 +264,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
         AppDialogBuilder.newAlert(getContext(), "アプリの実行に必要な権限を得られませんでした。\nアプリの権限を確認し、再起動してください。")
                 .cancelable(false)
                 .positiveButton("権限を確認", () -> startActivity(ContextUtil.getAppSettingIntent(getActivity())))
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     /**
@@ -274,7 +274,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
         AppDialogBuilder.newAlert(getContext(), "サイコン表示を行うため、「他のアプリの上に重ねて表示」を許可してください。")
                 .cancelable(false)
                 .positiveButton("設定", () -> startActivity(ContextUtil.getAppOverlaySettingIntent(getActivity())))
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     /**
@@ -284,7 +284,7 @@ public class AppBootFragmentMain extends AppNavigationFragment {
         AppDialogBuilder.newAlert(getContext(), "サイコン表示切り替えを有効化するため、「使用履歴へアクセス」を許可してください。")
                 .cancelable(false)
                 .positiveButton("設定", () -> startActivity(ContextUtil.getUsageStatusAcesss(getActivity())))
-                .show(getLifecycle());
+                .show(getFragmentLifecycle());
     }
 
     @OnActivityResult(AppConstants.REQUEST_GOOGLE_AUTH)
