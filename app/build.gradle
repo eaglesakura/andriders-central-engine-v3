@@ -277,7 +277,7 @@ android {
         /**
          * Android Studioでのローカルビルド設定
          */
-        develop {
+        studio {
             dimension "ide"
             applicationId "org.andriders.ace"
 
@@ -292,7 +292,7 @@ android {
         /**
          * デプロイ / ビルドマシン用設定
          */
-        googleplay {
+        terminal {
             dimension "ide"
             applicationId "org.andriders.ace"
 

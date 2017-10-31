@@ -1,0 +1,27 @@
+env:
+  variable:
+   GRADLE_OPTS: -Dorg.gradle.daemon=true -Dorg.gradle.jvmargs="-Xmx32g"
+  cache:
+    - /root/.m2
+    - /root/.gradle/caches/modules-2/files-2.1
+task:
+    exec:
+      # 環境チェック
+      - dockerimage: "gcr.io/eaglesakura-container/ci/android:26.0"
+        cmd:
+          - df -h
+          - chmod 755 -R ./scripts
+          - chmod 755 -R .timebooster/scripts
+          - ./scripts/developer-install-private.sh
+      # ビルド
+      - dockerimage: "gcr.io/eaglesakura-container/ci/android:26.0"
+        cmd:
+          - ./gradlew dependencies
+          - ./gradlew :app:dependencies > $TIMEBOOSTER_ARTIFACTS/dependencies-app.txt
+          - ./gradlew dependencyUpdates > $TIMEBOOSTER_ARTIFACTS/dependencyUpdates.txt
+          - .timebooster/scripts/test.sh
+          - .timebooster/scripts/assemble.sh
+      # アーティファクト回収
+      - dockerimage: "gcr.io/eaglesakura-container/ci/android:26.0"
+        cmd:
+          - cp -r ./ci-release $CIRCLE_ARTIFACTS
