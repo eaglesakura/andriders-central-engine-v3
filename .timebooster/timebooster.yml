@@ -12,6 +12,7 @@ task:
           - df -h
           - chmod 755 -R ./scripts
           - chmod 755 -R .timebooster/scripts
+          - echo -e "Host bitbucket.org\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
           - ./scripts/developer-install-private.sh
       # ビルド
       - dockerimage: "gcr.io/eaglesakura-container/ci/android:26.0"
