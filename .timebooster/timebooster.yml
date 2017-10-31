@@ -12,7 +12,7 @@ task:
           - df -h
           - chmod 755 -R ./scripts
           - chmod 755 -R .timebooster/scripts
-          - ./scripts/developer-install-private.sh
+          - "./scripts/developer-install-private.sh &&:"
       # ビルド
       - dockerimage: "gcr.io/eaglesakura-container/ci/android:26.0"
         cmd:

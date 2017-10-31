@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 mkdir private
 rm -rf private/ace-private/
