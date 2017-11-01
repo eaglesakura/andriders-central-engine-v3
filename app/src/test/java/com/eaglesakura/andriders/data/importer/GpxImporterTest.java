@@ -40,6 +40,7 @@ public class GpxImporterTest extends AppUnitTestCase {
     @Override
     public void onSetup() {
         super.onSetup();
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tokyo"));
     }
 
     @Test
