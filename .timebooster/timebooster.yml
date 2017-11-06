@@ -25,4 +25,4 @@ task:
       # アーティファクト回収
       - dockerimage: "gcr.io/eaglesakura-container/ci/android:26.0"
         cmd:
-          - cp -r ./ci-release $CIRCLE_ARTIFACTS
+          - cp -r ./ci-release $TIMEBOOSTER_ARTIFACTS
