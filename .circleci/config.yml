@@ -1,0 +1,42 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: ubuntu:16.04
+        environment:
+          CIRCLE_ARTIFACTS: /tmp/artifacts
+    steps:
+      - checkout
+      - run:
+          name: build-by-timemachine
+          command: |
+            apt-get update > /dev/null
+            apt-get install -y unzip ca-certificates > /dev/null
+            chmod 755 .timebooster/timebooster
+            .timebooster/timebooster \
+                    -config .timebooster/timebooster.yml \
+                    -api-key "${TIMEBOOSTER_API_KEY}" \
+                    -endpoint "${TIMEBOOSTER_ENDPOINT}" \
+                    run \
+                    -repository "${CIRCLE_REPOSITORY_URL}" \
+                    -github-access-token "${GITHUB_API_KEY}" \
+                    -revision "${CIRCLE_SHA1}" \
+                    -artifact "${CIRCLE_ARTIFACTS}" \
+                    -env "ACE_SLACK_HOOK_URL" \
+                    -env-from-circleci &&:
+            # timeboosterの結果を返却する
+            exit_code=$?
+
+            # collect artifacts
+            cd $CIRCLE_ARTIFACTS
+            unzip $CIRCLE_ARTIFACTS/*.zip > /dev/null
+            for file in `find art/ -name "exec-*.txt"`; do cat $file; done
+            for index in {0..16}; do
+              if [ -f "art/exec-$index" ]; then
+                cat  "art/exec-$index"
+              fi
+            done
+
+            exit $exit_code
+      - store_artifacts:
+          path: /tmp/artifacts
