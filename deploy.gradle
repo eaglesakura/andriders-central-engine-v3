@@ -39,31 +39,7 @@ private File getApk(String app, String flavor, String type) {
 task uploadGooglePlayAlphaVersion(type: com.eaglesakura.gradle.task.AndroidGooglePlayPublishTask) {
     applicationId = "org.andriders.ace"
     track = "alpha"
-    apk = getApk("app", "googleplay", "release")
-    serviceAccountEmail = GOOGLEPLAY_SERVICEACCOUNT_MAIL
-    p12 = GOOGLEPLAY_DEPLOY_P12_FILE
-}
-
-/**
- * ベータ版: APKと更新情報をアップロードする
- */
-task uploadGooglePlayBetaVersion(type: com.eaglesakura.gradle.task.AndroidGooglePlayPublishTask) {
-    applicationId = "org.andriders.ace"
-    track = "beta"
-    apk = getApk("app", "googleplay", "release")
-    apkListings = file("googleplay/beta")
-    serviceAccountEmail = GOOGLEPLAY_SERVICEACCOUNT_MAIL
-    p12 = GOOGLEPLAY_DEPLOY_P12_FILE
-}
-
-/**
- * 製品版: APKと更新情報をアップロードする
- */
-task uploadGooglePlayReleaseVersion(type: com.eaglesakura.gradle.task.AndroidGooglePlayPublishTask) {
-    applicationId = "org.andriders.ace"
-    track = "production"
-    apk = getApk("app", "googleplay", "release")
-    apkListings = file("googleplay/production")
+    apk = getApk("app", "terminal", "release")
     serviceAccountEmail = GOOGLEPLAY_SERVICEACCOUNT_MAIL
     p12 = GOOGLEPLAY_DEPLOY_P12_FILE
 }

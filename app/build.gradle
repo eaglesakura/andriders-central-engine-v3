@@ -367,3 +367,9 @@ slack {
 
 // Apply Google Play Service Data
 apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'deploygate'
+deploygate {
+    userName = DEPLOYGATE_USER_NAME;
+    token = DEPLOYGATE_API_KEY;
+}
