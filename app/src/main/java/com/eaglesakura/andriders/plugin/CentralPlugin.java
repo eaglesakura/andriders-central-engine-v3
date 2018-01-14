@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.plugin;
 
+import com.eaglesakura.andriders.AceSdkUtil;
 import com.eaglesakura.andriders.central.CentralDataUtil;
 import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.data.display.DisplayBindManager;
@@ -23,7 +24,6 @@ import com.eaglesakura.android.service.CommandMap;
 import com.eaglesakura.android.service.data.Payload;
 import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.serialize.PublicFieldDeserializer;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.RandomUtil;
 import com.eaglesakura.util.StringUtil;
@@ -371,7 +371,7 @@ public class CentralPlugin {
          * GPS座標を更新する
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setLocation, (Object sender, String cmd, Payload payload) -> {
-            PluginProtocol.SrcLocation idl = PublicFieldDeserializer.deserializeFrom(PluginProtocol.SrcLocation.class, payload.getBuffer());
+            PluginProtocol.SrcLocation idl = AceSdkUtil.deserializeFromByteArray(PluginProtocol.SrcLocation.class, payload.getBuffer());
             CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setLocation(idl.latitude, idl.longitude, idl.altitude, idl.accuracyMeter));
             return null;
         });
@@ -380,7 +380,7 @@ public class CentralPlugin {
          * 心拍を設定する
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setHeartrate, (Object sender, String cmd, Payload payload) -> {
-            PluginProtocol.SrcHeartrate idl = PublicFieldDeserializer.deserializeFrom(PluginProtocol.SrcHeartrate.class, payload.getBuffer());
+            PluginProtocol.SrcHeartrate idl = AceSdkUtil.deserializeFromByteArray(PluginProtocol.SrcHeartrate.class, payload.getBuffer());
             CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setHeartrate(idl.bpm));
             return null;
         });
@@ -389,7 +389,7 @@ public class CentralPlugin {
          * S&Cセンサーを設定する
          */
         mCmdMap.addAction(CentralDataCommand.CMD_setSpeedAndCadence, (Object sender, String cmd, Payload payload) -> {
-            PluginProtocol.SrcSpeedAndCadence idl = PublicFieldDeserializer.deserializeFrom(PluginProtocol.SrcSpeedAndCadence.class, payload.getBuffer());
+            PluginProtocol.SrcSpeedAndCadence idl = AceSdkUtil.deserializeFromByteArray(PluginProtocol.SrcSpeedAndCadence.class, payload.getBuffer());
             CentralDataUtil.execute(mCentralDataManagerHolder, it -> it.setSpeedAndCadence(idl.crankRpm, idl.crankRevolution, idl.wheelRpm, idl.wheelRevolution));
             return null;
         });

@@ -6,8 +6,6 @@ import com.eaglesakura.andriders.storage.AppStorageManager;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
 
-import org.junit.Test;
-
 import org.sqlite.database.SQLiteX;
 import org.sqlite.database.sqlite.SQLiteDatabase;
 import org.sqlite.database.sqlite.SQLiteOpenHelper;
@@ -23,8 +21,9 @@ public class SessionLogDatabaseDeviceTest extends AppDeviceTestCase {
         SQLiteX.install(getContext());
     }
 
-    @Test
-    public void JSONデータをパースする() throws Throwable {
+//    @Test
+    @SuppressWarnings("unused")
+    private void JSONデータをパースする() throws Throwable {
         AppStorageManager storageManager = Garnet.instance(AppStorageProvider.class, AppStorageManager.class);
 
         SQLiteOpenHelper helper = new SQLiteOpenHelper(

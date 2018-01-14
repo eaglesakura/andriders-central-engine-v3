@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.service.server;
 
+import com.eaglesakura.andriders.AceSdkUtil;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.plugin.internal.CentralServiceCommand;
@@ -8,7 +9,6 @@ import com.eaglesakura.android.service.CommandMap;
 import com.eaglesakura.android.service.CommandServer;
 import com.eaglesakura.android.service.data.Payload;
 import com.eaglesakura.android.thread.UIHandler;
-import com.eaglesakura.serialize.PublicFieldSerializer;
 
 import android.app.Application;
 import android.app.Service;
@@ -71,7 +71,7 @@ public class CentralSessionServer {
     public void notifyOnSessionStarted(SessionInfo info) {
         try {
             RawSessionInfo raw = new RawSessionInfo(info.getSessionId());
-            mImpl.broadcast(CentralServiceCommand.CMD_onSessionStarted, new Payload(PublicFieldSerializer.serializeFrom(raw, true)));
+            mImpl.broadcast(CentralServiceCommand.CMD_onSessionStarted, new Payload(AceSdkUtil.serializeToByteArray(raw)));
         } catch (Exception e) {
         }
     }
@@ -79,7 +79,7 @@ public class CentralSessionServer {
     public void notifyOnSessionStopped(SessionInfo info) {
         try {
             RawSessionInfo raw = new RawSessionInfo(info.getSessionId());
-            Payload payload = new Payload(PublicFieldSerializer.serializeFrom(raw, true));
+            Payload payload = new Payload(AceSdkUtil.serializeToByteArray(raw));
             mImpl.broadcast(CentralServiceCommand.CMD_onSessionStopped, payload);
         } catch (Exception e) {
 
@@ -96,7 +96,7 @@ public class CentralSessionServer {
                 return null;
             } else {
                 RawSessionInfo info = new RawSessionInfo(currentSession.getSessionId());
-                return new Payload(PublicFieldSerializer.serializeFrom(info, true));
+                return new Payload(AceSdkUtil.serializeToByteArray(info));
             }
         });
 

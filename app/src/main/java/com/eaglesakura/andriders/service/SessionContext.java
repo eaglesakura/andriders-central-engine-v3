@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.service;
 
+import com.eaglesakura.andriders.AceSdkUtil;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
@@ -21,7 +22,6 @@ import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.cerberus.CallbackTime;
 import com.eaglesakura.cerberus.ExecuteTarget;
-import com.eaglesakura.serialize.PublicFieldSerializer;
 import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 import com.squareup.otto.Subscribe;
@@ -210,7 +210,7 @@ public class SessionContext {
         AppLog.broadcast("RawCentralData date[%d]", raw.centralStatus.date);
 
         mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<byte[]> task) -> {
-            return PublicFieldSerializer.serializeFrom(raw, true);
+            return AceSdkUtil.serializeToByteArray(raw);
         }).completed((result, task) -> {
             // 対応アプリに対してブロードキャストを行う
             Intent intent = new Intent();
@@ -232,10 +232,10 @@ public class SessionContext {
                 intent.putExtra(CentralDataReceiver.EXTRA_NOTIFICATION_DATA, data.serialize());
                 RawCentralData centralData = mSession.getCentralDataManager().getLatestCentralData();
                 if (centralData != null) {
-                    intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, PublicFieldSerializer.serializeFrom(centralData, true));
+                    intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, AceSdkUtil.serializeToByteArray(centralData));
                 }
                 mService.sendBroadcast(intent);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 AppLog.report(e);
             }
         }

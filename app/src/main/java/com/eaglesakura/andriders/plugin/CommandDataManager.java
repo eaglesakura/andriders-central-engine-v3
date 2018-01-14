@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.plugin;
 
+import com.eaglesakura.andriders.AceSdkUtil;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.dao.central.DbCommand;
 import com.eaglesakura.andriders.data.db.CentralSettingDatabase;
@@ -9,9 +10,6 @@ import com.eaglesakura.andriders.model.command.CommandSetupData;
 import com.eaglesakura.andriders.serialize.RawIntent;
 import com.eaglesakura.andriders.system.manager.CentralSettingManager;
 import com.eaglesakura.json.JSON;
-import com.eaglesakura.serialize.PublicFieldDeserializer;
-import com.eaglesakura.serialize.error.SerializeException;
-import com.eaglesakura.util.SerializeUtil;
 
 import org.greenrobot.greendao.annotation.NotNull;
 
@@ -84,7 +82,7 @@ public class CommandDataManager extends CentralSettingManager {
             dbCommand.setPackageName(data.getPackageName());
 
             if (data.getUserIntent() != null) {
-                RawIntent rawIntent = PublicFieldDeserializer.deserializeFrom(RawIntent.class, data.getUserIntent());
+                RawIntent rawIntent = AceSdkUtil.deserializeFromByteArray(RawIntent.class, data.getUserIntent());
                 dbCommand.setIntentJson(JSON.encodeOrNull(rawIntent));
             }
 
@@ -94,7 +92,7 @@ public class CommandDataManager extends CentralSettingManager {
 
             db.update(dbCommand);
             return new CommandData(dbCommand);
-        } catch (SerializeException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

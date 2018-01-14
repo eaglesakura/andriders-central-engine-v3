@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.service.command;
 
+import com.eaglesakura.andriders.AceSdkUtil;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.data.command.CommandController;
 import com.eaglesakura.andriders.central.data.command.distance.DistanceCommandController;
@@ -25,10 +26,9 @@ import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.cerberus.CallbackTime;
 import com.eaglesakura.cerberus.ExecuteTarget;
-import com.eaglesakura.serialize.PublicFieldSerializer;
+import com.eaglesakura.json.JSON;
 import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
 import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
-import com.eaglesakura.util.SerializeUtil;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
@@ -252,7 +252,7 @@ public class CentralCommandController {
             Intent intent = SerializableIntent.newIntent(rawIntent);
             // ACEのデータを受け取っているなら、シリアライズしてコマンドに送る
             if (mLatestCentralData != null) {
-                centralData = PublicFieldSerializer.serializeFrom(mLatestCentralData, true);
+                centralData = AceSdkUtil.serializeToByteArray(mLatestCentralData);
                 intent.putExtra(CommandSetting.EXTRA_COMMAND_CENTRAL_DATA, centralData);
             }
             switch (rawIntent.intentType) {

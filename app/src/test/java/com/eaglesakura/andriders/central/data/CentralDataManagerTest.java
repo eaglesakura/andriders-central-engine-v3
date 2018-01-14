@@ -1,5 +1,6 @@
 package com.eaglesakura.andriders.central.data;
 
+import com.eaglesakura.andriders.AceSdkUtil;
 import com.eaglesakura.andriders.AppUnitTestCase;
 import com.eaglesakura.andriders.central.data.sensor.SpeedData;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
@@ -10,8 +11,6 @@ import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.json.JSON;
-import com.eaglesakura.serialize.PublicFieldDeserializer;
-import com.eaglesakura.serialize.PublicFieldSerializer;
 import com.eaglesakura.util.CollectionUtil;
 import com.eaglesakura.util.MathUtil;
 import com.eaglesakura.util.Timer;
@@ -201,10 +200,10 @@ public class CentralDataManagerTest extends AppUnitTestCase {
 
         // シリアライズとデシリアライズが正常である
         {
-            byte[] bytes = PublicFieldSerializer.serializeFrom(centralData, true);
+            byte[] bytes = AceSdkUtil.serializeToByteArray(centralData);
             assertFalse(CollectionUtil.isEmpty(bytes));
 
-            RawCentralData deserialized = PublicFieldDeserializer.deserializeFrom(RawCentralData.class, bytes);
+            RawCentralData deserialized = AceSdkUtil.deserializeFromByteArray(RawCentralData.class, bytes);
             assertEquals(centralData, deserialized);
         }
         {
