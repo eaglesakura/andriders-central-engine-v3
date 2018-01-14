@@ -14,8 +14,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# DeployGateへ常にアップロードする
+./gradlew :app:uploadDeployGateTerminalRelease
+
 if [[ "${CIRCLE_BRANCH:-nil}" =~ develop ]]; then
     echo "Deploy to Google Play[Alpha]"
-    ./gradlew uploadGooglePlayDevelopAlpha
-    ./gradlew uploadGooglePlayProductionAlpha
+    ./gradlew uploadGooglePlayAlphaVersion
 fi
