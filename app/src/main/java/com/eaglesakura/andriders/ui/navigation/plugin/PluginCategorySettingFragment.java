@@ -16,7 +16,6 @@ import com.eaglesakura.android.margarine.Bind;
 import com.eaglesakura.android.saver.BundleState;
 import com.eaglesakura.sloth.annotation.BindInterface;
 import com.eaglesakura.sloth.annotation.FragmentLayout;
-import com.eaglesakura.sloth.ui.progress.ProgressToken;
 
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
@@ -162,17 +161,15 @@ public class PluginCategorySettingFragment extends AppFragment {
             Category pluginCategory = Category.fromName(mCategoryName);
             List<CentralPlugin> pluginList = mCentralPluginCollection.list(pluginCategory);
 
-            try (ProgressToken token = pushProgress(R.string.Word_Common_Working)) {
-                if (isChecked && pluginCategory.hasAttribute(Category.ATTRIBUTE_SINGLE_SELECT)) {
-                    // 1つしか選択できないのなら、一旦全てを外す
-                    for (CentralPlugin p : pluginList) {
-                        mPluginDataManager.setActive(p, false);
-                    }
+            if (isChecked && pluginCategory.hasAttribute(Category.ATTRIBUTE_SINGLE_SELECT)) {
+                // 1つしか選択できないのなら、一旦全てを外す
+                for (CentralPlugin p : pluginList) {
+                    mPluginDataManager.setActive(p, false);
                 }
-
-                // プラグインのチェック状態を更新する
-                mPluginDataManager.setActive(plugin, isChecked);
             }
+
+            // プラグインのチェック状態を更新する
+            mPluginDataManager.setActive(plugin, isChecked);
             return this;
         }).failed((error, task) -> {
             AppLog.report(error);

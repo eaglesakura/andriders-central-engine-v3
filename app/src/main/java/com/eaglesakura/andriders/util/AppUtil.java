@@ -77,7 +77,7 @@ public class AppUtil {
      */
     public static Intent newCommandSettingIntent(@NonNull Context context, @NonNull CommandKey commandKey) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("acecommand://"));
-        intent.putExtra(CommandSetting.EXTRA_COMMAND_KEY, commandKey);
+        CommandKey.putExtra(intent, CommandSetting.EXTRA_COMMAND_KEY, commandKey);
         return Intent.createChooser(intent, null);
     }
 
@@ -110,7 +110,6 @@ public class AppUtil {
                 .addApiIfAvailable(LocationServices.API)
                 ;
     }
-
 
     public static String getErrorTitle(Throwable e) {
         Context context = Sloth.getApplication();

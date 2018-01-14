@@ -3,6 +3,9 @@ package com.eaglesakura.andriders.data.res;
 import com.eaglesakura.alternet.Alternet;
 import com.eaglesakura.alternet.request.ConnectRequest;
 import com.eaglesakura.alternet.request.SimpleHttpRequest;
+import com.eaglesakura.andriders.provider.AppContextProvider;
+import com.eaglesakura.android.garnet.Provide;
+import com.eaglesakura.android.garnet.Singleton;
 import com.eaglesakura.sloth.graphics.SyncImageLoader;
 import com.eaglesakura.util.Timer;
 
@@ -14,6 +17,7 @@ import android.support.annotation.NonNull;
 /**
  * アプリ用ImageLoader
  */
+@Singleton
 public class AppImageLoader extends SyncImageLoader {
 
     final private Alternet mNetworkConnector;
@@ -38,6 +42,14 @@ public class AppImageLoader extends SyncImageLoader {
         } else {
             // OnMemory経由
             return super.newImage(uri, onMemoryCache);
+        }
+    }
+
+    @Singleton
+    public static class Provider extends AppContextProvider {
+        @Provide
+        public AppImageLoader provide() {
+            return new AppImageLoader(getContext(), 48, 24);
         }
     }
 

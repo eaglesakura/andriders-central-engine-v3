@@ -76,7 +76,7 @@ public class MenuController {
         /**
          * ユーザーログを開く
          */
-        void requrestShowLogs(MenuController self);
+        void requestShowLogs(MenuController self);
 
         /**
          * センサーメニューを開く
@@ -102,7 +102,7 @@ public class MenuController {
                 mCallback.requestShowInformation(this);
                 break;
             case R.id.Menu_Log:
-                mCallback.requrestShowLogs(this);
+                mCallback.requestShowLogs(this);
                 break;
             case R.id.Menu_Gadgets:
                 mCallback.requestShowSensorDevices(this);

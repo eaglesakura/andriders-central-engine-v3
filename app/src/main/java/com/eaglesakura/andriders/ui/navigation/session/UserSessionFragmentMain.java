@@ -39,7 +39,7 @@ public class UserSessionFragmentMain extends AppNavigationFragment implements Se
     @Override
     protected void onCreateLifecycle(FragmentLifecycle lifecycle) {
         super.onCreateLifecycle(lifecycle);
-        mNavigationMapFragment.bind(lifecycle);
+        mNavigationMapFragment.subscribe(lifecycle);
         mSessionControlBus.bind(lifecycle, this);
     }
 

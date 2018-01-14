@@ -22,6 +22,7 @@ import com.eaglesakura.andriders.serialize.RawSensorData;
 import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.firebase.auth.FirebaseAuthorizeManager;
+import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.android.gms.client.PlayServiceConnection;
 import com.eaglesakura.android.util.FragmentUtil;
 import com.eaglesakura.android.util.ImageUtil;
@@ -83,6 +84,7 @@ public class NavigationMapFragment extends AppFragment {
     SessionControlBus mSessionControlBus;
 
     @NonNull
+    @Inject(AppImageLoader.Provider.class)
     AppImageLoader mImageLoader;
 
     /**
@@ -113,8 +115,6 @@ public class NavigationMapFragment extends AppFragment {
 
         mSessionControlBus = FragmentUtil.findInterface(this, getContext(), SessionControlBus.Holder.class).getSessionControlBus();
         mSessionControlBus.bind(getFragmentLifecycle(), this);
-
-        mImageLoader = FragmentUtil.findInterface(this, getContext(), AppImageLoader.Holder.class).getImageLoader();
         return view;
     }
 

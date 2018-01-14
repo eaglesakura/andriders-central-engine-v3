@@ -6,6 +6,7 @@ import com.eaglesakura.andriders.ui.navigation.base.AppFragment;
 import com.eaglesakura.andriders.ui.widget.IconItemAdapter;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.margarine.Bind;
+import com.eaglesakura.android.util.ImageUtil;
 import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.sloth.annotation.FragmentLayout;
 import com.eaglesakura.util.CollectionUtil;
@@ -15,7 +16,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -79,9 +82,17 @@ public class LauncherSelectFragmentMain extends AppFragment {
      */
     @UiThread
     void onSelected(ResolveInfo info) {
+        Bitmap icon;
+        Drawable drawable = info.loadIcon(getContext().getPackageManager());
+        if (drawable instanceof BitmapDrawable) {
+            icon = ((BitmapDrawable) drawable).getBitmap();
+        } else {
+            icon = ImageUtil.toBitmap(drawable, 128);
+        }
+
         CommandSetting.Builder
                 .makeActivity(getContext(), new ComponentName(info.activityInfo.packageName, info.activityInfo.name))
-                .setIcon(((BitmapDrawable) info.loadIcon(getContext().getPackageManager())).getBitmap())
+                .setIcon(icon)
                 .finish(getActivity());
     }
 

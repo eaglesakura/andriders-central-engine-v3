@@ -141,7 +141,7 @@ public class UserSessionActivity extends AppNavigationActivity {
         }
 
         @Override
-        public void requrestShowLogs(MenuController self) {
+        public void requestShowLogs(MenuController self) {
             Intent intent = new Intent(self(), TotalLogActivity.class);
             startActivity(intent);
         }
