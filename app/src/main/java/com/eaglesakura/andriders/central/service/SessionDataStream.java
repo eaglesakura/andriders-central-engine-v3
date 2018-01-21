@@ -13,7 +13,7 @@ public class SessionDataStream extends SlothLiveData<RawCentralData> {
      */
     private CentralSession mSession;
 
-    public SessionDataStream(CentralSession session) {
+    SessionDataStream(CentralSession session) {
         mSession = session;
     }
 
