@@ -1,7 +1,6 @@
 package com.eaglesakura.andriders.central.service;
 
 import com.eaglesakura.andriders.serialize.RawCentralData;
-import com.eaglesakura.sloth.data.DataBus;
 
 /**
  * 最新のセッション情報
@@ -22,15 +21,5 @@ public class SessionData {
 
     public CentralSession getSession() {
         return mSession;
-    }
-
-    public static class Bus extends DataBus<SessionData> {
-        public RawCentralData getLatestData() {
-            return getData().getLatestData();
-        }
-
-        public CentralSession getSession() {
-            return getData().getSession();
-        }
     }
 }

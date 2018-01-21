@@ -55,13 +55,14 @@ public class CentralSession {
     SessionState.Bus mStateBus = new SessionState.Bus(new SessionState(SessionState.State.NewObject, this));
 
     /**
-     * セッション更新バス
+     * データ取得用のStream
      */
     @NonNull
-    SessionData.Bus mDataBus = new SessionData.Bus();
+    private SessionDataStream mSessionDataStream;
 
     CentralSession(SessionInfo sessionInfo) {
         mSessionInfo = sessionInfo;
+        mSessionDataStream = new SessionDataStream(this);
     }
 
     /**
@@ -81,11 +82,11 @@ public class CentralSession {
     }
 
     /**
-     * セッションのメインデータ通知用のBusを取得する
+     * セッション情報を受け取るStream
      */
     @NonNull
-    public SessionData.Bus getDataBus() {
-        return mDataBus;
+    public SessionDataStream getDataStream() {
+        return mSessionDataStream;
     }
 
     public long getSessionId() {
@@ -103,10 +104,7 @@ public class CentralSession {
 
     /**
      * 初期化を開始させる
-     *
-     * @return 初期化タスク, awaitを行うことで同期的に終了を待てる
      */
-    @NonNull
     public void initialize(@Nullable InitializeOption option, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
         mStateBus.modified(new SessionState(SessionState.State.Initializing, this));
 
@@ -161,7 +159,7 @@ public class CentralSession {
             // 更新を行う
             if (mCentralDataManager.onUpdate()) {
                 // 更新が行えたので、Busに通知を流す
-                mDataBus.modified(new SessionData(mCentralDataManager.getLatestCentralData(), this));
+                mSessionDataStream.onUpdate(mCentralDataManager.getLatestCentralData());
             }
         } finally {
             if (timer.end() > (1000 / 60)) {

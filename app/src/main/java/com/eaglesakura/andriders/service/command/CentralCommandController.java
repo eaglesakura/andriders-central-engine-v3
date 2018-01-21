@@ -8,7 +8,6 @@ import com.eaglesakura.andriders.central.data.command.proximity.ProximityCommand
 import com.eaglesakura.andriders.central.data.command.speed.SpeedCommandController;
 import com.eaglesakura.andriders.central.data.command.timer.TimerCommandController;
 import com.eaglesakura.andriders.central.service.CentralSession;
-import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.CommandSetting;
@@ -105,7 +104,7 @@ public class CentralCommandController {
         Garnet.create(result)
                 .depend(Context.class, context)
                 .inject();
-        session.getDataBus().bind(lifecycleDelegate, result);
+        session.getDataStream().observe(lifecycleDelegate, result::observeCentralData);
         session.getStateBus().bind(lifecycleDelegate, result);
         animationFrameBus.bind(lifecycleDelegate, result);
         return result;
@@ -225,9 +224,9 @@ public class CentralCommandController {
     /**
      * データ更新をハンドリングする
      */
-    @Subscribe
-    private void onSessionDataChanged(SessionData.Bus data) {
-        mLatestCentralData = data.getLatestData();
+    @UiThread
+    private void observeCentralData(RawCentralData data) {
+        mLatestCentralData = data;
         mCentralDataReceiver.onReceived(mLatestCentralData);
     }
 

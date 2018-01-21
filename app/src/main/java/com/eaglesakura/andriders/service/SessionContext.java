@@ -4,7 +4,6 @@ import com.eaglesakura.andriders.AceSdkUtil;
 import com.eaglesakura.andriders.central.CentralDataReceiver;
 import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
-import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.data.notification.CentralNotificationManager;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
@@ -24,12 +23,12 @@ import com.eaglesakura.cerberus.CallbackTime;
 import com.eaglesakura.cerberus.ExecuteTarget;
 import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
-import com.squareup.otto.Subscribe;
 
 import android.app.Service;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 
 /**
  * サービスで動作させる1セッションの情報を管理する
@@ -40,7 +39,7 @@ public class SessionContext {
     private final Service mService;
 
     @NonNull
-    private final ServiceLifecycle mLifecycleDelegate = new ServiceLifecycle();
+    private final ServiceLifecycle mLifecycle = new ServiceLifecycle();
 
     /**
      * 現在走行中のセッションデータ
@@ -94,7 +93,7 @@ public class SessionContext {
      * セッションを初期化する
      */
     public void initialize(Intent intent) {
-        mLifecycleDelegate.onCreate();
+        mLifecycle.onCreate();
 
         SessionInfo sessionInfo = new SessionInfo.Builder(mService, new Clock(System.currentTimeMillis()))
                 .build();
@@ -102,22 +101,22 @@ public class SessionContext {
         CentralSession.InitializeOption option = new CentralSession.InitializeOption();
 
         CentralSession centralSession = CentralSession.newInstance(sessionInfo);
-        centralSession.getStateBus().bind(mLifecycleDelegate, this);
-        centralSession.getDataBus().bind(mLifecycleDelegate, this);
-        centralSession.getStateBus().bind(mLifecycleDelegate, mService);
+        centralSession.getStateBus().bind(mLifecycle, this);
+        centralSession.getDataStream().observe(mLifecycle, this::observeSessionData);
+        centralSession.getStateBus().bind(mLifecycle, mService);
 
-        mSessionLogController = SessionLogController.attach(mLifecycleDelegate, centralSession);
+        mSessionLogController = SessionLogController.attach(mLifecycle, centralSession);
 
-        mSessionStatusbar = CentralStatusBar.attach(mLifecycleDelegate, centralSession, mNotificationCallback);
+        mSessionStatusbar = CentralStatusBar.attach(mLifecycle, centralSession, mNotificationCallback);
 
-        mAnimationController = ServiceAnimationController.attach(mLifecycleDelegate, centralSession, mAnimationCallback);
+        mAnimationController = ServiceAnimationController.attach(mLifecycle, centralSession, mAnimationCallback);
 
-        mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession);
+        mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycle, mAnimationFrameBus, centralSession);
         mCentralDisplayWindow.getCentralNotificationManager().addListener(mNotificationShowingListener);  // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
 
-        mCommandController = CentralCommandController.attach(mService, mLifecycleDelegate, mAnimationFrameBus, centralSession, mCommandCallback);
+        mCommandController = CentralCommandController.attach(mService, mLifecycle, mAnimationFrameBus, centralSession, mCommandCallback);
 
-        mLifecycleDelegate.asyncQueue((BackgroundTask<CentralSession> task) -> {
+        mLifecycle.asyncQueue((BackgroundTask<CentralSession> task) -> {
             SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
             centralSession.initialize(option, checker);
             return centralSession;
@@ -138,13 +137,13 @@ public class SessionContext {
     }
 
     public void dispose() {
-        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
+        mLifecycle.async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
             if (mSession != null) {
                 mSession.dispose();
             }
             return this;
         }).finalized(task -> {
-            mLifecycleDelegate.onDestroy();
+            mLifecycle.onDestroy();
         }).start();
     }
 
@@ -188,20 +187,15 @@ public class SessionContext {
      */
     private long mLastDataBroadcastTime = 0;
 
+
     /**
      * データ更新をハンドリングする
      *
      * データの圧縮等、送出には20ms程度を要する。
      * UIスレッドを止めるには多少気になる時間なので、圧縮はasyncで行う。
      */
-    @Subscribe
-    private void onSessionDataChanged(SessionData.Bus data) {
-        RawCentralData raw = data.getLatestData();
-        if (raw == null) {
-            AppLog.broadcast("RawCentralData == null");
-            return;
-        }
-
+    @UiThread
+    private void observeSessionData(RawCentralData raw) {
         if ((raw.centralStatus.date - mLastDataBroadcastTime) < 1000) {
             return;
         }
@@ -209,7 +203,7 @@ public class SessionContext {
 
         AppLog.broadcast("RawCentralData date[%d]", raw.centralStatus.date);
 
-        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<byte[]> task) -> {
+        mLifecycle.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<byte[]> task) -> {
             return AceSdkUtil.serializeToByteArray(raw);
         }).completed((result, task) -> {
             // 対応アプリに対してブロードキャストを行う
@@ -219,7 +213,6 @@ public class SessionContext {
             intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, result);
             mService.sendBroadcast(intent);
         }).start();
-
     }
 
     private final CentralNotificationManager.OnNotificationShowingListener mNotificationShowingListener = new CentralNotificationManager.OnNotificationShowingListener() {

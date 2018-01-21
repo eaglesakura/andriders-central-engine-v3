@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -92,6 +93,17 @@ public class CentralDisplayWindow {
      */
     String mLastTopApplication;
 
+    private static final int WINDOW_LAYER_TYPE;
+
+    static {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Android O以降は専用のレイヤーに載せる
+            WINDOW_LAYER_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            WINDOW_LAYER_TYPE = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        }
+    }
+
     CentralDisplayWindow(@NonNull Context context) {
         mContext = context;
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -100,7 +112,6 @@ public class CentralDisplayWindow {
     public static CentralDisplayWindow attach(@NonNull Context context, ServiceLifecycle lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session) {
         CentralDisplayWindow result = new CentralDisplayWindow(context);
         session.getStateBus().bind(lifecycleDelegate, result);
-        session.getDataBus().bind(lifecycleDelegate, result);
         animationFrameBus.bind(lifecycleDelegate, result);
 
         Garnet.create(result)
@@ -196,7 +207,7 @@ public class CentralDisplayWindow {
                 // レイアウトの挿入位置設定
                 // TYPE_SYSTEM_OVERLAYはほぼ最上位に位置して、ロック画面よりも上に表示される。
                 // ただし、タッチを拾うことはできない。
-                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+                WINDOW_LAYER_TYPE,
                 // ウィンドウ属性
                 // TextureViewを利用するには、FLAG_HARDWARE_ACCELERATED が必至となる。
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
@@ -224,7 +235,7 @@ public class CentralDisplayWindow {
                 // レイアウトの挿入位置設定
                 // TYPE_SYSTEM_OVERLAYはほぼ最上位に位置して、ロック画面よりも上に表示される。
                 // ただし、タッチを拾うことはできない。
-                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+                WINDOW_LAYER_TYPE,
                 // ウィンドウ属性
                 // TextureViewを利用するには、FLAG_HARDWARE_ACCELERATED が必至となる。
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED

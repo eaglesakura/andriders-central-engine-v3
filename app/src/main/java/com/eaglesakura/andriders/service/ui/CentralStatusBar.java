@@ -11,7 +11,13 @@ import com.eaglesakura.sloth.view.builder.NotificationBuilder;
 import com.eaglesakura.sloth.view.builder.RemoteViewsBuilder;
 import com.squareup.otto.Subscribe;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 
@@ -76,10 +82,22 @@ public class CentralStatusBar {
      */
     @UiThread
     private void onStartSessionInitialize(Service service, CentralSession session) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(NotificationBuilder.CHANNEL_DEFAULT, "default", NotificationManager.IMPORTANCE_HIGH);
+            channel.setLightColor(Color.RED);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+            NotificationManager notificationManager = (NotificationManager) mCallback.getService(this).getSystemService(Context.NOTIFICATION_SERVICE);
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(channel);
+        }
         mNotification = NotificationBuilder.from(service)
                 .ticker(R.string.Word_Common_AndridersCentralEngine)
                 .title(R.string.Word_Common_AndridersCentralEngine)
                 .icon(R.mipmap.ic_launcher)
+                .customize(builder -> {
+                    builder.setChannelId(NotificationBuilder.CHANNEL_DEFAULT);
+                })
                 .showForeground(NOTIFICATION_ID);
 
         // 表示内容を切り替える

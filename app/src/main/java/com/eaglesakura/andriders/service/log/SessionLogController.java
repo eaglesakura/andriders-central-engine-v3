@@ -3,10 +3,10 @@ package com.eaglesakura.andriders.service.log;
 import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.central.data.log.SessionLogger;
 import com.eaglesakura.andriders.central.service.CentralSession;
-import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
 import com.eaglesakura.andriders.provider.AppDatabaseProvider;
+import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.ClockTimer;
 import com.eaglesakura.android.garnet.Garnet;
@@ -17,6 +17,7 @@ import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.squareup.otto.Subscribe;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 
 /**
  * セッションログの書き込み管理コントローラ
@@ -41,7 +42,7 @@ public class SessionLogController {
     public static SessionLogController attach(ServiceLifecycle lifecycleDelegate, CentralSession session) {
         SessionLogController result = new SessionLogController(session);
         session.getStateBus().bind(lifecycleDelegate, result);
-        session.getDataBus().bind(lifecycleDelegate, result);
+        session.getDataStream().observe(lifecycleDelegate, result::observeSessionData);
 
         Garnet.inject(result);
 
@@ -75,9 +76,9 @@ public class SessionLogController {
     /**
      * データが更新された
      */
-    @Subscribe
-    private void onSessionDataChanged(SessionData.Bus data) {
-        mLogger.onUpdate(data.getLatestData());
+    @UiThread
+    private void observeSessionData(RawCentralData data) {
+        mLogger.onUpdate(data);
         if (mCommitTimer.overTimeMs(COMMIT_INTERVAL_TIME_SEC) && mLogger.hasPointCaches()) {
             commitAsync();
             mCommitTimer.start();
