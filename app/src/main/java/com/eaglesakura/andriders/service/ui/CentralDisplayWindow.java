@@ -278,7 +278,7 @@ public class CentralDisplayWindow {
 
     @UiThread
     private void onAnimationFrame(double deltaSec) {
-        AppLog.system("onAnimationFrame delta[%.3f sec]", deltaSec);
+//        AppLog.system("onAnimationFrame delta[%.3f sec]", deltaSec);
         // 通知を更新
         mCentralNotificationManager.onUpdate(deltaSec);
 
