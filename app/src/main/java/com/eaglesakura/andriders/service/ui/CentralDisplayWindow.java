@@ -1,6 +1,7 @@
 package com.eaglesakura.andriders.service.ui;
 
 import com.eaglesakura.andriders.R;
+import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.data.display.DisplayBindManager;
@@ -15,16 +16,17 @@ import com.eaglesakura.andriders.provider.SessionManagerProvider;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.thread.HandlerLoopController;
+import com.eaglesakura.android.thread.UIHandler;
 import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.android.util.ViewUtil;
 import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.cerberus.CallbackTime;
 import com.eaglesakura.cerberus.ExecuteTarget;
 import com.eaglesakura.cerberus.ResultCollection;
-import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
+import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
 import com.eaglesakura.util.Timer;
 import com.eaglesakura.util.Util;
-import com.squareup.otto.Subscribe;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -86,12 +88,18 @@ public class CentralDisplayWindow {
     private DisplayLayoutCollection mCurrentDisplayLayout;
 
     @NonNull
-    private final ServiceLifecycle mLifecycle = new ServiceLifecycle();
+    private final Lifecycle mLifecycle;
 
     /**
      * 最後にチェックした際のアプリケーションID
      */
-    String mLastTopApplication;
+    private String mLastTopApplication;
+
+    @NonNull
+    private final SessionInfo mSessionInfo;
+
+    @Nullable
+    private HandlerLoopController mLoopController;
 
     private static final int WINDOW_LAYER_TYPE;
 
@@ -104,21 +112,16 @@ public class CentralDisplayWindow {
         }
     }
 
-    CentralDisplayWindow(@NonNull Context context) {
+    public CentralDisplayWindow(@NonNull Context context, @NonNull Lifecycle lifecycle, CentralSession centralSession) {
         mContext = context;
+        mLifecycle = lifecycle;
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    }
+        mSessionInfo = centralSession.getSessionInfo();
 
-    public static CentralDisplayWindow attach(@NonNull Context context, ServiceLifecycle lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session) {
-        CentralDisplayWindow result = new CentralDisplayWindow(context);
-        session.getStateBus().bind(lifecycleDelegate, result);
-        animationFrameBus.bind(lifecycleDelegate, result);
-
-        Garnet.create(result)
-                .depend(CentralSession.class, session)
+        centralSession.getStateStream().observe(lifecycle, this::observeSessionState);
+        Garnet.create(this)
+                .depend(CentralSession.class, centralSession)
                 .inject();
-
-        return result;
     }
 
     /**
@@ -162,9 +165,9 @@ public class CentralDisplayWindow {
     /**
      * Sessionのステート変更通知をハンドリングする
      */
-    @Subscribe
-    private void onSessionStateChanged(SessionState.Bus state) {
-        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
+    @UiThread
+    private void observeSessionState(SessionState state) {
+        AppLog.system("SessionState ID[%d] Changed[%s]", mSessionInfo.getSessionId(), state.getState());
         if (state.getState() == SessionState.State.Running) {
             // ウィンドウを登録する
             initDisplayView();
@@ -177,7 +180,11 @@ public class CentralDisplayWindow {
                 filter.addAction(CentralServiceCommand.ACTION_NOTIFICATION_REQUEST);
                 mContext.registerReceiver(mCentralDisplayEventReceiver, filter);
             }
-            mLifecycle.onCreate();
+
+            // 毎フレームの描画処理を行う
+            mLoopController = new HandlerLoopController(UIHandler.getInstance(), this::onAnimationFrame);
+            mLoopController.setFrameRate(30.0);
+            mLoopController.connect();
         } else if (state.getState() == SessionState.State.Stopping) {
             // ウィンドウを削除する
             mWindowManager.removeView(mDataDisplay);
@@ -190,7 +197,11 @@ public class CentralDisplayWindow {
             // Receiverを削除
             mContext.unregisterReceiver(mCentralDisplayEventReceiver);
 
-            mLifecycle.onDestroy();
+            // レンダリング停止
+            if (mLoopController != null) {
+                mLoopController.disconnect();
+                mLoopController = null;
+            }
         }
     }
 
@@ -265,18 +276,18 @@ public class CentralDisplayWindow {
      */
     private double mDeviceCheckDeltaSec;
 
-    @Subscribe
-    private void onAnimationFrame(AnimationFrame.Bus frame) {
-//        AppLog.system("onAnimationFrame frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
+    @UiThread
+    private void onAnimationFrame(double deltaSec) {
+        AppLog.system("onAnimationFrame delta[%.3f sec]", deltaSec);
         // 通知を更新
-        mCentralNotificationManager.onUpdate(frame.getDeltaSec());
+        mCentralNotificationManager.onUpdate(deltaSec);
 
         if (mNotificationView != null) {
             mNotificationView.invalidate();
         }
 
-        mDisplayDeltaSec += frame.getDeltaSec();
-        mDeviceCheckDeltaSec += frame.getDeltaSec();
+        mDisplayDeltaSec += deltaSec;
+        mDeviceCheckDeltaSec += deltaSec;
 
         if (mDisplayDeltaSec > 1.0 && mCurrentDisplayLayout != null) {
             for (DisplayLayout layout : mCurrentDisplayLayout.getSource()) {
@@ -296,7 +307,7 @@ public class CentralDisplayWindow {
      * デバイス状態を更新する
      */
     @UiThread
-    void refreshDeviceContext() {
+    private void refreshDeviceContext() {
         Timer timer = new Timer();
         mLifecycle.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<ResultCollection> task) -> {
             String currentAppPackage = PackageUtil.getTopApplicationPackage(mContext);
@@ -334,4 +345,6 @@ public class CentralDisplayWindow {
             }
         }
     };
+
+
 }

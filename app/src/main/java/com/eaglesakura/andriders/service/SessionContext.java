@@ -12,15 +12,16 @@ import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.service.command.CentralCommandController;
 import com.eaglesakura.andriders.service.command.ProximityFeedbackManager;
 import com.eaglesakura.andriders.service.log.SessionLogController;
-import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.service.ui.CentralDisplayWindow;
 import com.eaglesakura.andriders.service.ui.CentralStatusBar;
-import com.eaglesakura.andriders.service.ui.ServiceAnimationController;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.andriders.util.Clock;
+import com.eaglesakura.android.thread.HandlerLoopController;
+import com.eaglesakura.android.thread.UIHandler;
 import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.cerberus.CallbackTime;
 import com.eaglesakura.cerberus.ExecuteTarget;
+import com.eaglesakura.lambda.Action1;
 import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 
@@ -33,57 +34,48 @@ import android.support.annotation.UiThread;
 /**
  * サービスで動作させる1セッションの情報を管理する
  */
-@SuppressWarnings("ALL")
 public class SessionContext {
     @NonNull
     private final Service mService;
 
+    /**
+     * 1セッション管理用のライフサイクル
+     *
+     * セッション管理にかかわるすべての非同期処理は、このライフサイクルによって管理される
+     */
     @NonNull
     private final ServiceLifecycle mLifecycle = new ServiceLifecycle();
 
     /**
      * 現在走行中のセッションデータ
      */
-    @NonNull
     CentralSession mSession;
 
     /**
      * 走行中のログ保存管理
      */
-    @NonNull
     SessionLogController mSessionLogController;
 
     /**
      * セッションのNotification通知管理
-     *
-     * CentralSessionと
      */
-    @NonNull
     CentralStatusBar mSessionStatusbar;
-
-    /**
-     * アニメーション管理
-     */
-    @NonNull
-    ServiceAnimationController mAnimationController;
-
-    /**
-     * アニメーション管理バス
-     */
-    @NonNull
-    AnimationFrame.Bus mAnimationFrameBus = new AnimationFrame.Bus(new AnimationFrame());
 
     /**
      * 通知レンダリングエリア
      */
-    @NonNull
     CentralDisplayWindow mCentralDisplayWindow;
 
     /**
      * コマンド管理
      */
-    @NonNull
     CentralCommandController mCommandController;
+
+    /**
+     * CentralManagerの定時更新を制御する
+     */
+    @Nullable
+    HandlerLoopController mLoopController;
 
     public SessionContext(@NonNull Service service) {
         mService = service;
@@ -91,6 +83,8 @@ public class SessionContext {
 
     /**
      * セッションを初期化する
+     *
+     * @param intent Service開始時に適用されたIntentがそのまま渡される
      */
     public void initialize(Intent intent) {
         mLifecycle.onCreate();
@@ -98,27 +92,20 @@ public class SessionContext {
         SessionInfo sessionInfo = new SessionInfo.Builder(mService, new Clock(System.currentTimeMillis()))
                 .build();
 
-        CentralSession.InitializeOption option = new CentralSession.InitializeOption();
-
         CentralSession centralSession = CentralSession.newInstance(sessionInfo);
-        centralSession.getStateBus().bind(mLifecycle, this);
         centralSession.getDataStream().observe(mLifecycle, this::observeSessionData);
-        centralSession.getStateBus().bind(mLifecycle, mService);
 
-        mSessionLogController = SessionLogController.attach(mLifecycle, centralSession);
+        mSessionLogController = new SessionLogController(centralSession, mLifecycle);
+        mSessionStatusbar = new CentralStatusBar(getService(), mLifecycle, centralSession, mNotificationCallback);
 
-        mSessionStatusbar = CentralStatusBar.attach(mLifecycle, centralSession, mNotificationCallback);
-
-        mAnimationController = ServiceAnimationController.attach(mLifecycle, centralSession, mAnimationCallback);
-
-        mCentralDisplayWindow = CentralDisplayWindow.attach(mService, mLifecycle, mAnimationFrameBus, centralSession);
+        mCentralDisplayWindow = new CentralDisplayWindow(mService, mLifecycle, centralSession);
         mCentralDisplayWindow.getCentralNotificationManager().addListener(mNotificationShowingListener);  // リスナを登録し、表示タイミングで対応アプリに通知できるようにする
 
-        mCommandController = CentralCommandController.attach(mService, mLifecycle, mAnimationFrameBus, centralSession, mCommandCallback);
+        mCommandController = new CentralCommandController(mService, mLifecycle, centralSession, mCommandCallback);
 
         mLifecycle.asyncQueue((BackgroundTask<CentralSession> task) -> {
             SupportCancelCallbackBuilder.CancelChecker checker = SupportCancelCallbackBuilder.from(task).build();
-            centralSession.initialize(option, checker);
+            centralSession.initialize(checker);
             return centralSession;
         }).completed((result, task) -> {
             mSession = centralSession;
@@ -131,12 +118,22 @@ public class SessionContext {
                 // 起動完了を通知
                 plugin.onCentralBootCompleted();
             });
+
+
+            mLoopController = new HandlerLoopController(UIHandler.getInstance(), mOnAnimationUpdate);
+            mLoopController.setFrameRate(2.0);  // 毎秒2回程度の更新に抑える
+            mLoopController.connect();
         }).failed((error, task) -> {
             AppLog.report(error);
         }).start();
     }
 
     public void dispose() {
+        if (mLoopController != null) {
+            mLoopController.disconnect();
+            mLoopController = null;
+        }
+
         mLifecycle.async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
             if (mSession != null) {
                 mSession.dispose();
@@ -172,21 +169,10 @@ public class SessionContext {
         return mSessionStatusbar;
     }
 
-    @Nullable
-    public ServiceAnimationController getAnimationController() {
-        return mAnimationController;
-    }
-
-    @Nullable
-    public AnimationFrame.Bus getAnimationFrameBus() {
-        return mAnimationFrameBus;
-    }
-
     /**
      * 最後にデータをBroadcastした時刻
      */
     private long mLastDataBroadcastTime = 0;
-
 
     /**
      * データ更新をハンドリングする
@@ -239,11 +225,6 @@ public class SessionContext {
      */
     private final CentralStatusBar.Callback mNotificationCallback = new CentralStatusBar.Callback() {
         @Override
-        public Service getService(CentralStatusBar self) {
-            return mService;
-        }
-
-        @Override
         public void onClickNotification(CentralStatusBar self) {
             AppLog.system("Click Notification");
         }
@@ -256,33 +237,18 @@ public class SessionContext {
     };
 
     /**
-     * アニメーションコントロール
+     * 定時更新の処理
      */
-    private final ServiceAnimationController.Callback mAnimationCallback = new ServiceAnimationController.Callback() {
-        private boolean mClockInitialSync;
-
-        private double mSessionDeltaSec;
-
+    private final Action1<Double> mOnAnimationUpdate = new Action1<Double>() {
         @Override
-        public void onUpdate(ServiceAnimationController self, CentralSession session, double deltaSec) {
+        public void action(Double deltaSec) throws Exception {
             // セッションが初期化されていないなら無視する
             if (mSession == null) {
                 return;
             }
-
-            {
-                // セッション内部時間と現実時間とのズレを補正する
-                double centralDeltaSec = (double) (System.currentTimeMillis() - session.getSessionClock().now()) / 1000.0;
-                mSessionDeltaSec += centralDeltaSec;
-                if (mSessionDeltaSec > 0.5) {
-                    // 毎秒2回程度のアップデートに抑える
-                    mSession.onUpdate(centralDeltaSec);
-                    mSessionDeltaSec = 0;
-                }
-            }
-
-            // アニメーションを追加
-            mAnimationFrameBus.onUpdate(session, deltaSec);
+            // セッション内部時刻とリアル時刻の差分を経過時間として進める
+            double centralDeltaSec = (double) (System.currentTimeMillis() - mSession.getSessionClock().now()) / 1000.0;
+            mSession.onUpdate(centralDeltaSec);
         }
     };
 

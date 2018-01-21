@@ -39,7 +39,7 @@ public class CentralSessionTest extends AppDeviceTestCase {
 
         try {
             timer.start();
-            centralSession.initialize(new CentralSession.InitializeOption(), () -> false);
+            centralSession.initialize(() -> false);
         } finally {
             validate(timer.end()).to(1000 * 10); // 10秒以内に処理出来ている
         }

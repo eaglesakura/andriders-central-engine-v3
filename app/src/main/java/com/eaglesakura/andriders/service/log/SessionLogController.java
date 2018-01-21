@@ -1,7 +1,7 @@
 package com.eaglesakura.andriders.service.log;
 
-import com.eaglesakura.andriders.central.data.CentralDataManager;
 import com.eaglesakura.andriders.central.data.log.SessionLogger;
+import com.eaglesakura.andriders.central.data.session.SessionInfo;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.data.db.SessionLogDatabase;
@@ -13,19 +13,30 @@ import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
 import com.eaglesakura.cerberus.CallbackTime;
 import com.eaglesakura.cerberus.ExecuteTarget;
-import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
-import com.squareup.otto.Subscribe;
+import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
 /**
  * セッションログの書き込み管理コントローラ
  */
 public class SessionLogController {
-    ServiceLifecycle mLifecycleDelegate = new ServiceLifecycle();
+    @NonNull
+    private Lifecycle mLifecycle;
 
-    SessionLogger mLogger;
+    @NonNull
+    private final SessionLogger mLogger;
+
+    @NonNull
+    private final SessionInfo mSessionInfo;
+
+    /**
+     * 最後に取得したCentralData
+     */
+    @Nullable
+    private RawCentralData mLatestObserveCentralData;
 
     @Inject(value = AppDatabaseProvider.class, name = AppDatabaseProvider.NAME_WRITEABLE)
     SessionLogDatabase mDatabase;
@@ -33,36 +44,31 @@ public class SessionLogController {
     @NonNull
     final ClockTimer mCommitTimer;
 
-    private SessionLogController(CentralSession centralSession) {
-        mLifecycleDelegate.onCreate();
+    public SessionLogController(@NonNull CentralSession centralSession, @NonNull Lifecycle lifecycle) {
+        mLifecycle = lifecycle;
+        mSessionInfo = centralSession.getSessionInfo();
         mLogger = new SessionLogger(centralSession.getSessionInfo());
         mCommitTimer = new ClockTimer(centralSession.getSessionClock());
-    }
 
-    public static SessionLogController attach(ServiceLifecycle lifecycleDelegate, CentralSession session) {
-        SessionLogController result = new SessionLogController(session);
-        session.getStateBus().bind(lifecycleDelegate, result);
-        session.getDataStream().observe(lifecycleDelegate, result::observeSessionData);
+        centralSession.getStateStream().observe(lifecycle, this::observeSessionState);
+        centralSession.getDataStream().observe(lifecycle, this::observeSessionData);
 
-        Garnet.inject(result);
-
-        return result;
+        Garnet.inject(this);
     }
 
     /**
      * Sessionのステート変更通知をハンドリングする
      */
-    @Subscribe
-    private void onSessionStateChanged(SessionState.Bus state) {
+    @UiThread
+    private void observeSessionState(SessionState state) {
         // 必要に応じてハンドリングを追加する
-        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
+        AppLog.system("SessionState ID[%d] Changed[%s]", mSessionInfo.getSessionId(), state.getState());
         if (state.getState() == SessionState.State.Destroyed) {
             // 最後のステートの場合、強制的に更新する
             // 初期化が終わる前にDestroyが行われる可能性があるので注意する
-            CentralDataManager centralDataManager = state.getSession().getCentralDataManager();
-            if (centralDataManager != null && centralDataManager.getLatestCentralData() != null) {
+            if (mLatestObserveCentralData != null) {
                 AppLog.db("finalize commit");
-                mLogger.add(centralDataManager.getLatestCentralData());
+                mLogger.add(mLatestObserveCentralData);
                 commitAsync();
             }
         }
@@ -83,6 +89,7 @@ public class SessionLogController {
             commitAsync();
             mCommitTimer.start();
         }
+        mLatestObserveCentralData = data;
     }
 
     private void commitAsync() {
@@ -91,7 +98,7 @@ public class SessionLogController {
             return;
         }
 
-        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.FireAndForget, task -> {
+        mLifecycle.async(ExecuteTarget.GlobalParallel, CallbackTime.FireAndForget, task -> {
             try (SessionLogDatabase db = mDatabase.open(0x00)) {
                 db.runInTx(() -> {
                     mLogger.commit(mDatabase);

@@ -7,7 +7,6 @@ import com.eaglesakura.andriders.service.server.CentralSessionServer;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.util.ContextUtil;
 import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
-import com.squareup.otto.Subscribe;
 
 import org.greenrobot.greendao.annotation.NotNull;
 
@@ -109,15 +108,16 @@ public class CentralSessionService extends Service {
     /**
      * Sessionのステート変更通知をハンドリングする
      */
-    @Subscribe
-    private void onSessionStateChanged(SessionState.Bus state) {
+    @UiThread
+    private void observeSessionState(SessionState state) {
         // 必要に応じてハンドリングを追加する
-        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
+        CentralSession session = mSession.getSession();
+        AppLog.system("SessionState ID[%d] Changed[%s]", session.getSessionId(), state.getState());
         if (state.getState() == SessionState.State.Running) {
             // 実行中にステートが変わったので、走行通知をする
-            mSessionServer.notifyOnSessionStarted(state.getSession().getSessionInfo());
+            mSessionServer.notifyOnSessionStarted(session.getSessionInfo());
         } else if (state.getState() == SessionState.State.Destroyed) {
-            mSessionServer.notifyOnSessionStopped(state.getSession().getSessionInfo());
+            mSessionServer.notifyOnSessionStopped(session.getSessionInfo());
         }
     }
 

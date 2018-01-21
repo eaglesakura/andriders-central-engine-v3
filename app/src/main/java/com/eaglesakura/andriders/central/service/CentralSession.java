@@ -22,7 +22,6 @@ import com.eaglesakura.util.Timer;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 /**
  * 1セッションを管理する。
@@ -52,7 +51,7 @@ public class CentralSession {
      * 現在のステート
      */
     @NonNull
-    SessionState.Bus mStateBus = new SessionState.Bus(new SessionState(SessionState.State.NewObject, this));
+    SessionStateStream mStateStream;
 
     /**
      * データ取得用のStream
@@ -63,6 +62,7 @@ public class CentralSession {
     CentralSession(SessionInfo sessionInfo) {
         mSessionInfo = sessionInfo;
         mSessionDataStream = new SessionDataStream(this);
+        mStateStream = new SessionStateStream(this);
     }
 
     /**
@@ -73,12 +73,9 @@ public class CentralSession {
         return mSessionInfo;
     }
 
-    /**
-     * State通知用のBusを取得する
-     */
     @NonNull
-    public SessionState.Bus getStateBus() {
-        return mStateBus;
+    public SessionStateStream getStateStream() {
+        return mStateStream;
     }
 
     /**
@@ -104,9 +101,11 @@ public class CentralSession {
 
     /**
      * 初期化を開始させる
+     *
+     * バックグラウンドスレッドで処理されることが想定される
      */
-    public void initialize(@Nullable InitializeOption option, CancelCallback cancelCallback) throws AppException, TaskCanceledException {
-        mStateBus.modified(new SessionState(SessionState.State.Initializing, this));
+    public void initialize(CancelCallback cancelCallback) throws AppException, TaskCanceledException {
+        mStateStream.onUpdate(new SessionState(SessionState.State.Initializing));
 
         CentralPluginCollection pluginCollection;
 
@@ -126,7 +125,7 @@ public class CentralSession {
         mPluginCollection = pluginCollection;
 
         // State切り替えを通知する
-        mStateBus.modified(new SessionState(SessionState.State.Running, this));
+        mStateStream.onUpdate(new SessionState(SessionState.State.Running));
 
         // 必要であればWi-Fiを切断する
         if (mSessionInfo.getCentralServiceSettings().isWifiDisable()) {
@@ -146,7 +145,7 @@ public class CentralSession {
      */
     public void onUpdate(double deltaSec) {
         // 実行中以外のステートは無視する
-        if (mStateBus.getState() != SessionState.State.Running) {
+        if (mStateStream.getValueOrThrow().getState() != SessionState.State.Running) {
             return;
         }
 
@@ -178,18 +177,15 @@ public class CentralSession {
 
     /**
      * 削除を行う
-     *
-     * @return 終了タスク, awaitを行うことで終了待ちを明示できる
      */
-    @NonNull
     public void dispose() throws AppException {
         try {
-            mStateBus.modified(new SessionState(SessionState.State.Stopping, this));
+            mStateStream.onUpdate(new SessionState(SessionState.State.Stopping));
             if (mPluginCollection != null) {
                 mPluginCollection.disconnect();
             }
         } finally {
-            mStateBus.modified(new SessionState(SessionState.State.Destroyed, this));
+            mStateStream.onUpdate(new SessionState(SessionState.State.Destroyed));
         }
     }
 
@@ -203,8 +199,5 @@ public class CentralSession {
                 .inject();
 
         return result;
-    }
-
-    public static class InitializeOption {
     }
 }

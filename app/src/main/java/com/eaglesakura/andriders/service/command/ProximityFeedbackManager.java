@@ -3,7 +3,6 @@ package com.eaglesakura.andriders.service.command;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
-import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.android.util.AndroidUtil;
@@ -89,8 +88,12 @@ public class ProximityFeedbackManager {
         }
     }
 
-    @Subscribe
-    private void onAnimation(AnimationFrame.Bus data) {
+    /**
+     * 毎時更新を行う
+     *
+     * @param deltaSec 経過秒
+     */
+    public void onUpdate(double deltaSec) {
         int durationSec = getDurationTimeMs() / 1000;
         if (durationSec > 0 && durationSec <= CommandKey.PROXIMITY_COMMAND_NUM && mLastVibeSec != durationSec && mCurrentProximity.isProximity()) {
             // フィードバック時刻になったので端末を振動

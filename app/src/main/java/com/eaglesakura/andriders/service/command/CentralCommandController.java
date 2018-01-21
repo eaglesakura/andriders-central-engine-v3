@@ -19,15 +19,15 @@ import com.eaglesakura.andriders.provider.AppManagerProvider;
 import com.eaglesakura.andriders.provider.SessionManagerProvider;
 import com.eaglesakura.andriders.serialize.RawCentralData;
 import com.eaglesakura.andriders.serialize.RawIntent;
-import com.eaglesakura.andriders.service.ui.AnimationFrame;
 import com.eaglesakura.andriders.util.AppLog;
 import com.eaglesakura.android.garnet.Garnet;
 import com.eaglesakura.android.garnet.Inject;
+import com.eaglesakura.android.thread.HandlerLoopController;
+import com.eaglesakura.android.thread.UIHandler;
 import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.cerberus.CallbackTime;
 import com.eaglesakura.cerberus.ExecuteTarget;
 import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
-import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
 import com.squareup.otto.Subscribe;
 
 import android.content.Context;
@@ -60,7 +60,7 @@ public class CentralCommandController {
     final private CentralSession mSession;
 
     @NonNull
-    final private Lifecycle mLifecycleDelegate;
+    final private Lifecycle mLifecycle;
 
     @Inject(AppManagerProvider.class)
     private CommandDataManager mCommandDataManager;
@@ -73,43 +73,48 @@ public class CentralCommandController {
     /**
      * 近接センサーフィードバック
      */
+    @Nullable
     private ProximityFeedbackManager mProximityFeedbackManager;
 
     @Nullable
     private ProximityCommandController mProximityCommandController;
 
-    final List<DistanceCommandController> mDistanceCommandControllerList = new ArrayList<>();
+    private final List<DistanceCommandController> mDistanceCommandControllerList = new ArrayList<>();
 
-    final List<SpeedCommandController> mSpeedCommandControllerList = new ArrayList<>();
+    private final List<SpeedCommandController> mSpeedCommandControllerList = new ArrayList<>();
 
     final List<TimerCommandController> mTimerCommandControllerList = new ArrayList<>();
-
-    @NonNull
-    private AnimationFrame.Bus mAnimationBus;
 
     @Nullable
     private RawCentralData mLatestCentralData;
 
-    CentralCommandController(@NonNull Context context, Lifecycle delegate, CentralSession session, AnimationFrame.Bus animationFrameBus, Callback callback) {
+    /**
+     * 近接コマンド制御用のループコントローラ
+     */
+    @Nullable
+    private HandlerLoopController mHandlerLoopController;
+
+    public CentralCommandController(@NonNull Context context, @NonNull Lifecycle lifecycle, @NonNull CentralSession session, @NonNull Callback callback) {
         mContext = context;
         mCallback = callback;
         mCentralDataReceiver = new CentralDataReceiver(mContext);
-        mLifecycleDelegate = delegate;
+        mLifecycle = lifecycle;
         mSession = session;
-        mAnimationBus = animationFrameBus;
-    }
 
-    public static CentralCommandController attach(@NonNull Context context, ServiceLifecycle lifecycleDelegate, AnimationFrame.Bus animationFrameBus, @NonNull CentralSession session, Callback callback) {
-        CentralCommandController result = new CentralCommandController(context, lifecycleDelegate, session, animationFrameBus, callback);
-        Garnet.create(result)
+        Garnet.create(this)
                 .depend(Context.class, context)
                 .inject();
-        session.getDataStream().observe(lifecycleDelegate, result::observeCentralData);
-        session.getStateBus().bind(lifecycleDelegate, result);
-        animationFrameBus.bind(lifecycleDelegate, result);
-        return result;
+
+        session.getStateStream().observe(mLifecycle, this::observeSessionState);
+        session.getDataStream().observe(mLifecycle, this::observeCentralData);
     }
 
+    /**
+     * 現在の近接コマンドマネージャを取得する
+     *
+     * 初期化が完了するため、これはnullを返却する
+     */
+    @Nullable
     public ProximityFeedbackManager getProximityFeedbackManager() {
         return mProximityFeedbackManager;
     }
@@ -117,26 +122,35 @@ public class CentralCommandController {
     /**
      * Sessionのステート変更通知をハンドリングする
      */
-    @Subscribe
-    private void onSessionStateChanged(SessionState.Bus state) {
-        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
+    @UiThread
+    private void observeSessionState(SessionState state) {
+        AppLog.system("SessionState ID[%d] Changed[%s]", mSession.getSessionId(), state.getState());
 
         if (state.getState() == SessionState.State.Running) {
             // すべての設定済みコマンドをロードする
             // 必要であれば近接コマンドへ接続する
             loadCommands();
+
+            mHandlerLoopController = new HandlerLoopController(UIHandler.getInstance(), this::onUpdate);
+            mHandlerLoopController.setFrameRate(10.0);  // コマンドは0.1秒インターバルもあれば十分
+            mHandlerLoopController.connect();
         } else if (state.getState() == SessionState.State.Stopping) {
             // 必要であれば近接コマンドから切断する
             if (mProximitySensorManager != null) {
                 mProximitySensorManager.disconnect();
                 mProximitySensorManager = null;
             }
+
+            if (mHandlerLoopController != null) {
+                mHandlerLoopController.disconnect();
+                mHandlerLoopController = null;
+            }
         }
     }
 
     @UiThread
     private void loadCommands() {
-        mLifecycleDelegate.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<CommandDataCollection> task) -> {
+        mLifecycle.async(ExecuteTarget.LocalQueue, CallbackTime.Alive, (BackgroundTask<CommandDataCollection> task) -> {
             return mCommandDataManager.loadAll();
         }).completed((result, task) -> {
             AppLog.command("Loaded Commands[%d]", result.size());
@@ -174,9 +188,8 @@ public class CentralCommandController {
             mProximityFeedbackManager.setProximityCommands(new CommandDataCollection(proximityCommands));
 
             // Busに登録する
-            mProximitySensorManager.getProximityDataBus().bind(mLifecycleDelegate, this);
-            mProximitySensorManager.getProximityDataBus().bind(mLifecycleDelegate, mProximityFeedbackManager);
-            mAnimationBus.bind(mLifecycleDelegate, mProximityFeedbackManager);
+            mProximitySensorManager.getProximityDataBus().bind(mLifecycle, this);
+            mProximitySensorManager.getProximityDataBus().bind(mLifecycle, mProximityFeedbackManager);
         }
 
         // その他のコマンドを付与する
@@ -233,13 +246,17 @@ public class CentralCommandController {
     /**
      * 毎フレーム処理の振り分けを行う
      */
-    @Subscribe
-    private void onAnimationFrame(AnimationFrame.Bus frame) {
-//        AppLog.system("onAnimationFrame frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
+    @UiThread
+    private void onUpdate(double deltaSec) {
+//        AppLog.system("onUpdate frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
 
         // 必要なコントローラを更新する
         for (TimerCommandController controller : mTimerCommandControllerList) {
             controller.onUpdate(mSession.getSessionClock().now());
+        }
+
+        if (mProximityFeedbackManager != null) {
+            mProximityFeedbackManager.onUpdate(deltaSec);
         }
     }
 

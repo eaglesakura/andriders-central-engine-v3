@@ -4,12 +4,11 @@ import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionState;
 import com.eaglesakura.andriders.util.AppLog;
-import com.eaglesakura.sloth.app.lifecycle.ServiceLifecycle;
+import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
 import com.eaglesakura.sloth.view.SupportNotification;
 import com.eaglesakura.sloth.view.SupportRemoteViews;
 import com.eaglesakura.sloth.view.builder.NotificationBuilder;
 import com.eaglesakura.sloth.view.builder.RemoteViewsBuilder;
-import com.squareup.otto.Subscribe;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -26,54 +25,52 @@ import android.support.annotation.UiThread;
  */
 public class CentralStatusBar {
 
-    static final int NOTIFICATION_ID = 0x1200;
+    private static final int NOTIFICATION_ID = 0x1200;
 
     /**
      * 通知ID
      */
-    SupportNotification mNotification;
+    private SupportNotification mNotification;
 
     /**
      * 通知用のView
      */
-    SupportRemoteViews mNotificationViews;
+    private SupportRemoteViews mNotificationViews;
 
     /**
      * 制御コールバック
      */
     @NonNull
-    final Callback mCallback;
+    private final Callback mCallback;
 
-    CentralStatusBar(@NonNull Callback callback) {
+    @NonNull
+    private final Service mService;
+
+    @NonNull
+    private final CentralSession mSession;
+
+    public CentralStatusBar(Service service, Lifecycle lifecycle, CentralSession session, @NonNull Callback callback) {
+        mService = service;
         mCallback = callback;
-    }
-
-    public static CentralStatusBar attach(ServiceLifecycle lifecycleDelegate, CentralSession session, @NonNull Callback callback) {
-        CentralStatusBar result = new CentralStatusBar(callback);
-
-        session.getStateBus().bind(lifecycleDelegate, result);
-
-        return result;
+        mSession = session;
+        session.getStateStream().observe(lifecycle, this::observeSessionState);
     }
 
     /**
      * Sessionのステート変更通知をハンドリングする
      */
-    @Subscribe
-    private void onSessionStateChanged(SessionState.Bus state) {
-        AppLog.system("SessionState ID[%d] Changed[%s]", state.getSession().getSessionId(), state.getState());
+    private void observeSessionState(SessionState state) {
+        AppLog.system("SessionState ID[%d] Changed[%s]", mSession.getSessionId(), state.getState());
 
-        Service service = mCallback.getService(this);
-        CentralSession session = state.getSession();
         if (state.getState() == SessionState.State.Initializing) {
             // 初期化中
-            onStartSessionInitialize(service, session);
+            onStartSessionInitialize(mService);
         } else if (state.getState() == SessionState.State.Running) {
             // 実行中に切り替わった
-            onStartSession(service, session);
+            onStartSession(mService);
         } else if (state.getState() == SessionState.State.Stopping) {
             // セッション終了とする
-            onStopSession(service, session);
+            onStopSession(mService);
         }
     }
 
@@ -81,13 +78,13 @@ public class CentralStatusBar {
      * セッションが開始された
      */
     @UiThread
-    private void onStartSessionInitialize(Service service, CentralSession session) {
+    private void onStartSessionInitialize(Service service) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(NotificationBuilder.CHANNEL_DEFAULT, "default", NotificationManager.IMPORTANCE_HIGH);
             channel.setLightColor(Color.RED);
             channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
-            NotificationManager notificationManager = (NotificationManager) mCallback.getService(this).getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
             assert notificationManager != null;
             notificationManager.createNotificationChannel(channel);
         }
@@ -95,33 +92,24 @@ public class CentralStatusBar {
                 .ticker(R.string.Word_Common_AndridersCentralEngine)
                 .title(R.string.Word_Common_AndridersCentralEngine)
                 .icon(R.mipmap.ic_launcher)
-                .customize(builder -> {
-                    builder.setChannelId(NotificationBuilder.CHANNEL_DEFAULT);
-                })
                 .showForeground(NOTIFICATION_ID);
 
         // 表示内容を切り替える
         setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_initialize)
                 .build()
-                .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
-                    mCallback.onClickNotification(CentralStatusBar.this);
-                }));
+                .setOnClickListener(R.id.Item_Root, (self, viewId) -> mCallback.onClickNotification(CentralStatusBar.this)));
     }
 
     /**
      * セッションの初期化が完了した
      */
     @UiThread
-    private void onStartSession(Service service, CentralSession session) {
+    private void onStartSession(Service service) {
         // 表示内容を切り替える
         setContent(RemoteViewsBuilder.from(service, R.layout.display_notification_running)
                 .build()
-                .setOnClickListener(R.id.Item_Root, (self, viewId) -> {
-                    mCallback.onClickNotification(CentralStatusBar.this);
-                })
-                .setOnClickListener(R.id.Button_ViewToggle, (self, viewId) -> {
-                    mCallback.onClickToggleDisplay(CentralStatusBar.this);
-                })
+                .setOnClickListener(R.id.Item_Root, (self, viewId) -> mCallback.onClickNotification(CentralStatusBar.this))
+                .setOnClickListener(R.id.Button_ViewToggle, (self, viewId) -> mCallback.onClickToggleDisplay(CentralStatusBar.this))
         );
     }
 
@@ -129,7 +117,7 @@ public class CentralStatusBar {
      * セッションが終了した
      */
     @UiThread
-    private void onStopSession(Service service, CentralSession session) {
+    private void onStopSession(Service service) {
         if (mNotification != null) {
             service.stopForeground(true);
             mNotification.cancel();
@@ -158,12 +146,6 @@ public class CentralStatusBar {
     }
 
     public interface Callback {
-
-        /**
-         * 管理対象のServiceを取得する
-         */
-        Service getService(CentralStatusBar self);
-
         /**
          * 通知をクリックされた
          */

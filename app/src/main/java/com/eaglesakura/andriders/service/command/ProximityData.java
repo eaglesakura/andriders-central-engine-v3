@@ -13,9 +13,9 @@ import java.util.Date;
 public class ProximityData {
 
     @NonNull
-    final Date mDate;
+    private final Date mDate;
 
-    final boolean mProximityState;
+    private final boolean mProximityState;
 
     public ProximityData(@NonNull Date date, boolean proximityState) {
         mDate = date;
