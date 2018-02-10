@@ -4,7 +4,7 @@ import com.eaglesakura.andriders.central.data.command.CommandController;
 import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
-import com.eaglesakura.andriders.service.command.ProximityData;
+import com.eaglesakura.andriders.service.command.ProximityState;
 import com.eaglesakura.andriders.util.AppLog;
 
 import android.content.Context;
@@ -23,7 +23,7 @@ public class ProximityCommandController extends CommandController {
     /**
      * 手をかざしたタイミングでの近接情報
      */
-    private ProximityData mStartProximity;
+    private ProximityState mStartProximity;
 
     public ProximityCommandController(@NonNull Context context) {
         super(context);
@@ -49,7 +49,7 @@ public class ProximityCommandController extends CommandController {
     /**
      * 近接状態が更新された
      */
-    public void onUpdate(ProximityData data) {
+    public void onUpdate(ProximityState data) {
         if (data.isProximity()) {
             // 近接状態となった
             mStartProximity = data;

@@ -5,7 +5,7 @@ import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.dao.central.DbCommand;
 import com.eaglesakura.andriders.model.command.CommandData;
 import com.eaglesakura.andriders.model.command.CommandDataCollection;
-import com.eaglesakura.andriders.service.command.ProximityData;
+import com.eaglesakura.andriders.service.command.ProximityState;
 import com.eaglesakura.andriders.util.Clock;
 import com.eaglesakura.cerberus.PendingCallbackQueue;
 import com.eaglesakura.thread.IntHolder;
@@ -53,7 +53,7 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
 //        callbackNum.value = 0;
 //        for (int i = 0; i < ProximityCommandController.MAX_FEEDBACK_SEC; ++i) {
 //            clock.offset(1000 + 1);
-//            controller.onUpdate(1.01);
+//            controller.onUpdateFrame(1.01);
 //            Util.sleep(100);
 //            assertEquals(callbackSec.value, i + 1);
 //            assertEquals(callbackNum.value, i + 1);
@@ -96,13 +96,13 @@ public class ProximityCommandControllerTest extends AppUnitTestCase {
 
             // 近接開始
             {
-                ProximityData data = new ProximityData(clock.nowDate(), true);
+                ProximityState data = new ProximityState(clock.nowDate(), true);
                 controller.onUpdate(data);
             }
             clock.offset(1000 * (i + 1) + 1);   // 最初の1秒はキャンセルチェックなので飛ばす
             clock.offset(10);
             {
-                ProximityData data = new ProximityData(clock.nowDate(), false);
+                ProximityState data = new ProximityState(clock.nowDate(), false);
                 controller.onUpdate(data);
             }
             Util.sleep(100);

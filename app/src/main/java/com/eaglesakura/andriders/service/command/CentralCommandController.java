@@ -28,7 +28,6 @@ import com.eaglesakura.cerberus.BackgroundTask;
 import com.eaglesakura.cerberus.CallbackTime;
 import com.eaglesakura.cerberus.ExecuteTarget;
 import com.eaglesakura.sloth.app.lifecycle.Lifecycle;
-import com.squareup.otto.Subscribe;
 
 import android.content.Context;
 import android.content.Intent;
@@ -187,9 +186,9 @@ public class CentralCommandController {
                     .instance(ProximityFeedbackManager.class);
             mProximityFeedbackManager.setProximityCommands(new CommandDataCollection(proximityCommands));
 
-            // Busに登録する
-            mProximitySensorManager.getProximityDataBus().bind(mLifecycle, this);
-            mProximitySensorManager.getProximityDataBus().bind(mLifecycle, mProximityFeedbackManager);
+            // Observe
+            ProximityStream proximityStream = mProximitySensorManager.getProximityStream();
+            proximityStream.observe(mLifecycle, this::observeProximity);
         }
 
         // その他のコマンドを付与する
@@ -229,9 +228,15 @@ public class CentralCommandController {
     /**
      * 近接コマンド状態が更新された
      */
-    @Subscribe
-    private void onUpdateProximity(ProximityData.Bus data) {
-        mProximityCommandController.onUpdate(data.getData());
+    @UiThread
+    private void observeProximity(ProximityState state) {
+        if (mProximityCommandController != null) {
+            mProximityCommandController.onUpdate(state);
+        }
+
+        if (mProximityFeedbackManager != null) {
+            mProximityFeedbackManager.onUpdateProximity(state);
+        }
     }
 
     /**
@@ -248,7 +253,7 @@ public class CentralCommandController {
      */
     @UiThread
     private void onUpdate(double deltaSec) {
-//        AppLog.system("onUpdate frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
+//        AppLog.system("onUpdateAnimationFrame frame[%d] delta[%.3f sec]", frame.getFrameCount(), frame.getDeltaSec());
 
         // 必要なコントローラを更新する
         for (TimerCommandController controller : mTimerCommandControllerList) {
@@ -256,7 +261,7 @@ public class CentralCommandController {
         }
 
         if (mProximityFeedbackManager != null) {
-            mProximityFeedbackManager.onUpdate(deltaSec);
+            mProximityFeedbackManager.onUpdateAnimationFrame(deltaSec);
         }
     }
 

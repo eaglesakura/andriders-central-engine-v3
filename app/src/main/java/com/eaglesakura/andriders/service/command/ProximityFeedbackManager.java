@@ -6,7 +6,6 @@ import com.eaglesakura.andriders.model.command.CommandDataCollection;
 import com.eaglesakura.android.graphics.Font;
 import com.eaglesakura.android.graphics.Graphics;
 import com.eaglesakura.android.util.AndroidUtil;
-import com.squareup.otto.Subscribe;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -31,7 +30,7 @@ public class ProximityFeedbackManager {
     /**
      * 現在の近接状態
      */
-    private ProximityData mCurrentProximity;
+    private ProximityState mCurrentProximity;
 
     /**
      * 近接コマンド一覧
@@ -76,9 +75,8 @@ public class ProximityFeedbackManager {
     /**
      * 近接コマンド状態が更新された
      */
-    @Subscribe
-    private void onUpdateProximity(ProximityData.Bus data) {
-        mCurrentProximity = data.getData();
+    void onUpdateProximity(ProximityState state) {
+        mCurrentProximity = state;
         if (!mCurrentProximity.isProximity()) {
             // 手を話したので状態をリセット
             mLastVibeSec = 0;
@@ -93,7 +91,7 @@ public class ProximityFeedbackManager {
      *
      * @param deltaSec 経過秒
      */
-    public void onUpdate(double deltaSec) {
+    void onUpdateAnimationFrame(double deltaSec) {
         int durationSec = getDurationTimeMs() / 1000;
         if (durationSec > 0 && durationSec <= CommandKey.PROXIMITY_COMMAND_NUM && mLastVibeSec != durationSec && mCurrentProximity.isProximity()) {
             // フィードバック時刻になったので端末を振動

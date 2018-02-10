@@ -10,7 +10,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.annotation.NonNull;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,7 +21,7 @@ public class ProximitySensorManager {
     private Context mContext;
 
     @NonNull
-    private final ProximityData.Bus mProximityData;
+    private final ProximityStream mProximityStream;
 
     @NonNull
     private final ScreenEventReceiver mScreenEventReceiver;
@@ -34,12 +33,12 @@ public class ProximitySensorManager {
         mContext = context;
         mScreenEventReceiver = new ScreenEventReceiver(mContext);
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-        mProximityData = new ProximityData.Bus(new ProximityData(new Date(), false));
+        mProximityStream = new ProximityStream();
     }
 
     @NonNull
-    public ProximityData.Bus getProximityDataBus() {
-        return mProximityData;
+    public ProximityStream getProximityStream() {
+        return mProximityStream;
     }
 
     public void connect() {
@@ -83,15 +82,9 @@ public class ProximitySensorManager {
             AppLog.proximity("Proximity[%.1f]", value);
 
             boolean proximity = (value < COMMAND_INPUT_VALUE);
-            if (mProximityData.isProximity() == proximity) {
-                // ステートが変わってない
-                return;
+            if (mProximityStream.onUpdate(proximity)) {
+                AppLog.proximity("Modified ProximityState[%s]", proximity ? "YES" : "NO");
             }
-
-            AppLog.proximity("Modified ProximityState[%s]", proximity ? "YES" : "NO");
-
-            // ステートの切り替わりを送信する
-            mProximityData.modified(new ProximityData(new Date(), proximity));
         }
 
         @Override
