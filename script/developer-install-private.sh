@@ -7,13 +7,16 @@
 #################################################################################
 if [ -e ./ace-private/v3.0.x ]; then
     echo "installed ace-private/"
-    cd ace-private/
-    git fetch
-    git pull origin master
-    cd ..
 else
     git clone git@bitbucket.org:eaglesakura/ace-private.git
 fi
+
+cd ace-private/
+if [ -d "`pwd`/.git" ]; then
+  echo "exist git repository"
+  git checkout -f 3c06c6a
+fi
+cd ..
 
 if [ -e "./ace-private/v3.0.x/" ]; then
     cp -rf ./ace-private/v3.0.x/main           ./app/private/
