@@ -3,15 +3,11 @@ package com.eaglesakura.andriders.ui.navigation.display;
 import com.eaglesakura.andriders.R;
 import com.eaglesakura.andriders.model.display.DisplayLayout;
 import com.eaglesakura.andriders.ui.widget.IconItemAdapter;
-import com.eaglesakura.util.StringUtil;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-
-import java.util.Comparator;
-import java.util.Date;
 
 /**
  * レイアウト用のアプリケーション情報
@@ -22,18 +18,25 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
     @Nullable
     private final ApplicationInfo mAppInfo;
 
-    Drawable mSubIcon;
+    /**
+     * バッジとして表示する補助アイコン
+     */
+    private final Drawable mBadgeIcon;
 
-    Date mUpdatedDate;
+    /**
+     * アプリアイコン本体
+     */
+    private Drawable mIcon;
 
-    Drawable mIcon;
-
-    String mTitle;
+    /**
+     * アプリタイトル
+     */
+    private final String mTitle;
 
     public DisplayLayoutApplication(Context context, @Nullable ApplicationInfo packageInfo, @Nullable Drawable subIcon) {
         mContext = context;
         mAppInfo = packageInfo;
-        mSubIcon = subIcon;
+        mBadgeIcon = subIcon;
         if (mAppInfo != null) {
             mTitle = packageInfo.loadLabel(context.getPackageManager()).toString();
         } else {
@@ -42,7 +45,8 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
     }
 
     /**
-     * デフォルト構成のアプリである場合true
+     * デフォルト構成である場合true.
+     * ユーザーが明示的に指定しない場合、このレイアウト構成が利用される.
      */
     public boolean isDefaultApp() {
         return mAppInfo == null;
@@ -71,8 +75,9 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
     }
 
     @Override
-    public Drawable getSubIcon() {
-        return mUpdatedDate != null ? mSubIcon : null;
+    public Drawable getBadgeIcon() {
+//        return mUpdatedDate != null ? mBadgeIcon : null;
+        return mBadgeIcon;
     }
 
     /**
@@ -82,26 +87,4 @@ public class DisplayLayoutApplication implements IconItemAdapter.Item {
     public String getTitle() {
         return mTitle;
     }
-
-    /**
-     * 昇順ソート
-     */
-    public static final Comparator<DisplayLayoutApplication> COMPARATOR_ASC = (a, b) -> {
-        if (a.mAppInfo == null) {
-            return -1;
-        } else if (b.mAppInfo == null) {
-            return 1;
-        }
-
-        if (a.mUpdatedDate != null && b.mUpdatedDate != null) {
-            // 値が大きい方を優先させる
-            return Long.compare(b.mUpdatedDate.getTime(), a.mUpdatedDate.getTime());
-        } else if (a.mUpdatedDate != null) {
-            return -1;
-        } else if (b.mUpdatedDate != null) {
-            return 1;
-        } else {
-            return StringUtil.compareString(a.mAppInfo.packageName, b.mAppInfo.packageName);
-        }
-    };
 }

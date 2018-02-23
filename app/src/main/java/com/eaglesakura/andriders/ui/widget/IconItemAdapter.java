@@ -23,8 +23,8 @@ import android.view.ViewGroup;
 public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends CardAdapter<T> {
     final Lifecycle mLifecycle;
 
-    public IconItemAdapter(Lifecycle delegate) {
-        mLifecycle = delegate;
+    public IconItemAdapter(Lifecycle lifecycle) {
+        mLifecycle = lifecycle;
     }
 
     protected abstract Context getContext();
@@ -47,11 +47,11 @@ public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends Ca
         mLifecycle.async(ExecuteTarget.LocalParallel, CallbackTime.Foreground, (BackgroundTask<ResultCollection> task) -> {
             return new ResultCollection()
                     .put("main", bind.getItem().getIcon())
-                    .put("sub", bind.getItem().getSubIcon())
+                    .put("sub", bind.getItem().getBadgeIcon())
                     ;
         }).completed((result, task) -> {
-            binding.Icon.setImageDrawable(((Drawable) result.get("main")));
-            binding.SubIcon.setImageDrawable((Drawable) result.get("sub"));
+            binding.Icon.setImageDrawable(result.get("main"));
+            binding.SubIcon.setImageDrawable(result.get("sub"));
             binding.Icon.setVisibility(View.VISIBLE);
         }).cancelSignal(task -> !bind.isBinded())
                 .start();
@@ -75,7 +75,7 @@ public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends Ca
         /**
          * 補助表記を行う
          */
-        Drawable getSubIcon();
+        Drawable getBadgeIcon();
 
         /**
          * 表示タイトル
@@ -102,7 +102,7 @@ public abstract class IconItemAdapter<T extends IconItemAdapter.Item> extends Ca
         }
 
         @Override
-        public Drawable getSubIcon() {
+        public Drawable getBadgeIcon() {
             return null;
         }
 

@@ -20,9 +20,11 @@ import com.eaglesakura.android.util.PackageUtil;
 import com.eaglesakura.cerberus.error.TaskCanceledException;
 import com.eaglesakura.collection.DataCollection;
 import com.eaglesakura.lambda.CancelCallback;
-import com.eaglesakura.sloth.data.DataBus;
 import com.eaglesakura.util.CollectionUtil;
+import com.eaglesakura.util.DateUtil;
 import com.eaglesakura.util.StringUtil;
+
+import org.greenrobot.greendao.annotation.NotNull;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -31,6 +33,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,49 +46,50 @@ import static com.eaglesakura.sloth.util.AppSupportUtil.assertNotCanceled;
  * レイアウトデータ管理
  */
 public class DisplayLayoutController {
-    Context mContext;
+    private Context mContext;
 
     /**
      * キャッシュされたレイアウト情報
      */
-    Map<String, DisplayLayoutGroup> mLayouts = new HashMap<>();
+    private Map<String, DisplayLayoutGroup> mLayouts = new HashMap<>();
 
     /**
      * 表示用UIを持ったプラグイン一覧
      */
-    DataCollection<CentralPlugin> mDisplayPlugins;
+    private DataCollection<CentralPlugin> mDisplayPlugins;
 
     @Inject(AppManagerProvider.class)
-    DisplayLayoutManager mDisplayLayoutManager;
+    private DisplayLayoutManager mDisplayLayoutManager;
 
     /**
      * ソート対象のアプリ
      */
     @Nullable
-    DataCollection<DisplayLayoutApplication> mApplications;
+    private DataCollection<DisplayLayoutApplication> mApplications;
 
     /**
      * デフォルト構成のアプリ
      * package名はnull
      */
     @NonNull
-    DisplayLayoutApplication mDefaultApplication;
+    private DisplayLayoutApplication mDefaultApplication;
+
 
     /**
      * 選択されているアプリ
      */
-    @NonNull
-    DisplayLayoutApplication mSelectedApp;
+    @NotNull
+    private DisplayLayoutApplicationStream mSelectedAppStream = new DisplayLayoutApplicationStream();
 
     /**
-     * ACE上でレイアウト設定されているアプリにつけるサブアイコン
+     * ACE上でレイアウト設定されているアプリにつけるバッジアイコン
      */
     @NonNull
-    Drawable mSubIcon;
+    private Drawable mBadgeIcon;
 
     public DisplayLayoutController(Context context) {
         mContext = context;
-        mSubIcon = DrawableUtil.getVectorDrawable(context, R.drawable.ic_cycle_computer, R.color.App_Icon_Grey);
+        mBadgeIcon = DrawableUtil.getVectorDrawable(context, R.drawable.ic_cycle_computer, R.color.App_Icon_Grey);
         Garnet.create(this)
                 .depend(Context.class, context)
                 .inject();
@@ -166,8 +171,8 @@ public class DisplayLayoutController {
             group.insertOrReplace(layout);
         }
 
-        mDefaultApplication = new DisplayLayoutApplication(mContext, null, mSubIcon);
-        mSelectedApp = mDefaultApplication;
+        mDefaultApplication = new DisplayLayoutApplication(mContext, null, mBadgeIcon);
+        mSelectedAppStream.onUpdate(mDefaultApplication);
     }
 
     /**
@@ -176,7 +181,7 @@ public class DisplayLayoutController {
      * キャッシュがある場合はキャッシュを利用し、それ以外の場合はロードを実行する。
      */
     public void loadTargetApplications(CancelCallback cancelCallback) throws TaskCanceledException {
-        if (mSelectedApp == null) {
+        if (mSelectedAppStream.getValue() == null) {
             throw new IllegalStateException("load() not called!");
         }
 
@@ -188,20 +193,38 @@ public class DisplayLayoutController {
         assertNotCanceled(cancelCallback);
 
         List<DisplayLayoutApplication> result = new ArrayList<>();
-        result.add(mSelectedApp);   // デフォルト構成用
+        result.add(mSelectedAppStream.getValue());   // デフォルト構成用
 
         Set<String> existPackageNames = CollectionUtil.asOtherSet(PackageUtil.listLauncherApplications(mContext), it -> it.activityInfo.packageName);
         for (ApplicationInfo info : PackageUtil.listInstallApplications(mContext)) {
             if (existPackageNames.contains(info.packageName)) {
                 AppLog.system("Load TargetLauncher package[%s]", info.packageName);
-                result.add(new DisplayLayoutApplication(mContext, info, mSubIcon));
+                result.add(new DisplayLayoutApplication(mContext, info, mBadgeIcon));
             }
 
             assertNotCanceled(cancelCallback);
         }
 
         mApplications = new DataCollection<>(result);
-        mApplications.setComparator(DisplayLayoutApplication.COMPARATOR_ASC);
+        mApplications.setComparator((a, b) -> {
+            DisplayLayoutGroup aGroup = mLayouts.get(a.getPackageName());
+            DisplayLayoutGroup bGroup = mLayouts.get(b.getPackageName());
+
+            if (aGroup == null && bGroup == null) {
+                return a.getPackageName().compareTo(b.getPackageName());
+            } else if (aGroup != null && bGroup == null) {
+                return -1;
+            } else if (aGroup == null && bGroup != null) {
+                return 1;
+            }
+
+            Date aDate = aGroup.getUpdateDate();
+            Date bDate = bGroup.getUpdateDate();
+            return Long.compare(
+                    aDate != null ? aDate.getTime() : DateUtil.currentTimeMillis(),
+                    bDate != null ? bDate.getTime() : DateUtil.currentTimeMillis()
+            );
+        });
     }
 
     /**
@@ -249,18 +272,19 @@ public class DisplayLayoutController {
     }
 
     /**
-     * 現在選択されているアプリを取得する
+     * 編集対象のアプリをハンドリングするSteam
      */
     @NonNull
-    public DisplayLayoutApplication getSelectedApp() {
-        return mSelectedApp;
+    public DisplayLayoutApplicationStream getSelectedAppStream() {
+        return mSelectedAppStream;
     }
 
     /**
      * 現在選択されているアプリのレイアウトを更新する
      */
     public void setLayout(DisplayLayout layout) {
-        DisplayLayoutGroup layoutGroup = getLayoutGroup(getSelectedApp().getPackageName());
+        DisplayLayoutApplication app = mSelectedAppStream.getValueOrDefault(mDefaultApplication);
+        DisplayLayoutGroup layoutGroup = getLayoutGroup(app.getPackageName());
         layoutGroup.insertOrReplace(layout);
     }
 
@@ -268,26 +292,46 @@ public class DisplayLayoutController {
      * 現在の状況に応じてソートされたアプリ一覧を取得する
      */
     public List<DisplayLayoutApplication> listSortedApplications() {
-        for (DisplayLayoutApplication app : mApplications.getSource()) {
-            app.mUpdatedDate = null;
-            DisplayLayoutGroup group = mLayouts.get(app.getPackageName());
-            if (group != null) {
-                app.mUpdatedDate = group.getUpdateDate();
-            }
+        if (mApplications == null) {
+            return new ArrayList<>();
         }
 
         return mApplications.list();
     }
 
-    public static class Bus extends DataBus<DisplayLayoutController> {
+    /**
+     * アプリの表示優先度を設定するキャッシュ値
+     */
+    private static class ApplicationSortCache {
+        /**
+         * 操作された最終日付
+         */
+        private Date mUpdatedDate;
 
-        public Bus(@Nullable DisplayLayoutController data) {
-            super(data);
+        /**
+         * 操作対象のアプリID
+         */
+        private String mPackageName;
+
+        public ApplicationSortCache(Date updatedDate, String packageName) {
+            mUpdatedDate = updatedDate;
+            mPackageName = packageName;
         }
 
-        public void onSelected(DisplayLayoutApplication app) {
-            getData().mSelectedApp = app;
-            modified();
-        }
+        /**
+         * 昇順ソート
+         */
+        public static final Comparator<ApplicationSortCache> COMPARATOR_ASC = (a, b) -> {
+            if (a.mUpdatedDate != null && b.mUpdatedDate != null) {
+                // 値が大きい方を優先させる
+                return Long.compare(b.mUpdatedDate.getTime(), a.mUpdatedDate.getTime());
+            } else if (a.mUpdatedDate != null) {
+                return -1;
+            } else if (b.mUpdatedDate != null) {
+                return 1;
+            } else {
+                return StringUtil.compareString(a.mPackageName, b.mPackageName);
+            }
+        };
     }
 }

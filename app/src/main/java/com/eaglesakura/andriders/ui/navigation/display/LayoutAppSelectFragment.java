@@ -12,7 +12,6 @@ import com.eaglesakura.sloth.annotation.BindInterface;
 import com.eaglesakura.sloth.annotation.FragmentLayout;
 import com.eaglesakura.sloth.data.SupportCancelCallbackBuilder;
 import com.eaglesakura.sloth.ui.progress.ProgressToken;
-import com.squareup.otto.Subscribe;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -82,17 +81,18 @@ public class LayoutAppSelectFragment extends AppFragment {
     }
 
     /**
-     * アプリが切り替えられた
+     * 編集対象のApplicationが切り替えられrた
      */
-    @Subscribe
-    void onSelectedApp(DisplayLayoutController.Bus bus) {
-        mDisplayLayoutController = bus.getData();
+    @UiThread
+    void observeCurrentDispalayApp(DisplayLayoutApplication currentApp) {
+        AQuery q = new AQuery(getView());
+        q.id(R.id.Item_Title).text(currentApp.getTitle());  // タイトル設定
+        q.id(R.id.Item_Icon).image(currentApp.getIcon());   // アイコン設定
 
-        DisplayLayoutApplication data = mDisplayLayoutController.getSelectedApp();
-        new AQuery(getView())
-                .id(R.id.Item_Title).text(data.getTitle())  // タイトル設定
-                .id(R.id.Item_Icon).image(data.getIcon())   // アイコン設定
-                .id(R.id.Button_Delete).visibility(data.isDefaultApp() ? View.GONE : View.VISIBLE).clicked(view -> mCallback.onRequestDeleteLayout(this, data));    // 削除ボタン設定
+
+        q.id(R.id.Button_Delete)
+                .visibility(currentApp.isDefaultApp() ? View.GONE : View.VISIBLE)
+                .clicked(view -> mCallback.onRequestDeleteLayout(this, currentApp));    // 削除ボタン設定
     }
 
     public interface Callback {

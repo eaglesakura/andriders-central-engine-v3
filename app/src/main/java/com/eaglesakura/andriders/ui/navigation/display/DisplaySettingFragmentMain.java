@@ -35,8 +35,6 @@ public class DisplaySettingFragmentMain extends AppNavigationFragment implements
 
     DisplayLayoutController mDisplayLayoutController;
 
-    DisplayLayoutController.Bus mDisplayLayoutControllerBus;
-
     @Override
     protected void onCreateLifecycle(FragmentLifecycle lifecycle) {
         super.onCreateLifecycle(lifecycle);
