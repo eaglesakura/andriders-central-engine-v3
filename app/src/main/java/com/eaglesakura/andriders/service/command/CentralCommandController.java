@@ -9,6 +9,7 @@ import com.eaglesakura.andriders.central.data.command.timer.TimerCommandControll
 import com.eaglesakura.andriders.central.service.CentralSession;
 import com.eaglesakura.andriders.central.service.SessionData;
 import com.eaglesakura.andriders.central.service.SessionState;
+import com.eaglesakura.andriders.command.CommandKey;
 import com.eaglesakura.andriders.command.CommandSetting;
 import com.eaglesakura.andriders.command.SerializableIntent;
 import com.eaglesakura.andriders.model.command.CommandData;
@@ -276,7 +277,7 @@ public class CentralCommandController {
         // 正常に起動できたら、Receiverにも流す
         try {
             Intent intent = new Intent(CentralDataReceiver.ACTION_COMMAND_BOOTED);
-            intent.putExtra(CentralDataReceiver.EXTRA_COMMAND_KEY, data.getKey());
+            CommandKey.putExtra(intent, CentralDataReceiver.EXTRA_COMMAND_KEY, data.getKey());
             if (centralData != null) {
                 intent.putExtra(CentralDataReceiver.EXTRA_CENTRAL_DATA, centralData);
             }
