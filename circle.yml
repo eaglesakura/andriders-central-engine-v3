@@ -15,12 +15,15 @@ machine:
     ANDROID_HOME: /home/ubuntu/android-sdk
     GRADLE_OPTS: -Dorg.gradle.parallel=false -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xms256m -Xmx3000m -XX:MaxPermSize=128m -XX:+HeapDumpOnOutOfMemoryError"
     JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms256m -Xmx3000m -XX:MaxPermSize=128m
+    PATH: /home/ubuntu/android-sdk:/home/ubuntu/android-sdk/tools:/home/ubuntu/android-sdk/tools/bin:/home/ubuntu/android-sdk/platform-tool:$PATH
 dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
   override:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk-auto.sh)"
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-extra-repo.sh)"
+    - yes | sdkmanager "build-tools;27.0.3"
+    - yes | sdkmanager "platforms;android-27"
     - ./script/developer-install-private.sh
     - ./gradlew --refresh-dependencies :app:dependencies
 test:
