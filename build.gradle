@@ -29,6 +29,7 @@ allprojects {
         maven { url "http://eaglesakura.github.io/maven/" }
         maven { url "https://clojars.org/repo/" }
         maven { url "https://dl.bintray.com/android/android-tools/" } // DataBinding-alpha
+        maven { url "https://dl.bintray.com/eaglesakura/maven/" }
         mavenCentral()
     }
 }
